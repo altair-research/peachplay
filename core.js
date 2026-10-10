@@ -118,9 +118,9 @@ function sessionEnd(game) {
   if (sticker) { S.stickers.push(sticker); save(); }
   view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.gotRight(good, SESSION.rounds)}</p>
     ${sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : ''}
-    <div class="menu intro"><button class="big math" id="again"><span class="gi">🔁</span>${t.playAgain}</button>
-    <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}</button>
-    <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}</button></div>`;
+    <div class="menu intro"><button class="big math" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
+    <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>
+    <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}<small>${t.anotherSub}</small></button></div>`;
   $('#again').onclick = () => launch(game); $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
   say(t.roundDone); sfx('win'); confetti(150);
 }

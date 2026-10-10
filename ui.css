@@ -293,3 +293,10 @@ pk-cheer .peachy.oops{animation:shake .4s}
 .logictext{font-size:clamp(20px,5.6vw,28px);font-weight:700;max-width:420px;margin:auto;line-height:1.45;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 4px 0 #f0cdb7}
 details.gi{background:#fff;border-radius:14px;padding:10px 14px;margin:10px auto;max-width:640px;text-align:left;font-size:15px}
 details.gi summary{font-weight:700;cursor:pointer}
+
+/* round-complete screen: centered buttons */
+.menu.intro{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:14px}
+.menu.intro .big{flex:0 1 210px;min-width:150px;min-height:150px}
+.menu.intro .big small{white-space:normal}
+.toprow .big.surprise .bt{display:flex;flex-direction:column;align-items:flex-start;text-align:left;line-height:1.15}
+.toprow .big.surprise .bt small{font-size:12px;font-weight:500;margin:2px 0 0;color:#7a6a6a}
