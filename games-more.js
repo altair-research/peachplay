@@ -80,14 +80,14 @@ registerGame({
     }
     const i = rnd(7), kind = pick(lvl('days') === 1 ? ['after', 'after', 'weekend'] : ['after', 'before', 'weekend']);
     if (kind === 'weekend') {
-      const good = pick([0, 6]), bad = others([1, 2, 3, 4, 5], -1, 2), o = (d, ok) => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: DAYS[d][1], ok });
+      const good = pick([0, 6]), bad = others([1, 2, 3, 4, 5], -1, 2), o = (d, ok) => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: S.lang === 'ko' ? DAYS[d][1] : null, ok });
       quiz(this, { ask: B('Which day is part of the weekend?', '주말인 요일은 무엇일까요?'), opts: [o(good, true), ...bad.map(d => o(d, false))], cls: 'words', after: B('Saturday and Sunday are the weekend.', '토요일과 일요일이 주말이에요.') });
       return;
     }
     const ans = kind === 'after' ? (i + 1) % 7 : (i + 6) % 7, ds = others([0, 1, 2, 3, 4, 5, 6].filter(d => d !== ans && d !== i), -1, 2);
     quiz(this, {
       ask: kind === 'after' ? B(`What day comes after ${DAYS[i][0]}?`, `${DAYS[i][1]} 다음 요일은?`) : B(`What day comes before ${DAYS[i][0]}?`, `${DAYS[i][1]} 전 요일은?`),
-      opts: [ans, ...ds].map(d => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: DAYS[d][1], ok: d === ans })), cls: 'words', after: B(`${DAYS[ans][0]}!`, `${DAYS[ans][1]}!`), vocab: DAYS[ans][0]
+      opts: [ans, ...ds].map(d => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: S.lang === 'ko' ? DAYS[d][1] : null, ok: d === ans })), cls: 'words', after: B(`${DAYS[ans][0]}!`, `${DAYS[ans][1]}!`), vocab: DAYS[ans][0]
     });
   }
 });

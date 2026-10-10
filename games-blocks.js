@@ -16,7 +16,7 @@ registerGame({
     const ask = B(`Fill a whole row to clear it! Clear ${goal} rows.`, `가로 한 줄을 가득 채우면 사라져요! ${goal}줄을 없애요.`);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="bstatrow"><div class="bstat" id="bstat"></div><div class="bnextbox"><span>${L(B("Next", "다음"))}</span><div class="bnext" id="bnext"></div></div></div>
-      <div class="bboard" id="bb" style="--w:${W}"></div>
+      <div class="bboard" id="bb" style="--w:${W};--h:${H}"></div>
       <div class="bctl"><button class="pill" id="bl">◀</button><button class="pill" id="br2">↻</button><button class="pill" id="bd">⬇</button><button class="pill" id="bn">▶</button></div>
       <pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));

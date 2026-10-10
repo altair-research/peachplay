@@ -158,7 +158,7 @@ registerGame({
     const ds = ppl.slice(1);
     quiz(this, {
       ask: B(`Who is the ${c[2]}?`, `${c[3]} 누구일까요?`), show: `<div class="logictext">${L(B(en, ko))}</div>`,
-      opts: ppl.map(p => ({ html: `<span class="word">${p[0]}</span>`, label: B('', p[1]), ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
+      opts: ppl.map(p => ({ html: `<span class="word">${p[0]}${S.lang === 'ko' ? ' · ' + p[1] : ''}</span>`, ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
     });
   }
 });
