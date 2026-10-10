@@ -33,6 +33,7 @@ function say(text, lang, keepQueue) {
 function renderPeaches() {
   const b = Math.floor(S.peaches / 10), r = S.peaches % 10;
   $('#peaches').textContent = (b ? `🧺${b} ` : '') + `🍑${r}`;
+  const sc = $('#stkChip'); if (sc) sc.textContent = `🏆${(S.stickers || []).length}`;
 }
 function addPeach() { S.peaches++; save(); renderPeaches(); }
 
@@ -69,6 +70,7 @@ function confetti(count = 60) {
     const ps = Array.from({ length: count }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 140, y: innerHeight * 0.45, vx: (Math.random() - .5) * 10, vy: -Math.random() * 10 - 3, r: 4 + Math.random() * 5, c: cols[rnd(cols.length)], rot: Math.random() * 6, vr: (Math.random() - .5) * .4 }));
     let f = 0; const step = () => { ctx.clearRect(0, 0, c.width, c.height); ps.forEach(p => { p.vy += 0.35; p.x += p.vx; p.y += p.vy; p.rot += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); }); if (++f < 85) requestAnimationFrame(step); else ctx.clearRect(0, 0, c.width, c.height); };
     requestAnimationFrame(step);
+    setTimeout(() => ctx.clearRect(0, 0, c.width, c.height), 2800);       // safety: never leave confetti on screen
   } catch (e) {}
 }
 // Peachy, the peach mascot
@@ -115,7 +117,7 @@ function surprise() {                                // mixed run: different gam
 }
 function sessionEnd(game) {
   const t = T(), good = SESSION.done, free = ALL_STICKERS.filter(s => !S.stickers.includes(s)), sticker = free.length && !SESSION.mix ? pick(free) : null;
-  if (sticker) { S.stickers.push(sticker); save(); }
+  if (sticker) { S.stickers.push(sticker); save(); renderPeaches(); }
   view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.gotRight(good, SESSION.rounds)}</p>
     ${sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : ''}
     <div class="menu intro"><button class="big math" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
