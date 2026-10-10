@@ -277,3 +277,19 @@ pk-cheer .peachy.oops{animation:shake .4s}
 .stkb{font-size:28px;width:52px;height:52px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #f0cdb7;padding:0}.stkb.sel{background:#ffe9a8;outline:3px solid #f5b800}
 .sparkrow{display:flex;gap:10px;justify-content:center;font-size:clamp(60px,20vw,100px)}
 .spark{animation:float 3s ease-in-out infinite}.spark:nth-child(2){animation-delay:.4s}.spark:nth-child(3){animation-delay:.8s}
+
+/* challenge zone */
+.subj.gifted h2{color:#5f3dc4}.big.gifted{border-top-color:#5f3dc4}
+.ag{display:grid;grid-template-columns:repeat(2,auto);gap:10px;justify-content:center}
+.ag:has(.ac:nth-child(4)):not(:has(.ac:nth-child(5))){grid-template-columns:repeat(2,auto)}
+.ac{display:flex;align-items:center;justify-content:center;width:clamp(70px,22vw,100px);height:clamp(70px,22vw,100px);background:#fff;border-radius:18px;font-size:clamp(40px,13vw,60px);box-shadow:0 4px 0 #f0cdb7}
+.ac.q{background:#fff8f1;border:3px dashed var(--peach);color:var(--peach);font-weight:800}
+.mxg{display:grid;grid-template-columns:repeat(var(--n),auto);gap:8px;justify-content:center}
+.mxc{display:flex;align-items:center;justify-content:center;width:clamp(58px,18vw,76px);height:clamp(58px,18vw,76px);background:#fff;border-radius:14px;box-shadow:0 3px 0 #f0cdb7}
+.mxc.q{background:#fff8f1;border:3px dashed var(--peach);color:var(--peach);font-size:34px;font-weight:800}
+.fig{display:block}
+.rotg{display:grid;grid-template-columns:repeat(var(--w),var(--px));grid-template-rows:repeat(var(--h),var(--px));gap:2px}
+.rotg i,.rotg b{display:block;width:var(--px);height:var(--px);border-radius:4px}.rotg i{box-shadow:inset 0 4px 0 #fff6,inset 0 -4px 0 #0003}
+.logictext{font-size:clamp(20px,5.6vw,28px);font-weight:700;max-width:420px;margin:auto;line-height:1.45;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 4px 0 #f0cdb7}
+details.gi{background:#fff;border-radius:14px;padding:10px 14px;margin:10px auto;max-width:640px;text-align:left;font-size:15px}
+details.gi summary{font-weight:700;cursor:pointer}

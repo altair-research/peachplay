@@ -6,7 +6,7 @@ const I18N = {
     speech: 'en-US', switchTo: '한국어',
     app: 'Peachy K', tagline: 'Georgia Kindergarten Games',
     pick: 'Pick a game!',
-    subjects: { math: 'Math', read: 'Reading', write: 'Writing', life: 'Me & My Day', create: 'Create & Imagine', brain: 'Brain Games', ss: 'Georgia & Our Nation', sci: 'Science' },
+    subjects: { math: 'Math', read: 'Reading', write: 'Writing', life: 'Me & My Day', create: 'Create & Imagine', gifted: 'Challenge Zone', brain: 'Brain Games', ss: 'Georgia & Our Nation', sci: 'Science' },
     right: ['Great job!', 'Awesome!', 'You did it!', 'Super!', 'Peachy!'],
     again: 'Try again!', next: 'Next ▶', listen: 'Listen',
     grownups: 'For grown-ups', back: 'Back',
@@ -35,6 +35,9 @@ const I18N = {
     roundDone: 'Round complete!', gotRight: (a, b) => `You got ${a} of ${b} on the first try!`, playAgain: 'Play again', surprise: 'Surprise me!', pickAnother: 'Pick another game',
     checkBtn: 'Check-up', scopeAll: 'Full check-up', checkDone: 'Check-up done!', lastTime: (a, b) => `Last time: ${a}/${b}`, better: 'Better!', improved: 'Got better at', practiceThese: 'Practice these', allRight: 'All right! Great job!', progressTitle: 'Check-ups', colDate: 'Date', colScore: 'Score',
     run: 'Run', addArrows: 'Tap the arrows to make a program', heroHi: "Hi! I'm Peachy!", stickers: 'My Stickers', stickersTitle: 'My Sticker Book', newSticker: 'New sticker!', stickerHint: 'Finish a round to win a sticker!',
+    challengeTitle: 'Thinking skills (Challenge Zone)', challengeNote: 'Practice for thinking skills. This is not an official test, does not predict gifted eligibility, and cannot promise admission. Short, relaxed practice (10-15 minutes) is enough.',
+    areaVerbal: 'Verbal reasoning', areaQuant: 'Quantitative reasoning', areaNonverbal: 'Nonverbal / spatial reasoning', areaCreative: 'Creativity', colTried: 'Tried',
+    giftedInfoTitle: 'About gifted screening in Georgia', giftedInfo: 'Georgia (Rule 160-4-2-.38) allows two routes: a high mental-ability score (99th percentile for K-2) plus an achievement measure, or meeting criteria in 3 of 4 areas: mental ability, achievement, creativity, motivation. Gwinnett calls its elementary program FOCUS; parents can ask the school to refer a child (kindergarten referrals open in January, per third-party guides). Details change, so confirm with your school or the district gifted office.',
     undo: 'Undo', hint: 'Hint', tooMany: 'Too many lines! Undo and try a different way.', watch: 'Watch the colors!', yourTurn: 'Your turn!', replay: 'Watch again',
     clear: 'Clear', done: 'Done', tellAbout: 'Now tell a grown-up about your drawing!'
   },
@@ -42,7 +45,7 @@ const I18N = {
     speech: 'ko-KR', switchTo: 'English',
     app: '피치 K', tagline: '조지아 유치원(K) 학습 게임',
     pick: '게임을 골라요!',
-    subjects: { math: '수학', read: '읽기', write: '쓰기', life: '나와 하루', create: '상상하고 만들기', brain: '두뇌 게임', ss: '조지아와 우리나라', sci: '과학' },
+    subjects: { math: '수학', read: '읽기', write: '쓰기', life: '나와 하루', create: '상상하고 만들기', gifted: '도전 문제', brain: '두뇌 게임', ss: '조지아와 우리나라', sci: '과학' },
     right: ['잘했어요!', '멋져요!', '해냈어요!', '최고예요!', '피치 좋아요!'],
     again: '다시 해 봐요!', next: '다음 ▶', listen: '듣기',
     grownups: '보호자용', back: '뒤로',
@@ -71,6 +74,9 @@ const I18N = {
     roundDone: '한 판 끝!', gotRight: (a, b) => `${b}문제 중 ${a}문제를 한 번에 맞혔어요!`, playAgain: '또 하기', surprise: '아무거나 놀기!', pickAnother: '다른 게임 고르기',
     checkBtn: '점검', scopeAll: '전체 점검', checkDone: '점검 끝!', lastTime: (a, b) => `지난번: ${a}/${b}`, better: '더 좋아졌어요!', improved: '좋아진 게임', practiceThese: '더 연습할 게임', allRight: '모두 맞았어요! 최고예요!', progressTitle: '점검 기록', colDate: '날짜', colScore: '점수',
     run: '실행', addArrows: '화살표를 눌러 길을 만들어요', heroHi: '안녕! 나는 피치야!', stickers: '내 스티커', stickersTitle: '내 스티커북', newSticker: '새 스티커!', stickerHint: '한 판을 끝내면 스티커를 받아요!',
+    challengeTitle: '사고력 연습 (도전 문제)', challengeNote: '사고력을 키우는 연습입니다. 공식 시험이 아니고, 영재 선발 가능성을 예측하거나 입학을 보장하지 않아요. 10~15분 정도 가볍게 하는 것으로 충분해요.',
+    areaVerbal: '언어 추론', areaQuant: '수량 추론', areaNonverbal: '비언어·공간 추론', areaCreative: '창의성', colTried: '시도',
+    giftedInfoTitle: '조지아 영재 선발 안내', giftedInfo: '조지아 주 규칙(160-4-2-.38)에는 두 가지 길이 있습니다. 정신능력 검사 점수가 매우 높고(K~2학년은 99번째 백분위) 성취도 기준도 충족하는 경우, 또는 정신능력·성취도·창의성·동기 4개 영역 중 3개의 기준을 충족하는 경우입니다. Gwinnett의 초등 영재 프로그램 이름은 FOCUS이고, 부모가 학교에 의뢰(referral)를 요청할 수 있습니다(제3자 안내에 따르면 K 의뢰는 1월부터). 내용은 바뀔 수 있으니 학교나 학군 영재 담당 부서에 꼭 확인하세요.',
     undo: '되돌리기', hint: '힌트', tooMany: '선이 너무 많아요! 되돌려서 다른 방법을 찾아봐요.', watch: '색깔을 잘 보세요!', yourTurn: '이제 네 차례!', replay: '다시 보기',
     clear: '지우기', done: '다 했어요', tellAbout: '이제 어른에게 그림 이야기를 들려줘요!'
   }

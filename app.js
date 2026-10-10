@@ -1,7 +1,7 @@
 'use strict';
 // App shell: home menu grouped by school subject, grown-ups panel, language switch.
-const SUBJECT_ORDER = ['math', 'read', 'write', 'ss', 'sci', 'life', 'create', 'brain'];
-const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', sci: '🔬', life: '🌈', create: '🎭', brain: '🧠' };
+const SUBJECT_ORDER = ['math', 'read', 'write', 'ss', 'sci', 'life', 'create', 'gifted', 'brain'];
+const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', sci: '🔬', life: '🌈', create: '🎭', gifted: '🚀', brain: '🧠' };
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
@@ -45,12 +45,21 @@ function checksTable() {
   return `<table><tr><th>${T().colDate}</th><th>${T().colArea}</th><th>${T().colScore}</th><th></th></tr>${rows}</table>`;
 }
 
+const CH_AREAS = [['areaVerbal', ['analogy', 'logic']], ['areaQuant', ['numseries', 'numanalogy', 'add20', 'skipcount']], ['areaNonverbal', ['matrix', 'classify', 'rotate']], ['areaCreative', ['uses', 'imagine', 'scene', 'storyspark']]];
+function challengeTable() {
+  const rows = CH_AREAS.map(([k, ids]) => { const t = ids.reduce((a, id) => { const s = stat(id); return [a[0] + s.right, a[1] + s.right + s.wrong]; }, [0, 0]); const pct = t[1] ? Math.round(100 * t[0] / t[1]) : 0; return `<tr><td>${T()[k]}</td><td>${t[1]}</td><td>${t[1] ? pct + '%' : '-'}</td><td><span class="bar2"><i style="width:${pct}%"></i></span></td></tr>`; }).join('');
+  return `<table><tr><th></th><th>${T().colTried}</th><th>${T().colRight}</th><th></th></tr>${rows}</table><p class="note2">${T().challengeNote}</p>`;
+}
+
 function grownups() {
   const rows = GAMES.map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = GAMES.map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
+    <h2>${T().challengeTitle}</h2>
+    <div class="tablewrap">${challengeTable()}</div>
+    <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>
     <h2>${T().progressTitle}</h2>
     <div class="tablewrap">${checksTable()}</div>
     <h2>${T().addrTitle}</h2>
