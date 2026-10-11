@@ -4,7 +4,7 @@
 const I18N = {
   en: {
     speech: 'en-US', switchTo: '한국어',
-    app: 'Peachy', tagline: 'Georgia Learning Games',
+    app: 'PeachPlay', tagline: 'Georgia Learning Games',
     pick: 'Pick a game!',
     subjects: { math: 'Math', read: 'Reading', write: 'Writing', life: 'Me & My Day', create: 'Create & Imagine', gifted: 'Challenge Zone', brain: 'Brain Games', ss: 'Georgia & Our Nation', sci: 'Science' },
     right: ['Great job!', 'Awesome!', 'You did it!', 'Super!', 'Peachy!'],
@@ -43,7 +43,7 @@ const I18N = {
   },
   ko: {
     speech: 'ko-KR', switchTo: 'English',
-    app: '피치', tagline: '조지아 학습 게임',
+    app: '피치플레이', tagline: '조지아 학습 게임',
     pick: '게임을 골라요!',
     subjects: { math: '수학', read: '읽기', write: '쓰기', life: '나와 하루', create: '상상하고 만들기', gifted: '도전 문제', brain: '두뇌 게임', ss: '조지아와 우리나라', sci: '과학' },
     right: ['잘했어요!', '멋져요!', '해냈어요!', '최고예요!', '피치 좋아요!'],
