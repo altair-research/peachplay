@@ -4,7 +4,7 @@
 const I18N = {
   en: {
     speech: 'en-US', switchTo: '한국어',
-    app: 'Peachy K', tagline: 'Georgia Kindergarten Games',
+    app: 'PeachPlay', tagline: 'Georgia Kindergarten Games',
     pick: 'Pick a game!',
     subjects: { math: 'Math', read: 'Reading', write: 'Writing', life: 'Me & My Day', create: 'Create & Imagine', gifted: 'Challenge Zone', brain: 'Brain Games', ss: 'Georgia & Our Nation', sci: 'Science' },
     right: ['Great job!', 'Awesome!', 'You did it!', 'Super!', 'Peachy!'],
