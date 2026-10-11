@@ -13,9 +13,11 @@ const PT = {
   colSubj: B('Subject', '과목'), colNow: B('Last 7', '최근 7일'), colPrev: B('Before', '그 전'), colTrend: B('Trend', '변화'),
   none: B('No answers yet. Play a game and the chart will fill in.', '아직 기록이 없어요. 게임을 하면 그래프가 채워져요.'),
   note: B('These numbers only count answers in this app on this device. They are a practice record, not a test score. A subject needs 5+ answers in a week to show a trend.', '이 앱에서 이 기기로 푼 문제만 센 연습 기록이에요. 시험 점수가 아니에요. 한 과목에서 일주일에 5문제 이상 풀어야 변화가 보여요.'),
+  shareT: B('Share Peachy K', 'Peachy K 공유하기'), shareN: B('Copy the link and send it to other parents or teachers.', '링크를 복사해서 다른 부모님이나 선생님께 보내 주세요.'), copy: B('Copy link', '링크 복사'), copied: B('Link copied!', '링크가 복사됐어요!'),
   back: B('Back', '뒤로'), who: B('Playing now', '지금 하는 아이'),
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} days in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
+const SITE_URL = 'https://altair-research.github.io/peachy-k/';
 const AVATARS = ['🍑', '🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🚀'];
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 

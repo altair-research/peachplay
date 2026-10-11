@@ -37,6 +37,10 @@ h1{font-size:clamp(32px,7vw,56px);line-height:1.1;margin:0 0 14px;color:var(--pe
 .cta{display:inline-flex;align-items:center;gap:10px;background:var(--peach);color:#fff;text-decoration:none;font-weight:800;font-size:22px;padding:16px 34px;border-radius:999px;box-shadow:0 6px 0 #d9482b;min-height:56px}
 .cta:active{transform:translateY(3px);box-shadow:0 3px 0 #d9482b}
 .cta2{display:inline-block;margin:14px 8px 0;color:var(--peach-d);font-weight:700}
+.share{display:flex;gap:8px;margin-top:22px;max-width:560px;flex-wrap:wrap}
+.share input{flex:1 1 220px;min-width:0;font:inherit;font-size:15px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.copy{font:inherit;font-weight:800;border:0;border-radius:14px;padding:12px 18px;min-height:48px;background:var(--ink);color:var(--bg);cursor:pointer}
+.copied{min-height:22px;margin-top:6px;color:var(--green);font-weight:700;font-size:14px}
 .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
 .badges>span{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px}
 @media (min-width:860px){.hero .wrap{grid-template-columns:240px 1fr;text-align:left}.lead{margin-left:0}.badges{justify-content:flex-start}.mascot{width:220px}}
@@ -84,6 +88,8 @@ footer{padding:30px 0 50px;text-align:center;color:var(--mute);font-size:14px}
     <a class="cta" href="play/">▶ <span class="en">Play now</span><span class="ko">지금 시작하기</span></a>
     <a class="cta2" href="#install"><span class="en">Add it to your home screen</span><span class="ko">홈 화면에 추가하는 방법</span></a>
     <div class="badges"><span><span class="en">Free</span><span class="ko">무료</span></span><span><span class="en">No ads</span><span class="ko">광고 없음</span></span><span><span class="en">No sign-up</span><span class="ko">가입 없음</span></span><span><span class="en">Works offline</span><span class="ko">오프라인 가능</span></span><span>English · 한국어</span></div>
+    <div class="share"><input id="shareUrl" readonly aria-label="Link" value="https://altair-research.github.io/peachy-k/"><button id="copyBtn" class="copy" type="button">📋 <span class="en">Copy link</span><span class="ko">링크 복사</span></button><button id="shareBtn" class="copy" type="button" hidden>📤 <span class="en">Share</span><span class="ko">공유</span></button></div>
+    <div class="copied" id="copied" role="status" aria-live="polite"></div>
   </div>
 </div></section>
 
@@ -148,6 +154,17 @@ footer{padding:30px 0 50px;text-align:center;color:var(--mute);font-size:14px}
   function apply(){root.lang=lang;btn.textContent=lang==='en'?'한국어':'English';document.title=lang==='en'?'Peachy K – Free learning games for Georgia kindergartners':'Peachy K – 조지아 유치원 아이를 위한 무료 학습 게임'}
   btn.onclick=function(){lang=lang==='en'?'ko':'en';try{localStorage.setItem(KEY,lang)}catch(e){}apply()};
   apply();
+  var url=document.getElementById('shareUrl'),msg=document.getElementById('copied');
+  try{url.value=location.origin+location.pathname.replace(/index\.html$/,'')}catch(e){}
+  function done(ok){msg.textContent=ok?(lang==='en'?'Link copied!':'링크가 복사됐어요!'):(lang==='en'?'Press and hold the link, then Copy.':'링크를 길게 눌러 복사하세요.');setTimeout(function(){msg.textContent=''},2600)}
+  document.getElementById('copyBtn').onclick=function(){
+    var t=url.value;
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true)},fallback)}else fallback();
+    function fallback(){try{url.focus();url.select();url.setSelectionRange(0,t.length);done(document.execCommand('copy'))}catch(e){done(false)}}
+  };
+  url.onfocus=function(){url.select()};
+  var sb=document.getElementById('shareBtn');
+  if(navigator.share){sb.hidden=false;sb.onclick=function(){navigator.share({title:'Peachy K',text:lang==='en'?'Free learning games for kindergartners':'유치원 아이를 위한 무료 학습 게임',url:url.value}).catch(function(){})}}
 })();
 </script>
 </body>

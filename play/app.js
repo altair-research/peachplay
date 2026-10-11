@@ -66,10 +66,15 @@ function grownups() {
     <h2>${T().addrTitle}</h2>
     <div class="form"><input id="street" placeholder="${T().street}" value="${S.addr.street.replace(/"/g, '&quot;')}"><input id="city" placeholder="${T().city}" value="${S.addr.city.replace(/"/g, '&quot;')}">
     <button class="next" id="saveAddr">${T().save}</button> <span id="savedMsg"></span></div>
+    <h2>${L(PT.shareT)}</h2><p class="note2">${L(PT.shareN)}</p>
+    <div class="form"><input id="shareUrl" readonly value="${SITE_URL}"><button class="next" id="copyLink">📋 ${L(PT.copy)}</button> <span id="copiedMsg"></span></div>
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; save(); renderPeaches(); grownups(); } };
+  $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
+    const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
   $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
   $('#b').onclick = home;
 }
