@@ -1,0 +1,10 @@
+/* Beta-readiness additions: grown-ups backup/feedback forms, update/storage banners. */
+.bk textarea,.bk select{font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:2px solid #f0cdb7;background:#fff;color:inherit;max-width:100%}
+.bk textarea{width:min(100%,520px)}
+.bk .fb{flex-direction:column;align-items:stretch;max-width:520px;margin:0 auto}
+.bk .chkl{display:flex;gap:8px;align-items:center;font-size:16px;text-align:left}
+.bk .chkl input{width:24px;height:24px;min-width:0;padding:0;margin:0;flex:none}
+.bkmsg{min-height:24px;font-weight:700;color:#06a37c;text-align:center}
+.sbar2{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:50;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;background:#fff;border:2px solid #ff9a76;border-radius:16px;padding:10px 12px;box-shadow:0 6px 18px #0004;font-size:16px}
+.sbar2 .pill{font-size:16px;padding:8px 14px}
+body.playing .sbar2{display:none}

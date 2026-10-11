@@ -68,6 +68,7 @@ function grownups() {
     <button class="next" id="saveAddr">${T().save}</button> <span id="savedMsg"></span></div>
     <h2>${L(PT.shareT)}</h2><p class="note2">${L(PT.shareN)}</p>
     <div class="form"><input id="shareUrl" readonly value="${SITE_URL}"><button class="next" id="copyLink">📋 ${L(PT.copy)}</button> <span id="copiedMsg"></span></div>
+    ${typeof backupHtml === 'function' ? backupHtml() : ''}
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
@@ -75,6 +76,7 @@ function grownups() {
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
+  if (typeof backupBind === 'function') backupBind();
   $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
   $('#b').onclick = home;
 }
