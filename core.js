@@ -59,7 +59,7 @@ function record(id, ok) {
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
   try {
-    if (S.muted) return; audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (S.muted) return; audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime + when, o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + ms / 1000);
     o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + ms / 1000 + 0.02);

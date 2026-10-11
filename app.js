@@ -83,6 +83,7 @@ renderMute();
 $('#homeBtn').onclick = () => { quitDiag(); home(); };
 $('#navProg').onclick = () => { quitDiag(); progressScreen(); };
 $('#navFaq').onclick = () => { quitDiag(); faqScreen(); };
+$('#rotok').onclick = () => document.body.classList.add('landok');
 $('#profBtn').onclick = () => { quitDiag(); profilesScreen(); };
 $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
 $('#langBtn').onclick = () => { S.lang = S.lang === 'en' ? 'ko' : 'en'; save(); quitDiag(); home(); };

@@ -415,3 +415,20 @@ header{grid-template-columns:auto 1fr auto auto}
 #hnav{grid-column:1/-1;display:flex;gap:8px;justify-content:center}
 #hnav .pill{flex:1;max-width:220px;font-size:14px;padding:7px 8px;min-height:38px;white-space:nowrap}
 body.playing #hnav{display:none}
+
+/* ===== phones & tablets ===== */
+html,body{overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+header{padding-top:max(6px,env(safe-area-inset-top))}
+button,.opt,.big,.pill,.tile,.pad,.stk,.av{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#view{-webkit-touch-callout:none}
+input{max-width:100%}
+#hnav .pill{min-height:44px}
+/* a phone held sideways is too short for the games: ask to turn it (can be dismissed) */
+#rot{display:none}
+@media (orientation:landscape) and (max-height:480px) and (pointer:coarse){
+  body:not(.landok) #rot{display:flex;position:fixed;inset:0;z-index:100;background:#fff1e6;align-items:center;justify-content:center;text-align:center;padding:16px}
+  body:not(.landok) #rot .rotbox{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .rotico{font-size:48px}
+  #rot p{margin:0;font-size:22px;font-weight:800}#rot p span{font-size:18px;font-weight:600}
+}
