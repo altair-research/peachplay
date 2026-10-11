@@ -4,7 +4,7 @@
 const I18N = {
   en: {
     speech: 'en-US', switchTo: '한국어',
-    app: 'PeachPlay', tagline: 'Georgia Learning Games',
+    app: 'PeachPlay', tagline: 'Georgia Kindergarten Games',
     pick: 'Pick a game!',
     subjects: { math: 'Math', read: 'Reading', write: 'Writing', life: 'Me & My Day', create: 'Create & Imagine', gifted: 'Challenge Zone', brain: 'Brain Games', ss: 'Georgia & Our Nation', sci: 'Science' },
     right: ['Great job!', 'Awesome!', 'You did it!', 'Super!', 'Peachy!'],
@@ -14,7 +14,7 @@ const I18N = {
     focus: 'Needs a little more practice:', focusNone: 'Play a few rounds to see suggestions.',
     addrTitle: 'My address (saved only on this device)', street: 'Street address', city: 'City',
     save: 'Save', saved: 'Saved!', reset: 'Erase progress', resetAsk: 'Erase all progress on this device?',
-    basket: 'baskets', note: 'Made for Georgia elementary topics (kindergarten and 1st grade so far). Not affiliated with Gwinnett County Public Schools. No ads. No data leaves this device.',
+    basket: 'baskets', note: 'Made for Georgia kindergarten topics. Not affiliated with Gwinnett County Public Schools. No ads. No data leaves this device.',
     tensAsk: 'Which number is missing?',
     fillAsk: 'Tap the empty boxes to make ten!',
     pair: (a, b) => `${a} and ${b} make ten!`,
@@ -43,7 +43,7 @@ const I18N = {
   },
   ko: {
     speech: 'ko-KR', switchTo: 'English',
-    app: '피치플레이', tagline: '조지아 학습 게임',
+    app: '피치 K', tagline: '조지아 유치원(K) 학습 게임',
     pick: '게임을 골라요!',
     subjects: { math: '수학', read: '읽기', write: '쓰기', life: '나와 하루', create: '상상하고 만들기', gifted: '도전 문제', brain: '두뇌 게임', ss: '조지아와 우리나라', sci: '과학' },
     right: ['잘했어요!', '멋져요!', '해냈어요!', '최고예요!', '피치 좋아요!'],
@@ -53,7 +53,7 @@ const I18N = {
     focus: '조금 더 연습하면 좋아요:', focusNone: '몇 판 하면 추천이 나와요.',
     addrTitle: '우리 집 주소 (이 기기에만 저장)', street: '번지/도로명 주소', city: '도시',
     save: '저장', saved: '저장됐어요!', reset: '기록 지우기', resetAsk: '이 기기의 모든 기록을 지울까요?',
-    basket: '바구니', note: '조지아 초등 학습 주제(지금은 유치원과 1학년)에 맞춘 게임입니다. Gwinnett County Public Schools와 관련이 없습니다. 광고 없음. 데이터는 기기 밖으로 나가지 않습니다.',
+    basket: '바구니', note: '조지아 유치원 학습 주제에 맞춘 게임입니다. Gwinnett County Public Schools와 관련이 없습니다. 광고 없음. 데이터는 기기 밖으로 나가지 않습니다.',
     tensAsk: '빠진 숫자는 뭘까요?',
     fillAsk: '빈 칸을 눌러서 10을 만들어요!',
     pair: (a, b) => `${a}와 ${b}를 합치면 십!`,

@@ -122,7 +122,7 @@ function launch(game, mix) {
 }
 function surprise() {                                // mixed run: different game every couple of rounds
   const picks = (typeof currentPicks === 'function' ? currentPicks(3) : []).map(p => p.id);
-  const pool = visibleGames().filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
+  const pool = GAMES.filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
   const g = (picks.length && rnd(2) === 0 ? GAMES.find(x => x.id === pick(picks)) : null) || pick(pool);
   SESSION.hist = [...(SESSION.hist || []), g.id]; launch(g, true);
 }
@@ -206,7 +206,3 @@ const numOpts = (ans, lo, hi, n = 3) => {
 
 const GAMES = [];
 const registerGame = (g) => GAMES.push(g);
-// Which games a child sees: K games for K, 1st-grade games for grade 1; thinking games (brain/create/gifted) and handwriting are shared.
-const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subject) || ['trace', 'draw'].includes(g.id) ? 'both' : 'K');
-const kidGrade = () => (curKid().grade === '1' ? '1' : 'K');
-const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return gr === 'both' || gr === kidGrade() || (kidGrade() === '1' && S.showK && gr === 'K'); });

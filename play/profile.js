@@ -5,11 +5,8 @@
 //  (3) re-check any time: results are stored per date on this device and compared with the last time.
 // All of this produces "Peachy's picks". Everything runs in the browser; nothing is uploaded.
 
-const DIAG_IDS_1 = ['count120', 'tensones', 'compare100', 'maketen20', 'missingnum', 'growpat', 'clock1', 'coins1',
-  'blends', 'longvowels', 'tricky1', 'fixsent', 'weather1', 'plants1', 'figures1', 'mapdir'];
-const DIAG_IDS_K = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'shapes2d', 'pattern',
+const DIAG_IDS = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'shapes2d', 'pattern',
   'letters', 'sounds', 'rhyme', 'flags', 'address', 'compass', 'living', 'motion'];
-const DIAG_IDS = () => (kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
 const CHECK_SKIP = ['ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
 
@@ -33,15 +30,15 @@ function currentPicks(max = 3) {
   }
   Object.keys(res).forEach(id => { if (res[id] === false) add(id, 3, '__quick__'); });
   return Object.keys(need)
-    .filter(id => gameById(id) && visibleGames().includes(gameById(id)) && (stat(id).right - stat(id).wrong) < 8)        // drop once clearly mastered in play
+    .filter(id => gameById(id) && (stat(id).right - stat(id).wrong) < 8)        // drop once clearly mastered in play
     .sort((a, b) => need[b] - need[a]).slice(0, max)
     .map(id => ({ id, need: need[id], why: why[id] }));
 }
 
 // ---- check-ups ----
 function buildCheck(scope) {
-  if (scope === 'all') return DIAG_IDS().filter(gameById).map(id => ({ id, lv: 1 }));
-  const capable = visibleGames().filter(g => g.subject === scope && !CHECK_SKIP.includes(g.id));
+  if (scope === 'all') return DIAG_IDS.map(id => ({ id, lv: 1 }));
+  const capable = GAMES.filter(g => g.subject === scope && !CHECK_SKIP.includes(g.id));
   const items = shuffle(capable).map(g => ({ id: g.id, lv: 1 }));
   const extra = shuffle(capable).map(g => ({ id: g.id, lv: 2 }));        // second, harder question for small subjects
   while (items.length < 8 && extra.length) items.push(extra.shift());
