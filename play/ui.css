@@ -458,3 +458,5 @@ header #langBtn{font-size:14px;padding:8px 10px;white-space:nowrap}
 .faqtabs{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;padding:4px 2px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .faqtabs::-webkit-scrollbar{display:none}
 .ftab{flex:none;white-space:nowrap;font-size:14px;padding:6px 12px}
+
+.ver{text-align:center;font-size:12px;color:#a08676;margin:14px 0 6px;letter-spacing:.2px}

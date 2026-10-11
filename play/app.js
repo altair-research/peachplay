@@ -19,7 +19,7 @@ function home() {
       </section>`).join('')}
     <button class="link" id="find">${T().findStart}</button>
     <button class="link" id="parent">${T().grownups}</button>
-    <p class="note">${T().note}</p>`;
+    <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
   $('#parent').onclick = grownups; $('#find').onclick = intro;
   $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
@@ -69,7 +69,7 @@ function grownups() {
     <h2>${L(PT.shareT)}</h2><p class="note2">${L(PT.shareN)}</p>
     <div class="form"><input id="shareUrl" readonly value="${SITE_URL}"><button class="next" id="copyLink">📋 ${L(PT.copy)}</button> <span id="copiedMsg"></span></div>
     <button class="link" id="reset">${T().reset}</button>
-    <div><button class="next" id="b">${T().back}</button></div>`;
+    <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };

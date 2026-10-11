@@ -34,7 +34,7 @@ function faqScreen() {
   view().innerHTML = `<h1>❓ ${T().faqTitle}</h1><p class="tag">${T().faqLead}</p>
     <div class="faqtabs" role="tablist"><button class="ftab ${faqCat === 'all' ? 'on' : ''}" data-c="all">${L(B('All', '전체'))}</button>${FAQ_CATS.map(c => `<button class="ftab ${faqCat === c[0] ? 'on' : ''}" data-c="${c[0]}"><span>${c[1]}</span> ${L(c[2])}</button>`).join('')}</div>
     <div class="faqlist">${shown.map(c => `<section class="faqsec"><h2>${c[1]} ${L(c[2])}</h2>${FAQ.filter(f => f[2] === c[0]).map(f => `<details class="faq"><summary>${L(f[0])}</summary><p>${L(f[1])}</p></details>`).join('')}</section>`).join('')}</div>
-    <div><button class="next" id="b">${T().back}</button></div>`;
+    <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $$('.ftab').forEach(b => b.onclick = () => { faqCat = b.dataset.c; faqScreen(); });
   $('#b').onclick = home;
 }
