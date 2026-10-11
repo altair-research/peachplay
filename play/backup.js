@@ -8,7 +8,7 @@ const BK = {
   save: B('Save backup file', '백업 파일 저장'), copy: B('Copy backup code', '백업 코드 복사'), copied: B('Copied!', '복사됐어요!'),
   load: B('Restore from file', '파일에서 복원'), paste: B('Restore from code', '코드로 복원'), pasteHint: B('Paste backup code here', '백업 코드를 여기에 붙여넣기'),
   ask: B('Replace ALL progress on this device with the backup? This cannot be undone.', '이 기기의 모든 기록을 백업 내용으로 바꿀까요? 되돌릴 수 없어요.'),
-  ok: B('Restored! Reloading…', '복원했어요! 다시 불러옵니다…'), bad: B('That does not look like a PeachPlay backup.', 'PeachPlay 백업이 아니에요.'), full: B('Could not save on this device (storage full or blocked).', '이 기기에 저장하지 못했어요(저장 공간 부족 또는 차단).'),
+  ok: B('Restored! Reloading…', '복원했어요! 다시 불러옵니다…'), bad: B('That does not look like a Peachy backup.', 'Peachy 백업이 아니에요.'), full: B('Could not save on this device (storage full or blocked).', '이 기기에 저장하지 못했어요(저장 공간 부족 또는 차단).'),
   fbTitle: B('Send feedback', '의견 보내기'), fbNote: B('Opens your e-mail app with a draft to the app maker. Nothing is sent until you press Send in your mail app. No tracking.', '이메일 앱에 초안이 열려요. 메일 앱에서 보내기를 누르기 전에는 아무것도 전송되지 않고, 추적도 없어요.'),
   fbKind: B('Type', '종류'), kinds: [B('Bug / something broke', '오류 / 고장'), B('Idea / request', '아이디어 / 요청'), B('Question', '질문'), B('Other', '기타')],
   fbMsg: B('What happened? What would you like?', '무슨 일이 있었나요? 바라는 점은요?'),
@@ -40,7 +40,7 @@ function backupApply(o, say2) {
   } catch (e) { console.warn('[peachy] restore failed', e); say2(L(BK.full)); }
 }
 function feedbackBody(msg, dev, prog) {
-  const lines = [msg.trim(), '', '---', `PeachPlay v${APP_VERSION} (${APP_BUILD})`];
+  const lines = [msg.trim(), '', '---', `Peachy v${APP_VERSION} (${APP_BUILD})`];
   if (dev) lines.push(`Browser: ${navigator.userAgent}`, `Screen: ${screen.width}x${screen.height} @${window.devicePixelRatio || 1}, window ${innerWidth}x${innerHeight}`, `Language: ${navigator.language} / app ${S.lang}`, `Installed app: ${(matchMedia('(display-mode: standalone)').matches || navigator.standalone) ? 'yes' : 'no'}`);
   if (prog) { let r = 0, w = 0, g = 0; Object.values(S.stats || {}).forEach(s => { r += s.right; w += s.wrong; if (s.right + s.wrong) g++; }); lines.push(`Progress (current child): ${g} games tried, ${r} right, ${w} missed`); }
   return lines.join('\n');
@@ -75,6 +75,6 @@ function backupBind() {
   $('#bkFile').onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 5e6) return msg(L(BK.bad)); const r = new FileReader(); r.onload = () => restore(r.result); r.onerror = () => msg(L(BK.bad)); r.readAsText(f); e.target.value = ''; };
   $('#bkPaste').onclick = () => restore($('#bkText').value);
   const draft = () => `${L(BK.kinds[+$('#fbKind').value])}\n\n${feedbackBody($('#fbMsg').value, $('#fbDev').checked, $('#fbProg').checked)}`;
-  $('#fbSend').onclick = () => { location.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('PeachPlay feedback v' + APP_VERSION)}&body=${encodeURIComponent(draft())}`; };
+  $('#fbSend').onclick = () => { location.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('Peachy feedback v' + APP_VERSION)}&body=${encodeURIComponent(draft())}`; };
   $('#fbCopy').onclick = () => copyText(draft(), ok => msg(ok ? L(BK.copied) : ''));
 }

@@ -13,14 +13,16 @@ function home() {
     <div class="tag">${T().tagline}</div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${picksHtml()}
-    ${SUBJECT_ORDER.map(sub => `
+    ${SUBJECT_ORDER.map(sub => visibleGames().some(g => g.subject === sub) ? `
       <section class="subj ${sub}"><h2><span>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</span>${(sub === 'brain' || sub === 'create') ? '' : `<button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button>`}</h2>
-        <div class="menu">${GAMES.filter(g => g.subject === sub).map(g => `<button class="big ${sub}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`).join('')}</div>
-      </section>`).join('')}
+        <div class="menu">${visibleGames().filter(g => g.subject === sub).map(g => `<button class="big ${sub}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`).join('')}</div>
+      </section>` : '').join('')}
+    ${kidGrade() === '1' ? `<button class="link" id="showk">${S.showK ? L(B('Hide kindergarten games', '유치원(K) 게임 숨기기')) : L(B('Show kindergarten games too', '유치원(K) 게임도 보기'))}</button>` : ''}
     <button class="link" id="find">${T().findStart}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
+  if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
   $('#parent').onclick = grownups; $('#find').onclick = intro;
   $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
@@ -52,8 +54,8 @@ function challengeTable() {
 }
 
 function grownups() {
-  const rows = GAMES.map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
-  const weak = GAMES.map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
+  const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
+  const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>

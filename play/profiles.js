@@ -4,7 +4,7 @@ const PT = {
   prog: B('My Progress', '내 기록'), kids: B('Who is playing?', '누가 하나요?'),
   add: B('Add a child', '아이 추가'), edit: B('Edit', '수정'), del: B('Remove', '삭제'), name: B('Name or nickname', '이름 또는 별명'),
   grade: B('Grade', '학년'), gK: B('Kindergarten', '유치원(K)'), g1: B('1st grade', '1학년'), save: B('Save', '저장'), cancel: B('Cancel', '취소'),
-  kidsNote: B('Each child keeps their own peaches, stickers, levels and history on this device. Nothing is sent anywhere. 1st-grade games are still being prepared, so for now every child plays the same set.', '아이마다 복숭아, 스티커, 단계, 기록이 이 기기에 따로 저장돼요. 어디로도 전송되지 않아요. 1학년 게임은 아직 준비 중이라 지금은 모두 같은 게임을 해요.'),
+  kidsNote: B('Each child keeps their own peaches, stickers, levels and history on this device. Nothing is sent anywhere. The grade you pick decides which games show up (kindergarten or 1st grade). Grades 2 to 5 are coming.', '아이마다 복숭아, 스티커, 단계, 기록이 이 기기에 따로 저장돼요. 어디로도 전송되지 않아요. 고른 학년(유치원 또는 1학년)에 맞는 게임이 보여요. 2~5학년은 준비 중이에요.'),
   delAsk: B('Remove this child and all of their saved progress on this device?', '이 아이와 이 기기에 저장된 기록을 모두 지울까요?'),
   today: B('Today', '오늘'), week: B('Last 7 days', '최근 7일'), streak: B('Days in a row', '연속 일수'), acc: B('Correct (7 days)', '정답률(7일)'),
   answers: B('answers', '문제'), days: B('days', '일'),
@@ -13,7 +13,7 @@ const PT = {
   colSubj: B('Subject', '과목'), colNow: B('Last 7', '최근 7일'), colPrev: B('Before', '그 전'), colTrend: B('Trend', '변화'),
   none: B('No answers yet. Play a game and the chart will fill in.', '아직 기록이 없어요. 게임을 하면 그래프가 채워져요.'),
   note: B('These numbers only count answers in this app on this device. They are a practice record, not a test score. A subject needs 5+ answers in a week to show a trend.', '이 앱에서 이 기기로 푼 문제만 센 연습 기록이에요. 시험 점수가 아니에요. 한 과목에서 일주일에 5문제 이상 풀어야 변화가 보여요.'),
-  shareT: B('Share PeachPlay', 'PeachPlay 공유하기'), shareN: B('Copy the link and send it to other parents or teachers.', '링크를 복사해서 다른 부모님이나 선생님께 보내 주세요.'), copy: B('Copy link', '링크 복사'), copied: B('Link copied!', '링크가 복사됐어요!'),
+  shareT: B('Share Peachy', 'Peachy 공유하기'), shareN: B('Copy the link and send it to other parents or teachers.', '링크를 복사해서 다른 부모님이나 선생님께 보내 주세요.'), copy: B('Copy link', '링크 복사'), copied: B('Link copied!', '링크가 복사됐어요!'),
   back: B('Back', '뒤로'), who: B('Playing now', '지금 하는 아이'),
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} days in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
