@@ -409,3 +409,9 @@ pk-cheer .peachy{width:clamp(30px,min(11vw,5.6dvh),56px)}
 .legend{display:flex;gap:16px;justify-content:center;font-size:14px;margin-bottom:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 td.tr{font-weight:800;font-size:18px}td.tr.up{color:#06a37c}td.tr.dn{color:#e05a4a}
+
+/* header: info row + quick links (Progress, Q&A) that stay in view while scrolling */
+header{grid-template-columns:auto 1fr auto auto}
+#hnav{grid-column:1/-1;display:flex;gap:8px;justify-content:center}
+#hnav .pill{flex:1;max-width:220px;font-size:14px;padding:7px 8px;min-height:38px;white-space:nowrap}
+body.playing #hnav{display:none}

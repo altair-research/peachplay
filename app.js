@@ -5,13 +5,12 @@ const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', 
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
-  $('#langBtn').textContent = T().switchTo;
+  $('#langBtn').textContent = T().switchTo; renderNav();
   document.documentElement.lang = S.lang;
   view().innerHTML = `
     <div class="hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}</div></div>
     <h1>${T().app}</h1>
     <div class="tag">${T().tagline}</div>
-    <div class="helprow"><button class="pill helpbtn" id="faqBtn">❓ ${T().faqBtn}</button><button class="pill helpbtn" id="progBtn">📈 ${L(PT.prog)}</button></div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${picksHtml()}
     ${SUBJECT_ORDER.map(sub => `
@@ -22,7 +21,7 @@ function home() {
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p>`;
   $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
-  $('#parent').onclick = grownups; $('#find').onclick = intro; $('#faqBtn').onclick = faqScreen; $('#progBtn').onclick = progressScreen;
+  $('#parent').onclick = grownups; $('#find').onclick = intro;
   $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub));
@@ -82,6 +81,8 @@ function renderMute() {
 $('#muteBtn').onclick = () => { S.muted = !S.muted; save(); try { speechSynthesis.cancel(); } catch (e) {} renderMute(); };
 renderMute();
 $('#homeBtn').onclick = () => { quitDiag(); home(); };
+$('#navProg').onclick = () => { quitDiag(); progressScreen(); };
+$('#navFaq').onclick = () => { quitDiag(); faqScreen(); };
 $('#profBtn').onclick = () => { quitDiag(); profilesScreen(); };
 $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
 $('#langBtn').onclick = () => { S.lang = S.lang === 'en' ? 'ko' : 'en'; save(); quitDiag(); home(); };

@@ -19,6 +19,9 @@ const PT = {
 const AVATARS = ['🍑', '🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🚀'];
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+// the quick links under the header are hidden while a game is on screen (games must fit one screen)
+function renderNav() { const p = $('#navProg'), f = $('#navFaq'); if (p) { p.textContent = '📈 ' + L(PT.prog); f.textContent = '❓ ' + T().faqBtn; } }
+new MutationObserver(() => { const v = view(); document.body.classList.toggle('playing', !!(v && v.firstElementChild && !v.querySelector(':scope > h1, :scope > .hero'))); }).observe(view(), { childList: true });
 function renderProfBtn() { const b = $('#profBtn'); if (b) b.textContent = curKid().avatar; }
 function kidLabel(k) { return k.name ? esc(k.name) : (k.id === 'p1' ? L(B('Me', '나')) : L(B('Child', '아이'))); }
 function switchKid(id) { save(); PROF.active = id; saveProf(); location.reload(); }
