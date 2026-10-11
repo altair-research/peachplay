@@ -90,6 +90,8 @@ class PkCheer extends HTMLElement {
 }
 if (!customElements.get('pk-cheer')) customElements.define('pk-cheer', PkCheer);
 function updateBar() { const i = document.querySelector('#sbar i'); if (i) i.style.width = Math.min(100, Math.round(100 * SESSION.n / (SESSION.rounds || ROUNDS))) + '%'; }
+// a new screen always starts at the top (the home list may have been scrolled)
+new MutationObserver((ms) => { if (ms.some(m => [...m.addedNodes].some(n => n.id !== 'nx'))) window.scrollTo(0, 0); }).observe(document.getElementById('view'), { childList: true });
 new MutationObserver(() => { const b = document.getElementById('sbar'); if (b) b.style.visibility = (document.querySelector('#view > .prompt') && !DIAG.active) ? 'visible' : 'hidden'; }).observe(document.getElementById('view'), { childList: true });
 
 const ALL_STICKERS = ['🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🐬', '🦖', '🚀', '🏆', '🎈', '🍦', '🎨', '⚽', '🌈', '⭐', '🌻', '🍉', '🚂', '🐝', '🦊', '🐧', '🐘', '🦒', '🦆', '🐞', '🍓', '🎸', '🚁', '🌙', '☀️', '🍩', '🧸', '🎁', '🔔', '🍑'];
