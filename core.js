@@ -1,6 +1,13 @@
 'use strict';
 // Core: device-local state, speech, helpers, and the shared multiple-choice quiz engine.
-const KEY = 'sag.v2';
+// Children on this device: each has its own saved data (the first child keeps the original key).
+const PKEY = 'sag.profiles';
+let PROF = { active: 'p1', list: [{ id: 'p1', name: '', avatar: '🍑', grade: 'K' }] };
+try { const raw = localStorage.getItem(PKEY); if (raw) PROF = JSON.parse(raw); } catch (e) {}
+const KEY = PROF.active === 'p1' ? 'sag.v2' : 'sag.v2.' + PROF.active;
+const saveProf = () => { try { localStorage.setItem(PKEY, JSON.stringify(PROF)); } catch (e) {} };
+const curKid = () => PROF.list.find(k => k.id === PROF.active) || PROF.list[0];
+const today = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const freshStat = () => ({ right: 0, wrong: 0, streak: 0, level: 1 });
 let S = { lang: 'en', peaches: 0, stats: {}, addr: { street: '', city: '' } };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
@@ -41,6 +48,8 @@ function addPeach() { S.peaches++; save(); renderPeaches(); }
 function record(id, ok) {
   const s = stat(id);
   if (SESSION.id === id) { SESSION.done = (SESSION.done || 0) + (ok ? 1 : 0); }
+  const h = ((S.hist = S.hist || {})[today()] = S.hist[today()] || { r: 0, w: 0, g: {} }), hg = (h.g[id] = h.g[id] || [0, 0]);
+  if (ok) { h.r++; hg[0]++; } else { h.w++; hg[1]++; }
   if (ok) { s.right++; s.streak++; if (s.streak >= 4 && s.level < 2) { s.level++; s.streak = 0; } }
   else { s.wrong++; s.streak = 0; if (s.level > 1 && s.wrong % 3 === 0) s.level--; }
   save();

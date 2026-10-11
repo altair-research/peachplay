@@ -11,7 +11,7 @@ function home() {
     <div class="hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}</div></div>
     <h1>${T().app}</h1>
     <div class="tag">${T().tagline}</div>
-    <button class="pill helpbtn" id="faqBtn">❓ ${T().faqBtn}</button>
+    <div class="helprow"><button class="pill helpbtn" id="faqBtn">❓ ${T().faqBtn}</button><button class="pill helpbtn" id="progBtn">📈 ${L(PT.prog)}</button></div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${picksHtml()}
     ${SUBJECT_ORDER.map(sub => `
@@ -22,7 +22,7 @@ function home() {
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p>`;
   $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
-  $('#parent').onclick = grownups; $('#find').onclick = intro; $('#faqBtn').onclick = faqScreen;
+  $('#parent').onclick = grownups; $('#find').onclick = intro; $('#faqBtn').onclick = faqScreen; $('#progBtn').onclick = progressScreen;
   $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub));
@@ -62,6 +62,7 @@ function grownups() {
     <div class="tablewrap">${challengeTable()}</div>
     <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>
     <h2>${T().progressTitle}</h2>
+    <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button>
     <div class="tablewrap">${checksTable()}</div>
     <h2>${T().addrTitle}</h2>
     <div class="form"><input id="street" placeholder="${T().street}" value="${S.addr.street.replace(/"/g, '&quot;')}"><input id="city" placeholder="${T().city}" value="${S.addr.city.replace(/"/g, '&quot;')}">
@@ -70,6 +71,7 @@ function grownups() {
     <div><button class="next" id="b">${T().back}</button></div>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; save(); renderPeaches(); grownups(); } };
+  $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
   $('#b').onclick = home;
 }
 
@@ -80,7 +82,8 @@ function renderMute() {
 $('#muteBtn').onclick = () => { S.muted = !S.muted; save(); try { speechSynthesis.cancel(); } catch (e) {} renderMute(); };
 renderMute();
 $('#homeBtn').onclick = () => { quitDiag(); home(); };
+$('#profBtn').onclick = () => { quitDiag(); profilesScreen(); };
 $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
 $('#langBtn').onclick = () => { S.lang = S.lang === 'en' ? 'ko' : 'en'; save(); quitDiag(); home(); };
-renderPeaches(); S.introSeen ? home() : intro();
+renderPeaches(); renderProfBtn(); S.introSeen ? home() : intro();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
