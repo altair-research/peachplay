@@ -5,6 +5,14 @@
   const TXT = { upd: { en: 'A new version is ready.', ko: '새 버전이 준비됐어요.' }, reload: { en: 'Reload', ko: '새로고침' }, later: { en: 'Later', ko: '나중에' },
     store: { en: 'Progress cannot be saved in this browser (private mode, blocked or full storage). Please use a normal window.', ko: '이 브라우저에서는 기록을 저장할 수 없어요(사생활 보호 모드, 차단 또는 저장 공간 부족). 일반 창에서 열어 주세요.' } };
   const bar = (id, html) => { if (document.getElementById(id)) return null; const d = document.createElement('div'); d.id = id; d.className = 'sbar2'; d.setAttribute('role', 'status'); d.innerHTML = html; document.body.appendChild(d); return d; };
+  const offline = state => {
+    window.peachOfflineState = state;
+    document.querySelectorAll('[data-offline-status]').forEach(el => {
+      const value = T()[state];
+      if (el.textContent !== value) el.textContent = value;
+    });
+  };
+  offline('offlinePreparing');
 
   // A waiting worker activates only when Reload is selected.
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
@@ -15,11 +23,37 @@
       const d = bar('updbar', `<span>${TXT.upd[lang()]}</span><button class="pill" id="updGo">${TXT.reload[lang()]}</button><button class="pill" id="updLater">${TXT.later[lang()]}</button>`);
       if (d) { d.querySelector('#updGo').onclick = () => { if (r.waiting) { approved = true; r.waiting.postMessage({ type: 'ACTIVATE_UPDATE' }); } else location.reload(); }; d.querySelector('#updLater').onclick = () => d.remove(); }
     };
-    navigator.serviceWorker.ready.then(r => { offer(r); r.addEventListener('updatefound', () => { const w = r.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed') offer(r); }); }); });
+    const inspect = w => {
+      if (!w || w.state !== 'activated') return;
+      const channel = new MessageChannel();
+      const timer = setTimeout(() => { channel.port1.close(); offline('offlineFailed'); }, 10000);
+      channel.port1.onmessage = e => { clearTimeout(timer); channel.port1.close(); offline(e.data.ready ? 'offlineReady' : 'offlineFailed'); };
+      w.postMessage({ type: 'OFFLINE_STATUS' }, [channel.port2]);
+    };
+    const watch = r => {
+      offer(r);
+      inspect(r.active);
+      const track = () => {
+        const w = r.installing;
+        if (!w) return;
+        if (!r.active) offline('offlinePreparing');
+        w.addEventListener('statechange', () => {
+          if (w.state === 'installed') offer(r);
+          if (w.state === 'activated') inspect(w);
+          if (w.state === 'redundant' && !r.active) offline('offlineFailed');
+        });
+      };
+      track();
+      r.addEventListener('updatefound', track);
+    };
+    // Register on every launch: a rejected first install is retried without
+    // storing a success flag or unregistering the working previous version.
+    navigator.serviceWorker.register('sw.js').then(watch).catch(() => offline('offlineFailed'));
+    navigator.serviceWorker.addEventListener('controllerchange', () => inspect(navigator.serviceWorker.controller));
     const check = () => navigator.serviceWorker.getRegistration().then(r => { offer(r); return r && r.update(); }).catch(() => {});
     document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
     setInterval(check, 30 * 60 * 1000);
-  }
+  } else offline('offlineUnavailable');
 
   // 2) Storage warning: shown once if localStorage is unavailable or a write fails.
   const warn = () => { const d = bar('storbar', `<span>${TXT.store[lang()]}</span><button class="pill" id="storOk">OK</button>`); if (d) d.querySelector('#storOk').onclick = () => d.remove(); };

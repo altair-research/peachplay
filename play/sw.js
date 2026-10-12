@@ -1,5 +1,5 @@
 // Offline cache so the games work on school Chromebooks without Wi-Fi after the first visit.
-const CACHE = 'peachplay-v57';
+const CACHE = 'peachplay-v58';
 const FILES = ['./', 'index.html', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'style.css', 'version.js', 'ui.css', 'blockpuzzle.css', 'beta.css', 'a11y.css', 'grade1.css', 'games1-math.js', 'games1-math2.js', 'games1-draw.js', 'games2-math.js', 'games2-read.js', 'games2-sci.js', 'games2-ss.js', 'games3-math.js', 'games3-math2.js', 'games3-read.js', 'games3-sci.js', 'games3-ss.js', 'grade3-math.css', 'grade3-math2.css', 'grade3-read.css', 'grade3-sci.css', 'grade3-ss.css', 'games1-read.js', 'games1-sci.js', 'games1-ss.js', 'world-data.js', 'backup.js', 'pwa.js', 'notice.js', 'manip.js', 'manip.css', 'theme.css', 'adaptive-extra.js', 'i18n.js', 'core.js', 'games-math.js', 'games-read.js', 'games-write.js', 'games-read2.js', 'games-math2.js', 'games-sci2.js', 'games-brain.js', 'games-more.js', 'games-blocks.js', 'games-blockpuzzle.js', 'games-think.js', 'games-gifted.js', 'games-ga.js', 'games-sci.js', 'report-parse.js', 'profile.js', 'faq.js', 'profiles.js', 'adaptive.js', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/pdfjs/pdf.min.js', 'vendor/pdfjs/pdf.worker.min.js'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(u => new Request(u, { cache: 'reload' }))))));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x.startsWith('peachplay-v') && x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())));
@@ -24,3 +24,17 @@ self.addEventListener('fetch', e => {
 });
 
 self.addEventListener('message', e => { if (e.data && e.data.type === 'ACTIVATE_UPDATE') e.waitUntil(self.skipWaiting()); });
+
+// Installation uses addAll: a failed download rejects installation without
+// publishing a partial batch. Report readiness only after checking every file,
+// including files the user has not opened yet. No persistent readiness flag.
+self.addEventListener('message', e => {
+  if (!e.data || e.data.type !== 'OFFLINE_STATUS' || !e.ports[0]) return;
+  e.waitUntil((async () => {
+    try {
+      const cache = await caches.open(CACHE);
+      const entries = await Promise.all(FILES.map(u => cache.match(new URL(u, self.location.href).href)));
+      e.ports[0].postMessage({ ready: entries.every(Boolean) });
+    } catch (err) { e.ports[0].postMessage({ ready: false }); }
+  })());
+});

@@ -3,6 +3,7 @@
 // in games-*.js; a missing language falls back to English.
 const I18N = {
   en: {
+    offlinePreparing: 'Preparing for offline use…', offlineReady: 'Ready to use offline', offlineFailed: 'Offline preparation could not finish. Open again with internet to retry.', offlineUnavailable: 'Offline use is unavailable in this browser.',
     speech: 'en-US', switchTo: '한국어',
     app: 'PeachPlay', tagline: 'Georgia Learning Games',
     pick: 'Pick a game!',
@@ -42,6 +43,7 @@ const I18N = {
     clear: 'Clear', done: 'Done', tellAbout: 'Now tell a grown-up about your drawing!'
   },
   ko: {
+    offlinePreparing: '인터넷 없이 쓸 준비 중이에요…', offlineReady: '인터넷 없이도 쓸 준비가 됐어요', offlineFailed: '오프라인 준비를 끝내지 못했어요. 인터넷에 연결해 다시 열면 재시도해요.', offlineUnavailable: '이 브라우저에서는 오프라인 사용을 준비할 수 없어요.',
     speech: 'ko-KR', switchTo: 'English',
     app: '피치플레이', tagline: '조지아 학습 게임',
     pick: '게임을 골라요!',

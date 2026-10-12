@@ -71,6 +71,7 @@ function settings(focusKey, focusLook) {
   const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
     <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
+    <p class="offline-status" role="status" data-offline-status>${T()[window.peachOfflineState || 'offlinePreparing']}</p>
     <div><button class="next" id="b">${T().back}</button></div>`;
   $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(null, b.dataset.look); });
   $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(k); });
@@ -178,4 +179,3 @@ renderPeaches(); renderProfBtn();
   if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
   if (g) { home(); launch(g); } else if (S.introSeen) home(); else intro();
 })();
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
