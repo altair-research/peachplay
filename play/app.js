@@ -12,21 +12,46 @@ function home() {
     <h1>${T().app}</h1>
     <div class="tag">${T().tagline}</div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
+    ${continueHtml()}
     ${picksHtml()}
-    ${SUBJECT_ORDER.map(sub => visibleGames().some(g => g.subject === sub) ? `
-      <section class="subj ${sub}"><h2><span>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</span>${(sub === 'brain' || sub === 'create') ? '' : `<button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button>`}</h2>
-        <div class="menu">${visibleGames().filter(g => g.subject === sub).map(g => `<button class="big ${sub}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`).join('')}</div>
-      </section>` : '').join('')}
+    <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
+    <div id="gresults"></div>
+    <div id="subjtiles" class="menu">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
     ${prevGrade(kidGrade()) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
     <button class="link" id="find">${T().findStart}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
-  $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
+  wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
+  $('#gsearch').oninput = (e) => {
+    const q = e.target.value.trim().toLowerCase(), box = $('#gresults');
+    if (!q) { box.innerHTML = ''; $('#subjtiles').style.display = ''; return; }
+    const hits = visibleGames().filter(g => `${g.title.en} ${g.title.ko} ${g.sub.en} ${g.sub.ko}`.toLowerCase().includes(q));
+    $('#subjtiles').style.display = 'none';
+    box.innerHTML = hits.length ? `<div class="menu">${hits.map(gameBtn).join('')}</div>` : `<p class="note2">${L(B('No games found.', '찾는 게임이 없어요.'))}</p>`;
+    wireGames();
+  };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
-  $('#parent').onclick = grownups; $('#find').onclick = intro;
-  $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
+  $('#parent').onclick = () => gate(grownups); $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
-  $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub));
+  window.scrollTo(0, 0);
+}
+
+// ---- home helpers: games are shown per subject (tiles -> subject screen), with continue, picks and search
+const gameBtn = (g) => `<button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`;
+const subjTile = (sub) => { const n = visibleGames().filter(g => g.subject === sub).length; return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`; };
+const wireGames = () => $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
+function continueHtml() {
+  const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';
+  return `<div class="controw"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">▶️</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
+}
+function subjectScreen(sub) {
+  const games = visibleGames().filter(g => g.subject === sub);
+  view().innerHTML = `<h1>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</h1>
+    ${(sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
+    <div class="menu">${games.map(gameBtn).join('')}</div>
+    <div><button class="next" id="b">${T().back}</button></div>`;
+  wireGames(); $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub)); $('#b').onclick = home;
+  window.scrollTo(0, 0);
 }
 
 function stickerBook() {
@@ -54,6 +79,17 @@ function challengeTable() {
   return `<table><tr><th></th><th>${T().colTried}</th><th>${T().colRight}</th><th></th></tr>${rows}</table><p class="note2">${T().challengeNote}</p>`;
 }
 
+// A small question for grown-ups before the settings page (keeps the reset and backup buttons away from small children).
+function gate(next) {
+  const x = 6 + rnd(4), y = 6 + rnd(4);
+  view().innerHTML = `<h1>🔒 ${T().grownups}</h1><p class="tag">${L(B(`Grown-ups only. What is ${x} × ${y}?`, `어른용 화면이에요. ${x} × ${y} = ?`))}</p>
+    <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">OK</button> <span id="gmsg"></span></div>
+    <div><button class="next" id="b">${T().back}</button></div>`;
+  const check = () => { if (+$('#gans').value.trim() === x * y) next(); else { $('#gmsg').textContent = L(B('Not quite. Try again!', '다시 해 보세요!')); $('#gans').value = ''; } };
+  $('#gok').onclick = check; $('#gans').onkeydown = (e) => { if (e.key === 'Enter') check(); }; $('#b').onclick = home;
+  window.scrollTo(0, 0);
+}
+
 function grownups() {
   const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
@@ -75,7 +111,7 @@ function grownups() {
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; save(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
