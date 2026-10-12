@@ -7,7 +7,7 @@ const sw = (right, wrongs) => [right, ...wrongs.filter(w => w.en !== right.en)].
 
 // ---------- 1. People who shaped Georgia and America ----------
 const HEROES2 = [
-  { id: 'og', e: '⛵', n: B('James Oglethorpe', '제임스 오글소프'), what: B('founded the colony of Georgia in 1733 and started the city of Savannah', '1733년 조지아 식민지를 세우고 서배너 도시를 시작했어요'), clue: B('I led the settlers who landed at Savannah in 1733.', '나는 1733년 서배너에 도착한 이주민들을 이끌었어요.') },
+  { id: 'og', e: '⛵', n: B('James Oglethorpe', '제임스 오글소프'), what: B('founded the colony of Georgia in 1733 and started the city of Savannah', '1733년 조지아 식민지를 세우고 서배너라는 도시를 만들었어요'), clue: B('I led the settlers who landed at Savannah in 1733.', '나는 1733년 서배너에 도착한 이주민들을 이끌었어요.') },
   { id: 'to', e: '🪶', n: B('Tomochichi', '토모치치'), what: B('was a Yamacraw Creek leader who welcomed Oglethorpe and helped the settlers', '야마크로 크리크족 지도자로 오글소프를 맞이하고 이주민을 도왔어요'), clue: B('I am a Creek leader. I welcomed the new settlers to my land.', '나는 크리크족 지도자예요. 새로 온 이주민들을 반갑게 맞았어요.') },
   { id: 'mm', e: '🗣️', n: B('Mary Musgrove', '메리 머스그로브'), what: B('was a Creek and English interpreter and trader who helped the two groups talk and trade', '크리크 말과 영어를 통역하고 거래를 도운 사람이에요'), clue: B('I helped the Creek and the English understand each other as an interpreter.', '나는 통역으로 크리크족과 영국인이 서로 이해하도록 도왔어요.') },
   { id: 'sq', e: '✍️', n: B('Sequoyah', '세쿼이아'), what: B('created a writing system (syllabary) for the Cherokee language', '체로키 말을 위한 글자(음절 문자)를 만들었어요'), clue: B('I made a way to write the Cherokee language.', '나는 체로키 말을 적을 수 있는 글자를 만들었어요.') },
@@ -17,20 +17,20 @@ const HEROES2 = [
   { id: 'jc', e: '🥜', n: B('Jimmy Carter', '지미 카터'), what: B('grew up on a peanut farm in Plains, Georgia and became the 39th President of the United States', '조지아 플레인스의 땅콩 농장에서 자라 미국 제39대 대통령이 됐어요'), clue: B('I grew up on a peanut farm in Georgia and later became President.', '나는 조지아 땅콩 농장에서 자랐고 나중에 대통령이 됐어요.') }
 ];
 G2SS({
-  id: 'heroes2', icon: '🌟', title: B('Georgia Heroes', '조지아의 인물들'), sub: B('Oglethorpe, Sequoyah, Robinson, King and more', '오글소프, 세쿼이아, 로빈슨, 킹 그리고 더'), u: 'History',
+  id: 'heroes2', icon: '🌟', title: B('Georgia Heroes', '조지아의 인물들'), sub: B('Oglethorpe, Sequoyah, Robinson, King and more', '오글소프, 세쿼이아, 로빈슨, 킹 등 여러 인물'), u: 'History',
   play() {
     const lv = lvl('heroes2'), h = pick(lv === 1 ? HEROES2.slice(0, 6) : HEROES2), kind = pick(['who', 'what']);
     if (kind === 'who') {
       quiz(this, { ask: B(`Who am I? ${h.clue.en}`, `나는 누구일까요? ${h.clue.ko}`), askSay: B(`Who am I? ${h.clue.en}`, `나는 누구일까요? ${h.clue.ko}`), opts: [h, ...others(HEROES2, h, 2)].map((x, i) => ({ html: `<span class="word">${x.e} ${L(x.n)}</span>`, label: x.n, ok: i === 0 })), cls: 'words', after: B(`${h.n.en} ${h.what.en}.`, `${h.n.ko}: ${h.what.ko}.`) });
     } else {
-      quiz(this, { ask: B(`${h.e} What did ${h.n.en} do?`, `${h.e} ${h.n.ko}은(는) 어떤 일을 했나요?`), opts: [h.what, ...others(HEROES2, h, 2).map(x => x.what)].map((w, i) => ({ html: `<span class="word">${L(w)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${h.n.en} ${h.what.en}.`, `${h.n.ko}: ${h.what.ko}.`) });
+      quiz(this, { ask: B(`${h.e} What did ${h.n.en} do?`, `${h.e} ${h.n.ko}: 어떤 일을 했나요?`), opts: [h.what, ...others(HEROES2, h, 2).map(x => x.what)].map((w, i) => ({ html: `<span class="word">${L(w)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${h.n.en} ${h.what.en}.`, `${h.n.ko}: ${h.what.ko}.`) });
     }
   }
 });
 
 // ---------- 2. Creek and Cherokee peoples ----------
 const NATIONS = [
-  { q: B('Which Native American people lived in the mountains of north Georgia?', '조지아 북쪽 산악 지대에 살았던 아메리카 원주민은?'), r: B('The Cherokee', '체로키족'), w: [B('The Creek', '크리크족')] },
+  { q: B('Which Native American people lived in the mountains of north Georgia?', '조지아 북쪽 산이 많은 곳에 살았던 아메리카 원주민은 누구일까요?'), r: B('The Cherokee', '체로키족'), w: [B('The Creek', '크리크족')] },
   { q: B('Who made a writing system for the Cherokee language?', '체로키 말을 적는 글자를 만든 사람은?'), r: B('Sequoyah', '세쿼이아'), w: [B('Tomochichi', '토모치치'), B('Oglethorpe', '오글소프')] },
   { q: B('Tomochichi was a leader of which people?', '토모치치는 어느 민족의 지도자였나요?'), r: B('The Creek (Yamacraw)', '크리크족(야마크로)'), w: [B('The Cherokee', '체로키족')] },
   { q: B('Which three crops did many Creek and Cherokee farmers grow together?', '크리크족과 체로키족 농부들이 함께 키운 세 가지 작물은?'), r: B('Corn, beans and squash', '옥수수, 콩, 호박'), w: [B('Wheat, rice and oats', '밀, 쌀, 귀리'), B('Cotton, tobacco and sugar', '목화, 담배, 설탕')] },
@@ -79,7 +79,7 @@ G2SS({
         const [a, b] = shuffle(GA_CITY), dx = (b.p[0] - a.p[0]) * 0.84, dy = b.p[1] - a.p[1], ang = Math.atan2(dy, dx) * 180 / Math.PI, m = ((ang % 45) + 45) % 45;
         if (Math.hypot(dx, dy) < 0.9 || (m > 10 && m < 35)) continue;     // keep only angles that are clearly inside one compass direction
         const right = dirName(ang), wrongs = others([0, 45, 90, 135, 180, 225, 270, 315].map(dirName).filter(d => d.en !== right.en), null, 2);
-        quiz(this, { ask: B(`On the map, which direction is ${b.n.en} from ${a.n.en}?`, `지도에서 ${a.n.ko}에서 본 ${b.n.ko}은(는) 어느 방향일까요?`), show: gaMapSvg({ names: true, compass: true }), opts: sw(right, wrongs), cls: 'words', after: B(`${b.n.en} is to the ${right.en} of ${a.n.en}.`, `${b.n.ko}은(는) ${a.n.ko}의 ${right.ko}에 있어요.`) });
+        quiz(this, { ask: B(`On the map, which direction is ${b.n.en} from ${a.n.en}?`, `지도에서 ${a.n.ko} 기준으로 ${b.n.ko}의 방향은 어디일까요?`), show: gaMapSvg({ names: true, compass: true }), opts: sw(right, wrongs), cls: 'words', after: B(`${b.n.en} is to the ${right.en} of ${a.n.en}.`, `${b.n.ko}의 위치는 ${a.n.ko}의 ${right.ko}이에요.`) });
         return;
       }
       const c = pick(GA_CITY); quiz(this, { ask: B('Which city is the capital of Georgia?', '조지아의 주도(수도)는 어느 도시일까요?'), show: gaMapSvg({ names: true }), opts: sw(GA_CITY[0].n, [GA_CITY[1].n, GA_CITY[3].n]), cls: 'words', after: B('Atlanta is the capital of Georgia.', '애틀랜타가 조지아의 주도예요.') });
@@ -128,7 +128,7 @@ G2SS({
     const lv = lvl('goods2'), kind = pick(lv === 1 ? ['gs', 'gs', 'role'] : ['gs', 'role', 'role', 'res']);
     if (kind === 'gs') {
       const g = pick(GOODS2);
-      quiz(this, { ask: B(`Is ${g[1].en} a good or a service?`, `${g[1].ko}은(는) 물건일까요, 서비스일까요?`), show: `<span class="emo">${g[0]}</span>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '물건(만져서 가질 수 있어요)' : 'A good (a thing you can hold)'}</span>`, ok: g[2] === 'good' }, { html: `<span class="word">${S.lang === 'ko' ? '서비스(누군가 해 주는 일)' : 'A service (work done for you)'}</span>`, ok: g[2] === 'service' }], cls: 'words sents', after: g[2] === 'good' ? B('A good is a thing that people make or grow.', '물건은 사람들이 만들거나 키운 것이에요.') : B('A service is work that one person does for another.', '서비스는 한 사람이 다른 사람을 위해 해 주는 일이에요.') });
+      quiz(this, { ask: B(`Goods or services? Choose the category for ${g[1].en}.`, `${g[1].ko}: 물건일까요, 서비스일까요?`), show: `<span class="emo">${g[0]}</span>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '물건(만져서 가질 수 있어요)' : 'A good (a thing you can hold)'}</span>`, ok: g[2] === 'good' }, { html: `<span class="word">${S.lang === 'ko' ? '서비스(누군가 해 주는 일)' : 'A service (work done for you)'}</span>`, ok: g[2] === 'service' }], cls: 'words sents', after: g[2] === 'good' ? B('A good is a thing that people make or grow.', '물건은 사람들이 만들거나 키운 것이에요.') : B('A service is work that one person does for another.', '서비스는 한 사람이 다른 사람을 위해 해 주는 일이에요.') });
     } else if (kind === 'role') {
       const q = pick([[B('A baker makes bread and sells it. What is the baker?', '빵을 만들어 파는 제빵사는 무엇일까요?'), B('A producer', '생산자'), [B('A consumer', '소비자')], B('A producer makes goods or provides services.', '생산자는 물건을 만들거나 서비스를 해 줘요.')],
         [B('A family buys bread at the bakery. What is the family?', '빵집에서 빵을 사는 가족은 무엇일까요?'), B('Consumers', '소비자'), [B('Producers', '생산자')], B('Consumers use or buy goods and services.', '소비자는 물건과 서비스를 사서 써요.')],
@@ -149,14 +149,14 @@ G2SS({
   play() {
     const lv = lvl('choices2'), kind = pick(lv === 1 ? ['scar', 'save', 'earn'] : ['scar', 'trade', 'trade', 'save', 'earn']);
     const quizOf = (q) => quiz(this, { ask: q[0], opts: sw(q[1], q[2]), cls: 'words sents', after: q[3] || B(`${q[1].en}.`, `${q[1].ko}.`) });
-    if (kind === 'scar') quizOf(pick([[B('You want a toy and a snack, but you only have enough money for one. What is this called?', '장난감과 간식을 사고 싶지만 돈이 한 가지만 살 만큼만 있어요. 이것을 무엇이라 할까요?'), B('Scarcity (not enough for everything)', '부족함(모든 것을 가질 수 없음)'), [B('A gift', '선물'), B('A holiday', '휴일')], B('Scarcity means we cannot have everything we want, so we must choose.', '부족하다는 것은 원하는 모두를 가질 수 없어서 골라야 한다는 뜻이에요.')],
+    if (kind === 'scar') quizOf(pick([[B('You want a toy and a snack, but you only have enough money for one. What is this called?', '장난감과 간식을 사고 싶지만 돈이 한 가지만 살 만큼만 있어요. 이것을 무엇이라 할까요?'), B('Scarcity (not enough for everything)', '부족함(모든 것을 가질 수 없음)'), [B('A gift', '선물'), B('A holiday', '휴일')], B('Scarcity means we cannot have everything we want, so we must choose.', '부족하다는 것은 원하는 것을 모두 가질 수 없어서 골라야 한다는 뜻이에요.')],
       [B('Why must people make choices?', '사람들은 왜 선택을 해야 할까요?'), B('Because resources and money are limited', '자원과 돈이 한정되어 있어서'), [B('Because choices are fun', '선택이 재미있어서'), B('Because stores are closed', '가게가 닫혀 있어서')]]]));
     else if (kind === 'trade') {
       const t = pick([[B('You choose a sticker book instead of a ball. What did you give up?', '공 대신 스티커 책을 골랐어요. 포기한 것은?'), B('The ball', '공'), [B('The sticker book', '스티커 책'), B('Nothing', '아무것도 없어요')]],
         [B('You choose to play outside instead of watching TV. What did you give up?', '텔레비전 보는 대신 밖에서 놀기로 했어요. 포기한 것은?'), B('Watching TV', '텔레비전 보기'), [B('Playing outside', '밖에서 놀기'), B('Nothing', '아무것도 없어요')]]]);
-      quizOf([t[0], t[1], t[2], B('Giving up the next best choice is called an opportunity cost.', '선택하면서 포기한 가장 좋은 다른 것을 기회비용이라고 해요.')]);
+      quizOf([t[0], t[1], t[2], B('Giving up the next best choice is called an opportunity cost.', '하나를 고르면서 포기한 다른 선택들 중 가장 좋은 것을 기회비용이라고 해요.')]);
     } else if (kind === 'save') quizOf(pick([[B('What does it mean to save money?', '돈을 저축한다는 것은 무슨 뜻일까요?'), B('To keep it to use later', '나중에 쓰려고 모아 두는 것'), [B('To spend it all today', '오늘 다 쓰는 것'), B('To lose it', '잃어버리는 것')]],
-      [B('You want a $20 toy and have $5. What is a smart plan?', '20달러짜리 장난감이 사고 싶은데 5달러가 있어요. 현명한 계획은?'), B('Save a little each week until you have enough', '매주 조금씩 모아 충분해질 때까지 기다리기'), [B('Spend the $5 on candy right now', '지금 사탕에 5달러 쓰기'), B('Forget the toy and the money', '장난감도 돈도 잊기')]]]));
+      [B('You want a $20 toy and have $5. What is a smart plan?', '20달러짜리 장난감을 사고 싶은데 5달러가 있어요. 어떤 계획을 세우면 좋을까요?'), B('Save a little each week until you have enough', '매주 조금씩 모아 충분해질 때까지 기다리기'), [B('Spend the $5 on candy right now', '지금 사탕에 5달러 쓰기'), B('Forget the toy and the money', '장난감도 돈도 잊기')]]]));
     else quizOf(pick([[B('Which one is a way to earn money?', '돈을 버는 방법은 무엇일까요?'), B('Working at a job', '일해서 돈 받기'), [B('Wishing for money', '돈이 생기길 바라기'), B('Spending money', '돈 쓰기')]],
       [B('People earn money by ...', '사람들은 무엇을 해서 돈을 벌까요?'), B('doing work or selling goods and services', '일하거나 물건·서비스를 팔기'), [B('only going shopping', '쇼핑만 하기'), B('sleeping', '잠자기')]]]));
   }
@@ -167,14 +167,14 @@ const SYMS = [
   { e: '🍑', n: B('the peach', '복숭아'), s: B('the official state fruit of Georgia', '조지아의 주 과일') }, { e: '🌹', n: B('the Cherokee rose', '체로키 장미'), s: B('the state flower of Georgia', '조지아의 주 꽃') },
   { e: '🐦', n: B('the brown thrasher', '브라운 트래셔(갈색 새)'), s: B('the state bird of Georgia', '조지아의 주 새') }, { e: '🌳', n: B('the live oak', '라이브 오크(참나무)'), s: B('the state tree of Georgia', '조지아의 주 나무') },
   { e: '🧅', n: B('the Vidalia onion', '비달리아 양파'), s: B('the state vegetable of Georgia', '조지아의 주 채소') }, { e: '🐝', n: B('the honeybee', '꿀벌'), s: B('the state insect of Georgia', '조지아의 주 곤충') },
-  { e: '🦅', n: B('the bald eagle', '흰머리수리'), s: B('the national bird of the United States', '미국의 국조(나라 새)') }, { e: '🗽', n: B('the Statue of Liberty', '자유의 여신상'), s: B('a giant statue in New York Harbor that is a symbol of freedom', '뉴욕 항구에 서 있는 자유의 상징 조형물') },
-  { e: '🇺🇸', n: B('the American flag (50 stars, 13 stripes)', '미국 국기(별 50개, 줄 13개)'), s: B('the flag of the United States: 50 stars for the states, 13 stripes for the first colonies', '미국 국기: 별 50개는 주, 줄 13개는 처음 식민지를 뜻해요') }
+  { e: '🦅', n: B('the bald eagle', '흰머리수리'), s: B('the national bird of the United States', '미국을 대표하는 새(국조)') }, { e: '🗽', n: B('the Statue of Liberty', '자유의 여신상'), s: B('a giant statue in New York Harbor that is a symbol of freedom', '뉴욕 항구에 서 있는 자유의 상징 조형물') },
+  { e: '🇺🇸', n: B('the American flag (50 stars, 13 stripes)', '미국 국기(별 50개, 줄 13개)'), s: B('the flag of the United States: 50 stars for the states, 13 stripes for the first colonies', '미국 국기: 별 50개는 주를, 줄 13개는 처음의 식민지들을 뜻해요') }
 ];
 G2SS({
   id: 'symbols2', icon: '🦅', title: B('Symbols', '상징'), sub: B('Georgia and United States symbols', '조지아와 미국의 상징'), u: 'Citizenship',
   play() {
     const lv = lvl('symbols2'), s = pick(lv === 1 ? SYMS.slice(0, 7) : SYMS);
-    quiz(this, { ask: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)} is ...`, `${s.n.ko}은(는) ...`), show: `<span class="emo">${s.e}</span>`, opts: [s, ...others(SYMS, s, 2)].map((x, i) => ({ html: `<span class="word">${L(x.s)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)}: ${s.s.en}.`, `${s.n.ko}: ${s.s.ko}.`) });
+    quiz(this, { ask: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)} is ...`, `${s.n.ko}: 알맞은 설명을 골라요.`), show: `<span class="emo">${s.e}</span>`, opts: [s, ...others(SYMS, s, 2)].map((x, i) => ({ html: `<span class="word">${L(x.s)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)}: ${s.s.en}.`, `${s.n.ko}: ${s.s.ko}.`) });
   }
 });
 

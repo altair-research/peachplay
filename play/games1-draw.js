@@ -92,11 +92,11 @@ G1({
 
 // ---------- Grade 2: cut a rectangle into halves, thirds or fourths ----------
 registerGame({
-  id: 'partitiondraw2', grade: '2', subject: 'math', icon: '✂️', title: B('Cut It Into Equal Shares', '똑같은 조각으로 자르기'), sub: B('Draw lines for halves, thirds and fourths', '선을 그어 반, 3분의 1, 4분의 1'), u: 'Equal shares (draw)', area: B('Grade 2 Math · Equal shares (draw)', '2학년 수학 · 똑같이 나누기(그리기)'),
+  id: 'partitiondraw2', grade: '2', subject: 'math', icon: '✂️', title: B('Cut It Into Equal Shares', '똑같은 조각으로 자르기'), sub: B('Draw lines for halves, thirds and fourths', '선을 그어 반, 3분의 1, 4분의 1로 나누어요'), u: 'Equal shares (draw)', area: B('Grade 2 Math · Equal shares (draw)', '2학년 수학 · 똑같이 나누기(그리기)'),
   play() {
     const lv = lvl('partitiondraw2'), n = pick(lv === 1 ? [2, 3] : [2, 3, 4]), sh = CUT_SHAPES.rect;
     const name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : n === 3 ? B('thirds (3 equal shares)', '3분의 1 (똑같은 3조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
-    const ask = B(`Cut the rectangle into ${name.en}. Drag your finger across it to draw each line.${n === 3 ? ' You need 2 lines.' : n === 4 ? ' You need 2 lines.' : ''}`, `직사각형을 ${name.ko}으로 잘라요. 손가락을 끌어서 선을 그어요.${n === 3 || n === 4 ? ' 선은 2개가 필요해요.' : ''}`);
+    const ask = B(`Cut the rectangle into ${name.en}. Drag your finger across it to draw each line.${n === 3 ? ' You need 2 lines.' : n === 4 ? ' You need 2 lines.' : ''}`, `직사각형을 잘라요: ${name.ko}. 손가락을 끌어서 선을 그어요.${n === 3 || n === 4 ? ' 선은 2개가 필요해요.' : ''}`);
     view().innerHTML = roundShell(L(ask), `<svg id="cutsvg" viewBox="0 0 100 100" class="cutsvg"><rect x="${sh.x}" y="${sh.y}" width="${sh.w}" height="${sh.h}" rx="3" fill="#ffd166" stroke="#1d3557" stroke-width="3"/><g id="cuts" stroke="#ef476f" stroke-width="3" stroke-linecap="round"></g></svg>`, `<div><button class="pill" id="clr">↺ ${L(B('Clear', '지우기'))}</button></div>`);
     const svg = $('#cutsvg'), cuts = $('#cuts'), cx = sh.x + sh.w / 2, cy = sh.y + sh.h / 2; let lines = [], missed = false, done = false, cur = null;
     const askNow = () => say(L(ask)); $('#sp').onclick = askNow; askNow();
