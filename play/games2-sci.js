@@ -126,7 +126,7 @@ G2S({
   play() {
     const lv = lvl('matterchange2'), kind = pick(lv === 1 ? ['melt', 'prop', 'melt'] : ['melt', 'prop', 'rev', 'rev', 'evap']);
     if (kind === 'melt') {
-      const q = pick([[B('What makes an ice cube melt into water?', '얼음이 녹아 물이 되게 하는 것은?'), B('Heating it (making it warmer)', '따뜻하게 하기(열을 주기)'), [B('Cooling it more', '더 차갑게 하기'), B('Nothing changes it', '아무것도 하지 않아도')], B('Heat melts a solid into a liquid.', '열을 주면 고체가 녹아 액체가 돼요.')],
+      const q = pick([[B('What makes an ice cube melt into water?', '얼음이 녹아 물이 되게 하는 것은?'), B('Heating it (making it warmer)', '따뜻하게 하기(열을 주기)'), [B('Cooling it more', '더 차갑게 하기'), B('Nothing changes it', '아무것도 바꾸지 못해요')], B('Heat melts a solid into a liquid.', '열을 주면 고체가 녹아 액체가 돼요.')],
         [B('What makes water freeze into ice?', '물이 얼어 얼음이 되게 하는 것은?'), B('Cooling it (taking heat away)', '차갑게 하기(열을 빼앗기)'), [B('Heating it', '뜨겁게 하기'), B('Stirring it a little', '조금 젓기')], B('Cooling turns a liquid into a solid.', '차갑게 하면 액체가 고체로 변해요.')]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[3] });
     } else if (kind === 'evap') {

@@ -82,7 +82,7 @@ G2SS({
         quiz(this, { ask: B(`On the map, which direction is ${b.n.en} from ${a.n.en}?`, `지도에서 ${a.n.ko} 기준으로 ${b.n.ko}의 방향은 어디일까요?`), show: gaMapSvg({ names: true, compass: true }), opts: sw(right, wrongs), cls: 'words', after: B(`${b.n.en} is to the ${right.en} of ${a.n.en}.`, `${b.n.ko}의 위치는 ${a.n.ko}의 ${right.ko}이에요.`) });
         return;
       }
-      const c = pick(GA_CITY); quiz(this, { ask: B('Which city is the capital of Georgia?', '조지아의 주도(수도)는 어느 도시일까요?'), show: gaMapSvg({ names: true }), opts: sw(GA_CITY[0].n, [GA_CITY[1].n, GA_CITY[3].n]), cls: 'words', after: B('Atlanta is the capital of Georgia.', '애틀랜타가 조지아의 주도예요.') });
+      const c = pick(GA_CITY); quiz(this, { ask: B('Which city is the capital of Georgia?', '조지아의 주도(주 정부가 있는 도시)는 어느 도시일까요?'), show: gaMapSvg({ names: true }), opts: sw(GA_CITY[0].n, [GA_CITY[1].n, GA_CITY[3].n]), cls: 'words', after: B('Atlanta is the capital of Georgia.', '애틀랜타가 조지아의 주도예요.') });
     } else if (kind === 'nbr') {
       const q = pick([[B('Which state is SOUTH of Georgia?', '조지아의 남쪽에 있는 주는?'), B('Florida', '플로리다'), [B('Tennessee', '테네시'), B('Alabama', '앨라배마')]],
         [B('Which state is WEST of Georgia?', '조지아의 서쪽에 있는 주는?'), B('Alabama', '앨라배마'), [B('Florida', '플로리다'), B('South Carolina', '사우스캐롤라이나')]],
@@ -104,7 +104,7 @@ const GOV = [
   { q: B('Who is the leader of a city or town?', '도시나 마을의 지도자는 누구일까요?'), r: B('The mayor', '시장'), w: [B('The governor', '주지사'), B('The President', '대통령')] },
   { q: B('Who is the leader of the state of Georgia?', '조지아주의 지도자는 누구일까요?'), r: B('The governor', '주지사'), w: [B('The mayor', '시장'), B('The President', '대통령')] },
   { q: B('Who is the leader of the whole United States?', '미국 전체의 지도자는 누구일까요?'), r: B('The President', '대통령'), w: [B('The mayor', '시장'), B('The governor', '주지사')] },
-  { q: B('What is the capital city of Georgia, where state leaders work?', '주 지도자들이 일하는 조지아의 주도(수도)는?'), r: B('Atlanta', '애틀랜타'), w: [B('Savannah', '서배너'), B('Macon', '메이컨')] },
+  { q: B('What is the capital city of Georgia, where state leaders work?', '주 지도자들이 일하는 조지아의 주도(주 정부가 있는 도시)는?'), r: B('Atlanta', '애틀랜타'), w: [B('Savannah', '서배너'), B('Macon', '메이컨')] },
   { q: B('Why do we have laws?', '우리에게 법이 있는 까닭은?'), r: B('To keep people safe and treat people fairly', '사람들을 안전하게 지키고 공정하게 대하려고'), w: [B('To make life boring', '생활을 지루하게 하려고'), B('To help only one person', '한 사람만 돕기 위해')] },
   { q: B('Which one is a RESPONSIBILITY of a good citizen?', '좋은 시민의 책임은 무엇일까요?'), r: B('Obey the laws and respect other people', '법을 지키고 다른 사람을 존중하기'), w: [B('Break a rule when no one is looking', '아무도 안 볼 때 규칙 어기기'), B('Take things that are not yours', '내 것이 아닌 물건 가져가기')] },
   { q: B('Which one is a RIGHT that citizens in the United States have?', '미국 시민이 가진 권리는 무엇일까요?'), r: B('Speak freely and share your ideas', '자유롭게 말하고 생각을 나눌 권리'), w: [B('Ignore every rule', '모든 규칙 무시하기'), B('Never go to school', '학교에 가지 않기')] },
@@ -131,7 +131,7 @@ G2SS({
       quiz(this, { ask: B(`Goods or services? Choose the category for ${g[1].en}.`, `${g[1].ko}: 물건일까요, 서비스일까요?`), show: `<span class="emo">${g[0]}</span>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '물건(만져서 가질 수 있어요)' : 'A good (a thing you can hold)'}</span>`, ok: g[2] === 'good' }, { html: `<span class="word">${S.lang === 'ko' ? '서비스(누군가 해 주는 일)' : 'A service (work done for you)'}</span>`, ok: g[2] === 'service' }], cls: 'words sents', after: g[2] === 'good' ? B('A good is a thing that people make or grow.', '물건은 사람들이 만들거나 키운 것이에요.') : B('A service is work that one person does for another.', '서비스는 한 사람이 다른 사람을 위해 해 주는 일이에요.') });
     } else if (kind === 'role') {
       const q = pick([[B('A baker makes bread and sells it. What is the baker?', '빵을 만들어 파는 제빵사는 무엇일까요?'), B('A producer', '생산자'), [B('A consumer', '소비자')], B('A producer makes goods or provides services.', '생산자는 물건을 만들거나 서비스를 해 줘요.')],
-        [B('A family buys bread at the bakery. What is the family?', '빵집에서 빵을 사는 가족은 무엇일까요?'), B('Consumers', '소비자'), [B('Producers', '생산자')], B('Consumers use or buy goods and services.', '소비자는 물건과 서비스를 사서 써요.')],
+        [B('A family buys bread at the bakery. What is the family?', '빵집에서 빵을 사는 가족은 무엇일까요?'), B('Consumers', '소비자'), [B('Producers', '생산자')], B('Consumers buy and use goods and services.', '소비자는 물건과 서비스를 사서 써요.')],
         [B('A farmer grows corn. What is the farmer?', '옥수수를 키우는 농부는 무엇일까요?'), B('A producer', '생산자'), [B('A consumer', '소비자')], B('A producer makes goods or provides services.', '생산자는 물건을 만들거나 서비스를 해 줘요.')]]);
       quiz(this, { ask: q[0], opts: sw(q[1], q[2]), cls: 'words', after: q[3] });
     } else {

@@ -89,12 +89,12 @@ G2({
 
 // ---------- 7. Subtract two-digit numbers ----------
 G2({
-  id: 'sub2dig', icon: '➖', title: B('Subtract Two-Digit Numbers', '두 자리 수 빼기'), sub: B('Take away or count up', '빼기 또는 거슬러 세기'), u: 'Subtraction within 100',
+  id: 'sub2dig', icon: '➖', title: B('Subtract Two-Digit Numbers', '두 자리 수 빼기'), sub: B('Take away or count up', '빼기 또는 이어 세기'), u: 'Subtraction within 100',
   play() {
     const lv = lvl('sub2dig'), regroup = lv === 2 && rnd(3) > 0; let a, b, g = 0;
     do { a = 30 + rnd(70); b = 11 + rnd(a - 15); g++; } while (((regroup ? b % 10 <= a % 10 : b % 10 > a % 10) || b >= a) && g < 200);
     const d = a - b, tb = Math.floor(b / 10) * 10, ob = b % 10;
-    quiz(this, { ask: B('Subtract. You can count up from the small number too.', '빼 봐요. 작은 수에서 거슬러 세어도 좋아요.'), show: bigEq(`${a} − ${b} = ?`), opts: numO(d, [d + 10, d - 10, Math.abs(a % 10 - ob) + Math.floor((a - b) / 10) * 10, d + 1, d - 1].filter(v => v >= 0 && v < 100), 0, 99), after: B(`${b} + ${d} = ${a}, so ${a} − ${b} = ${d}.`, `${b} + ${d} = ${a}. 그러니까 ${a} − ${b} = ${d}.`) });
+    quiz(this, { ask: B('Subtract. You can count up from the small number too.', '빼 봐요. 작은 수에서 큰 수까지 이어 세어도 좋아요.'), show: bigEq(`${a} − ${b} = ?`), opts: numO(d, [d + 10, d - 10, Math.abs(a % 10 - ob) + Math.floor((a - b) / 10) * 10, d + 1, d - 1].filter(v => v >= 0 && v < 100), 0, 99), after: B(`${b} + ${d} = ${a}, so ${a} − ${b} = ${d}.`, `${b} + ${d} = ${a}. 그러니까 ${a} − ${b} = ${d}.`) });
   }
 });
 
@@ -130,7 +130,7 @@ G2({
     if (lv === 1) { a = 100 * (1 + rnd(5)) + 10 * rnd(5); b = 100 * (1 + rnd(3)) + 10 * rnd(4); }
     else { a = 120 + rnd(560); b = 31 + rnd(250); }
     if (add) { if (a + b > 999) { this.play(); return; } ans = a + b; eq = `${a} + ${b}`; const [ha, ta, oa] = digits3(a), [hb, tb, ob] = digits3(b); tip = B(`Add the hundreds, then the tens, then the ones: ${ans}.`, `100씩 묶음, 10씩 묶음, 낱개를 차례로 더해요. 답: ${ans}`); }
-    else { if (a < b) [a, b] = [b, a]; if (a === b) { this.play(); return; } ans = a - b; eq = `${a} − ${b}`; tip = B(`Count up from ${b} to ${a}, or take away by place value: ${ans}.`, `${b}에서 ${a}까지 거슬러 세거나 자리별로 빼요: ${ans}.`); }
+    else { if (a < b) [a, b] = [b, a]; if (a === b) { this.play(); return; } ans = a - b; eq = `${a} − ${b}`; tip = B(`Count up from ${b} to ${a}, or take away by place value: ${ans}.`, `${b}에서 ${a}까지 이어 세거나 자리별로 빼요: ${ans}.`); }
     const hund = (v) => Math.floor(v / 100) * 100, noCarry = add ? hund(a) + hund(b) + (a % 100) + (b % 100) % 100 : ans + 100;
     quiz(this, { ask: B('Solve it. Use hundreds, tens and ones.', '100씩 묶음, 10씩 묶음, 낱개로 나누어서 풀어요.'), show: bigEq(`${eq} = ?`), opts: numO(ans, [ans + 100, ans - 100, ans + 10, ans - 10, noCarry].filter(v => v > 0 && v < 1100 && v !== ans), 1, 1100), after: tip });
   }
@@ -247,7 +247,7 @@ G2({
   play() {
     const lv = lvl('money2'), kind = pick(lv === 1 ? ['count', 'count', 'make', 'dollar'] : ['count', 'make', 'make', 'dollar', 'symbol', 'pay']);
     const mkset = (max) => { const l = []; const q = rnd(3), d = rnd(4), n = rnd(3), p = rnd(5); for (let i = 0; i < q; i++) l.push('quarter'); for (let i = 0; i < d; i++) l.push('dime'); for (let i = 0; i < n; i++) l.push('nickel'); for (let i = 0; i < p; i++) l.push('penny'); return l; };
-    if (kind === 'count') { let l, g = 0; do { l = mkset(); g++; } while ((l.length < 2 || l.length > 7 || coinTotal(l) >= 100) && g < 100); const t = coinTotal(l); quiz(this, { ask: B('How many cents in all? Count the biggest coins first.', '모두 몇 센트일까요? 큰 동전부터 세어요.'), show: coinRow([...l].sort((a, b) => COINS[b].v - COINS[a].v)), opts: numO(t, [t + 5, t - 5, t + 10, t - 1, t + 1].filter(v => v > 0), 1, 110).map(o => ({ html: o.html.replace(/>(\d+)</, '>$1¢<'), ok: o.ok })), after: B(`${t}¢`, `${t}¢`) }); }
+    if (kind === 'count') { let l, g = 0; do { l = mkset(); g++; } while ((l.length < 2 || l.length > 7 || coinTotal(l) >= 100) && g < 100); const t = coinTotal(l); quiz(this, { ask: B('How many cents in all? Count the coins worth the most first.', '모두 몇 센트일까요? 값이 큰 동전부터 세어요.'), show: coinRow([...l].sort((a, b) => COINS[b].v - COINS[a].v)), opts: numO(t, [t + 5, t - 5, t + 10, t - 1, t + 1].filter(v => v > 0), 1, 110).map(o => ({ html: o.html.replace(/>(\d+)</, '>$1¢<'), ok: o.ok })), after: B(`${t}¢`, `${t}¢`) }); }
     else if (kind === 'make') { const amt = pick([30, 35, 40, 45, 55, 60, 65, 70, 75, 85, 90]); const right = amt >= 75 ? ['quarter', 'quarter', 'quarter', ...(amt - 75 === 10 ? ['dime'] : amt - 75 === 15 ? ['dime', 'nickel'] : [])] : null; let ans; if (amt === 30) ans = ['quarter', 'nickel']; else if (amt === 35) ans = ['quarter', 'dime']; else if (amt === 40) ans = ['quarter', 'dime', 'nickel']; else if (amt === 45) ans = ['quarter', 'dime', 'dime']; else if (amt === 55) ans = ['quarter', 'quarter', 'nickel']; else if (amt === 60) ans = ['quarter', 'quarter', 'dime']; else if (amt === 65) ans = ['quarter', 'quarter', 'dime', 'nickel']; else if (amt === 70) ans = ['quarter', 'quarter', 'dime', 'dime']; else if (amt === 75) ans = ['quarter', 'quarter', 'quarter']; else if (amt === 85) ans = ['quarter', 'quarter', 'quarter', 'dime']; else ans = ['quarter', 'quarter', 'quarter', 'dime', 'nickel'];
       const wrongs = [[...ans, 'penny'], ans.slice(0, -1).concat(['penny', 'penny'])].filter(w => coinTotal(w) !== amt); const opts = [ans, ...wrongs.slice(0, 2)]; if (opts.length < 3) opts.push([...ans, 'nickel']); quiz(this, { ask: B(`Which coins make ${amt}¢?`, `${amt}¢가 되는 동전은?`), show: '', opts: opts.map((l, i) => ({ html: coinRow([...l].sort((a, b) => COINS[b].v - COINS[a].v)), ok: coinTotal(l) === amt })), cls: 'groups', after: B(`${amt}¢`, `${amt}¢`) }); }
     else if (kind === 'dollar') { const qs = [[B('How many quarters make 1 dollar?', '쿼터 몇 개가 1달러일까요?'), 4], [B('How many dimes make 1 dollar?', '다임 몇 개가 1달러일까요?'), 10], [B('How many nickels make 1 dollar?', '니켈 몇 개가 1달러일까요?'), 20], [B('1 dollar is how many cents?', '1달러는 몇 센트일까요?'), 100]], q = pick(qs); quiz(this, { ask: q[0], show: billSvg(1), opts: numO(q[1], [4, 10, 20, 25, 50, 100].filter(v => v !== q[1]), 1, 100), after: B('1 dollar = 100¢', '1달러 = 100¢') }); }
