@@ -16,17 +16,25 @@ const FIGS = [
   { id: 'bridges', n: B('Ruby Bridges', '루비 브리지스'), ini: 'RB', c: '#f78fb3', sym: '🏫', what: B('In 1960, a six-year-old girl bravely became the first Black child at her New Orleans school, helping make schools fair for all children.', '1960년, 여섯 살 소녀가 뉴올리언스의 자기 학교에 다닌 첫 흑인 아이가 되어, 모든 아이를 위한 공평한 학교를 만드는 데 용감하게 힘을 보탰어요.'), short: B('helped make schools fair for everyone', '모두에게 공평한 학교를 만든 사람'), grp: 'south', trait: 'courage' }
 ];
 const figCard = (f) => `<span class="fig" style="--c:${f.c}"><b>${f.ini}</b><i>${f.sym}</i></span>`;
+// Specific, independently sourced achievements, not personality judgments.
+// Keep these separate from FIGS, which is also used by placetime.
+// Sources and the all-pairs distractor review: docs/review/codex-done-1.md.
+const FIGURE1_FACTS = [
+  { id: 'franklin', who: B('Who invented a lightning rod to help protect buildings?', '건물을 보호하는 피뢰침을 발명한 사람은?'), deed: B('Invented a lightning rod', '피뢰침을 발명했어요'), after: B('Benjamin Franklin designed a lightning rod to help protect buildings from lightning.', '벤저민 프랭클린은 번개로부터 건물을 보호하는 피뢰침을 발명했어요.') },
+  { id: 'jefferson', who: B('Who was the main writer of the Declaration of Independence?', '미국 독립선언서의 초안을 주로 쓴 사람은?'), deed: B('Wrote the main draft of the Declaration of Independence', '미국 독립선언서의 초안을 주로 썼어요'), after: B('Thomas Jefferson wrote the main draft. Other people helped revise it.', '토머스 제퍼슨이 초안을 주로 썼고, 다른 사람들이 함께 다듬었어요.') },
+  { id: 'lewis', who: B('Which group traveled west to the Pacific Ocean in 1805?', '1805년에 서쪽으로 여행해 태평양에 도착한 탐험대는?'), deed: B('Traveled west to the Pacific in 1805', '1805년에 서쪽으로 여행해 태평양에 도착했어요'), after: B('Lewis and Clark reached the Pacific in 1805. Sacagawea and many Native peoples helped the expedition.', '루이스와 클라크는 1805년에 태평양에 도착했어요. 사카가웨아와 여러 원주민이 탐험대를 도왔어요.') },
+  { id: 'roosevelt', who: B('Which president established five national parks?', '국립공원 다섯 곳을 세운 대통령은?'), deed: B('Established five national parks as president', '대통령으로서 국립공원 다섯 곳을 세웠어요'), after: B('Theodore Roosevelt signed laws establishing five national parks while he was president.', '시어도어 루스벨트는 대통령일 때 국립공원 다섯 곳을 세우는 법에 서명했어요.') },
+  { id: 'carver', who: B('Who studied uses for peanuts at Tuskegee?', '터스키기에서 땅콩의 여러 쓰임새를 연구한 사람은?'), deed: B('Studied uses for peanuts at Tuskegee', '터스키기에서 땅콩의 쓰임새를 연구했어요'), after: B('George Washington Carver studied many uses for peanuts and helped farmers.', '조지 워싱턴 카버는 땅콩의 여러 쓰임새를 연구하고 농부들을 도왔어요.') },
+  { id: 'bridges', who: B('Who became the first Black child at William Frantz School in 1960?', '1960년에 윌리엄 프랜츠 학교에 다닌 첫 흑인 어린이는?'), deed: B('Entered William Frantz School in 1960', '1960년에 윌리엄 프랜츠 학교에 입학했어요'), after: B('At six, Ruby Bridges entered a school that had only allowed white children. She helped end unfair school segregation.', '여섯 살 루비 브리지스는 백인 아이들만 받던 학교에 입학했어요. 피부색으로 학생을 나누는 차별을 없애는 데 힘을 보탰어요.') }
+];
 G1T({
-  id: 'figures1', icon: '🦸', title: B('Heroes of America', '미국의 인물들'), sub: B('Six people who made a difference', '큰 일을 한 여섯 사람'), u: 'Historical figures',
+  id: 'figures1', icon: '🦸', title: B('Heroes of America', '미국의 인물들'), sub: B('Match people with what they did', '인물과 그 사람이 한 일 연결하기'), u: 'Historical figures',
   play() {
-    const lv = lvl('figures1'), f = pick(FIGS), ds = others(FIGS, f, 2), kind = pick(lv === 1 ? ['who', 'what'] : ['who', 'what', 'who', 'trait']);
+    const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, 2), kind = lvl('figures1') === 1 ? 'who' : pick(['who', 'what']);
     if (kind === 'who') {
-      quiz(this, { ask: B(`Who is this? "${L(f.what)}"`, `누구일까요? "${f.what.ko}"`), opts: [f, ...ds].map(x => ({ html: figCard(x), label: x.n, ok: x === f })), cls: 'figs', after: B(`${f.n.en}: ${f.short.en}.`, `${f.n.ko}: ${f.short.ko}.`) });
-    } else if (kind === 'what') {
-      quiz(this, { ask: B('What did this person do?', '이 사람은 무슨 일을 했을까요?'), askSay: B(`What did ${f.n.en} do?`, `${f.n.ko}: 무슨 일을 했을까요?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [f, ...ds].map(x => ({ html: `<span class="word">${L(x.short)}</span>`, ok: x === f })), cls: 'words sents', after: f.what, vocab: f.n.en });
+      quiz(this, { ask: fact.who, opts: [fact, ...ds].map(x => { const person = FIGS.find(p => p.id === x.id); return { html: `<span class="word">${L(person.n)}</span>`, ok: x === fact }; }), cls: 'words sents', after: fact.after });
     } else {
-      const names = { courage: B('courage', '용기'), perseverance: B('perseverance (not giving up)', '인내 (포기하지 않기)'), environment: B('respect for nature', '자연을 존중하는 마음'), equality: B('equality (being fair to all)', '평등 (모두에게 공평하기)'), curious: B('curiosity', '호기심') }, t = f.trait, ds2 = others(Object.keys(names), t, 2);
-      quiz(this, { ask: B(`Which trait fits ${f.n.en}?`, `${f.n.ko}에게 어울리는 품성은?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [t, ...ds2].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === t })), cls: 'words', after: f.what });
+      quiz(this, { ask: B(`What did ${f.n.en} do?`, `${f.n.ko}: 무슨 일을 했을까요?`), opts: [fact, ...ds].map(x => ({ html: `<span class="word">${L(x.deed)}</span>`, ok: x === fact })), cls: 'words sents', after: fact.after });
     }
   }
 });

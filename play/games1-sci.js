@@ -34,21 +34,31 @@ G1S({
   }
 });
 
-// ---------- 2. Rain, snow, sleet, hail ----------
+// ---------- 2. Picture weather (S1E1 observations) ----------
+// Original SVGs keep rain/snow distinct across platforms. Cloud-only prompts
+// explicitly exclude precipitation: a rainy sky also contains clouds.
+const PRECIP_PICS = [
+  { id: 'rain', n: B('rain', '비'), ask: B('Which picture shows rain falling?', '비가 내리는 그림은?'), clue: B('Drops of water fall from a cloud. Which picture matches?', '구름에서 물방울이 떨어져요. 어떤 그림일까요?'), detail: B('Rain falls as drops of water.', '비는 물방울로 내려요.') },
+  { id: 'snow', n: B('snow', '눈'), ask: B('Which picture shows snow falling?', '눈이 내리는 그림은?'), clue: B('Snowflakes fall from a cloud. Which picture matches?', '구름에서 눈송이가 내려요. 어떤 그림일까요?'), detail: B('Snow falls as ice crystals called snowflakes.', '눈은 얼음 결정인 눈송이로 내려요.') },
+  { id: 'cloud', n: B('clouds without rain or snow', '비나 눈이 내리지 않는 구름'), ask: B('Which sky has clouds but no rain or snow?', '구름은 있지만 비나 눈은 내리지 않는 하늘은?'), clue: B('Clouds cover the sky. Nothing is falling from them. Which picture matches?', '구름이 하늘을 덮고 있어요. 구름에서 아무것도 내리지 않아요. 어떤 그림일까요?'), detail: B('Clouds do not always bring rain or snow.', '구름이 있어도 비나 눈이 내리지 않을 수 있어요.') },
+  { id: 'wind', n: B('wind', '바람'), ask: B('Which picture shows wind blowing a windsock?', '바람이 불어 바람자루가 펴진 그림은?'), clue: B('Moving air stretches out a windsock. Which picture matches?', '움직이는 공기가 바람자루를 쭉 펴요. 어떤 그림일까요?'), detail: B('Wind is moving air. It blows the windsock out.', '바람은 움직이는 공기예요. 바람이 바람자루를 펴 줘요.') },
+  { id: 'sun', n: B('sun in a clear sky', '맑은 하늘의 해'), ask: B('Which picture shows the sun in a clear sky?', '맑은 하늘에 해가 떠 있는 그림은?'), clue: B('The sun shines. There are no clouds in this sky. Which picture matches?', '해가 빛나요. 하늘에 구름이 없어요. 어떤 그림일까요?'), detail: B('This sky is clear, with no clouds.', '이 하늘에는 구름이 없고 맑아요.') }
+];
+const precipPicture = (w) => {
+  const cloud = '<path d="M22 52 C8 52 8 30 24 28 C25 9 51 7 59 24 C79 13 99 29 93 43 C111 47 102 64 86 64 H27 C18 64 16 57 22 52Z" fill="#fff" stroke="#526d82" stroke-width="3"/>';
+  let drawing;
+  if (w.id === 'rain') drawing = cloud + [30, 58, 86].map(x => `<path d="M${x} 72 Q${x - 14} 91 ${x} 94 Q${x + 14} 91 ${x} 72Z" fill="#247bbb"/>`).join('');
+  else if (w.id === 'snow') drawing = cloud + [28, 60, 92].map(x => `<g transform="translate(${x} 85)" stroke="#247bbb" stroke-width="3" stroke-linecap="round"><path d="M0 -10V10 M-9 -5L9 5 M-9 5L9 -5"/></g>`).join('');
+  else if (w.id === 'cloud') drawing = cloud;
+  else if (w.id === 'wind') drawing = '<path d="M28 102V20" stroke="#526d82" stroke-width="5"/><path d="M31 25L103 37V51L31 61Z" fill="#ed694b" stroke="#843d2a" stroke-width="2"/><path d="M51 28V58 M73 32V55" stroke="#fff" stroke-width="9"/><ellipse cx="31" cy="43" rx="6" ry="18" fill="#fff" stroke="#843d2a" stroke-width="2"/><path d="M54 77H104 M43 89H85" stroke="#526d82" stroke-width="3" stroke-linecap="round"/>';
+  else drawing = '<g stroke="#e99813" stroke-width="4" stroke-linecap="round"><path d="M60 13V25 M60 85V97 M18 55H30 M90 55H102 M30 25L39 34 M81 76L90 85 M30 85L39 76 M81 34L90 25"/><circle cx="60" cy="55" r="22" fill="#ffd34e"/></g>';
+  return `<svg viewBox="0 0 120 115" role="img" aria-label="${L(w.n)}" style="width:clamp(64px,min(22vw,16dvh),130px);height:auto;max-width:100%"><rect x="2" y="2" width="116" height="111" rx="14" fill="#e4f4fc"/>${drawing}</svg>`;
+};
 G1S({
-  id: 'precip', icon: '🌨️', title: B('Rain, Snow, Sleet, Hail', '비, 눈, 진눈깨비, 우박'), sub: B('Solid ice or liquid water?', '얼음일까 물일까?'), u: 'Weather',
+  id: 'precip', icon: '🌦️', title: B('Weather Pictures', '그림으로 보는 날씨'), sub: B('Rain, snow, clouds, wind, and sunshine', '비, 눈, 구름, 바람, 맑은 하늘'), u: 'Weather',
   play() {
-    const lv = lvl('precip'), items = [['🌧️', B('rain', '비'), 'liquid'], ['❄️', B('snow', '눈'), 'solid'], ['🧊', B('hail', '우박'), 'solid'], ['🌨️', B('sleet', '진눈깨비'), 'solid']], kind = pick(lv === 1 ? ['state', 'state', 'name'] : ['state', 'notprecip', 'freeze', 'name']);
-    if (kind === 'state') {
-      const t = pick(items); quiz(this, { ask: B(`Is ${t[1].en} solid (ice) or liquid (water)?`, `${t[1].ko}: 고체(얼음)일까요, 액체(물)일까요?`), show: `<span class="emo">${t[0]}</span>`, opts: [['solid', B('solid (ice)', '고체 (얼음)')], ['liquid', B('liquid (water)', '액체 (물)')]].map(x => ({ html: `<span class="word">${L(x[1])}</span>`, ok: x[0] === t[2] })), cls: 'words', after: B(`${t[1].en} is ${t[2]}.`, `${t[1].ko}: ${t[2] === 'solid' ? '고체' : '액체'}예요.`), vocab: `${t[1].en} is ${t[2]}.` });
-    } else if (kind === 'name') {
-      const t = pick(items), ds = shuffle(items.filter(x => x !== t)).slice(0, 2); quiz(this, { ask: B(`Which one is ${t[1].en.toUpperCase()}?`, `${t[1].ko}: 어느 것일까요?`), askSay: B(`Which one is ${t[1].en}?`, `${t[1].ko}: 어느 것일까요?`), opts: [t, ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, ok: x === t })), cls: 'shapes', after: B(`That is ${t[1].en}.`, `${t[1].ko}이에요.`), vocab: t[1].en });
-    } else if (kind === 'notprecip') {
-      const bad = [['☀️', B('sunshine', '햇빛')], ['🌈', B('rainbow', '무지개')], ['🌬️', B('wind', '바람')]], b = pick(bad), ds = shuffle(items).slice(0, 2);
-      quiz(this, { ask: B('Which one is NOT rain, snow, sleet, or hail?', '비, 눈, 진눈깨비, 우박이 아닌 것은?'), opts: [b, ...ds].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B(`${b[1].en} does not fall from the clouds.`, `${b[1].ko}: 구름에서 떨어지지 않아요.`) });
-    } else {
-      quiz(this, { ask: B('When it gets very cold, liquid water can turn into ___.', '아주 추워지면 액체인 물은 ___(으)로 변할 수 있어요.'), show: '<span class="emo">💧 → ❄️</span>', opts: sOpts(tx('ice', '얼음'), [tx('steam', '수증기'), tx('sand', '모래')]), cls: 'words', after: B('Cold makes water freeze into ice. Heat melts ice back into water.', '추우면 물이 얼음으로 얼고, 따뜻하면 얼음이 다시 녹아 물이 돼요.'), vocab: 'ice' });
-    }
+    const w = pick(PRECIP_PICS), choices = [w, ...others(PRECIP_PICS, w, 2)];
+    quiz(this, { ask: lvl('precip') === 1 ? w.ask : w.clue, opts: choices.map(x => ({ html: precipPicture(x), ok: x === w })), cls: 'shapes', after: w.detail, vocab: w.n.en });
   }
 });
 

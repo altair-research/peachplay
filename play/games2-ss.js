@@ -61,7 +61,7 @@ const gaMapSvg = (o = {}) => {
   const mtn = [[-84.2, 34.85], [-83.7, 34.85], [-84.65, 34.7]].map(p => `<polygon points="${gx(p[0]) - 6},${gy(p[1]) + 6} ${gx(p[0]) + 6},${gy(p[1]) + 6} ${gx(p[0])},${gy(p[1]) - 5}" fill="#8d6e63"/>`).join('');
   const swamp = `<ellipse cx="${gx(-82.3).toFixed(1)}" cy="${gy(30.85).toFixed(1)}" rx="12" ry="7" fill="#9ccc65" opacity=".85"/>`;
   const dir = o.compass ? `<g transform="translate(205 40)"><circle r="20" fill="#fff" stroke="#1d3557" stroke-width="1.5"/><path d="M0 -17 L5 0 L0 17 L-5 0Z" fill="#ef476f"/><path d="M-17 0 L0 5 L17 0 L0 -5Z" fill="#1d3557"/><text y="-22" font-size="10" font-weight="900" text-anchor="middle" fill="#1d3557">N</text></g>` : '';
-  return `<svg viewBox="0 0 240 260" class="gasvg"><rect width="240" height="260" fill="#d7efff"/><rect x="170" y="150" width="70" height="110" fill="#bfe6ff"/><polygon points="${GA_OUT.map(pt).join(' ')}" fill="#f4e6b8" stroke="#1d3557" stroke-width="2.5" stroke-linejoin="round"/>${mtn}${swamp}${rivers}${cities}${dir}<text x="212" y="236" font-size="10" font-weight="800" fill="#2a6fb0" text-anchor="middle">${S.lang === 'ko' ? '대서양' : 'Atlantic'}</text></svg>`;
+  return `<svg viewBox="0 0 240 260" class="gasvg"><rect width="240" height="260" fill="#d7efff"/><rect x="170" y="150" width="70" height="110" fill="#bfe6ff"/><polygon points="${GA_OUT.map(pt).join(' ')}" fill="#f4e6b8" stroke="#1d3557" stroke-width="2.5" stroke-linejoin="round"/>${mtn}${swamp}${rivers}${cities}${dir}${o.states ? [['TN', 70, 9], ['NC', 150, 15], ['SC', 190, 70], ['AL', 18, 112], ['FL', 100, 246]].map(t => `<text x="${t[1]}" y="${t[2]}" font-size="10" font-weight="800" fill="#7a869a" text-anchor="middle">${t[0]}</text>`).join('') : ''}<text x="212" y="236" font-size="10" font-weight="800" fill="#2a6fb0" text-anchor="middle">${S.lang === 'ko' ? '대서양' : 'Atlantic'}</text></svg>`;
 };
 const dirName = (a) => [B('east', '동쪽'), B('northeast', '북동쪽'), B('north', '북쪽'), B('northwest', '북서쪽'), B('west', '서쪽'), B('southwest', '남서쪽'), B('south', '남쪽'), B('southeast', '남동쪽')][Math.round(((a % 360) + 360) % 360 / 45) % 8];
 G2SS({
@@ -89,7 +89,7 @@ G2SS({
         [B('Which state is NORTH of Georgia (along with North Carolina)?', '조지아의 북쪽에 있는 주는? (노스캐롤라이나와 함께)'), B('Tennessee', '테네시'), [B('Florida', '플로리다'), B('Alabama', '앨라배마')]],
         [B('Which state is EAST of Georgia, across the Savannah River?', '서배너강 건너 조지아의 동쪽에 있는 주는?'), B('South Carolina', '사우스캐롤라이나'), [B('Alabama', '앨라배마'), B('Tennessee', '테네시')]],
         [B('Which ocean touches the east side of Georgia?', '조지아의 동쪽 바다는?'), B('Atlantic Ocean', '대서양'), [B('Pacific Ocean', '태평양'), B('Arctic Ocean', '북극해')]]]);
-      quiz(this, { ask: q[0], show: gaMapSvg({ compass: true }), opts: sw(q[1], q[2]), cls: 'words', after: B(`${q[1].en}.`, `${q[1].ko}.`) });
+      quiz(this, { ask: q[0], show: gaMapSvg({ compass: true, states: q[1].en !== 'Atlantic Ocean' }), opts: sw(q[1], q[2]), cls: 'words', after: B(`${q[1].en}.`, `${q[1].ko}.`) });
     } else {
       const q = pick([[B('What do the brown triangles on the Georgia map show?', '조지아 지도의 갈색 삼각형은 무엇을 나타낼까요?'), B('Mountains in the north', '북쪽의 산'), [B('Cities', '도시'), B('Rivers', '강')]],
         [B('What do the blue lines on the Georgia map show?', '조지아 지도의 파란 선은 무엇을 나타낼까요?'), B('Rivers', '강'), [B('Mountains', '산'), B('Roads', '도로')]],

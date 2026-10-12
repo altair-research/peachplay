@@ -15,7 +15,7 @@ function cleanState(s) {                                  // keeps only known, w
   const o = {}; if (!isObj(s)) return o;
   if (s.lang === 'en' || s.lang === 'ko') o.lang = s.lang;
   if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
-  if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))) }; }); }
+  if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
   if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };
   if (s.profile === null || isObj(s.profile)) o.profile = s.profile;
   if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40);
@@ -77,8 +77,10 @@ function record(id, ok) {
   if (SESSION.id === id) { SESSION.done = (SESSION.done || 0) + (ok ? 1 : 0); }
   const h = ((S.hist = S.hist || {})[today()] = S.hist[today()] || { r: 0, w: 0, g: {} }), hg = (h.g[id] = h.g[id] || [0, 0]);
   if (ok) { h.r++; hg[0]++; } else { h.w++; hg[1]++; }
-  if (ok) { s.right++; s.streak++; if (s.streak >= 4 && s.level < 2) { s.level++; s.streak = 0; } }
-  else { s.wrong++; s.streak = 0; if (s.level > 1 && s.wrong % 3 === 0) s.level--; }
+  // level follows RECENT play (last 6 rounds): 5 clean answers in a row go up (a 2-option guess does that 1 time in 32), 3 misses in the last 5 go down
+  s.recent = ((s.recent || '') + (ok ? '1' : '0')).slice(-6);
+  if (ok) { s.right++; s.streak++; if (s.streak >= 5 && s.level < 2) { s.level++; s.streak = 0; s.recent = ''; } }
+  else { s.wrong++; s.streak = 0; if (s.level > 1 && (s.recent.slice(-5).match(/0/g) || []).length >= 3) { s.level--; s.recent = ''; } }
   save();
 }
 
@@ -201,6 +203,12 @@ function quiz(game, item) {
     <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact"></div>`;
   const ask = () => { say(item.askSay ? L(item.askSay) : askText); if (item.askExtra) say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
+  const optTexts = () => $$('.opt').map(b => (b.querySelector('.word,.num') || b).innerText.replace(/\s+/g, ' ').trim()).filter(t => /[A-Za-zㄱ-힝0-9]{2,}/.test(t));
+  if (optTexts().length >= 2 && optTexts().join('').length >= 8 && !$$('.opt svg').length) {      // read the choices aloud (text choices only; pictures have nothing to read)
+    const rb = document.createElement('button'); rb.className = 'say'; rb.id = 'spo'; rb.textContent = '🔉'; rb.setAttribute('aria-label', L(B('Read the choices', '보기 읽어 주기')));
+    rb.onclick = () => optTexts().forEach((t, i) => say(t, undefined, i > 0));
+    $('#sp').after(rb);
+  }
   $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
   let missed = false;
