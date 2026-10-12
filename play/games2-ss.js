@@ -1,7 +1,7 @@
 'use strict';
 // Grade 2 social studies (Georgia Standards of Excellence, Social Studies): SS2H1 Georgia leaders and heroes, SS2H2 Creek and Cherokee,
 // SS2G1 Georgia map skills, SS2CG citizenship and government, SS2E economics.
-const AREA2SS = (u) => B(`Grade 2 Social Studies · ${u}`, `2학년 사회 · ${u}`);
+const AREA2SS = (u) => B(`Grade 2 Social Studies · ${u}`, `2학년 사회 · ${U_KO[u] || u}`);
 const G2SS = (g) => registerGame(Object.assign({ grade: '2', subject: 'ss' }, g, { area: AREA2SS(g.u) }));
 const sw = (right, wrongs) => [right, ...wrongs.filter(w => w.en !== right.en)].map((w, i) => ({ html: `<span class="word">${L(w)}</span>`, ok: i === 0 }));
 
@@ -76,10 +76,10 @@ G2SS({
       quiz(this, { ask: B('The red line is a river. Which river is it?', '빨간 선은 강이에요. 어느 강일까요?'), show: gaMapSvg({ river: r.k }), opts: sw(r.n, others(GA_RIVER, r, 2).map(x => x.n)), cls: 'words', after: B(`That is the ${r.n.en}.`, `${r.n.ko}이에요.`) });
     } else if (kind === 'dir') {
       for (let t = 0; t < 40; t++) {
-        const [a, b] = shuffle(GA_CITY), dx = (b.p[0] - a.p[0]) * 0.84, dy = b.p[1] - a.p[1], ang = Math.atan2(dy, dx) * 180 / Math.PI, m = ((ang % 45) + 45) % 45;
-        if (Math.hypot(dx, dy) < 0.9 || (m > 10 && m < 35)) continue;     // keep only angles that are clearly inside one compass direction
-        const right = dirName(ang), wrongs = others([0, 45, 90, 135, 180, 225, 270, 315].map(dirName).filter(d => d.en !== right.en), null, 2);
-        quiz(this, { ask: B(`On the map, which direction is ${b.n.en} from ${a.n.en}?`, `지도에서 ${a.n.ko} 기준으로 ${b.n.ko}의 방향은 어디일까요?`), show: gaMapSvg({ names: true, compass: true }), opts: sw(right, wrongs), cls: 'words', after: B(`${b.n.en} is to the ${right.en} of ${a.n.en}.`, `${b.n.ko}의 위치는 ${a.n.ko}의 ${right.ko}이에요.`) });
+        const [a, b] = shuffle(GA_CITY), dx = (b.p[0] - a.p[0]) * 0.84, dy = b.p[1] - a.p[1], ang = Math.atan2(dy, dx) * 180 / Math.PI, m = ((ang % 90) + 90) % 90, axis = Math.min(m, 90 - m);
+        if (Math.hypot(dx, dy) < 0.9 || axis > 28) continue;     // grade 2 uses north, south, east and west: keep pairs that clearly lie along one of them
+        const right = dirName(Math.round((((ang % 360) + 360) % 360) / 90) * 90), wrongs = others([0, 90, 180, 270].map(dirName).filter(d => d.en !== right.en), null, 2);
+        quiz(this, { ask: B(`On the map, which way is ${b.n.en} from ${a.n.en}? (north, south, east or west)`, `지도에서 ${a.n.ko} 기준으로 ${b.n.ko}은(는) 어느 쪽일까요? (동서남북)`), show: gaMapSvg({ names: true, compass: true }), opts: sw(right, wrongs), cls: 'words', after: B(`${b.n.en} is to the ${right.en} of ${a.n.en}.`, `${b.n.ko}의 위치는 ${a.n.ko}의 ${right.ko}이에요.`) });
         return;
       }
       const c = pick(GA_CITY); quiz(this, { ask: B('Which city is the capital of Georgia?', '조지아의 주도(주 정부가 있는 도시)는 어느 도시일까요?'), show: gaMapSvg({ names: true }), opts: sw(GA_CITY[0].n, [GA_CITY[1].n, GA_CITY[3].n]), cls: 'words', after: B('Atlanta is the capital of Georgia.', '애틀랜타가 조지아의 주도예요.') });
@@ -195,6 +195,6 @@ G2SS({
       return;
     }
     const a = pick(EVENTS), b = pick(EVENTS.filter(x => x !== a)), early = a.y < b.y ? a : b, late = early === a ? b : a, askFirst = kind !== 'last';
-    quiz(this, { ask: askFirst ? B('Which event happened FIRST (earlier)?', '어느 일이 먼저(더 일찍) 일어났을까요?') : B('Which event happened LAST (later)?', '어느 일이 나중에(더 늦게) 일어났을까요?'), opts: [a, b].map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === (askFirst ? early : late) })), cls: 'words sents', after: B(`${early.n.en} (${early.y}) came before ${late.n.en} (${late.y}).`, `${early.n.ko}(${early.y}년)이 ${late.n.ko}(${late.y}년)보다 먼저예요.`) });
+    quiz(this, { ask: askFirst ? B('Which event happened FIRST (earlier)?', '어느 일이 먼저(더 일찍) 일어났을까요?') : B('Which event happened LAST (later)?', '어느 일이 나중에(더 늦게) 일어났을까요?'), opts: [a, b].map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === (askFirst ? early : late) })), cls: 'words sents', after: B(`${early.y}: ${early.n.en}, then ${late.y}: ${late.n.en}.`, `${early.y}년: ${early.n.ko} → ${late.y}년: ${late.n.ko}`) });
   }
 });

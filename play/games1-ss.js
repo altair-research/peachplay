@@ -2,7 +2,7 @@
 // Grade 1 social studies (Georgia Social Studies GSE, updated 2023): "Our American Heritage".
 // SS1H historical figures, SS1G time/place and maps, SS1CG character and patriotism, SS1E economics, map and information-processing skills.
 // Figures are shown as simple cartoon icons (never realistic portraits). Facts stay within the standard's list.
-const AREA1T = (u) => B(`Grade 1 Social Studies · ${u}`, `1학년 사회 · ${u}`);
+const AREA1T = (u) => B(`Grade 1 Social Studies · ${u}`, `1학년 사회 · ${U_KO[u] || u}`);
 const G1T = (g) => registerGame(Object.assign({ grade: '1', subject: 'ss' }, g, { area: AREA1T(g.u) }));
 const tOpts = (right, wrongs, cls = 'word') => [right, ...wrongs].map(w => ({ html: `<span class="${cls}">${L(w)}</span>`, ok: w === right }));
 

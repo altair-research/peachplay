@@ -2,7 +2,7 @@
 // Grade 1 math, part 1: numbers to 120, place value, comparing, addition and subtraction.
 // Built from Georgia's K-12 Mathematics Standards (2021), grade 1: NR.1 (counting, place value, comparing), NR.2 (within 20), NR.5 (within 100).
 // Notes from the standards: fluency is never timed; unknown numbers appear in every position; no "key word" tricks; words/models before symbols.
-const AREA1 = (u) => B(`Grade 1 Math · ${u}`, `1학년 수학 · ${u}`);
+const AREA1 = (u) => B(`Grade 1 Math · ${u}`, `1학년 수학 · ${U_KO[u] || u}`);
 const G1 = (g) => registerGame(Object.assign({ grade: '1', subject: 'math' }, g, { area: AREA1(g.u) }));
 const ONES_W = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 const TENS_W = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];

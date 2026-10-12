@@ -3,8 +3,8 @@
 // Foundations 2.F.P: vowel patterns, two-syllable words, syllable types, nonsense words, irregular words, spelling.
 // Language 2.L: grammar (plurals, nouns, pronouns, verbs, adjectives, adverbs, punctuation), vocabulary (word parts, multiple meanings, homophones).
 // Texts 2.T: fables and folktales (message, characters, structure), informational text (main idea, text features, procedures), poems.
-const AREA2R = (u) => B(`Grade 2 Reading · ${u}`, `2학년 읽기 · ${u}`);
-const AREA2W = (u) => B(`Grade 2 Writing · ${u}`, `2학년 쓰기 · ${u}`);
+const AREA2R = (u) => B(`Grade 2 Reading · ${u}`, `2학년 읽기 · ${U_KO[u] || u}`);
+const AREA2W = (u) => B(`Grade 2 Writing · ${u}`, `2학년 쓰기 · ${U_KO[u] || u}`);
 const G2R = (g) => registerGame(Object.assign({ grade: '2', subject: 'read' }, g, { area: AREA2R(g.u) }));
 const G2W = (g) => registerGame(Object.assign({ grade: '2', subject: 'write' }, g, { area: AREA2W(g.u) }));
 

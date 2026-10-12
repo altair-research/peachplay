@@ -104,7 +104,7 @@ registerGame({
     const kind = (a, b) => { const d = angleDeg(a, b); return d < 12 || d > 168 ? 'h' : Math.abs(d - 90) < 12 ? 'v' : 'o'; };
     const fail = (msg) => { missed = true; const c = $('#cheer'); if (c) c.textContent = T().again; $('#fact').textContent = L(msg); sfx('no'); lines = []; draw(); };
     const this_ = this;
-    const win = () => { done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : n === 3 ? 'Three equal shares are thirds.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : n === 3 ? '똑같은 3조각은 3분의 1(thirds)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.')); };
+    const win = () => { done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : n === 3 ? 'Three equal shares are thirds.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같이 2조각으로 나눈 한 조각은 반(2분의 1, half)이에요.' : n === 3 ? '똑같이 3조각으로 나눈 한 조각은 3분의 1(a third)이에요.' : '똑같이 4조각으로 나눈 한 조각은 4분의 1(a fourth, a quarter)이에요.')); };
     const onUp = (a, b) => {
       if (Math.hypot(b.x - a.x, b.y - a.y) < 25) { draw(); return; }
       const k = kind(a, b), tol = 7;

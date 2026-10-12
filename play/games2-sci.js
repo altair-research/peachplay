@@ -1,7 +1,7 @@
 'use strict';
 // Grade 2 science (Georgia Science GSE, 2016): S2E1 Sun, Moon and stars; S2E2 changes to Earth's surface; S2P1 matter and its changes;
 // S2P2 push, pull and motion; S2L1 life cycles, pollination and seed travel.
-const AREA2S = (u) => B(`Grade 2 Science · ${u}`, `2학년 과학 · ${u}`);
+const AREA2S = (u) => B(`Grade 2 Science · ${u}`, `2학년 과학 · ${U_KO[u] || u}`);
 const G2S = (g) => registerGame(Object.assign({ grade: '2', subject: 'sci' }, g, { area: AREA2S(g.u) }));
 // one right answer and some wrong ones, all text; wrongs that equal the right answer are dropped
 const wOpts = (right, wrongs) => [right, ...wrongs.filter(w => w.en !== right.en)].map((w, i) => ({ html: `<span class="word">${L(w)}</span>`, ok: i === 0 }));
@@ -187,7 +187,7 @@ G2S({
     const i = kind === 'next' ? rnd(3) : kind === 'prev' ? 1 + rnd(3) : kind === 'first' ? 0 : 3;
     const askMap = { next: [B(`${c.n.en} life cycle: what comes RIGHT AFTER the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes RIGHT BEFORE the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
     const [ask, right] = askMap[kind], wr = others(c.st, right, 3).slice(0, 2);
-    quiz(this, { ask, show: `<div class="cyc">${c.st.map(s => `<span>${s[0]}</span>`).join('<i>→</i>')}</div>`, opts: [right, ...wr].map((s, k) => ({ html: `<span class="emo">${s[0]}</span>`, label: s[1], ok: k === 0 })), after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
+    quiz(this, { ask, show: `<span class="emo">${c.e}</span>`, opts: [right, ...wr].map((s, k) => ({ html: `<span class="word">${L(s[1])}</span>`, ok: k === 0 })), cls: 'words', after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
   }
 });
 
@@ -196,8 +196,8 @@ const SEEDS = [
   { e: '🌼', n: B('a dandelion seed', '민들레 씨'), how: B('wind', '바람'), why: B('It has light, fluffy parts that catch the wind.', '가볍고 솜털이 있어서 바람을 타요.') },
   { e: '🍁', n: B('a maple seed with a wing', '날개 달린 단풍나무 씨'), how: B('wind', '바람'), why: B('Its wing helps it spin and fly in the wind.', '날개가 있어 빙글빙글 돌며 바람에 날아가요.') },
   { e: '🥥', n: B('a coconut', '코코넛'), how: B('water', '물'), why: B('It floats on the ocean and lands on a new beach.', '바다에 둥둥 떠서 다른 해변에 닿아요.') },
-  { e: '🌰', n: B('an acorn', '도토리'), how: B('animals', '동물'), why: B('Squirrels bury acorns, and some grow into oak trees.', '다람쥐가 묻어 둔 도토리 일부가 참나무로 자라요.') },
-  { e: '🌾', n: B('a burr with tiny hooks', '작은 갈고리가 달린 도깨비바늘 씨'), how: B('animals', '동물'), why: B('The hooks stick to fur and clothes and get carried away.', '갈고리로 털과 옷에 붙어 멀리 옮겨져요.') },
+  { e: '🌳', n: B('an acorn', '도토리'), how: B('animals', '동물'), why: B('Squirrels bury acorns, and some grow into oak trees.', '다람쥐가 묻어 둔 도토리 일부가 참나무로 자라요.') },
+  { e: '🐕', n: B('a burr with tiny hooks', '작은 갈고리가 달린 도깨비바늘 씨'), how: B('animals', '동물'), why: B('The hooks stick to fur and clothes and get carried away.', '갈고리로 털과 옷에 붙어 멀리 옮겨져요.') },
   { e: '🍓', n: B('a berry that birds eat', '새가 먹는 열매'), how: B('animals', '동물'), why: B('Birds eat the fruit and drop the seeds far away.', '새가 열매를 먹고 씨를 먼 곳에 떨어뜨려요.') }
 ];
 const HOWS = [B('wind', '바람'), B('water', '물'), B('animals', '동물')];

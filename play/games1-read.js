@@ -1,8 +1,8 @@
 'use strict';
 // Grade 1 reading, writing and language (Georgia's K-12 ELA Standards, 2023, K-2 band): phonological awareness, phonics, word study, texts, grammar.
 // All words, stories and sentences are original. Hints for the standards: PA.4-6, P.1-3, F.1, T (stories/informational), L.GC.1 (grammar), L.V (word meaning).
-const AREA1R = (u) => B(`Grade 1 Reading · ${u}`, `1학년 읽기 · ${u}`);
-const AREA1W = (u) => B(`Grade 1 Writing · ${u}`, `1학년 쓰기 · ${u}`);
+const AREA1R = (u) => B(`Grade 1 Reading · ${u}`, `1학년 읽기 · ${U_KO[u] || u}`);
+const AREA1W = (u) => B(`Grade 1 Writing · ${u}`, `1학년 쓰기 · ${U_KO[u] || u}`);
 const G1R = (g) => registerGame(Object.assign({ grade: '1', subject: 'read' }, g, { area: AREA1R(g.u) }));
 const G1W = (g) => registerGame(Object.assign({ grade: '1', subject: 'write' }, g, { area: AREA1W(g.u) }));
 const wordOpts = (right, wrongs, cls = 'word') => [right, ...wrongs].map(w => ({ html: `<span class="${cls}">${w}</span>`, ok: w === right }));

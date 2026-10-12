@@ -2,7 +2,7 @@
 // Grade 2 math (Georgia's K-12 Mathematics Standards, 2021): NR.1 numbers to 1000, NR.2 add/subtract within 1000, NR.3 equal groups,
 // PAR.4 patterns, MDR.5 length and data, MDR.6 time and money, GSR.7 shapes, symmetry and equal shares.
 // Principles kept from grade 1: no timers, unknown number in every position, models before symbols, no key-word tricks, original content.
-const AREA2 = (u) => B(`Grade 2 Math · ${u}`, `2학년 수학 · ${u}`);
+const AREA2 = (u) => B(`Grade 2 Math · ${u}`, `2학년 수학 · ${U_KO[u] || u}`);
 const G2 = (g) => registerGame(Object.assign({ grade: '2', subject: 'math' }, g, { area: AREA2(g.u) }));
 const b100 = (n) => `<div class="b10 b100" aria-label="${n}"><div class="flats">${'<i class="flat"></i>'.repeat(Math.floor(n / 100))}</div><div class="rods">${'<i class="rod"></i>'.repeat(Math.floor(n / 10) % 10)}</div><div class="cubes">${'<i class="cube"></i>'.repeat(n % 10)}</div></div>`;
 const digits3 = (n) => [Math.floor(n / 100), Math.floor(n / 10) % 10, n % 10];
@@ -100,24 +100,24 @@ G2({
 
 // ---------- 8. Story problems ----------
 const WP2 = [['Mia', '미아'], ['Ben', '벤'], ['Lily', '릴리'], ['Sam', '샘'], ['Ava', '에이바'], ['Max', '맥스'], ['Zoe', '조이'], ['Leo', '레오']];
-const WI2 = [['stickers', '스티커', '⭐'], ['marbles', '구슬', '🔵'], ['books', '책', '📚'], ['cards', '카드', '🃏'], ['peaches', '복숭아', '🍑'], ['coins', '동전', '🪙']];
+const WI2 = [['stickers', '스티커', '⭐', '장'], ['marbles', '구슬', '🔵', '개'], ['books', '책', '📚', '권'], ['cards', '카드', '🃏', '장'], ['peaches', '복숭아', '🍑', '개'], ['coins', '동전', '🪙', '개']];       // 4th: Korean counting unit
 G2({
   id: 'wordprob2', icon: '📖', title: B('Story Problems', '이야기 문제'), sub: B('One- and two-step stories', '한 단계, 두 단계 이야기'), u: 'Word problems',
   play() {
-    const lv = lvl('wordprob2'), [n1, k1] = pick(WP2), [n2, k2] = pick(WP2.filter(x => x[0] !== n1)), [it, ik, ie] = pick(WI2), kinds = lv === 1 ? ['addR', 'addC', 'subR', 'subC', 'addS', 'subS', 'compare'] : ['two1', 'two2', 'addR3', 'subR3', 'two1', 'compare3'], kind = pick(kinds);
+    const lv = lvl('wordprob2'), [n1, k1] = pick(WP2), [n2, k2] = pick(WP2.filter(x => x[0] !== n1)), [it, ik, ie, un] = pick(WI2), ga = un === '개' ? '가' : '이', eul = un === '개' ? '를' : '을', kinds = lv === 1 ? ['addR', 'addC', 'subR', 'subC', 'addS', 'subS', 'compare'] : ['two1', 'two2', 'addR3', 'subR3', 'two1', 'compare3'], kind = pick(kinds);
     let ask, ans, bad = [];
-    if (kind === 'addR') { const a = 20 + rnd(50), b = 11 + rnd(Math.min(40, 90 - a)); ans = a + b; ask = B(`${n1} had ${a} ${it}. A friend gave ${n1} ${b} more. How many now?`, `${k1}에게 ${ik} ${a}개가 있었어요. 친구가 ${b}개를 더 줬어요. 지금 몇 개일까요?`); bad = [a + b + 10, a + b - 10, Math.abs(a - b)]; }
-    else if (kind === 'addC') { const a = 20 + rnd(40), c = a + 11 + rnd(Math.min(40, 90 - a)); ans = c - a; ask = B(`${n1} had ${a} ${it}. Then ${n1} got some more and had ${c}. How many did ${n1} get?`, `${k1}에게 ${ik} ${a}개가 있었어요. 더 받아서 ${c}개가 되었어요. 몇 개를 받았을까요?`); bad = [c + a, ans + 10, ans - 10]; }
-    else if (kind === 'addS') { const b = 11 + rnd(30), c = b + 15 + rnd(Math.min(45, 98 - b - 15)); ans = c - b; ask = B(`${n1} had some ${it}. ${n1} got ${b} more and now has ${c}. How many did ${n1} start with?`, `${k1}에게 ${ik} 몇 개가 있었어요. ${b}개를 더 받아 지금 ${c}개예요. 처음에 몇 개 있었을까요?`); bad = [c + b, ans + 10, ans - 10]; }
-    else if (kind === 'subR') { const a = 40 + rnd(55), b = 11 + rnd(a - 20); ans = a - b; ask = B(`${n1} had ${a} ${it}. ${n1} gave ${b} to ${n2}. How many are left?`, `${k1}에게 ${ik} ${a}개가 있었어요. ${k2}에게 ${b}개를 줬어요. 몇 개 남았을까요?`); bad = [a + b, ans + 10, ans - 10]; }
-    else if (kind === 'subC') { const a = 40 + rnd(55), c = 11 + rnd(a - 20); ans = a - c; ask = B(`${n1} had ${a} ${it}. ${n1} gave some away and has ${c} left. How many did ${n1} give away?`, `${k1}에게 ${ik} ${a}개가 있었어요. 몇 개를 줬더니 ${c}개가 남았어요. 몇 개를 줬을까요?`); bad = [a + c, ans + 10, ans - 10]; }
-    else if (kind === 'subS') { const b = 11 + rnd(30), c = 11 + rnd(40); ans = b + c; ask = B(`${n1} gave away ${b} ${it} and has ${c} left. How many did ${n1} have at first?`, `${k1}의 ${ik} 중 ${b}개를 줬더니 ${c}개가 남았어요. 처음에 몇 개 있었을까요?`); bad = [Math.abs(c - b), ans + 10, ans - 10]; }
-    else if (kind === 'compare') { const a = 20 + rnd(40), c = a + 11 + rnd(30); ans = c - a; ask = B(`${n1} has ${a} ${it}. ${n2} has ${c}. How many more does ${n2} have?`, `${k1}에게는 ${ik} ${a}개, ${k2}에게는 ${c}개가 있어요. ${k2}에게는 ${k1}보다 몇 개 더 있을까요?`); bad = [a + c, ans + 10, ans - 10]; }
-    else if (kind === 'two1') { const a = 30 + rnd(30), b = 10 + rnd(20), c = 5 + rnd(20); ans = a + b - c; ask = B(`${n1} had ${a} ${it}, got ${b} more, then gave away ${c}. How many does ${n1} have now?`, `${k1}에게 ${ik} ${a}개가 있었는데 ${b}개를 더 받고 ${c}개를 줬어요. 지금 몇 개일까요?`); bad = [a + b + c, a + b, a - b + c].filter(v => v !== ans); }
-    else if (kind === 'two2') { const a = 65 + rnd(35), b = 10 + rnd(20), c = 5 + rnd(20); ans = a - b - c; ask = B(`${n1} had ${a} ${it}. ${n1} gave ${b} to ${n2} and ${c} to a friend. How many are left?`, `${k1}에게 ${ik} ${a}개가 있었어요. ${k2}에게 ${b}개, 친구에게 ${c}개를 줬어요. 몇 개 남았을까요?`); bad = [a - b, a - c, a - b + c].filter(v => v !== ans); }
-    else if (kind === 'addR3') { const a = 120 + rnd(500), b = 100 + rnd(200); ans = a + b; ask = B(`A store had ${a} ${it}. It got ${b} more. How many ${it} in all?`, `가게에 ${ik} ${a}개가 있었어요. ${b}개가 더 왔어요. 모두 몇 개일까요?`); bad = [ans + 100, ans - 100, ans + 10]; }
-    else if (kind === 'subR3') { const a = 400 + rnd(500), b = 100 + rnd(250); ans = a - b; ask = B(`A store had ${a} ${it}. It sold ${b}. How many are left?`, `가게에 ${ik} ${a}개가 있었어요. ${b}개를 팔았어요. 몇 개 남았을까요?`); bad = [a + b, ans + 100, ans - 10]; }
-    else { const a = 150 + rnd(300), c = a + 100 + rnd(200); ans = c - a; ask = B(`A red box has ${a} ${it}. A blue box has ${c}. How many more are in the blue box?`, `빨간 상자에 ${ik} ${a}개, 파란 상자에 ${c}개가 있어요. 파란 상자에 몇 개 더 있을까요?`); bad = [a + c, ans + 100, ans - 10]; }
+    if (kind === 'addR') { const a = 20 + rnd(50), b = 11 + rnd(Math.min(40, 90 - a)); ans = a + b; ask = B(`${n1} had ${a} ${it}. A friend gave ${n1} ${b} more. How many now?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었어요. 친구가 ${b}${un}${eul} 더 줬어요. 지금 몇 ${un}일까요?`); bad = [a + b + 10, a + b - 10, Math.abs(a - b)]; }
+    else if (kind === 'addC') { const a = 20 + rnd(40), c = a + 11 + rnd(Math.min(40, 90 - a)); ans = c - a; ask = B(`${n1} had ${a} ${it}. Then ${n1} got some more and had ${c}. How many did ${n1} get?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었어요. 더 받아서 ${c}${un}${ga} 되었어요. 몇 ${un}${eul} 받았을까요?`); bad = [c + a, ans + 10, ans - 10]; }
+    else if (kind === 'addS') { const b = 11 + rnd(30), c = b + 15 + rnd(Math.min(45, 98 - b - 15)); ans = c - b; ask = B(`${n1} had some ${it}. ${n1} got ${b} more and now has ${c}. How many did ${n1} start with?`, `${k1}에게 ${ik} 몇 ${un}${ga} 있었어요. ${b}${un}${eul} 더 받아 지금 ${c}${un}예요. 처음에 몇 ${un} 있었을까요?`); bad = [c + b, ans + 10, ans - 10]; }
+    else if (kind === 'subR') { const a = 40 + rnd(55), b = 11 + rnd(a - 20); ans = a - b; ask = B(`${n1} had ${a} ${it}. ${n1} gave ${b} to ${n2}. How many are left?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었어요. ${k2}에게 ${b}${un}${eul} 줬어요. 몇 ${un} 남았을까요?`); bad = [a + b, ans + 10, ans - 10]; }
+    else if (kind === 'subC') { const a = 40 + rnd(55), c = 11 + rnd(a - 20); ans = a - c; ask = B(`${n1} had ${a} ${it}. ${n1} gave some away and has ${c} left. How many did ${n1} give away?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었어요. 몇 ${un}${eul} 줬더니 ${c}${un}${ga} 남았어요. 몇 ${un}${eul} 줬을까요?`); bad = [a + c, ans + 10, ans - 10]; }
+    else if (kind === 'subS') { const b = 11 + rnd(30), c = 11 + rnd(40); ans = b + c; ask = B(`${n1} gave away ${b} ${it} and has ${c} left. How many did ${n1} have at first?`, `${k1}의 ${ik} 중 ${b}${un}${eul} 줬더니 ${c}${un}${ga} 남았어요. 처음에 몇 ${un} 있었을까요?`); bad = [Math.abs(c - b), ans + 10, ans - 10]; }
+    else if (kind === 'compare') { const a = 20 + rnd(40), c = a + 11 + rnd(30); ans = c - a; ask = B(`${n1} has ${a} ${it}. ${n2} has ${c}. How many more does ${n2} have?`, `${k1}에게는 ${ik} ${a}${un}, ${k2}에게는 ${c}${un}${ga} 있어요. ${k2}에게는 ${k1}보다 몇 ${un} 더 있을까요?`); bad = [a + c, ans + 10, ans - 10]; }
+    else if (kind === 'two1') { const a = 30 + rnd(30), b = 10 + rnd(20), c = 5 + rnd(20); ans = a + b - c; ask = B(`${n1} had ${a} ${it}, got ${b} more, then gave away ${c}. How many does ${n1} have now?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었는데 ${b}${un}${eul} 더 받고 ${c}${un}${eul} 줬어요. 지금 몇 ${un}일까요?`); bad = [a + b + c, a + b, a - b + c].filter(v => v !== ans); }
+    else if (kind === 'two2') { const a = 65 + rnd(35), b = 10 + rnd(20), c = 5 + rnd(20); ans = a - b - c; ask = B(`${n1} had ${a} ${it}. ${n1} gave ${b} to ${n2} and ${c} to a friend. How many are left?`, `${k1}에게 ${ik} ${a}${un}${ga} 있었어요. ${k2}에게 ${b}${un}, 친구에게 ${c}${un}${eul} 줬어요. 몇 ${un} 남았을까요?`); bad = [a - b, a - c, a - b + c].filter(v => v !== ans); }
+    else if (kind === 'addR3') { const a = 120 + rnd(500), b = 100 + rnd(200); ans = a + b; ask = B(`A store had ${a} ${it}. It got ${b} more. How many ${it} in all?`, `가게에 ${ik} ${a}${un}${ga} 있었어요. ${b}${un}${ga} 더 왔어요. 모두 몇 ${un}일까요?`); bad = [ans + 100, ans - 100, ans + 10]; }
+    else if (kind === 'subR3') { const a = 400 + rnd(500), b = 100 + rnd(250); ans = a - b; ask = B(`A store had ${a} ${it}. It sold ${b}. How many are left?`, `가게에 ${ik} ${a}${un}${ga} 있었어요. ${b}${un}${eul} 팔았어요. 몇 ${un} 남았을까요?`); bad = [a + b, ans + 100, ans - 10]; }
+    else { const a = 150 + rnd(300), c = a + 100 + rnd(200); ans = c - a; ask = B(`A red box has ${a} ${it}. A blue box has ${c}. How many more are in the blue box?`, `빨간 상자에 ${ik} ${a}${un}, 파란 상자에 ${c}${un}${ga} 있어요. 파란 상자에 몇 ${un} 더 있을까요?`); bad = [a + c, ans + 100, ans - 10]; }
     quiz(this, { ask, show: `<span class="emo">${ie}</span>`, opts: numO(ans, bad.filter(v => v > 0 && v !== ans), 1, 1100), after: B(`The answer is ${ans}.`, `답: ${ans}`) });
   }
 });
@@ -151,14 +151,14 @@ G2({
 
 // ---------- 11. Arrays ----------
 G2({
-  id: 'arrays', icon: '🔳', title: B('Rows and Columns', '줄과 칸'), sub: B('Arrays and repeated addition', '배열과 같은 수 더하기'), u: 'Arrays',
+  id: 'arrays', icon: '🔳', title: B('Rows and Columns', '가로줄과 세로줄'), sub: B('Arrays and repeated addition', '배열과 같은 수 더하기'), u: 'Arrays',
   play() {
     const lv = lvl('arrays'), r = 2 + rnd(lv === 1 ? 3 : 4), c = 2 + rnd(lv === 1 ? 3 : 4), e = pick(['🍑', '🍎', '⭐', '🟦']), total = r * c, grid = `<div class="arr" style="--cols:${c}">${Array.from({ length: r * c }, () => `<span>${e}</span>`).join('')}</div>`, kind = pick(lv === 1 ? ['total', 'eq'] : ['total', 'eq', 'rows', 'cols']);
     const addEq = Array(r).fill(c).join(' + '), colEq = Array(c).fill(r).join(' + ');
-    if (kind === 'total') quiz(this, { ask: B(`${r} rows of ${c}. How many in all?`, `${r}줄에 ${c}개씩이에요. 모두 몇 개일까요?`), show: grid, opts: numO(total, [r + c, total + c, total - c, total + r].filter(v => v !== total && v > 0), 2, 30), after: B(`${addEq} = ${total}`, `${addEq} = ${total}`) });
-    else if (kind === 'eq') { const right = `${addEq} = ${total}`, cand = [right, `${colEq} = ${total}`, `${r} + ${c} = ${r + c}`].filter((v, i, ar) => ar.indexOf(v) === i); if (cand.length < 3) cand.push(`${Array(r + 1).fill(c).join(' + ')} = ${total + c}`); quiz(this, { ask: B('Which equation matches the rows?', '줄 수에 맞는 식은?'), show: grid, opts: cand.slice(0, 3).map(v => ({ html: `<span class="num eq">${v}</span>`, ok: v === right })), cls: 'words sents', after: B(`${r} rows of ${c}: ${right}`, `${r}줄 × ${c}: ${right}`) }); }
-    else if (kind === 'rows') quiz(this, { ask: B('How many rows are there?', '줄이 몇 개일까요?'), show: grid, opts: numO(r, [c, r + 1, r - 1].filter(v => v !== r && v > 0), 1, 7), after: B(`${r} rows`, `${r}줄`) });
-    else quiz(this, { ask: B('How many are in each row?', '한 줄에 몇 개씩 있을까요?'), show: grid, opts: numO(c, [r, c + 1, c - 1].filter(v => v !== c && v > 0), 1, 7), after: B(`${c} in each row`, `한 줄에 ${c}개`) });
+    if (kind === 'total') quiz(this, { ask: B(`${r} rows of ${c}. How many in all?`, `가로줄 ${r}개에 ${c}개씩이에요. 모두 몇 개일까요?`), show: grid, opts: numO(total, [r + c, total + c, total - c, total + r].filter(v => v !== total && v > 0), 2, 30), after: B(`${addEq} = ${total}`, `${addEq} = ${total}`) });
+    else if (kind === 'eq') { const right = `${addEq} = ${total}`, cand = [right, `${colEq} = ${total}`, `${r} + ${c} = ${r + c}`].filter((v, i, ar) => ar.indexOf(v) === i); if (cand.length < 3) cand.push(`${Array(r + 1).fill(c).join(' + ')} = ${total + c}`); quiz(this, { ask: B('Which equation matches the rows?', '가로줄마다 같은 수를 더한 식은?'), show: grid, opts: cand.slice(0, 3).map(v => ({ html: `<span class="num eq">${v}</span>`, ok: v === right })), cls: 'words sents', after: B(`${r} rows of ${c}: ${right}`, `가로줄 ${r}개, 한 줄에 ${c}개: ${right}`) }); }
+    else if (kind === 'rows') quiz(this, { ask: B('How many rows are there?', '가로줄이 몇 개일까요?'), show: grid, opts: numO(r, [c, r + 1, r - 1].filter(v => v !== r && v > 0), 1, 7), after: B(`${r} rows`, `가로줄 ${r}개`) });
+    else quiz(this, { ask: B('How many are in each row?', '가로줄 하나에 몇 개씩 있을까요?'), show: grid, opts: numO(c, [r, c + 1, c - 1].filter(v => v !== c && v > 0), 1, 7), after: B(`${c} in each row`, `가로줄 하나에 ${c}개`) });
   }
 });
 
@@ -166,10 +166,10 @@ G2({
 G2({
   id: 'equalgroups', icon: '🍪', title: B('Equal Groups', '똑같은 묶음'), sub: B('Groups of the same size', '같은 크기의 묶음'), u: 'Equal groups',
   play() {
-    const lv = lvl('equalgroups'), g = 2 + rnd(4), each = 2 + rnd(lv === 1 ? 3 : 4), e = pick(['🍪', '🍑', '⭐', '🐟']), total = g * each, kind = pick(['total', 'total', 'each']);
+    const lv = lvl('equalgroups'), g = 2 + rnd(4), each = 2 + rnd(lv === 1 ? 3 : 4), [e, un] = pick([['🍪', '개'], ['🍑', '개'], ['⭐', '개'], ['🐟', '마리']]), total = g * each, kind = pick(['total', 'total', 'each']);
     const plates = `<div class="plates">${Array.from({ length: g }, () => `<span class="plate">${e.repeat(each)}</span>`).join('')}</div>`;
-    if (kind === 'total') quiz(this, { ask: B(`${g} plates with ${each} each. How many in all?`, `접시 ${g}개에 ${each}개씩 있어요. 모두 몇 개일까요?`), show: plates, opts: numO(total, [g + each, total + each, total - each].filter(v => v !== total && v > 0), 2, 40), after: B(`${Array(g).fill(each).join(' + ')} = ${total}`, `${Array(g).fill(each).join(' + ')} = ${total}`) });
-    else quiz(this, { ask: B(`${total} ${e} are shared equally on ${g} plates. How many on each plate?`, `${e} ${total}개를 접시 ${g}개에 똑같이 나누면 접시마다 몇 개일까요?`), show: '', opts: numO(each, [total - g, g, each + 1, each - 1].filter(v => v !== each && v > 0), 1, 12), after: B(`${g} groups of ${each} make ${total}.`, `${each}개씩 ${g}묶음이면 모두 ${total}개예요.`) });
+    if (kind === 'total') quiz(this, { ask: B(`${g} plates with ${each} each. How many in all?`, `접시 ${g}개에 ${e}가 ${each}${un}씩 있어요. 모두 몇 ${un}일까요?`), show: plates, opts: numO(total, [g + each, total + each, total - each].filter(v => v !== total && v > 0), 2, 40), after: B(`${Array(g).fill(each).join(' + ')} = ${total}`, `${Array(g).fill(each).join(' + ')} = ${total}`) });
+    else quiz(this, { ask: B(`${total} ${e} are shared equally on ${g} plates. How many on each plate?`, `${e} ${total}${un}를 접시 ${g}개에 똑같이 나누면 접시마다 몇 ${un}일까요?`), show: '', opts: numO(each, [total - g, g, each + 1, each - 1].filter(v => v !== each && v > 0), 1, 12), after: B(`${g} groups of ${each} make ${total}.`, `${each}${un}씩 ${g}묶음이면 모두 ${total}${un}예요.`) });
   }
 });
 

@@ -1,7 +1,7 @@
 'use strict';
 // Grade 1 science (Georgia Science GSE, 2016): S1E1 weather, S1P1 light and sound, S1P2 magnets, S1L1 plants and animals.
 // The GCPS 1st-grade AKS also names animals and their young; that part is included at level 2 of "Animal Needs".
-const AREA1S = (u) => B(`Grade 1 Science · ${u}`, `1학년 과학 · ${u}`);
+const AREA1S = (u) => B(`Grade 1 Science · ${u}`, `1학년 과학 · ${U_KO[u] || u}`);
 const G1S = (g) => registerGame(Object.assign({ grade: '1', subject: 'sci' }, g, { area: AREA1S(g.u) }));
 const sOpts = (right, wrongs, cls = 'word') => [right, ...wrongs].map(w => ({ html: `<span class="${cls}">${L(w)}</span>`, ok: w === right }));
 const tx = (a, b) => B(a, b);
