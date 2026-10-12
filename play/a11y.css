@@ -26,3 +26,10 @@ body.readable{font-family:Arial,Helvetica,"Malgun Gothic","Apple SD Gothic Neo",
 .pref{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:#fff;border:2px solid #f0c9a8;font:inherit;font-size:17px;min-height:56px}
 .pref .pi{font-size:26px}.pref .pt{flex:1;font-weight:700}.pref .ps{font-weight:800;color:#9a7b62}.pref.on{border-color:#06d6a0}.pref.on .ps{color:#078a66}
 body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
+
+/* diagnostic practice */
+.adtips{text-align:left;max-width:560px;margin:8px auto;padding-left:22px;line-height:1.5}.adtips li{margin:4px 0}
+.adpick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.adres{display:grid;gap:12px;margin:14px 0;text-align:left}.adrow b{display:block;margin-bottom:4px}.adrow small{display:block;margin-top:3px;color:#7a5f4a}
+.adbar{position:relative;display:block;height:16px;border-radius:999px;background:#f3dcc8;overflow:visible}.adbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#7bdcb5,#06d6a0)}
+.adbar em{position:absolute;top:-4px;bottom:-4px;width:3px;background:#1d3557;border-radius:2px}

@@ -14,6 +14,7 @@ function home() {
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${continueHtml()}
     ${goalHtml()}
+    <div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Like i-Ready: harder when right, easier when missed', 'i-Ready처럼 맞히면 어려워지고 틀리면 쉬워져요'))}</small></button></div>
     ${favHtml()}
     ${picksHtml()}
     <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
@@ -34,7 +35,7 @@ function home() {
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
-  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#find').onclick = intro;
+  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#adapt').onclick = adaptIntro; $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   window.scrollTo(0, 0);
 }

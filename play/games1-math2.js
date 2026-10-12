@@ -55,7 +55,7 @@ G1({
       quiz(this, { ask: B(`How many flat faces does a ${SOLIDS[k].n.en} have?`, `${SOLIDS[k].n.ko}에는 평평한 면이 몇 개 있을까요?`), show: `<span class="emo">${thing[0]}</span>`, opts: numO(info[k], [0, 1, 2, 4, 6, 8].filter(v => v !== info[k]), 0, 8), after: B(`A ${SOLIDS[k].n.en} has ${info[k]} flat ${info[k] === 1 ? 'face' : 'faces'}.`, `${SOLIDS[k].n.ko}의 평평한 면은 ${info[k]}개예요.`), vocab: SOLIDS[k].n.en });
     } else {
       const keys = ['circle', 'square', 'triangle', 'rectangle', 'hexagon'], f = pick(keys), g = pick(keys.filter(x => x !== f && !(['square', 'rectangle'].includes(f) && ['square', 'rectangle'].includes(x)))), oddAt = rnd(4);
-      const opts = Array.from({ length: 4 }, (_, i) => ({ html: sh1(i === oddAt ? g : f, rnd(4) * 40, [0.8, 1, 0.9, 1.05][i], SHAPE_COLORS[(i + rnd(3)) % 5], rnd(2) === 0), ok: i === oddAt }));
+      const opts = Array.from({ length: 4 }, (_, i) => ({ html: sh1(i === oddAt ? g : f, rnd(4) * 40, [0.8, 0.95, 0.88, 1][i], SHAPE_COLORS[(i + rnd(3)) % 5], rnd(2) === 0), ok: i === oddAt }));
       quiz(this, { ask: B('Which shape does not belong?', '어느 모양이 다른 모양일까요?'), opts, cls: 'shapes', after: B(`Three are ${SH1[f].n.en}s.`, `세 개는 ${SH1[f].n.ko} 모양이에요.`) });
     }
   }

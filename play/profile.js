@@ -58,27 +58,28 @@ DIAG.decorate = (game) => {
 };
 DIAG.answer = (game, ok, btn) => {
   if (DIAG.busy) return; DIAG.busy = true;
-  DIAG.res.push({ id: game.id, lv: DIAG.lv, ok });
+  DIAG.res.push({ id: game.id, lv: DIAG.lv, ok }); if (DIAG.adapt) DIAG.adapt.update(ok);
   if (btn) btn.classList.add('picked');
   const run = DIAG.run; setTimeout(() => { if (!DIAG.active || run !== DIAG.run) return; DIAG.busy = false; DIAG.i++; diagStep(); }, 450);
 };
 function startDiag(scope) {
-  S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = typeof scope === 'string' ? scope : 'all';
+  DIAG.adapt = null; S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = typeof scope === 'string' ? scope : 'all';
   DIAG.items = buildCheck(DIAG.scope); DIAG.active = true; DIAG.i = 0; DIAG.res = []; DIAG.busy = false; diagStep();
 }
 function diagStep() {
   if (DIAG.i >= DIAG.items.length) return finishDiag();
+  if (DIAG.adapt) DIAG.items[DIAG.i] = DIAG.adapt.next();                     // adaptive practice chooses each question from the last answer
   const it = DIAG.items[DIAG.i]; DIAG.lv = it.lv; gameById(it.id).play();
 }
 function finishDiag() {
-  DIAG.active = false;
+  DIAG.active = false; if (DIAG.adapt) return adaptFinish();
   const gr = kidGrade(), prev = [...S.checks].reverse().find(c => c.scope === DIAG.scope && (c.grade || 'K') === gr);   // only compare check-ups of the same grade
   const check = { at: new Date().toISOString().slice(0, 16), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length };
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift();
   S.profile = S.profile || {}; save(); checkResult(check, prev);
 }
-function quitDiag() { DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
-const scopeName = (scope) => (scope === 'all' ? T().scopeAll : T().subjects[scope]);
+function quitDiag() { DIAG.adapt = null; DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
+const scopeName = (scope) => (scope === 'all' ? T().scopeAll : /^adapt-/.test(scope) ? `🧭 ${T().subjects[scope.slice(6)]}` : T().subjects[scope]);
 
 function checkResult(check, prev) {
   const per = (c) => { const r = {}; c.items.forEach(it => { r[it.id] = (r[it.id] !== false) && it.ok; }); return r; };
