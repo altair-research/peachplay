@@ -12,20 +12,20 @@ const moonSvg = (ph) => {                       // ph: 0 new, 1 crescent, 2 firs
     : `<path d="M50 10 A40 40 0 0 1 50 90 ${ph === 2 ? 'L50 10' : `A${ph === 1 ? 24 : 24} 40 0 0 ${ph === 1 ? 0 : 1} 50 10`} Z" fill="#fff6c2"/>`;
   return `<svg viewBox="0 0 100 100" class="moonsvg"><rect width="100" height="100" rx="10" fill="#1b2a49"/><circle cx="50" cy="50" r="40" fill="#34415f"/>${lit}<circle cx="50" cy="50" r="40" fill="none" stroke="#8aa0c8" stroke-width="1.5"/></svg>`;
 };
-const MOON_NAME = [B('new moon', '그믐(신월)'), B('crescent moon', '초승달 모양'), B('half moon (quarter)', '반달'), B('gibbous moon', '보름달에 가까운 볼록한 달'), B('full moon', '보름달')];
+const MOON_NAME = [B('new moon', '신월(보이지 않는 달)'), B('crescent moon', '초승달 모양'), B('half moon (quarter)', '반달'), B('gibbous moon', '보름달에 가까운 볼록한 달'), B('full moon', '보름달')];
 G2S({
   id: 'moon2', icon: '🌙', title: B('Moon Shapes', '달의 모양'), sub: B('Moon phases and where moonlight comes from', '달의 모양과 달빛'), u: 'Sun, Moon and Stars',
   play() {
     const lv = lvl('moon2'), kind = pick(lv === 1 ? ['name', 'name', 'light'] : ['name', 'name', 'light', 'cycle']);
     if (kind === 'name') {
       const ph = pick(lv === 1 ? [0, 2, 4] : [0, 1, 2, 3, 4]);
-      quiz(this, { ask: B('What shape of the Moon do you see?', '이 달은 어떤 모양일까요?'), show: moonSvg(ph), opts: wOpts(MOON_NAME[ph], others(MOON_NAME.filter((_, i) => lv === 2 || [0, 2, 4].includes(i)), MOON_NAME[ph], 2)), cls: 'words', after: B('The bright part is the side of the Moon that the Sun lights up.', '밝은 부분은 해가 비추는 쪽이에요.') });
+      quiz(this, { ask: B('What shape of the Moon do you see?', '이 달은 어떤 모양일까요?'), show: moonSvg(ph), opts: wOpts(MOON_NAME[ph], others(MOON_NAME.filter((_, i) => lv === 2 || [0, 2, 4].includes(i)), MOON_NAME[ph], 2)), cls: 'words', after: B('The Sun always lights half of the Moon. From Earth we see more or less of that lit half.', '해는 늘 달의 반쪽을 비춰요. 지구에서는 그 밝은 쪽이 더 보이거나 덜 보여요.') });
     } else if (kind === 'light') {
       const q = pick([[B('Where does moonlight come from?', '달빛은 어디에서 올까요?'), B('The Moon reflects light from the Sun.', '달이 햇빛을 반사해요.'), [B('The Moon makes its own light.', '달이 스스로 빛을 내요.'), B('The Moon is a star.', '달은 별이에요.')]],
         [B('Why does the Moon look different shapes?', '달은 왜 모양이 달라 보일까요?'), B('We see more or less of its lit side.', '해가 비추는 쪽이 보이는 정도가 달라요.'), [B('The Moon gets bigger and smaller.', '달이 커졌다 작아졌다 해요.'), B('Clouds eat the Moon.', '구름이 달을 먹어요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
-      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`The Moon goes from new moon to full moon. Which shape comes after the ${MOON_NAME[order[i]].en}?`, `달은 그믐에서 보름달로 변해요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
+      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`The Moon goes from new moon to full moon. Which shape comes after the ${MOON_NAME[order[i]].en}?`, `달은 신월에서 보름달로 변해요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
       const right = order[i + 1], wr = others([0, 1, 2, 3, 4], right, 4).filter(x => x !== order[i]).slice(0, 2);
       quiz(this, { ask, opts: [right, ...wr].map((p, k) => ({ html: moonSvg(p), label: MOON_NAME[p], ok: k === 0 })), after: B('The Moon changes shape in a pattern that repeats about every month.', '달 모양은 한 달쯤마다 되풀이되는 규칙으로 바뀌어요.') });
     }
@@ -69,7 +69,7 @@ G2S({
 
 // ---------- 3. Fast and slow changes to land ----------
 const EARTH_CH = [
-  { e: '🌋', n: B('a volcano erupts', '화산이 터져요'), fast: true }, { e: '🫨', n: B('an earthquake shakes the ground', '지진이 땅을 흔들어요'), fast: true },
+  { e: '🌋', n: B('a volcano erupts', '화산이 터져요'), fast: true }, { e: '🏚️', n: B('an earthquake shakes the ground', '지진이 땅을 흔들어요'), fast: true },
   { e: '🌊', n: B('a flood covers the land', '홍수가 땅을 덮어요'), fast: true }, { e: '⛰️', n: B('a landslide slides down a hill', '산사태가 비탈을 쓸어내려요'), fast: true },
   { e: '🏞️', n: B('a river carves a canyon over many years', '강이 오랜 세월 협곡을 깎아요'), fast: false }, { e: '🪨', n: B('wind and rain slowly wear down a rock', '바람과 비가 바위를 천천히 닳게 해요'), fast: false },
   { e: '🧊', n: B('a glacier slowly pushes across land', '빙하가 천천히 땅 위를 밀고 가요'), fast: false }, { e: '🏖️', n: B('ocean waves slowly wear away a beach', '바닷물결이 해변을 천천히 깎아요'), fast: false }
@@ -105,7 +105,7 @@ G2S({
       quiz(this, { ask: B(`Is ${m.n.en} a solid, a liquid or a gas?`, `${m.n.ko}은(는) 고체, 액체, 기체 중 무엇일까요?`), show: `<span class="emo">${m.e}</span>`, opts: STATE.map((s, i) => ({ html: `<span class="word">${L(s)}</span>`, ok: i === m.s })), cls: 'words', after: B('Solids keep their shape. Liquids flow and take the shape of the container. Gases spread out to fill the container.', '고체는 모양이 그대로예요. 액체는 흘러서 그릇 모양이 돼요. 기체는 퍼져서 그릇을 가득 채워요.') });
     } else {
       const q = pick([[B('Which kind of matter keeps its own shape?', '자기 모양을 그대로 지키는 물질은?'), STATE[0], [STATE[1], STATE[2]]],
-        [B('Which kind of matter flows and takes the shape of its container?', '흘러서 그릇의 모양이 되는 물질은?'), STATE[1], [STATE[0], STATE[2]]],
+        [B('Which kind of matter pours and settles at the bottom of its container, taking its shape?', '부으면 흘러서 그릇 아래쪽에 고이고 그릇 모양이 되는 물질은?'), STATE[1], [STATE[0], STATE[2]]],
         [B('Which kind of matter spreads out to fill its whole container?', '퍼져서 그릇 전체를 가득 채우는 물질은?'), STATE[2], [STATE[0], STATE[1]]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words', after: B(`${q[1].en[0].toUpperCase() + q[1].en.slice(1)}s fit that description.`, `${q[1].ko}가 알맞아요.`) });
     }
@@ -138,7 +138,7 @@ G2S({
       quiz(this, { ask: B(`Can you change it back to how it was? ${it[0].en}`, `원래대로 되돌릴 수 있을까요? ${it[0].ko}`), opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 되돌릴 수 있어요' : 'Yes, it can change back'}</span>`, ok: it[1] }, { html: `<span class="word">${S.lang === 'ko' ? '아니요, 되돌릴 수 없어요' : 'No, it cannot change back'}</span>`, ok: !it[1] }], cls: 'words sents', after: it[1] ? B('Melting and freezing can be undone by heating or cooling.', '녹기와 얼기는 열을 주거나 빼앗으면 되돌릴 수 있어요.') : B('Cooking and burning make new materials. They cannot be undone.', '굽기와 태우기는 새로운 물질이 생겨서 되돌릴 수 없어요.') });
     } else {
       const p = pick(MPROP), r = p.r[0];
-      quiz(this, { ask: p.q, opts: wOpts(r, shuffle(p.w).slice(0, 2)), cls: 'words', after: B(`${r.en} is the one.`, `정답은 ${r.ko}예요.`) });
+      quiz(this, { ask: p.q, opts: wOpts(r, shuffle(p.w).slice(0, 2)), cls: 'words', after: B(`${r.en[0].toUpperCase() + r.en.slice(1)} is the one.`, `정답: ${r.ko}`) });
     }
   }
 });
@@ -158,7 +158,7 @@ G2S({
     } else if (kind === 'fric') {
       const q = pick([[B('A toy car rolls across the floor. On which surface does it slow down fastest?', '장난감 자동차가 바닥을 굴러가요. 어느 바닥에서 가장 빨리 느려질까요?'), B('A thick, rough carpet', '두껍고 거친 카펫'), [B('Smooth ice', '매끄러운 얼음'), B('A smooth wood floor', '매끄러운 나무 바닥')]],
         [B('Which surface lets a sled slide the farthest?', '썰매가 가장 멀리 미끄러지는 바닥은?'), B('Smooth, slippery ice', '매끄럽고 미끄러운 얼음'), [B('Rough sand', '거친 모래'), B('Thick grass', '두꺼운 풀밭')]]]);
-      quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words', after: B('Rough surfaces rub more (friction), so things slow down faster.', '거친 바닥은 더 많이 마찰해서 물체가 더 빨리 느려져요.') });
+      quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words', after: B('Rough surfaces rub more (friction), so things slow down faster.', '거친 바닥은 마찰(서로 문지르는 힘)이 커서 물체가 더 빨리 느려져요.') });
     } else {
       const q = pick([[B('Which one changes the DIRECTION of a moving ball?', '굴러가는 공의 방향을 바꾸는 것은?'), B('Hitting it from the side', '옆에서 치기'), [B('Looking at it', '쳐다보기'), B('Waiting', '기다리기')]],
         [B('A force can change an object\'s ...', '힘은 물체의 무엇을 바꿀 수 있을까요?'), B('speed and direction', '빠르기와 방향'), [B('name and color', '이름과 색깔'), B('age', '나이')]]]);
@@ -172,7 +172,7 @@ const CYCLES = [
   { n: B('butterfly', '나비'), e: '🦋', st: [['🥚', B('egg', '알')], ['🐛', B('caterpillar (larva)', '애벌레')], ['🫘', B('chrysalis (pupa)', '번데기')], ['🦋', B('butterfly', '나비')]] },
   { n: B('frog', '개구리'), e: '🐸', st: [['🥚', B('egg', '알')], ['🐟', B('tadpole', '올챙이')], ['🦎', B('froglet (tadpole with legs)', '다리가 난 올챙이')], ['🐸', B('adult frog', '다 자란 개구리')]] },
   { n: B('bean plant', '콩'), e: '🌱', st: [['🫘', B('seed', '씨앗')], ['🌱', B('seedling (sprout)', '새싹')], ['🌿', B('grown plant', '다 자란 식물')], ['🌸', B('flower that makes new seeds', '새 씨앗을 만드는 꽃')]] },
-  { n: B('chicken', '닭'), e: '🐔', st: [['🥚', B('egg', '알')], ['🐣', B('chick', '병아리')], ['🐥', B('young bird', '어린 닭')], ['🐔', B('adult chicken', '다 자란 닭')]] }
+  { n: B('chicken', '닭'), e: '🐔', st: [['🥚', B('egg', '알')], ['🐣', B('chick', '병아리')], ['🐥', B('young chicken', '어린 닭')], ['🐔', B('adult chicken', '다 자란 닭')]] }
 ];
 G2S({
   id: 'lifecycle2', icon: '🦋', title: B('Life Cycles', '한살이'), sub: B('How living things grow and change', '생물이 자라고 변하는 과정'), u: 'Life Cycles',
@@ -185,7 +185,7 @@ G2S({
       return;
     }
     const i = kind === 'next' ? rnd(3) : kind === 'prev' ? 1 + rnd(3) : kind === 'first' ? 0 : 3;
-    const askMap = { next: [B(`${c.n.en} life cycle: what comes AFTER the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes BEFORE the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
+    const askMap = { next: [B(`${c.n.en} life cycle: what comes RIGHT AFTER the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes RIGHT BEFORE the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
     const [ask, right] = askMap[kind], wr = others(c.st, right, 3).slice(0, 2);
     quiz(this, { ask, show: `<div class="cyc">${c.st.map(s => `<span>${s[0]}</span>`).join('<i>→</i>')}</div>`, opts: [right, ...wr].map((s, k) => ({ html: `<span class="emo">${s[0]}</span>`, label: s[1], ok: k === 0 })), after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
   }
@@ -214,7 +214,7 @@ G2S({
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
       const s = pick(SEEDS);
-      quiz(this, { ask: B(`Which one gives the reason? ${s.n.en}`, `알맞은 까닭은 무엇일까요? ${s.n.ko}`), show: `<span class="emo">${s.e}</span>`, opts: wOpts(s.why, others(SEEDS, s, 3).map(x => x.why).filter(w => w.en !== s.why.en).slice(0, 2)), cls: 'words sents', after: s.why });
+      quiz(this, { ask: B(`Which sentence tells how this seed travels? ${s.n.en}`, `이 씨앗이 어떻게 퍼지는지 알맞게 말한 문장은? ${s.n.ko}`), show: `<span class="emo">${s.e}</span>`, opts: wOpts(s.why, others(SEEDS, s, 3).map(x => x.why).filter(w => w.en !== s.why.en).slice(0, 2)), cls: 'words sents', after: s.why });
     }
   }
 });
