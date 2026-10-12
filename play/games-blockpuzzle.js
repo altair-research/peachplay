@@ -113,7 +113,7 @@ function bpPlay(which) {
     if (!alive()) return;
     boardEl.className = 'bpboard' + (bomb ? ' bombing' : '');
     boardEl.innerHTML = board.map((r, y) => r.map((c, x) => { const i = y * N + x, cl = clearing && clearing.has(i); return `<div class="bpcell${cl ? ' clr' : ''}" data-i="${i}" ${cl ? `style="--d:${clearing.get(i)}"` : ''}>${c ? tile(c, pop.has(i) ? 'pop' : '') : ''}</div>`; }).join('')).join('');
-    pop = new Set(); trayEl.innerHTML = tray.map((p, i) => `<div class="bpslot" data-i="${i}">${p ? pieceHtml(p, 'mini') : ''}</div>`).join(''); hud();
+    pop = new Set(); trayEl.innerHTML = tray.map((p, i) => `<div class="bpslot" data-i="${i}" role="button" tabindex="${p ? 0 : -1}" aria-label="${L(B(`Piece ${i + 1}: select with Enter`, `블록 ${i + 1}: Enter로 선택해요`))}">${p ? pieceHtml(p, 'mini') : ''}</div>`).join(''); hud();
   };
   const dims = (p) => [Math.max(...p.cells.map(c => c[0])) + 1, Math.max(...p.cells.map(c => c[1])) + 1];
   const pieceHtml = (p, cls) => { const [w, h] = dims(p); return `<div class="bppiece ${cls}" style="--pw:${w};--ph:${h}">${Array.from({ length: w * h }, (_, i) => { const x = i % w, y = Math.floor(i / w), c = p.cells.find(q => q[0] === x && q[1] === y); return c ? tile({ c: p.col, g: c[2] }) : '<span></span>'; }).join('')}</div>`; };
@@ -241,6 +241,26 @@ function bpPlay(which) {
     const g = geom(), [w, h] = dims(p), el = document.createElement('div'); el.className = 'bpdrag'; el.style.setProperty('--cs', g.cs + 'px'); el.style.setProperty('--sk', `'${skin.g}'`); el.innerHTML = pieceHtml(p, 'full'); el.style.width = w * g.cs + 'px'; el.style.height = h * g.cs + 'px'; document.body.appendChild(el);
     drag = { i, p, el }; trayEl.children[i].classList.add('lift'); const t = target(e); preview(t.col, t.row); tone(440, 50, 0, 'sine', 0.06);
     window.addEventListener('pointermove', onMove, { passive: false }); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onCancel); e.preventDefault();
+  };
+  let keyPiece = null, keyCol = 0, keyRow = 0;
+  boardEl.tabIndex = 0; boardEl.setAttribute('role', 'group');
+  boardEl.setAttribute('aria-label', L(B('Puzzle board. Arrow keys move; Enter places the selected piece or bomb. Escape cancels.', '퍼즐판. 방향키로 이동하고 Enter로 블록이나 폭탄을 놓아요. Escape로 취소해요.')));
+  $('#bphint').setAttribute('role', 'status');
+  const keyPreview = () => {
+    if (keyPiece !== null && tray[keyPiece]) { drag = { p: tray[keyPiece] }; preview(keyCol, keyRow); drag = null; }
+    $('#bphint').textContent = L(B(`Row ${keyRow + 1}, column ${keyCol + 1}. ${keyPiece !== null && tray[keyPiece] && !fits(tray[keyPiece], keyCol, keyRow) ? 'No room here.' : 'Enter to place.'}`, `${keyRow + 1}행 ${keyCol + 1}열. ${keyPiece !== null && tray[keyPiece] && !fits(tray[keyPiece], keyCol, keyRow) ? '여기는 자리가 없어요.' : 'Enter로 놓아요.'}`));
+  };
+  trayEl.onkeydown = e => {
+    if (!['Enter', ' '].includes(e.key) || busy || done || drag) return;
+    const slot = e.target.closest('.bpslot'); if (!slot || !tray[+slot.dataset.i]) return;
+    e.preventDefault(); keyPiece = +slot.dataset.i; bomb = false; keyCol = keyRow = 0; boardEl.focus(); keyPreview();
+  };
+  boardEl.onkeydown = e => {
+    if (busy || done || drag) return;
+    const delta = { ArrowLeft: [-1,0], ArrowRight: [1,0], ArrowUp: [0,-1], ArrowDown: [0,1] }[e.key];
+    if (delta) { e.preventDefault(); keyCol = Math.max(0, Math.min(N - 1, keyCol + delta[0])); keyRow = Math.max(0, Math.min(N - 1, keyRow + delta[1])); keyPreview(); }
+    else if (['Enter', ' '].includes(e.key)) { e.preventDefault(); if (bomb) blast(keyRow * N + keyCol); else if (keyPiece !== null && place(keyPiece, keyCol, keyRow)) { keyPiece = null; clearPreview(); boardEl.focus(); } else keyPreview(); }
+    else if (e.key === 'Escape') { keyPiece = null; clearPreview(); trayEl.querySelector('[tabindex="0"]')?.focus(); }
   };
   newTray(); render(); say(L(ask)); $('#bphint').textContent = L(ask);
   // short "world x level" splash

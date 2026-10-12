@@ -48,7 +48,7 @@ bank('fossilclue3','Fossil Clues','화석 단서','S3E2.a',[
 bank('fossilorder3','Fossil Model','화석 모형','S3E2.b',[
  [B('In this model, what comes next?','이 모형에서 다음 단계는?'),B('A shell rests on the bottom. Sediment begins to pile up.','조개껍데기가 바닥에 있어요. 퇴적물(흙, 모래 등)이 쌓이기 시작해요.'),B('Sediment covers the shell','퇴적물이 껍데기를 덮어요'),B('The shell turns into a living bird','껍데기가 살아 있는 새가 돼요'),B('The shell becomes a cloud','껍데기가 구름이 돼요')],
  [B('Which can improve the chance of preservation?','보존될 가능성을 높일 수 있는 것은?'),null,B('Rapid burial in sediment','퇴적물에 빨리 묻히기'),B('Complete decay','완전히 썩어 없어지기'),B('Being eaten completely','전부 먹혀 없어지기')],
- [B('Which statement fits the fossil model?','화석 모형에 맞는 설명은?'),null,B('Only some remains are preserved','생물의 일부만 화석으로 남아요'),B('Every dead organism becomes a fossil','죽은 생물은 모두 화석이 돼요'),B('All fossils form in one day','모든 화석은 하루 만에 생겨요')]]);
+ [B('Which statement fits the fossil model?','화석 모형에 맞는 설명은?'),null,B('Not every organism becomes a fossil','모든 생물이 화석으로 남는 것은 아니에요'),B('Every dead organism becomes a fossil','죽은 생물은 모두 화석이 돼요'),B('All fossils form in one day','모든 화석은 하루 만에 생겨요')]]);
 reg('habitat3','Georgia Habitat Notes','조지아 서식지','S3L1.a',lv=>{
  const rows=habitatNotes, r=pick(rows);
  return q(lv===1?B('Which feature matches this Georgia region note?','이 조지아 지역 기록에 맞는 특징은?'):B('Which comparison follows from these region notes?','두 지역 기록을 비교하면 알 수 있는 것은?'),panel(L(lv===1?r[0]:r[4])),lv===1?r[1]:r[5],lv===1?r.slice(2,4):r.slice(6,8));

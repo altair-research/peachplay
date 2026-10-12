@@ -85,6 +85,18 @@ function bindStroke(cv, color, width, onDraw, onEnd) {
   cv.c.onpointerdown = (e) => { drawing = true; last = pos(e); try { cv.c.setPointerCapture(e.pointerId); } catch (err) {} onDraw(last, last, true); e.preventDefault(); };
   cv.c.onpointermove = (e) => { if (!drawing) return; const p = pos(e); onDraw(last, p, false); last = p; e.preventDefault(); };
   const end = () => { if (drawing) { drawing = false; if (onEnd) onEnd(); } };
+  cv.c.tabIndex = 0; cv.c.setAttribute('role', 'group');
+  cv.c.setAttribute('aria-label', L(B('Drawing canvas. Arrow keys move; Enter or Space starts and stops drawing.', '그림판. 방향키로 이동하고 Enter 또는 Space로 그리기를 시작하거나 멈춰요.')));
+  let cursor = [cv.w / 2, cv.h / 2], keyDrawing = false;
+  cv.c.parentElement?.style.setProperty('--cursor-x', '50%'); cv.c.parentElement?.style.setProperty('--cursor-y', '50%');
+  cv.c.onkeydown = e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); keyDrawing = !keyDrawing; if (keyDrawing) onDraw(cursor, cursor, true); else if (onEnd) onEnd(); return; }
+    const delta = { ArrowLeft: [-5, 0], ArrowRight: [5, 0], ArrowUp: [0, -5], ArrowDown: [0, 5] }[e.key]; if (!delta) return;
+    e.preventDefault(); const next = [Math.max(0, Math.min(cv.w, cursor[0] + delta[0])), Math.max(0, Math.min(cv.h, cursor[1] + delta[1]))];
+    if (keyDrawing) onDraw(cursor, next, false); cursor = next;
+    cv.c.parentElement?.style.setProperty('--cursor-x', (cursor[0] / cv.w * 100) + '%'); cv.c.parentElement?.style.setProperty('--cursor-y', (cursor[1] / cv.h * 100) + '%');
+  };
+  cv.c.onblur = () => { if (keyDrawing && onEnd) onEnd(); keyDrawing = false; };
   cv.c.onpointerup = end; cv.c.onpointercancel = end;
 }
 const canvasSize = () => { const w = Math.min(560, Math.max(260, window.innerWidth - 40)); return [w, Math.round(w * 0.64)]; };
@@ -109,7 +121,7 @@ registerGame({
     let done = false, missed = false;
     const color = '#ef476f', bw = 16;
     const ask = B(`Trace the ${mode === 'num' ? 'number' : 'letter'} ${ch}. Use your finger!`, `${ch} ${mode === 'num' ? '숫자' : '글자'}를 손가락으로 따라 써요!`);
-    view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="canvaswrap" id="cw"></div>
+    view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div><div class="canvaswrap" id="cw"></div>
       <div><button class="pill" id="clr">${T().clear}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#cw').appendChild(disp.c);
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
@@ -126,7 +138,7 @@ registerGame({
       if (r.coverage >= 0.5 && r.spill < 0.65) {
         done = true; if (DIAG.active) { DIAG.answer(this, !missed, null); return; }
         recordFinal('trace', missed); if (!missed) addPeach();
-        $('#cheer').textContent = pick(T().right); say(ch, 'en-US'); disp.c.onpointerdown = null; nextButton(() => this.play());
+        $('#cheer').textContent = pick(T().right); say(ch, 'en-US'); disp.c.onpointerdown = null; disp.c.onkeydown = null; nextButton(() => this.play());
       }
     });
     $('#clr').onclick = () => { missed = true; ink.ctx.clearRect(0, 0, w, h); disp.ctx.clearRect(0, 0, w, h); disp.ctx.fillStyle = '#ffd9c7'; disp.ctx.fillText(ch, w / 2, base); };
@@ -146,8 +158,8 @@ registerGame({
     const colors = ['#1d3557', '#ef476f', '#ff8c42', '#ffd166', '#06d6a0', '#118ab2', '#8338ec', '#8d5524'];
     let color = colors[0], size = 8;
     cv.ctx.fillStyle = '#fff'; cv.ctx.fillRect(0, 0, w, h);
-    view().innerHTML = `<div class="prompt">${L(pr)}<button class="say" id="sp">🔊</button></div><div class="canvaswrap" id="cw"></div>
-      <div class="palette">${colors.map((c, i) => `<button class="sw ${i === 0 ? 'sel' : ''}" data-c="${c}" style="background:${c}" aria-label="color"></button>`).join('')}
+    view().innerHTML = `<div class="prompt">${L(pr)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div><div class="canvaswrap" id="cw"></div>
+      <div class="palette">${colors.map((c, i) => `<button class="sw ${i === 0 ? 'sel' : ''}" data-c="${c}" style="background:${c}" aria-label="${L([B('Navy', '남색'), B('Pink', '분홍색'), B('Orange', '주황색'), B('Yellow', '노란색'), B('Green', '초록색'), B('Blue', '파란색'), B('Purple', '보라색'), B('Brown', '갈색')][i])}"></button>`).join('')}
       <button class="sw sz" data-s="5">·</button><button class="sw sz" data-s="12">●</button><button class="sw sz" data-s="22">⬤</button></div>
       <div><button class="pill" id="clr">${T().clear}</button> <button class="next" id="done">${T().done}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#cw').appendChild(cv.c);

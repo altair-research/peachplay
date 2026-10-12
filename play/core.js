@@ -17,10 +17,10 @@ function cleanState(s) {                                  // keeps only known, w
   if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
   if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
   if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };
-  if (s.profile === null || isObj(s.profile)) { o.profile = s.profile; if (isObj(o.profile)) { o.profile = Object.assign({}, o.profile); if ('diag' in o.profile && !(isObj(o.profile.diag) && Array.isArray(o.profile.diag.missed) && o.profile.diag.missed.every(x => typeof x === 'string'))) delete o.profile.diag; if ('report' in o.profile && !isObj(o.profile.report)) delete o.profile.report; } }
+  if (s.profile === null || isObj(s.profile)) { o.profile = s.profile; if (isObj(o.profile)) { o.profile = Object.assign({}, o.profile); if ('diag' in o.profile && !(isObj(o.profile.diag) && Array.isArray(o.profile.diag.missed) && o.profile.diag.missed.every(x => typeof x === 'string'))) delete o.profile.diag; if ('report' in o.profile && !(isObj(o.profile.report) && Array.isArray(o.profile.report.picks) && o.profile.report.picks.every(p => isObj(p) && typeof p.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(p.id) && Number.isFinite(p.score) && p.score >= 0 && Array.isArray(p.reasons) && p.reasons.every(r => typeof r === 'string')))) delete o.profile.report; } }
   if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40).map(c => {
     const items = c.items.filter(it => isObj(it) && typeof it.id === 'string' && it.id.length <= 40 && typeof it.ok === 'boolean').map(it => ({ id: it.id, lv: Math.min(3, Math.max(1, numOr(it.lv, 1))), ok: it.ok }));
-    return { at: typeof c.at === 'string' ? c.at.slice(0, 16) : '', scope: typeof c.scope === 'string' ? c.scope.slice(0, 12) : 'all', grade: GRADE_LIST.includes(c.grade) ? c.grade : 'K', items, ok: items.filter(x => x.ok).length, total: items.length };
+    return { at: typeof c.at === 'string' ? c.at.slice(0, 16) : '', scope: typeof c.scope === 'string' ? c.scope.slice(0, 12) : 'all', ...(Array.isArray(c.est) ? { est: c.est.filter(e => Array.isArray(e) && e.length === 2 && ['num','alg','meas','geo','pa','ph','hfw','voc','lit','inf'].includes(e[0]) && Number.isInteger(e[1]) && e[1] >= 0 && e[1] <= 7) } : {}), grade: GRADE_LIST.includes(c.grade) ? c.grade : 'K', items, ok: items.filter(x => x.ok).length, total: items.length };
   }).filter(c => c.items.length);
   if (Array.isArray(s.stickers)) o.stickers = s.stickers.filter(x => typeof x === 'string').slice(0, 200);
   if (isObj(s.bp)) o.bp = { level: Math.min(31, Math.max(1, Math.floor(numOr(s.bp.level, 1)))), best: Math.max(0, numOr(s.bp.best)), stars: isObj(s.bp.stars) ? Object.fromEntries(Object.entries(s.bp.stars).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k, Math.min(3, Math.max(0, v))])) : {}, friends: Array.isArray(s.bp.friends) ? s.bp.friends.filter(Number.isInteger) : [], skin: typeof s.bp.skin === 'string' ? s.bp.skin : 'plain', daily: isObj(s.bp.daily) ? s.bp.daily : null };
@@ -127,6 +127,7 @@ const PEACH_SVG = (mood = 'happy') => `<svg viewBox="0 0 64 64" class="peachy ${
 ${mood === 'oops' ? '<path d="M20 28l7 2M44 28l-7 2" stroke="#3a2a2a" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="34" r="3" fill="#3a2a2a"/><circle cx="40" cy="34" r="3" fill="#3a2a2a"/><path d="M25 48q7-6 14 0" stroke="#3a2a2a" stroke-width="2.4" fill="none" stroke-linecap="round"/>' : '<circle cx="24" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="40" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="25.2" cy="32.8" r="1.1" fill="#fff"/><circle cx="41.2" cy="32.8" r="1.1" fill="#fff"/><path d="M24 43q8 9 16 0" stroke="#3a2a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>'}</svg>`;
 // <pk-cheer>: assigning textContent shows the mascot, plays a sound and (for good answers) throws confetti
 class PkCheer extends HTMLElement {
+  connectedCallback() { this.setAttribute("role", "status"); this.setAttribute("aria-live", "polite"); }
   set textContent(v) {
     this._t = v || ''; this.replaceChildren(); if (!this._t) return;
     const bad = (this._t === T().again || this._t === T().tooMany);
@@ -208,7 +209,7 @@ function quiz(game, item) {
     <div class="prompt">${askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
     ${item.show ? `<div class="show">${item.show}</div>` : ''}
     <div class="opts ${item.cls || ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}">${o.html}${o.label ? `<span class="ol">${labelText(o.label)}</span>` : ''}</button>`).join('')}</div>
-    <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact"></div>`;
+    <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact" role="status"></div>`;
   const ask = () => { say(item.askSay ? L(item.askSay) : askText); if (item.askExtra) say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
   const optTexts = () => $$('.opt').map(b => (b.querySelector('.word,.num') || b).innerText.replace(/\s+/g, ' ').trim()).filter(t => /[A-Za-zㄱ-힝0-9]{2,}/.test(t));

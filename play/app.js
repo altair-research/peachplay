@@ -42,7 +42,7 @@ function home() {
 
 // ---- home helpers: games are shown per subject (tiles -> subject screen), with continue, picks and search
 const isFav = (id) => (S.fav || []).includes(id);
-const gameBtn = (g) => `<div class="gwrap"><button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button><button class="fav${isFav(g.id) ? ' on' : ''}" data-fav="${g.id}" aria-pressed="${isFav(g.id)}" aria-label="${L(B('Favorite', '즐겨찾기'))}">${isFav(g.id) ? '★' : '☆'}</button></div>`;
+const gameBtn = (g) => `<div class="gwrap"><button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button><button class="fav${isFav(g.id) ? ' on' : ''}" data-fav="${g.id}" aria-pressed="${isFav(g.id)}" aria-label="${L(B('Favorite', '즐겨찾기')) + ': ' + L(g.title).replace(/"/g, '&quot;')}">${isFav(g.id) ? '★' : '☆'}</button></div>`;
 const subjTile = (sub) => { const n = visibleGames().filter(g => g.subject === sub).length; return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`; };
 const wireGames = () => {
   $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
@@ -66,15 +66,17 @@ function applyPrefs() {
   document.body.classList.toggle('skin-explorer', S.skin === 'explorer'); document.body.classList.toggle('theme-dark', S.theme === 'dark'); document.body.classList.toggle('theme-system', S.theme === 'system');
 }
 const LOOKS = [['skin', '🎨', B('Look', '스킨'), [['peachy', B('Peachy', '피치')], ['explorer', B('Explorer (for older kids)', '탐험가 (큰 아이용)')]]], ['theme', '🌓', B('Screen', '화면 모드'), [['light', B('Light', '밝게')], ['dark', B('Night', '어둡게')], ['system', B('Follow device', '기기 설정 따르기')]]]];
-function settings() {
+function settings(focusKey, focusLook) {
   // the first two are stored as "off" switches so that older saves keep sound on
   const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
     <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
     <div><button class="next" id="b">${T().back}</button></div>`;
-  $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(); });
-  $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(); });
+  $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(null, b.dataset.look); });
+  $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(k); });
   $('#b').onclick = home; window.scrollTo(0, 0);
+  view().classList.add('settings-screen');
+  const target = focusKey ? $(`.pref[data-k="${focusKey}"]`) : focusLook ? $(`.pref[data-look="${focusLook}"]`) : null; if (target) target.focus();
 }
 function continueHtml() {
   const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';
@@ -119,7 +121,7 @@ function challengeTable() {
 function gate(next) {
   const x = 6 + rnd(4), y = 6 + rnd(4);
   view().innerHTML = `<h1>🔒 ${T().grownups}</h1><p class="tag">${L(B(`Grown-ups only. What is ${x} × ${y}?`, `어른용 화면이에요. ${x} × ${y} = ?`))}</p>
-    <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">OK</button> <span id="gmsg"></span></div>
+    <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">OK</button> <span id="gmsg" role="status"></span></div>
     <div><button class="next" id="b">${T().back}</button></div>`;
   const check = () => { if (+$('#gans').value.trim() === x * y) next(); else { $('#gmsg').textContent = L(B('Not quite. Try again!', '다시 해 보세요!')); $('#gans').value = ''; } };
   $('#gok').onclick = check; $('#gans').onkeydown = (e) => { if (e.key === 'Enter') check(); }; $('#b').onclick = home;

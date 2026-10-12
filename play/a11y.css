@@ -20,11 +20,11 @@ body.readable{font-family:Arial,Helvetica,"Malgun Gothic","Apple SD Gothic Neo",
 .goalrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 2px 4px;font-weight:800;font-size:15px}
 .goalbar{flex:1 1 90px;height:12px;border-radius:999px;background:#f3dcc8;overflow:hidden;min-width:80px}.goalbar i{display:block;height:100%;background:linear-gradient(90deg,#ffb36b,#ff7e5f)}
 .gwrap{position:relative;display:flex}.gwrap>.big{flex:1}
-.fav{position:absolute;top:4px;right:4px;width:44px;height:44px;border-radius:999px;background:transparent;border:0;font-size:24px;line-height:1;color:#c9a27a;cursor:pointer}
-.fav.on{color:#f4a300}
+.fav{position:absolute;top:4px;right:4px;width:44px;height:44px;border-radius:999px;background:transparent;border:0;font-size:24px;line-height:1;color:#84603b;cursor:pointer}
+.fav.on{color:#946000}
 .prefs{display:grid;gap:10px;margin:12px 0}
 .pref{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:#fff;border:2px solid #f0c9a8;font:inherit;font-size:17px;min-height:56px}
-.pref .pi{font-size:26px}.pref .pt{flex:1;font-weight:700}.pref .ps{font-weight:800;color:#9a7b62}.pref.on{border-color:#06d6a0}.pref.on .ps{color:#078a66}
+.pref .pi{font-size:26px}.pref .pt{flex:1;font-weight:700}.pref .ps{font-weight:800;color:#775a45}.pref.on{border-color:#06d6a0}.pref.on .ps{color:#06664c}
 body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 
 /* diagnostic practice */
@@ -39,3 +39,9 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 .pp-notice span{flex:1}.pp-notice a{color:#ffd166}.pp-notice button{min-width:44px;min-height:44px;border:0;border-radius:999px;background:#ffffff22;color:#fff;font-size:18px}
 .pp-notice-block{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:#fff7efee}
 .pp-nb-card{max-width:520px;text-align:center;background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 24px #0002;font-size:18px}
+
+@media(max-height:700px){.settings-screen .prefs{gap:6px;margin:6px 0}.settings-screen .pref{padding:10px 12px;min-height:50px}.settings-screen h1{margin:8px 0}.settings-screen .tag{margin:6px 0}}
+
+.canvaswrap:has(canvas:focus-visible){position:relative}.canvaswrap:has(canvas:focus-visible)::after{content:"+";position:absolute;left:var(--cursor-x,50%);top:var(--cursor-y,50%);pointer-events:none;color:#000;background:#fff;outline:2px solid #000;transform:translate(-50%,-50%)}
+
+.settings-screen{padding-bottom:12px}.settings-screen .tag{font-size:16px}.settings-screen .pref{font-size:15px;gap:8px;padding:8px 10px;min-height:48px}.settings-screen .pref .pi{font-size:22px}.settings-screen .pref.look .ps{max-width:46%;font-size:14px}.settings-screen .prefs{gap:6px}.settings-screen .next{margin:6px 0;padding:10px 24px}

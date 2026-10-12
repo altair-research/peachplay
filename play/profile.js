@@ -31,9 +31,9 @@ function currentPicks(max = 3) {
   const P = S.profile || {}, res = latestResults();
   const need = {}, why = {};
   const add = (id, v, r) => { need[id] = (need[id] || 0) + v; (why[id] = why[id] || []).push(r); };
-  if (P.report && P.report.picks.length) {
-    const top = P.report.picks[0].score || 1;
-    P.report.picks.forEach(p => add(p.id, (p.score / top) * 3, p.reasons[0]));
+  if (P.report && Array.isArray(P.report.picks) && P.report.picks.length) {
+    const top = (P.report.picks.find(p => isObj(p) && Number.isFinite(p.score)) || {}).score || 1;
+    P.report.picks.filter(p => isObj(p) && Number.isFinite(p.score) && Array.isArray(p.reasons)).forEach(p => add(p.id, (p.score / top) * 3, p.reasons[0]));
   }
   Object.keys(res).forEach(id => { if (res[id] === false) add(id, 3, '__quick__'); });
   return Object.keys(need)

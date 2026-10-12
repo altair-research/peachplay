@@ -33,7 +33,7 @@
   }
 
   function count() {
-    if (!NOTICE_STATS_URL || navigator.doNotTrack === '1' || !navigator.onLine) return;
+    if (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) || !NOTICE_STATS_URL || navigator.doNotTrack === '1' || !navigator.onLine) return;
     const day = new Date().toISOString().slice(0, 10); if (ls('pp.counted') === day) return;
     ls('pp.counted', day);
     try { const i = new Image(); i.referrerPolicy = 'no-referrer'; i.src = `${NOTICE_STATS_URL}?p=${encodeURIComponent('/play/open')}&t=PeachPlay&b=0&rnd=${Date.now()}`; } catch (e) {}

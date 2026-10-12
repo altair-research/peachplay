@@ -5,6 +5,7 @@ const FEEDBACK_EMAIL = 'altair.research.lab@gmail.com';
 const BK = {
   title: B('Backup & restore', '백업과 복원'),
   note: B("Progress lives only on this device. Save a backup file (or code) to move it to another device or keep it safe. The file contains your children's names and progress, so keep it private.", '기록은 이 기기에만 저장돼요. 다른 기기로 옮기거나 안전하게 보관하려면 백업 파일(또는 코드)을 저장하세요. 파일에는 아이 이름과 기록이 들어 있으니 다른 사람에게 보내지 마세요.'),
+  readFail: B('Could not read progress. No backup was created. Please try again in a normal browser window.', '기록을 읽지 못해 백업을 만들지 않았어요. 일반 브라우저 창에서 다시 시도해 주세요.'),
   save: B('Save backup file', '백업 파일 저장'), copy: B('Copy backup code', '백업 코드 복사'), copied: B('Copied!', '복사됐어요!'),
   load: B('Restore from file', '파일에서 복원'), paste: B('Restore from code', '코드로 복원'), pasteHint: B('Paste backup code here', '백업 코드를 여기에 붙여넣기'),
   ask: B('Replace ALL progress on this device with the backup? This cannot be undone.', '이 기기의 모든 기록을 백업 내용으로 바꿀까요? 되돌릴 수 없어요.'),
@@ -19,7 +20,8 @@ const BK = {
 const BK_RE = /^sag\.(profiles|v2(\.[A-Za-z0-9_-]+)?)$/;
 function backupCollect() {
   const data = {};
-  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (BK_RE.test(k)) data[k] = localStorage.getItem(k); } } catch (e) { console.warn('[peachy] backup read', e); }
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (BK_RE.test(k)) data[k] = localStorage.getItem(k); } } catch (e) { throw new Error('backup read failed', { cause: e }); }
+  if (!Object.keys(data).length || Object.values(data).some(v => typeof v !== 'string')) throw new Error('backup is empty or incomplete');
   return { app: 'peachy', format: 1, appVersion: APP_VERSION, exported: new Date().toISOString(), data };
 }
 function backupParse(text) {
@@ -86,8 +88,8 @@ function backupBind() {
     const old = () => { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); done(ok); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(() => done(true), old); else old();
   };
-  $('#bkSave').onclick = () => { try { const b = new Blob([json()], { type: 'application/json' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `peachy-backup-${today()}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(a.href); }, 1500); } catch (e) { console.warn('[peachy] backup save', e); msg(L(BK.full)); } };
-  $('#bkCopy').onclick = () => copyText(json(), ok => msg(ok ? L(BK.copied) : ''));
+  $('#bkSave').onclick = () => { try { const b = new Blob([json()], { type: 'application/json' }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `peachy-backup-${today()}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(a.href); }, 1500); } catch (e) { console.warn('[peachy] backup save', e); msg(L(BK.readFail)); } };
+  $('#bkCopy').onclick = () => { try { copyText(json(), ok => msg(ok ? L(BK.copied) : L(BK.readFail))); } catch (e) { msg(L(BK.readFail)); } };
   $('#bkLoad').onclick = () => $('#bkFile').click();
   $('#bkFile').onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 5e6) return msg(L(BK.bad)); const r = new FileReader(); r.onload = () => restore(r.result); r.onerror = () => msg(L(BK.bad)); r.readAsText(f); e.target.value = ''; };
   $('#bkPaste').onclick = () => restore($('#bkText').value);
