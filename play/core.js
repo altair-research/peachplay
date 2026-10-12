@@ -25,7 +25,8 @@ function cleanState(s) {                                  // keeps only known, w
   if (Array.isArray(s.stickers)) o.stickers = s.stickers.filter(x => typeof x === 'string').slice(0, 200);
   if (isObj(s.bp)) o.bp = { level: Math.min(31, Math.max(1, Math.floor(numOr(s.bp.level, 1)))), best: Math.max(0, numOr(s.bp.best)), stars: isObj(s.bp.stars) ? Object.fromEntries(Object.entries(s.bp.stars).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k, Math.min(3, Math.max(0, v))])) : {}, friends: Array.isArray(s.bp.friends) ? s.bp.friends.filter(Number.isInteger) : [], skin: typeof s.bp.skin === 'string' ? s.bp.skin : 'plain', daily: isObj(s.bp.daily) ? s.bp.daily : null };
   if (typeof s.last === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(s.last)) o.last = s.last;
-  ['muted', 'introSeen', 'showK'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
+  if (Array.isArray(s.fav)) o.fav = s.fav.filter(x => typeof x === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x)).slice(0, 30);
+  ['muted', 'introSeen', 'showK', 'sfxOff', 'voiceOff', 'calm', 'readable'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
   return o;
 }
@@ -58,7 +59,7 @@ const lvl = (id) => (DIAG.active ? (DIAG.lv || 1) : stat(id).level);
 // Speech is always paired with visible text/visuals, so muted devices (and missing voices) still work.
 function say(text, lang, keepQueue) {
   try {
-    if (S.muted || !('speechSynthesis' in window) || !text) return;
+    if (S.muted || S.voiceOff || !('speechSynthesis' in window) || !text) return;
     if (!keepQueue) speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang || T().speech; u.rate = 0.85;
@@ -94,7 +95,7 @@ function recordFinal(id, missed) { if (!missed) record(id, true); else if (!MISS
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
   try {
-    if (S.muted) return; audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (S.muted || S.sfxOff) return; audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime + when, o = audioCtx.createOscillator(), g = audioCtx.createGain();
     o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + ms / 1000);
     o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + ms / 1000 + 0.02);
@@ -108,7 +109,7 @@ function sfx(kind) {
 }
 function confetti(count = 60) {
   try {
-    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (S.calm || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
     const c = document.getElementById('fx'); if (!c) return; const ctx = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
     const cols = ['#ff7e5f', '#ffd166', '#06d6a0', '#118ab2', '#ef476f', '#8338ec'];
     const ps = Array.from({ length: count }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 140, y: innerHeight * 0.45, vx: (Math.random() - .5) * 10, vy: -Math.random() * 10 - 3, r: 4 + Math.random() * 5, c: cols[rnd(cols.length)], rot: Math.random() * 6, vr: (Math.random() - .5) * .4 }));
@@ -252,7 +253,7 @@ const GAMES = [];
 const registerGame = (g) => GAMES.push(g);
 // Which games a child sees: K games for K, 1st-grade games for grade 1; thinking games (brain/create/gifted) and handwriting are shared.
 const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subject) || ['trace', 'draw'].includes(g.id) ? 'both' : 'K');
-const GRADES = ['K', '1', '2'];
+const GRADES = ['K', '1', '2', '3'];
 const kidGrade = () => (GRADES.includes(curKid().grade) ? curKid().grade : 'K');
 const prevGrade = (g) => GRADES[GRADES.indexOf(g) - 1] || null;
 const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade())); });

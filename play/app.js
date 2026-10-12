@@ -13,12 +13,15 @@ function home() {
     <div class="tag">${T().tagline}</div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${continueHtml()}
+    ${goalHtml()}
+    ${favHtml()}
     ${picksHtml()}
     <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
     <div id="gresults"></div>
     <div id="subjtiles" class="menu">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
     ${prevGrade(kidGrade()) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
     <button class="link" id="find">${T().findStart}</button>
+    <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
@@ -31,15 +34,42 @@ function home() {
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
-  $('#parent').onclick = () => gate(grownups); $('#find').onclick = intro;
+  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   window.scrollTo(0, 0);
 }
 
 // ---- home helpers: games are shown per subject (tiles -> subject screen), with continue, picks and search
-const gameBtn = (g) => `<button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`;
+const isFav = (id) => (S.fav || []).includes(id);
+const gameBtn = (g) => `<div class="gwrap"><button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button><button class="fav${isFav(g.id) ? ' on' : ''}" data-fav="${g.id}" aria-pressed="${isFav(g.id)}" aria-label="${L(B('Favorite', '즐겨찾기'))}">${isFav(g.id) ? '★' : '☆'}</button></div>`;
 const subjTile = (sub) => { const n = visibleGames().filter(g => g.subject === sub).length; return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`; };
-const wireGames = () => $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
+const wireGames = () => {
+  $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
+  $$('.fav[data-fav]').forEach(b => b.onclick = () => {
+    const id = b.dataset.fav, f = S.fav = (S.fav || []).filter(x => x !== id); if (!b.classList.contains('on')) f.unshift(id); S.fav = f.slice(0, 30); save();
+    $$(`.fav[data-fav="${id}"]`).forEach(x => { const on = isFav(id); x.classList.toggle('on', on); x.textContent = on ? '★' : '☆'; x.setAttribute('aria-pressed', on); });
+  });
+};
+function favHtml() {
+  const gs = (S.fav || []).map(id => visibleGames().find(g => g.id === id)).filter(Boolean); if (!gs.length) return '';
+  return `<section class="subj favs"><h2>⭐ ${L(B('My favorites', '즐겨찾기'))}</h2><div class="menu">${gs.map(gameBtn).join('')}</div></section>`;
+}
+const GOAL = 20;                                   // answers per day (a gentle target, not a timer)
+function goalHtml() {
+  const h = (S.hist || {})[today()] || { r: 0, w: 0 }, n = h.r + h.w, st = typeof streakDays === 'function' ? streakDays() : 0, pct = Math.min(100, Math.round(100 * n / GOAL));
+  return `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
+}
+const PREFS = [['sfxOff', '🎵', B('Sound effects', '효과음'), true], ['voiceOff', '🗣️', B('Read-aloud voice', '읽어 주는 목소리'), true], ['calm', '🌙', B('Less motion (no confetti or shaking)', '움직임 줄이기 (색종이·흔들림 없음)'), false], ['readable', '🔤', B('Easy-to-read letters', '읽기 쉬운 글꼴'), false]];
+function applyPrefs() { document.body.classList.toggle('calm', !!S.calm); document.body.classList.toggle('readable', !!S.readable); }
+function settings() {
+  // the first two are stored as "off" switches so that older saves keep sound on
+  const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
+  view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
+    <div class="prefs">${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
+    <div><button class="next" id="b">${T().back}</button></div>`;
+  $$('.pref').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(); });
+  $('#b').onclick = home; window.scrollTo(0, 0);
+}
 function continueHtml() {
   const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';
   return `<div class="controw"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">▶️</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
@@ -125,7 +155,7 @@ function renderMute() {
   b.setAttribute('aria-pressed', S.muted ? 'true' : 'false'); document.body.classList.toggle('muted', !!S.muted);
 }
 $('#muteBtn').onclick = () => { S.muted = !S.muted; save(); try { speechSynthesis.cancel(); } catch (e) {} renderMute(); };
-renderMute();
+renderMute(); applyPrefs();
 $('#homeBtn').onclick = () => { quitDiag(); home(); };
 $('#navProg').onclick = () => { quitDiag(); progressScreen(); };
 $('#navFaq').onclick = () => { quitDiag(); faqScreen(); };

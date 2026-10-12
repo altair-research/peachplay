@@ -1,0 +1,9 @@
+.g3-math-model{font-size:clamp(17px,3.2dvh,24px);line-height:1.25;width:min(100%,460px);margin:auto}
+.g3-math-model svg{display:block;width:100%;height:clamp(90px,22dvh,155px);margin:auto;font:18px sans-serif}
+.g3-equation{font-size:clamp(22px,4.5dvh,34px);font-weight:750;padding:8px 2px;overflow-wrap:anywhere}
+.g3-math-model table{border-collapse:collapse;margin:auto;width:100%;font-size:clamp(16px,3dvh,22px)}
+.g3-math-model td,.g3-math-model th{border:2px solid #789;padding:7px 3px}
+.g3-bar{display:flex;border:2px solid currentColor;min-height:42px;align-items:stretch}
+.g3-bar span{display:grid;place-items:center;min-width:52px;background:#d4eafa;color:#17364a}
+.g3-bar span+span{border-left:2px solid #17364a;background:#ffe0bb}
+.g3-math-options .word{font-size:clamp(17px,3dvh,23px)}

@@ -1,0 +1,4 @@
+.g3-reading{font-size:clamp(17px,2.8dvh,22px);line-height:1.35;text-align:left;max-width:510px;margin:auto;padding:8px 12px;border:2px solid #a7becf;border-radius:14px;background:#f3f8fc;color:#17364a}
+.g3-listen{display:block;min-height:36px;font:600 14px sans-serif;margin:5px 0 0 auto;padding:3px 9px;border-radius:10px;background:#fff;color:#17364a;border:1px solid #789}
+.g3-read-options .word{font-size:clamp(16px,2.65dvh,21px);line-height:1.2}
+.g3-read-options .opt{padding:6px 10px}

@@ -12,3 +12,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* settings: less motion (same as the system setting) and easy-to-read letters */
+body.calm *,body.calm *::before,body.calm *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+body.readable{font-family:Arial,Helvetica,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-variant-ligatures:none}
+/* home: today's goal, favourites */
+.goalrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 2px 4px;font-weight:800;font-size:15px}
+.goalbar{flex:1 1 90px;height:12px;border-radius:999px;background:#f3dcc8;overflow:hidden;min-width:80px}.goalbar i{display:block;height:100%;background:linear-gradient(90deg,#ffb36b,#ff7e5f)}
+.gwrap{position:relative;display:flex}.gwrap>.big{flex:1}
+.fav{position:absolute;top:4px;right:4px;width:44px;height:44px;border-radius:999px;background:transparent;border:0;font-size:24px;line-height:1;color:#c9a27a;cursor:pointer}
+.fav.on{color:#f4a300}
+.prefs{display:grid;gap:10px;margin:12px 0}
+.pref{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-radius:18px;background:#fff;border:2px solid #f0c9a8;font:inherit;font-size:17px;min-height:56px}
+.pref .pi{font-size:26px}.pref .pt{flex:1;font-weight:700}.pref .ps{font-weight:800;color:#9a7b62}.pref.on{border-color:#06d6a0}.pref.on .ps{color:#078a66}
+body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}

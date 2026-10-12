@@ -1,0 +1,8 @@
+.g3-science{font-size:clamp(16px,2.8dvh,22px);line-height:1.3;max-width:480px;margin:4px auto;text-align:left}
+.g3-science svg{display:block;width:100%;height:clamp(100px,25dvh,175px);margin:auto;font:17px sans-serif;color:#17364a}
+.g3-science table{width:100%;border-collapse:collapse;font-size:clamp(15px,2.55dvh,20px);text-align:center}
+.g3-science td,.g3-science th{border:1px solid #789;padding:5px}
+.g3-science th{background:#e5f2ed;color:#173c31}
+.g3-science-options .word{font-size:clamp(16px,2.65dvh,22px);line-height:1.2}
+.g3-science-options .opt{padding:6px 10px}
+.g3-science svg.g3-shade{height:clamp(95px,20dvh,145px)}
