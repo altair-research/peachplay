@@ -30,7 +30,7 @@ const FIGURE1_FACTS = [
 G1T({
   id: 'figures1', icon: '🦸', title: B('Heroes of America', '미국의 인물들'), sub: B('Match people with what they did', '인물과 그 사람이 한 일 연결하기'), u: 'Historical figures',
   play() {
-    const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, 2), kind = lvl('figures1') === 1 ? 'who' : pick(['who', 'what']);
+    const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, 2), kind = pick(['who', 'what']);
     if (kind === 'who') {
       quiz(this, { ask: fact.who, opts: [fact, ...ds].map(x => { const person = FIGS.find(p => p.id === x.id); return { html: `<span class="word">${L(person.n)}</span>`, ok: x === fact }; }), cls: 'words sents', after: fact.after,
         onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
@@ -60,6 +60,10 @@ G1T({
   id: 'placetime', icon: '🗺️', title: B('Where and When', '어디서 언제'), sub: B('Time and place shaped their lives', '시대와 장소가 삶을 만들었어요'), u: 'Time and place',
   play() {
     const f = pick(FIGS), ds = others(Object.keys(GRPS), f.grp, 2), names = Object.fromEntries(Object.entries(GRPS));
+    if (rnd(2) === 0) {
+      const wrong = shuffle(FIGS.filter(x => x.grp !== f.grp)).slice(0,2);
+      quiz(this, { ask: B(`Whose story is connected to ${GRPS[f.grp].en}?`, `${GRPS[f.grp].ko}: 이곳이나 시대와 관련 있는 인물은 누구일까요?`), opts: [f,...wrong].map((x,i) => ({ html: `<span class="word">${L(x.n)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) }); return;
+    }
     quiz(this, { ask: B(`${f.n.en}'s story is connected to...`, `${f.n.ko}의 이야기와 관련 있는 곳과 때는?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [f.grp, ...ds].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === f.grp })), cls: 'words', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) });
   }
 });
@@ -163,6 +167,9 @@ G1T({
   id: 'savespend', icon: '🐷', title: B('Save or Spend?', '모을까 쓸까'), sub: B('Wants, needs, and saving', '원하는 것, 필요한 것, 저축'), u: 'Money choices',
   play() {
     const lv = lvl('savespend'), qs = [
+      [1, B('You put a dollar in a jar for a future purchase. Are you saving or spending?', '나중에 물건을 사려고 저금통에 1달러를 넣어요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Saving', '모으기'), [tx2('Spending', '쓰기')]],
+      [1, B('You pay for a pencil at a store. Are you saving or spending?', '가게에서 연필 값을 내요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Spending', '쓰기'), [tx2('Saving', '모으기')]],
+      [1, B('There are three children but only two seats. What is limited?', '아이는 세 명인데 자리는 두 개예요. 무엇이 부족할까요?'), tx2('Seats', '자리'), [tx2('Children', '아이'), tx2('Choices of color', '고를 수 있는 색')]],
       [1, B('Two kids want the last toy, but there is only one. This is called ___.', '아이 둘이 마지막 남은 장난감 하나를 갖고 싶어 해요. 이것을 ___(이)라고 해요.'), tx2('scarcity', '부족(희소성)'), [tx2('a service', '서비스'), tx2('a trade', '교환')]],
       [1, B('People earn money by ___.', '사람들은 ___ 돈을 벌어요.'), tx2('working', '일해서'), [tx2('sleeping', '잠만 자서'), tx2('wishing', '소원을 빌어서')]],
       [1, B('Which one is a NEED?', '꼭 필요한 것은 어느 것일까요?'), tx2('food', '음식'), [tx2('a video game', '게임'), tx2('a new toy', '새 장난감')]],
@@ -194,6 +201,8 @@ G1T({
 
 // ---------- patriotism: America and America the Beautiful ----------
 const PATRIOT = [
+  [B('People can show care for each other.', '사람들은 서로를 아끼는 마음을 보여 줄 수 있어요.'), B('Which action shows brotherhood?', '어떤 행동이 형제애를 보여 줄까요?'), tx2('Helping a neighbor', '이웃 돕기'), [tx2('Teasing a neighbor', '이웃 놀리기'), tx2('Leaving someone out', '누군가를 따돌리기')]],
+  [B('Liberty means freedom.', 'liberty는 자유라는 뜻이에요.'), B('What does liberty mean?', 'liberty는 무슨 뜻일까요?'), tx2('Freedom', '자유'), [tx2('A place to borrow books', '책을 빌리는 곳'), tx2('A loud noise', '큰 소리')]],
   [B('"Freedom" means being free to make your own choices.', '"자유(freedom)"는 스스로 선택할 수 있다는 뜻이에요.'), B('Which word means being free to make your own choices?', '스스로 선택할 수 있다는 뜻의 낱말은?'), tx2('freedom', '자유'), [tx2('homework', '숙제'), tx2('traffic', '교통')]],
   [B('"Liberty" is another word for freedom.', '"liberty"는 자유를 뜻하는 또 다른 낱말이에요.'), B('Which word means the same as freedom?', '자유와 뜻이 같은 낱말은?'), tx2('liberty', '자유(liberty)'), [tx2('library', '도서관'), tx2('letter', '편지')]],
   [B('"Pride" is a good feeling about something you care about.', '"자랑스러움(pride)"은 소중한 것에 대해 느끼는 좋은 기분이에요.'), B('Feeling happy and proud of your country is called...', '내 나라를 자랑스럽게 여기는 마음을 무엇이라고 할까요?'), tx2('pride', '자랑스러움'), [tx2('fear', '두려움'), tx2('boredom', '지루함')]],

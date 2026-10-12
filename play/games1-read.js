@@ -297,6 +297,10 @@ G1W({
 
 // ---------- 15. Writing starter (tiles) ----------
 const WSTART = [
+  [1, ['My', 'cat', 'sleeps.'], '🐱', B('My cat sleeps.', '내 고양이가 자요.')],
+  [1, ['We', 'draw', 'pictures.'], '🖍️', B('We draw pictures.', '우리는 그림을 그려요.')],
+  [2, ['I', 'like', 'to', 'draw', 'with', 'crayons.'], '🎨', B('I like to draw with crayons.', '나는 크레용으로 그림 그리기를 좋아해요.')],
+  [2, ['Last,', 'I', 'put', 'my', 'toys', 'away.'], '🧸', B('Last, I put my toys away.', '마지막으로 장난감을 치웠어요.')],
   [1, ['I', 'like', 'peaches.'], '🍑', B('I like peaches.', '나는 복숭아를 좋아해요.')], [1, ['Dogs', 'can', 'run.'], '🐕', B('Dogs can run.', '개는 달릴 수 있어요.')], [1, ['The', 'sun', 'is', 'hot.'], '☀️', B('The sun is hot.', '해는 뜨거워요.')], [1, ['Bees', 'make', 'honey.'], '🐝', B('Bees make honey.', '벌은 꿀을 만들어요.')], [1, ['I', 'see', 'a', 'bird.'], '🐦', B('I see a bird.', '새가 보여요.')], [1, ['We', 'play', 'at', 'school.'], '🏫', B('We play at school.', '우리는 학교에서 놀아요.')],
   [2, ['I', 'like', 'peaches', 'because', 'they', 'are', 'sweet.'], '🍑', B('I like peaches because they are sweet.', '복숭아는 달아서 좋아해요.')], [2, ['Plants', 'need', 'water', 'and', 'light.'], '🌱', B('Plants need water and light.', '식물은 물과 빛이 필요해요.')], [2, ['First,', 'I', 'ate', 'breakfast.'], '🥣', B('First, I ate breakfast.', '먼저 아침을 먹었어요.')], [2, ['Next,', 'I', 'went', 'to', 'school.'], '🚌', B('Next, I went to school.', '다음에 학교에 갔어요.')], [2, ['I', 'think', 'dogs', 'are', 'fun', 'because', 'they', 'play.'], '🐶', B('I think dogs are fun because they play.', '개는 같이 놀아서 재미있다고 생각해요.')], [2, ['Georgia', 'is', 'called', 'the', 'Peach', 'State.'], '🍑', B('Georgia is called the Peach State.', '조지아는 복숭아 주라고 불려요.')]
 ];

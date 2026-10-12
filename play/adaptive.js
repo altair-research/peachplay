@@ -11,12 +11,12 @@ const ADAPT_DOMAINS = {
     { k: 'geo', n: B('Geometry', '도형'), g: { K: ['shapes2d', 'shapes3d'], 1: ['shapeattr', 'shapecompose', 'partition'], 2: ['shapes2', 'symmetry', 'fractions2'], 3: ['polygon3', 'perimeter3', 'fractionline3'] } }
   ],
   read: [
-    { k: 'pa', n: B('Phonological Awareness', '소리 인식'), g: { K: ['rhyme', 'syllable', 'endsound'], 1: ['sylplay', 'onsetrime1', 'phonemes1'], 2: ['poems2'] } },
+    { k: 'pa', n: B('Phonological Awareness', '소리 인식'), g: { K: ['rhyme', 'syllable', 'endsound'], 1: ['sylplay', 'onsetrime1', 'phonemes1'], 2: ['poems2', 'adremove2'], 3: ['adremove3', 'adchange3'] } },
     { k: 'ph', n: B('Phonics', '파닉스'), g: { K: ['letters', 'sounds', 'readmatch'], 1: ['blends', 'longvowels', 'silly', 'twosyl'], 2: ['vowels2', 'syllables2', 'silly2'], 3: ['decode3', 'spell3'] } },
-    { k: 'hfw', n: B('High-Frequency Words', '자주 쓰는 낱말'), g: { K: ['sight'], 1: ['tricky1'], 2: ['tricky2'], 3: ['spell3'] } },
-    { k: 'voc', n: B('Vocabulary', '어휘'), g: { K: ['opposites'], 1: ['wordmeaning'], 2: ['wordnuance2', 'wordparts2'], 3: ['context3', 'wordshade3', 'wordrelation3', 'affix3'] } },
-    { k: 'lit', n: B('Comprehension: Literature', '이해: 이야기'), g: { 1: ['storyq'], 2: ['fables', 'poems2'], 3: ['character3', 'plot3', 'poetry3', 'viewpoint3'] } },
-    { k: 'inf', n: B('Comprehension: Informational Text', '이해: 정보 글'), g: { 1: ['factdet'], 2: ['info2', 'abc2'], 3: ['textstructure3', 'evidence3', 'purpose3', 'source3'] } }
+    { k: 'hfw', n: B('High-Frequency Words', '자주 쓰는 낱말'), g: { K: ['sight', 'adwordsK'], 1: ['tricky1', 'adwords1'], 2: ['tricky2', 'adwords2'], 3: ['adwords3', 'adwordcontext3'] } },
+    { k: 'voc', n: B('Vocabulary', '어휘'), g: { K: ['opposites', 'admeaningK'], 1: ['wordmeaning', 'admeaning1'], 2: ['wordnuance2', 'wordparts2'], 3: ['context3', 'wordshade3', 'wordrelation3', 'affix3'] } },
+    { k: 'lit', n: B('Comprehension: Literature', '이해: 이야기'), g: { K: ['adstoryK', 'adstoryorderK'], 1: ['storyq', 'adstory1'], 2: ['fables', 'poems2'], 3: ['character3', 'plot3', 'poetry3', 'viewpoint3'] } },
+    { k: 'inf', n: B('Comprehension: Informational Text', '이해: 정보 글'), g: { K: ['adinfoK', 'adinfotopicK'], 1: ['factdet', 'adinfo1'], 2: ['info2', 'abc2'], 3: ['textstructure3', 'evidence3', 'purpose3', 'source3'] } }
   ]
 };
 const ADAPT_LEN = { math: 24, read: 24 };

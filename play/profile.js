@@ -11,9 +11,10 @@ const DIAG_IDS_2 = ['count1000', 'place1000', 'compare1000', 'facts20', 'add2dig
   'vowels2', 'tricky2', 'grammar2a', 'fables', 'lifecycle2', 'matter2', 'heroes2', 'gamap2'];
 const DIAG_IDS_K = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'shapes2d', 'pattern',
   'letters', 'sounds', 'rhyme', 'flags', 'address', 'compass', 'living', 'motion'];
-const DIAG_IDS_3 = [];                       // filled when the grade-3 games exist (16 game ids, see docs/grade3-build-plan.md)
+const DIAG_IDS_3 = ['place3', 'round3', 'addsub3', 'array3', 'divide3', 'unitfraction3', 'equivalent3', 'area3', 'elapsed3',
+  'decode3', 'context3', 'evidence3', 'sentence3', 'rocktest3', 'temperature3', 'federal3'];                       // filled when the grade-3 games exist (16 game ids, see docs/grade3-build-plan.md)
 const DIAG_IDS = () => (kidGrade() === '3' && DIAG_IDS_3.length ? DIAG_IDS_3 : kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
-const CHECK_SKIP = ['partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
+const CHECK_SKIP = ['mcubes', 'mpatterns', 'mbaseten', 'mclock', 'mbalance', 'mletters', 'partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
 
 // ---- check history ----

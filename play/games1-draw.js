@@ -12,6 +12,8 @@ const roundShell = (askText, svgHtml, extra = '') => `<div class="prompt">${askT
 
 // ---------- Cut it: draw the lines ----------
 const CUT_SHAPES = { circle: { cx: 50, cy: 50, r: 40 }, rect: { x: 10, y: 20, w: 80, h: 60 } };
+// Aspect ratio changes the positions of fair cuts; color alone is not a new task.
+CUT_SHAPES.randomRect = () => { const [w, h] = pick([[84,36],[84,48],[84,60],[84,72],[72,84],[60,84],[48,84],[36,84]]); return { x: (100-w)/2, y: (100-h)/2, w, h }; };
 const distToLine = (p, a, b) => { const dx = b.x - a.x, dy = b.y - a.y, L2 = Math.hypot(dx, dy) || 1; return Math.abs(dy * (p.x - a.x) - dx * (p.y - a.y)) / L2; };
 const angleDeg = (a, b) => { let d = Math.abs(Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI) % 180; return d; };
 const angleBetween = (l1, l2) => { let d = Math.abs(angleDeg(l1[0], l1[1]) - angleDeg(l2[0], l2[1])); if (d > 90) d = 180 - d; return d; };
@@ -20,7 +22,7 @@ G1({
   play() {
     const lv = lvl('partitiondraw'), shape = pick(['circle', 'rect']), n = lv === 1 ? 2 : pick([2, 4]), name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
     const ask = B(`Cut the ${shape === 'circle' ? 'circle' : 'rectangle'} into ${name.en}. Drag your finger across it to draw a line.`, `${shape === 'circle' ? '동그라미(원)' : '직사각형'}을 ${name.ko}으로 잘라요. 손가락으로 쭉 끌어서 선을 그어요.`);
-    const sh = CUT_SHAPES[shape], center = shape === 'circle' ? { x: sh.cx, y: sh.cy } : { x: sh.x + sh.w / 2, y: sh.y + sh.h / 2 };
+    const sh = shape === 'circle' ? CUT_SHAPES.circle : CUT_SHAPES.randomRect(), center = shape === 'circle' ? { x: sh.cx, y: sh.cy } : { x: sh.x + sh.w / 2, y: sh.y + sh.h / 2 };
     const body = shape === 'circle' ? `<circle cx="${sh.cx}" cy="${sh.cy}" r="${sh.r}" fill="#ffd166" stroke="#1d3557" stroke-width="3"/>` : `<rect x="${sh.x}" y="${sh.y}" width="${sh.w}" height="${sh.h}" rx="3" fill="#ffd166" stroke="#1d3557" stroke-width="3"/>`;
     view().innerHTML = roundShell(L(ask), `<svg id="cutsvg" viewBox="0 0 100 100" class="cutsvg">${body}<g id="cuts" stroke="#ef476f" stroke-width="3" stroke-linecap="round"></g></svg>`, `<div><button class="pill" id="clr">↺ ${L(B('Clear', '지우기'))}</button></div>`);
     const svg = $('#cutsvg'), cuts = $('#cuts'); let lines = [], missed = false, done = false, cur = null, tries = 0;
@@ -46,7 +48,18 @@ G1({
       if (distToLine(center, a, b) > (shape === 'circle' ? 7 : 6)) { missed = true; tries++; const c = $('#cheer'); if (c) c.textContent = T().again; $('#fact').textContent = L(B('A fair cut goes through the middle.', '공평하게 자르려면 한가운데를 지나야 해요.')); draw(); sfx('no'); return; }
       lines.push(clip(snapLine(a, b))); draw();
       const r = ok2(lines);
-      if (r === true) { done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.')); }
+      if (r === true) {
+        // Accept a child's approximate gesture, but display exact equal shares.
+        if (n === 4) {
+          const atAngle = deg => { const a = deg * Math.PI / 180; return snapLine(center, { x: center.x + Math.cos(a), y: center.y + Math.sin(a) }); };
+          const a = angleDeg(lines[0][0], lines[0][1]);
+          if (shape === 'circle') lines = [atAngle(a), atAngle(a + 90)];
+          else if (a < 12 || a > 168 || Math.abs(a - 90) < 12) lines = [atAngle(0), atAngle(90)];
+          else { const d = Math.atan2(sh.h, sh.w) * 180 / Math.PI; lines = [atAngle(d), atAngle(180 - d)]; }
+          draw();
+        }
+        done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같이 2조각으로 나눈 한 조각은 반(2분의 1)이에요.' : '똑같이 4조각으로 나눈 한 조각은 4분의 1이에요.'));
+      }
       else if (r === false) { missed = true; lines = []; draw(); const c = $('#cheer'); if (c) c.textContent = T().again; $('#fact').textContent = L(B('Are all the pieces the same size? Try again!', '조각 크기가 모두 같을까요? 다시 해 봐요!')); sfx('no'); }
     };
     const this_ = this;
@@ -94,7 +107,7 @@ G1({
 registerGame({
   id: 'partitiondraw2', grade: '2', subject: 'math', icon: '✂️', title: B('Cut It Into Equal Shares', '똑같은 조각으로 자르기'), sub: B('Draw lines for halves, thirds and fourths', '선을 그어 반, 3분의 1, 4분의 1로 나누어요'), u: 'Equal shares (draw)', area: B('Grade 2 Math · Equal shares (draw)', '2학년 수학 · 똑같이 나누기(그리기)'),
   play() {
-    const lv = lvl('partitiondraw2'), n = pick(lv === 1 ? [2, 3] : [2, 3, 4]), sh = CUT_SHAPES.rect;
+    const lv = lvl('partitiondraw2'), n = pick(lv === 1 ? [2, 3] : [2, 3, 4]), sh = CUT_SHAPES.randomRect();
     const name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : n === 3 ? B('thirds (3 equal shares)', '3분의 1 (똑같은 3조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
     const ask = B(`Cut the rectangle into ${name.en}. Drag your finger across it to draw each line.${n === 3 ? ' You need 2 lines.' : n === 4 ? ' You need 2 lines.' : ''}`, `직사각형을 잘라요: ${name.ko}. 손가락을 끌어서 선을 그어요.${n === 3 || n === 4 ? ' 선은 2개가 필요해요.' : ''}`);
     view().innerHTML = roundShell(L(ask), `<svg id="cutsvg" viewBox="0 0 100 100" class="cutsvg"><rect x="${sh.x}" y="${sh.y}" width="${sh.w}" height="${sh.h}" rx="3" fill="#ffd166" stroke="#1d3557" stroke-width="3"/><g id="cuts" stroke="#ef476f" stroke-width="3" stroke-linecap="round"></g></svg>`, `<div><button class="pill" id="clr">↺ ${L(B('Clear', '지우기'))}</button></div>`);
@@ -107,7 +120,7 @@ registerGame({
     const win = () => { done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : n === 3 ? 'Three equal shares are thirds.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같이 2조각으로 나눈 한 조각은 반(2분의 1, half)이에요.' : n === 3 ? '똑같이 3조각으로 나눈 한 조각은 3분의 1(a third)이에요.' : '똑같이 4조각으로 나눈 한 조각은 4분의 1(a fourth, a quarter)이에요.')); };
     const onUp = (a, b) => {
       if (Math.hypot(b.x - a.x, b.y - a.y) < 25) { draw(); return; }
-      const k = kind(a, b), tol = 7;
+      const k = kind(a, b), tol = Math.min(7, (k === 'v' ? sh.w : sh.h) / 8);
       if (n === 2) {                                           // any straight cut through the middle
         if (distToLine({ x: cx, y: cy }, a, b) > tol) return fail(B('A fair cut goes through the middle.', '공평하게 자르려면 한가운데를 지나야 해요.'));
         const ang = angleDeg(a, b) * Math.PI / 180, f = 70; lines = [{ a: { x: cx - Math.cos(ang) * f, y: cy - Math.sin(ang) * f }, b: { x: cx + Math.cos(ang) * f, y: cy + Math.sin(ang) * f } }]; draw(); win(); return;

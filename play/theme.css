@@ -1,0 +1,67 @@
+/* Load AFTER a11y.css. Opt-in visual skins; never change layout metrics.
+   theme-dark = Night; theme-system = explicitly follow the OS.
+   Educational SVGs, canvases, maps and colour swatches retain their colours. */
+body:is(.skin-explorer,.theme-dark,.theme-system){
+  --bg:#fff1e6;--card:#ffffff;--ink:#3a2a2a;
+  --theme-shell:var(--ink);--theme-muted:#6b5a5a;--theme-edge:#f0cdb7;
+  --theme-accent:#c94a1f;--theme-focus:#1d4ed8;
+  --theme-track:#f3dcc8;--theme-selected:#ffe8b0;
+  --theme-good:#176b5b;--theme-bad:#b53b25;
+  --theme-heading:#c94a1f;--theme-mode:light;
+}
+body.skin-explorer{
+  --bg:#17354a;--card:#f5fafc;--ink:#183247;
+  --theme-shell:#eef7fa;--theme-muted:#415969;--theme-edge:#7295a5;
+  --theme-accent:#176b70;--theme-focus:#86cfff;
+  --theme-track:#d4e5eb;--theme-selected:#c9e8e5;
+  --theme-heading:#99e4df;
+  --math:#c2570a;--read:#6545bd;--ss:#bd3040;--sci:#176b70;
+}
+/* Explicit Night wins when both opt-in classes are accidentally present. */
+body.theme-dark{
+  --bg:#101c2b;--card:#203247;--ink:#f0f5fa;
+  --theme-shell:#f0f5fa;--theme-muted:#c0cedc;--theme-edge:#688298;
+  --theme-accent:#9de1da;--theme-focus:#86cfff;
+  --theme-track:#344c63;--theme-selected:#39596e;
+  --theme-heading:#ffbe9f;--theme-mode:dark;
+  --math:#ffbe82;--read:#c5b6ff;--ss:#ffadb6;--sci:#9de1da;
+}
+/* OS preference alone does nothing: the user must choose System first. */
+@media (prefers-color-scheme:dark){
+  body.theme-system:not(.theme-dark){
+    --bg:#101c2b;--card:#203247;--ink:#f0f5fa;
+    --theme-shell:#f0f5fa;--theme-muted:#c0cedc;--theme-edge:#688298;
+    --theme-accent:#9de1da;--theme-focus:#86cfff;
+    --theme-track:#344c63;--theme-selected:#39596e;
+    --theme-heading:#ffbe9f;--theme-mode:dark;
+    --math:#ffbe82;--read:#c5b6ff;--ss:#ffadb6;--sci:#9de1da;
+  }
+}
+body:is(.skin-explorer,.theme-dark,.theme-system){background:var(--bg);color:var(--theme-shell);color-scheme:var(--theme-mode)}
+body:is(.skin-explorer,.theme-dark,.theme-system) header{background:var(--bg);border-bottom-color:var(--theme-edge)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.big,.opt,.icon,.pill,.chip,#peaches,#muteBtn,.bubble,.pref,.scorebox,.stk:not(.lock),.bpcard,.logictext,details.faq,details.gi,table,.sbar2,input,textarea,select,.car,.frame,.card.flip,.rprog){
+  background:var(--card);color:var(--ink);border-color:var(--theme-edge);
+  box-shadow:0 4px 0 var(--theme-edge),0 10px 16px -8px #0003;
+}
+body:is(.skin-explorer,.theme-dark,.theme-system) .bubble::before{border-right-color:var(--card)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.tag,.note,.note2,.hint,.fact,.ver,.adrow small,.bphint,.bnextbox){color:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.big small,.pref .ps,.rprog em,details.faq p){color:var(--theme-muted)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .toprow .big.surprise .bt small{color:var(--theme-muted)}
+body:is(.skin-explorer,.theme-dark,.theme-system) input::placeholder,
+body:is(.skin-explorer,.theme-dark,.theme-system) textarea::placeholder{color:var(--theme-muted);opacity:1}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(h1,.subj h2){color:var(--theme-heading)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.next,.say){background:#176b70;color:#fff;border-color:var(--theme-edge);box-shadow:0 4px 0 var(--theme-edge)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.cheer,.good,.bigscore,.letter,.bignum,.slot,.warn){color:var(--theme-heading)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .pref.on{border-color:var(--theme-accent)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .pref.on .ps{color:var(--theme-accent)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.goalbar,.adbar,.progress,#sbar,.bar2,.stk.lock){background:var(--theme-track);color:var(--ink)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.progress div,.goalbar i,.adbar i,#sbar i){background:var(--theme-selected)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.opt.picked,.opt.idea.picked){background:var(--theme-selected);color:var(--ink)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .opt.ok{background:var(--theme-good);color:#fff;border-color:var(--theme-good)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .opt.no{background:var(--theme-bad);color:#fff;border-color:var(--theme-bad)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .fav{color:var(--theme-accent)}
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(button,input,textarea,select,summary):focus-visible{outline-color:var(--theme-focus);box-shadow:0 0 0 3px #102b45}
+/* These teaching surfaces deliberately stay light, including their labels. */
+body:is(.skin-explorer,.theme-dark,.theme-system) :is(.map,.mc,.cell,.maze,.rgrid,.rc,.sdg,.sdc,.ac,.mxc,.cbox,.gstage){color:#183247}
+/* Shape only: preserve touch areas, border widths, fonts and spacing. */
+body.skin-explorer :is(.big,.opt,.icon,.pill,.bubble,.pref,.scorebox,.bpcard,details.faq,details.gi){border-radius:12px}

@@ -17,6 +17,10 @@ G2S({
   id: 'moon2', icon: '🌙', title: B('Moon Shapes', '달의 모양'), sub: B('Moon phases and where moonlight comes from', '달의 모양과 달빛'), u: 'Sun, Moon and Stars',
   play() {
     const lv = lvl('moon2'), kind = pick(lv === 1 ? ['name', 'name', 'light'] : ['name', 'name', 'light', 'cycle']);
+    if (rnd(3) === 0) {
+      const ph = pick([0,2,4]);
+      quiz(this, { ask: B(`Which picture shows a ${MOON_NAME[ph].en}?`, `${MOON_NAME[ph].ko}에 알맞은 그림은 무엇일까요?`), opts: [0,2,4].map(p => ({ html: moonSvg(p), ok: p === ph })), cls: 'shapes', after: B('We see different amounts of the sunlit part of the Moon.', '햇빛을 받는 달의 부분이 보이는 정도가 달라요.') }); return;
+    }
     if (kind === 'name') {
       const ph = pick(lv === 1 ? [0, 2, 4] : [0, 1, 2, 3, 4]);
       quiz(this, { ask: B('What shape of the Moon do you see?', '이 달은 어떤 모양일까요?'), show: moonSvg(ph), opts: wOpts(MOON_NAME[ph], others(MOON_NAME.filter((_, i) => lv === 2 || [0, 2, 4].includes(i)), MOON_NAME[ph], 2)), cls: 'words', after: B('The Sun always lights half of the Moon. From Earth we see more or less of that lit half.', '해는 늘 달의 반쪽을 비춰요. 지구에서는 그 밝은 쪽이 더 보이거나 덜 보여요.') });
@@ -41,6 +45,13 @@ G2S({
   id: 'sky2', icon: '☀️', title: B('Sun and Stars', '해와 별'), sub: B('Shadows, sunrise, sunset and stars', '그림자, 해 뜨고 해 지는 모습, 별'), u: 'Sun, Moon and Stars',
   play() {
     const lv = lvl('sky2'), kind = pick(lv === 1 ? ['sunstar', 'rise', 'shadow', 'night'] : ['sunstar', 'rise', 'shadow', 'shadow', 'night', 'const']);
+    if (rnd(3) === 0) {
+      const q = pick([
+        [B('Which star is closest to Earth?', '지구에서 가장 가까운 별은 무엇일까요?'), B('The Sun', '해'), [B('The Moon', '달'), B('Mars', '화성')]],
+        [B('The Sun is high in the sky. Is a tree shadow shorter or longer than when the Sun is low?', '해가 높이 떠 있어요. 낮게 떠 있을 때보다 나무 그림자가 짧을까요, 길까요?'), B('Shorter', '짧아요'), [B('Longer', '길어요')]]
+      ]);
+      quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] }); return;
+    }
     if (kind === 'sunstar') {
       quiz(this, { ask: B('What is the Sun?', '해는 무엇일까요?'), opts: wOpts(B('A star', '별'), [B('A planet', '행성'), B('A moon', '위성(달)')]), cls: 'words', after: B('The Sun is a star. It looks big and bright because it is the closest star to Earth.', '해는 별이에요. 지구에서 가장 가까운 별이라서 크고 밝게 보여요.') });
     } else if (kind === 'rise') {

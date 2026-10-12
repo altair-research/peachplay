@@ -61,14 +61,19 @@ function goalHtml() {
   return `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
 }
 const PREFS = [['sfxOff', '🎵', B('Sound effects', '효과음'), true], ['voiceOff', '🗣️', B('Read-aloud voice', '읽어 주는 목소리'), true], ['calm', '🌙', B('Less motion (no confetti or shaking)', '움직임 줄이기 (색종이·흔들림 없음)'), false], ['readable', '🔤', B('Easy-to-read letters', '읽기 쉬운 글꼴'), false]];
-function applyPrefs() { document.body.classList.toggle('calm', !!S.calm); document.body.classList.toggle('readable', !!S.readable); }
+function applyPrefs() {
+  document.body.classList.toggle('calm', !!S.calm); document.body.classList.toggle('readable', !!S.readable);
+  document.body.classList.toggle('skin-explorer', S.skin === 'explorer'); document.body.classList.toggle('theme-dark', S.theme === 'dark'); document.body.classList.toggle('theme-system', S.theme === 'system');
+}
+const LOOKS = [['skin', '🎨', B('Look', '스킨'), [['peachy', B('Peachy', '피치')], ['explorer', B('Explorer (for older kids)', '탐험가 (큰 아이용)')]]], ['theme', '🌓', B('Screen', '화면 모드'), [['light', B('Light', '밝게')], ['dark', B('Night', '어둡게')], ['system', B('Follow device', '기기 설정 따르기')]]]];
 function settings() {
   // the first two are stored as "off" switches so that older saves keep sound on
   const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
-    <div class="prefs">${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
+    <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
     <div><button class="next" id="b">${T().back}</button></div>`;
-  $$('.pref').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(); });
+  $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(); });
+  $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(); });
   $('#b').onclick = home; window.scrollTo(0, 0);
 }
 function continueHtml() {
@@ -164,5 +169,11 @@ $('#rotok').onclick = () => document.body.classList.add('landok');
 $('#profBtn').onclick = () => { quitDiag(); profilesScreen(); };
 $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
 $('#langBtn').onclick = () => { S.lang = S.lang === 'en' ? 'ko' : 'en'; save(); quitDiag(); home(); };
-renderPeaches(); renderProfBtn(); S.introSeen ? home() : intro();
+renderPeaches(); renderProfBtn();
+// Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language.
+(() => {
+  const q = new URLSearchParams(location.search), g = q.get('game') && gameById(q.get('game')), lg = q.get('lang');
+  if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
+  if (g) { home(); launch(g); } else if (S.introSeen) home(); else intro();
+})();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});

@@ -58,6 +58,9 @@ G1S({
   id: 'precip', icon: '🌦️', title: B('Weather Pictures', '그림으로 보는 날씨'), sub: B('Rain, snow, clouds, wind, and sunshine', '비, 눈, 구름, 바람, 맑은 하늘'), u: 'Weather',
   play() {
     const w = pick(PRECIP_PICS), choices = [w, ...others(PRECIP_PICS, w, 2)];
+    if (rnd(2) === 0) {
+      quiz(this, { ask: B('What weather does this picture show?', '그림에 나타난 날씨는 무엇일까요?'), show: precipPicture(w), opts: choices.map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === w })), cls: 'words', after: w.detail, vocab: w.n.en }); return;
+    }
     quiz(this, { ask: lvl('precip') === 1 ? w.ask : w.clue, opts: choices.map(x => ({ html: precipPicture(x), ok: x === w })), cls: 'shapes', after: w.detail, vocab: w.n.en,
       // Reserve space for the engine's fixed Next button; this node is round-local.
       onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
@@ -91,6 +94,10 @@ G1S({
   id: 'magnets1', icon: '🧲', title: B('Magnet Power', '자석의 힘'), sub: B('Attract and repel', '끌어당기고 밀어내요'), u: 'Magnets',
   play() {
     const lv = lvl('magnets1'), kind = pick(lv === 1 ? ['pick', 'pick', 'uses'] : ['pick', 'poles', 'poles', 'uses', 'iron']);
+    if (rnd(3) === 0) {
+      const material = pick([B('wood', '나무'), B('paper', '종이'), B('plastic', '플라스틱')]);
+      quiz(this, { ask: B(`Which material will a magnet pull on: iron or ${material.en}?`, `철과 ${material.ko} 중 자석이 끌어당기는 재료는 무엇일까요?`), opts: sOpts(B('iron', '철'), [material]), cls: 'words', after: B('A magnet attracts iron.', '자석은 철을 끌어당겨요.') }); return;
+    }
     if (kind === 'pick') {
       const y = pick(MAG_YES), ds = shuffle(MAG_NO).slice(0, 2); quiz(this, { ask: B('Which one will a magnet pick up?', '자석이 끌어당기는 것은?'), show: '<span class="emo">🧲</span>', opts: [y, ...ds].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B(`A magnet pulls on ${y[1].en}. It has iron in it.`, `자석은 ${y[1].ko}에 붙어요. 철이 들어 있어요.`), vocab: 'attract' });
     } else if (kind === 'iron') {
@@ -113,6 +120,10 @@ G1S({
   id: 'light1', icon: '🔦', title: B('Light and Shadows', '빛과 그림자'), sub: B('Sources of light, big and small shadows', '빛을 내는 것, 큰 그림자와 작은 그림자'), u: 'Light',
   play() {
     const lv = lvl('light1'), kind = pick(lv === 1 ? ['source', 'source', 'see'] : ['source', 'see', 'shadow', 'shadow', 'dir']);
+    if (rnd(3) === 0) {
+      const object = pick([B('a book', '책'), B('a ball', '공'), B('a chair', '의자')]);
+      quiz(this, { ask: B(`Can you see ${object.en} in a room with no light at all?`, `빛이 전혀 없는 방에서 ${object.ko}의 모습을 볼 수 있을까요?`), opts: sOpts(B('No, light is needed.', '아니요, 빛이 필요해요.'), [B('Yes, even with no light.', '네, 빛이 전혀 없어도 보여요.')]), cls: 'words sents', after: B('Light must reach our eyes for us to see an object.', '물체를 보려면 빛이 우리 눈에 들어와야 해요.') }); return;
+    }
     if (kind === 'source') {
       const yes = [['☀️', B('sun', '해')], ['💡', B('lamp', '전등')], ['🔦', B('flashlight', '손전등')], ['🕯️', B('candle', '촛불')]], no = [['📖', B('book', '책')], ['🪨', B('rock', '돌')], ['⚽', B('ball', '공')], ['🪑', B('chair', '의자')]], y = pick(yes), ds = shuffle(no).slice(0, 2);
       quiz(this, { ask: B('Which one is a source of light? It makes its own light.', '빛을 내는 것은 어느 것일까요? 스스로 빛을 만들어요.'), opts: [y, ...ds].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B(`A ${y[1].en} gives off light.`, `${y[1].ko}: 스스로 빛을 내요.`), vocab: 'light' });
@@ -131,6 +142,10 @@ G1S({
   id: 'sound1', icon: '🔔', title: B('Sound and Vibration', '소리와 진동'), sub: B('Shaking makes sound', '떨리면 소리가 나요'), u: 'Sound',
   play() {
     const lv = lvl('sound1'), kind = pick(lv === 1 ? ['vib', 'vib', 'source'] : ['vib', 'source', 'signal', 'signal', 'feel']);
+    if (rnd(2) === 0) {
+      const source = pick([B('a drum being hit', '두드리는 북'), B('a plucked guitar string', '튕긴 기타 줄'), B('a ringing bell', '울리는 종'), B('a plucked rubber band', '튕긴 고무줄')]);
+      quiz(this, { ask: B(`What makes the sound in ${source.en}?`, `${source.ko}: 무엇 때문에 소리가 날까요?`), opts: sOpts(B('Vibration', '진동(떨림)'), [B('Freezing', '얼어붙기'), B('Changing color', '색 바뀌기')]), cls: 'words', after: B('Vibrating objects can make sounds.', '물체가 떨리면 소리가 날 수 있어요.') }); return;
+    }
     if (kind === 'vib') {
       quiz(this, { ask: B('Sound is made when something ___ back and forth very fast.', '무언가가 아주 빠르게 앞뒤로 ___ 소리가 만들어져요.'), show: '<span class="emo">🎸〰️</span>', opts: sOpts(tx('vibrates (shakes)', '떨리면 (진동하면)'), [tx('freezes', '얼면'), tx('melts', '녹으면')]), cls: 'words', after: B('A vibration makes sound.', '진동이 소리를 만들어요.'), vocab: 'vibrate' });
     } else if (kind === 'source') {

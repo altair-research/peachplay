@@ -30,6 +30,7 @@ G2SS({
 
 // ---------- 2. Creek and Cherokee peoples ----------
 const NATIONS = [
+  { q: B('Which statement about Creek and Cherokee people is true today?', '오늘날 크리크족과 체로키족에 대해 맞는 말은?'), r: B('They have communities today.', '오늘날에도 공동체를 이루며 살아요.'), w: [B('They lived only long ago.', '아주 먼 옛날에만 살았어요.'), B('They are imaginary people.', '이야기 속 상상의 사람들이에요.')] },
   { q: B('Which Native American people lived in the mountains of north Georgia?', '조지아 북쪽 산이 많은 곳에 살았던 아메리카 원주민은 누구일까요?'), r: B('The Cherokee', '체로키족'), w: [B('The Creek', '크리크족')] },
   { q: B('Who made a writing system for the Cherokee language?', '체로키 말을 적는 글자를 만든 사람은?'), r: B('Sequoyah', '세쿼이아'), w: [B('Tomochichi', '토모치치'), B('Oglethorpe', '오글소프')] },
   { q: B('Tomochichi was a leader of which people?', '토모치치는 어느 민족의 지도자였나요?'), r: B('The Creek (Yamacraw)', '크리크족(야마크로)'), w: [B('The Cherokee', '체로키족')] },
@@ -41,7 +42,7 @@ const NATIONS = [
 G2SS({
   id: 'nations2', icon: '🪶', title: B('Creek and Cherokee', '크리크족과 체로키족'), sub: B('The first peoples of Georgia', '조지아의 첫 주민들'), u: 'Native Peoples',
   play() {
-    const lv = lvl('nations2'), n = pick(lv === 1 ? NATIONS.slice(0, 5) : NATIONS);
+    const n = pick(NATIONS);
     quiz(this, { ask: n.q, opts: sw(n.r, n.w.length < 2 ? [...n.w, B(n.w[0].en === 'The Creek' ? 'The Spanish' : 'Nobody', n.w[0].en === 'The Creek' ? '스페인 사람들' : '아무도 없어요')] : n.w), cls: 'words sents', after: B(`${n.r.en}.`, `${n.r.ko}.`) });
   }
 });
@@ -114,7 +115,7 @@ const GOV = [
 G2SS({
   id: 'gov2', icon: '🏛️', title: B('Leaders and Citizens', '지도자와 시민'), sub: B('Mayor, governor, President, laws, rights, responsibilities', '시장, 주지사, 대통령, 법, 권리와 책임'), u: 'Government',
   play() {
-    const lv = lvl('gov2'), g = pick(lv === 1 ? GOV.slice(0, 7) : GOV);
+    const lv = lvl('gov2'), g = pick(lv === 1 ? GOV.slice(0, 8) : GOV);
     quiz(this, { ask: g.q, opts: sw(g.r, g.w.length < 2 ? [...g.w, B('A stranger', '모르는 사람')] : g.w), cls: 'words sents', after: B(`${g.r.en}.`, `${g.r.ko}.`) });
   }
 });
@@ -148,6 +149,10 @@ G2SS({
   id: 'choices2', icon: '🪙', title: B('Choices and Saving', '선택과 저축'), sub: B('Scarcity, trade-offs, earning and saving', '부족함, 선택의 대가, 벌기와 저축'), u: 'Economics',
   play() {
     const lv = lvl('choices2'), kind = pick(lv === 1 ? ['scar', 'save', 'earn'] : ['scar', 'trade', 'trade', 'save', 'earn']);
+    if (rnd(3) === 0) {
+      const price = 5 + rnd(6), saved = 1 + rnd(price - 1), need = price - saved;
+      quiz(this, { ask: B(`You are saving for a $${price} toy. You have $${saved}. How many more dollars do you need?`, `${price}달러짜리 장난감을 사려고 ${saved}달러를 모았어요. 몇 달러를 더 모아야 할까요?`), opts: numO(need, [need-1,need+1,price], 0, 12), after: B(`${price} − ${saved} = ${need} more dollars.`, `${price} − ${saved} = ${need}. ${need}달러를 더 모아요.`) }); return;
+    }
     const quizOf = (q) => quiz(this, { ask: q[0], opts: sw(q[1], q[2]), cls: 'words sents', after: q[3] || B(`${q[1].en}.`, `${q[1].ko}.`) });
     if (kind === 'scar') quizOf(pick([[B('You want a toy and a snack, but you only have enough money for one. What is this called?', '장난감과 간식을 사고 싶지만 돈이 한 가지만 살 만큼만 있어요. 이것을 무엇이라 할까요?'), B('Scarcity (not enough for everything)', '부족함(모든 것을 가질 수 없음)'), [B('A gift', '선물'), B('A holiday', '휴일')], B('Scarcity means we cannot have everything we want, so we must choose.', '부족하다는 것은 원하는 것을 모두 가질 수 없어서 골라야 한다는 뜻이에요.')],
       [B('Why must people make choices?', '사람들은 왜 선택을 해야 할까요?'), B('Because resources and money are limited', '자원과 돈이 한정되어 있어서'), [B('Because choices are fun', '선택이 재미있어서'), B('Because stores are closed', '가게가 닫혀 있어서')]]]));
@@ -173,7 +178,7 @@ const SYMS = [
 G2SS({
   id: 'symbols2', icon: '🦅', title: B('Symbols', '상징'), sub: B('Georgia and United States symbols', '조지아와 미국의 상징'), u: 'Citizenship',
   play() {
-    const lv = lvl('symbols2'), s = pick(lv === 1 ? SYMS.slice(0, 7) : SYMS);
+    const lv = lvl('symbols2'), s = pick(lv === 1 ? SYMS.slice(0, 8) : SYMS);
     quiz(this, { ask: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)} is ...`, `${s.n.ko}: 알맞은 설명을 골라요.`), show: `<span class="emo">${s.e}</span>`, opts: [s, ...others(SYMS, s, 2)].map((x, i) => ({ html: `<span class="word">${L(x.s)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${s.n.en[0].toUpperCase() + s.n.en.slice(1)}: ${s.s.en}.`, `${s.n.ko}: ${s.s.ko}.`) });
   }
 });

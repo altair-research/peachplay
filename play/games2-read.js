@@ -150,6 +150,13 @@ G2W({
 
 // ---------- 10. Build longer sentences (tiles) ----------
 const SENT2 = [
+  [1, ['The', 'small', 'duck', 'swims', 'slowly.'], '🦆', B('The small duck swims slowly.', '작은 오리가 천천히 헤엄쳐요.')],
+  [1, ['My', 'friend', 'reads', 'a', 'book.'], '📖', B('My friend reads a book.', '내 친구가 책을 읽어요.')],
+  [1, ['We', 'eat', 'lunch', 'at', 'home.'], '🥣', B('We eat lunch at home.', '우리는 집에서 점심을 먹어요.')],
+  [1, ['A', 'green', 'frog', 'jumps', 'high.'], '🐸', B('A green frog jumps high.', '초록 개구리가 높이 뛰어요.')],
+  [2, ['The', 'happy', 'child', 'carried', 'a', 'blue', 'bag.'], '🎒', B('The happy child carried a blue bag.', '기분 좋은 아이가 파란 가방을 들고 갔어요.')],
+  [2, ['Before', 'bed,', 'I', 'brush', 'my', 'teeth.'], '🪥', B('Before bed, I brush my teeth.', '잠자기 전에 이를 닦아요.')],
+  [2, ['Our', 'class', 'painted', 'a', 'boat', 'together.'], '⛵', B('Our class painted a boat together.', '우리 반은 함께 배를 그렸어요.')],
   [1, ['The', 'big', 'dog', 'runs', 'fast.'], '🐕', B('The big dog runs fast.', '큰 개가 빨리 달려요.')], [1, ['We', 'play', 'at', 'the', 'park.'], '🛝', B('We play at the park.', '우리는 공원에서 놀아요.')], [1, ['My', 'cat', 'sleeps', 'on', 'the', 'bed.'], '🐱', B('My cat sleeps on the bed.', '내 고양이는 침대에서 자요.')], [1, ['I', 'see', 'a', 'red', 'bird.'], '🐦', B('I see a red bird.', '빨간 새가 보여요.')],
   [2, ['The', 'little', 'frog', 'jumped', 'into', 'the', 'pond.'], '🐸', B('The little frog jumped into the pond.', '작은 개구리가 연못으로 뛰어들었어요.')], [2, ['After', 'school,', 'we', 'ride', 'our', 'bikes.'], '🚲', B('After school, we ride our bikes.', '방과 후에 우리는 자전거를 타요.')], [2, ['Peaches', 'grow', 'on', 'trees', 'in', 'Georgia.'], '🍑', B('Peaches grow on trees in Georgia.', '조지아에서는 복숭아가 나무에서 자라요.')], [2, ['The', 'sun', 'shines', 'brightly', 'in', 'summer.'], '☀️', B('The sun shines brightly in summer.', '여름에는 해가 환하게 빛나요.')], [2, ['Mom', 'and', 'I', 'baked', 'a', 'sweet', 'pie.'], '🥧', B('Mom and I baked a sweet pie.', '엄마와 나는 달콤한 파이를 구웠어요.')]
 ];
@@ -204,6 +211,8 @@ G2R({
 
 // ---------- 13. Words with more than one meaning, homophones, nuance ----------
 const WN2 = [
+  [1, B('"I wear a ring on my finger." What is a ring here?', '"I wear a ring on my finger."에서 ring은 무엇일까요?'), B('jewelry', '반지'), [B('a bell sound', '종소리')]],
+  [1, B('"I heard the bell ring." What does ring mean here?', '"I heard the bell ring."에서 ring은 무슨 뜻일까요?'), B('make a sound', '소리를 내다'), [B('jewelry on a finger', '손가락에 끼는 반지')]],
   [1, B('"The bat flew out of the cave." What is a bat here?', '"The bat flew out of the cave."에서 bat은 무엇일까요?'), B('an animal', '동물'), [B('a baseball tool', '야구 방망이')]], [1, B('"I hit the ball with a bat." What is a bat here?', '"I hit the ball with a bat."에서 bat은 무엇일까요?'), B('a baseball tool', '야구 방망이'), [B('an animal', '동물')]],
   [1, B('"The dog\'s bark is loud." What is bark here?', '"The dog\'s bark is loud."에서 bark는 무엇일까요?'), B('a dog sound', '개가 짖는 소리'), [B('the outside of a tree', '나무껍질')]], [1, B('"The bark of the tree is rough." What is bark here?', '"The bark of the tree is rough."에서 bark는 무엇일까요?'), B('the outside of a tree', '나무껍질'), [B('a dog sound', '개가 짖는 소리')]],
   [1, B('Which word means the same as "shout"?', '"shout"와 뜻이 비슷한 낱말은?'), B('yell', '소리치다'), [B('whisper', '속삭이다'), B('hum', '흥얼거리다')]], [1, B('Which word is the opposite of "whisper"?', '"whisper"의 반대에 가까운 낱말은?'), B('shout', '소리치다'), [B('murmur', '중얼거리다'), B('mumble', '웅얼거리다')]],
@@ -222,6 +231,7 @@ G2R({
 
 // ---------- 14. Paragraph skills ----------
 const PARAS = [
+  [B('I enjoy making art.', '나는 미술 활동을 좋아해요.'), [B('I draw boats with crayons.', '크레용으로 배를 그려요.'), B('I paint bright flowers.', '화사한 꽃을 색칠해요.')], B('That is why I enjoy making art.', '그래서 나는 미술 활동을 좋아해요.')],
   [B('Dogs make great pets.', '개는 훌륭한 반려동물이에요.'), [B('They are loyal and love to play.', '충직하고 노는 것을 좋아해요.'), B('They need food, water, and walks.', '먹이, 물, 산책이 필요해요.')], B('That is why many families love dogs.', '그래서 많은 가족이 개를 좋아해요.')],
   [B('Recess is my favorite part of school.', '학교에서 쉬는 시간이 가장 좋아요.'), [B('I play tag with my friends.', '친구들과 술래잡기를 해요.'), B('I swing as high as I can.', '그네를 힘껏 높이 타요.')], B('Recess makes my day fun.', '쉬는 시간 덕분에 하루가 즐거워요.')],
   [B('Peaches are a special fruit in Georgia.', '복숭아는 조지아의 특별한 과일이에요.'), [B('Many peach trees grow on farms.', '많은 복숭아나무가 농장에서 자라요.'), B('People pick peaches in summer.', '사람들은 여름에 복숭아를 따요.')], B('Georgia is proud of its peaches.', '조지아는 복숭아를 자랑스러워해요.')]

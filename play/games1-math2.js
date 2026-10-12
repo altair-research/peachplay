@@ -75,6 +75,12 @@ const COMPS = [
   { shape: 'hexagon', n: B('hexagon', '육각형'), parts: [0, 1, 2, 3, 4, 5].map(hexPart), what: B('6 triangles', '삼각형 6개') }
 ];
 COMPS[5].circle = true;
+// Different partitions, not shuffled copies of the same pieces.
+COMPS.push(
+  { shape: 'square rectangles', n: B('square', '정사각형'), parts: [{ pts: '10,10 90,10 90,50 10,50', c: [50,30] }, { pts: '10,50 90,50 90,90 10,90', c: [50,70] }], what: B('2 rectangles', '직사각형 2개') },
+  { shape: 'triangle halves', n: B('triangle', '삼각형'), parts: [{ pts: '50,10 50,90 10,90', c: [37,63] }, { pts: '50,10 90,90 50,90', c: [63,63] }], what: B('2 triangles', '삼각형 2개') },
+  { shape: 'trapezoid halves', n: B('trapezoid', '사다리꼴'), parts: [{ pts: '30,20 50,20 50,80 10,80', c: [35,50] }, { pts: '50,20 70,20 90,80 50,80', c: [65,50] }], what: B('2 trapezoids', '사다리꼴 2개') }
+);
 const partEl = (p, fill, tf = '') => (p.pts ? `<polygon points="${p.pts}"` : `<path d="${p.d}"`) + ` fill="${fill}" stroke="#fff" stroke-width="2.5" stroke-linejoin="round" ${tf ? `transform="${tf}"` : ''}/>`;
 const compWhole = (cp) => `<svg viewBox="0 0 100 100" class="comp">${cp.parts.map((p, i) => partEl(p, COMP_COL[i % 6])).join('')}</svg>`;
 const compApart = (cp) => `<svg viewBox="0 0 100 100" class="comp">${cp.parts.map((p, i) => { const [cx, cy] = p.c, tx = (cx - 50) * 0.55, ty = (cy - 50) * 0.55; return partEl(p, COMP_COL[i % 6], `translate(${tx.toFixed(1)} ${ty.toFixed(1)}) translate(${cx} ${cy}) scale(.78) translate(${-cx} ${-cy})`); }).join('')}</svg>`;
@@ -85,9 +91,9 @@ G1({
     const sameShape = (a, b) => a.n.en === b.n.en && ((a.circle ? 1 : 0) === (b.circle ? 1 : 0)) || (a.circle && b.circle) || a.shape === b.shape;
     const other = (n) => shuffle(COMPS.filter(c => !sameShape(c, cp) && c.what.en !== cp.what.en)).filter((c, i, ar) => ar.findIndex(d => d.n.en === c.n.en && d.shape.slice(0, 6) === c.shape.slice(0, 6)) === i).slice(0, n);
     if (kind === 'make') {
-      const ds = other(2); quiz(this, { ask: B('What shape can you make with these pieces?', '이 조각들로 어떤 모양을 만들 수 있을까요?'), show: compApart(cp), opts: [cp, ...ds].map((c, i) => ({ html: compWhole(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make a ${L(cp.n)}.`, `${cp.what.ko}로 ${cp.n.ko}을 만들 수 있어요.`) });
+      const ds = other(2); quiz(this, { ask: B('Join these pieces without turning or rearranging them. Which picture matches?', '조각을 돌리거나 자리를 바꾸지 않고 붙여요. 알맞은 그림은?'), show: compApart(cp), opts: [cp, ...ds].map((c, i) => ({ html: compWhole(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make a ${L(cp.n)}.`, `${cp.what.ko}로 ${cp.n.ko}을 만들 수 있어요.`) });
     } else if (kind === 'whatpieces') {
-      const ds = other(2); quiz(this, { ask: B('Which pieces make this shape?', '어떤 조각들로 이 모양을 만들까요?'), show: compWhole(cp), opts: [cp, ...ds].map((c, i) => ({ html: compApart(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make this shape.`, `${cp.what.ko}로 이 모양을 만들어요.`) });
+      const ds = other(2); quiz(this, { ask: B('Which pieces match the dividing lines in this picture?', '이 그림의 나눔선과 딱 맞는 조각들은?'), show: compWhole(cp), opts: [cp, ...ds].map((c, i) => ({ html: compApart(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make this shape.`, `${cp.what.ko}로 이 모양을 만들어요.`) });
     } else {
       const n = cp.parts.length; quiz(this, { ask: B('How many pieces make this shape?', '이 모양은 조각이 몇 개로 이루어져 있을까요?'), show: compWhole(cp), opts: numO(n, [n - 1, n + 1, 2, 4].filter(v => v !== n && v > 0), 1, 8), after: B(`${n} pieces: ${L(cp.what)}.`, `조각 ${n}개: ${cp.what.ko}.`) });
     }
@@ -201,6 +207,10 @@ G1({
   id: 'coins1', icon: '🪙', title: B('Coins and Quarters', '동전과 쿼터'), sub: B('Which is worth more?', '어느 쪽 값이 더 클까?'), u: 'Money',
   play() {
     const lv = lvl('coins1'), kind = pick(lv === 1 ? ['quarter', 'size', 'worth'] : ['compare', 'compare', 'size', 'worth', 'equal']);
+    if (rnd(3) === 0) {
+      const k = pick(['penny','nickel','dime','quarter']);
+      quiz(this, { ask: B(`Which coin is worth ${COINS[k].v} cents?`, `${COINS[k].v}센트인 동전은 무엇일까요?`), opts: ['penny','nickel','dime','quarter'].map(c => ({ html: coinSvg(c), label: COINS[c].n, ok: c === k })), cls: 'shapes', after: B(`A ${COINS[k].n.en} is worth ${COINS[k].v} cents.`, `${COINS[k].n.ko}의 값은 ${COINS[k].v}센트예요.`) }); return;
+    }
     if (kind === 'quarter') {
       quiz(this, { ask: B('How many cents is a QUARTER worth?', '쿼터(quarter)는 몇 센트일까요?'), askSay: B('How many cents is a quarter worth?', '쿼터는 몇 센트일까요?'), show: coinSvg('quarter'), opts: numO(25, [10, 5, 20, 15], 1, 30).map(o => ({ html: o.html.replace(/>(\d+)</, '>$1¢<'), ok: o.ok })), after: B('A quarter is worth 25 cents.', '쿼터는 25센트예요.'), vocab: 'A quarter is worth 25 cents.' });
     } else if (kind === 'size') {

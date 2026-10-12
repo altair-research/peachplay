@@ -1,6 +1,16 @@
 (() => {
 'use strict';
-const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'math',icon:'🧮',title:B(en,ko),sub:B('Explore numbers and explain your thinking','수를 살펴보고 생각을 설명해요'),area:B(`Grade 3 Math · ${code}`,`3학년 수학 · ${code}`),play(){quiz(this,make(lvl(id)));}});
+// Keep ten successive rounds distinct without changing the shared engine.
+const recentItems = new Map();
+const fresh = (id, level, make) => {
+ const key = `${id}:${level}:${S.lang}`, seen = recentItems.get(key) || [];
+ for (let attempt = 0; attempt < 2048; attempt++) {
+  const it = make(level), signature = JSON.stringify([it.ask.en, it.show || '', it.opts.filter(o=>o.ok).map(o=>o.html)]);
+  if (!seen.includes(signature)) { seen.push(signature); if (seen.length > 9) seen.shift(); recentItems.set(key, seen); return it; }
+ }
+ throw new Error(`Insufficient distinct questions: ${id}/${level}`);
+};
+const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'math',icon:'🧮',title:B(en,ko),sub:B('Explore numbers and explain your thinking','수를 살펴보고 생각을 설명해요'),area:B(`Grade 3 Math · ${code}`,`3학년 수학 · ${code}`),play(){quiz(this,fresh(id,lvl(id),make));}});
 const nums=(a,w=[])=>[...new Set([a,...w,a+1,a+10,Math.max(0,a-1)])].filter(n=>Number.isInteger(n)&&n>=0).slice(0,3).map(n=>({html:`<span class="num">${n}</span>`,ok:n===a}));
 const panel=s=>`<div class="g3-math-model">${s}</div>`;
 const eq=s=>panel(`<div class="g3-equation">${s}</div>`);

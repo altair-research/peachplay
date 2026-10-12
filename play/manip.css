@@ -1,0 +1,45 @@
+/* Scoped workbenches. Load after ui.css; no styling leaks into other games. */
+#view:has(> .m-play){padding:4px 8px 8px;max-width:760px}
+.m-play{--m-ink:#344958;display:flex;flex-direction:column;gap:3px;color:var(--m-ink);width:100%;max-width:620px;margin:auto;min-height:0}
+.m-play .m-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:20px}
+.m-play .m-btn{min-width:44px;min-height:44px;padding:4px 8px;border:2px solid #c4cdd5;border-radius:12px;background:#fff;color:#273b4a;font-size:16px;line-height:1.15;touch-action:none;user-select:none}
+.m-play .m-btn:disabled{opacity:.45}
+.m-play .m-btn[aria-pressed="true"]{border-color:#1d4ed8;box-shadow:inset 0 0 0 1px #1d4ed8;background:#eaf1ff}
+.m-play .m-btn:focus-visible{outline:3px solid #1d4ed8;outline-offset:2px}
+.m-play .m-modes,.m-play .m-footer{display:flex;gap:6px;justify-content:center}
+.m-play .m-modes>.m-btn,.m-play .m-footer>.m-btn{flex:1}
+.m-play .m-prompt{font-size:18px;line-height:1.2;min-height:44px;margin:0;display:flex;align-items:center;justify-content:center}
+.m-play .m-work{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
+.m-play .m-meter{font-size:18px;font-weight:700;line-height:24px;min-height:24px}
+.m-play .m-tray,.m-play .m-tools{display:flex;justify-content:center;gap:6px;width:100%;flex-wrap:wrap}
+.m-play .m-tray>.m-btn{font-size:22px;padding:2px;min-width:44px}
+.m-play .m-tools>.m-btn{flex:1;max-width:150px}
+.m-play .m-tray>.m-btn>span{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:6px}
+.m-play .m-feedback{font-size:16px;line-height:1.2;min-height:58px;margin:0;display:flex;align-items:center;justify-content:center}
+.m-play .m-cubes{display:grid;grid-template-columns:repeat(5,44px);grid-template-rows:repeat(4,44px);gap:4px}
+.m-play .m-cubes .m-btn{position:relative;background:var(--m-color);font-size:25px;padding:0}
+.m-play .m-cubes .m-btn[data-east="true"]::after{content:'';position:absolute;width:9px;height:10px;right:-7px;top:15px;background:#344958;z-index:1;pointer-events:none}
+.m-play .m-cubes .m-btn[data-south="true"]::before{content:'';position:absolute;width:10px;height:9px;bottom:-7px;left:15px;background:#344958;z-index:1;pointer-events:none}
+.m-play .m-pattern-board{width:264px;height:176px;position:relative;background:#fff;border-radius:8px}
+.m-play .m-pattern-board>svg{width:100%;height:100%;position:absolute;inset:0;pointer-events:none}
+.m-play .m-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,44px);grid-template-rows:repeat(4,44px)}
+.m-play .m-grid>.m-btn{border:1px dotted #34495840;border-radius:0;background:transparent;color:#34495866;padding:0}
+.m-play .m-tray svg{width:40px;height:40px;display:block}
+.m-play .m-columns{display:flex;width:100%;max-width:360px;gap:6px}
+.m-play .m-columns>.m-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;height:132px}
+.m-play .m-columns svg{width:72px;max-width:100%;height:72px;flex-shrink:0}
+.m-play .m-trades{display:grid;grid-template-columns:1fr 1fr;max-width:380px}
+.m-play .m-trades>.m-btn{max-width:none;font-size:15px}
+.m-play .m-clock{width:clamp(176px,30dvh,230px);height:clamp(176px,30dvh,230px);touch-action:none}
+.m-play .m-clock svg{width:100%;height:100%;font-size:16px;font-weight:700;fill:#344958}
+.m-play .m-scale{position:relative;width:264px;height:176px}
+.m-play .m-scale>svg{position:absolute;inset:0;width:100%;height:100%}
+.m-play .m-pans{position:absolute;inset:52px 0 0;display:flex;justify-content:space-between;align-items:flex-start;gap:36px}
+.m-play .m-pans>.m-btn{width:114px;min-height:100px;display:flex;flex-direction:column;gap:6px;align-items:center;background:#f7fafc;border-bottom:5px solid #344958}
+.m-play .m-weights{display:grid;grid-template-columns:repeat(4,20px);gap:2px;min-height:40px;align-items:center}
+.m-play .m-weights i{font-style:normal;background:#d6c7ef;border:1px solid #344958;border-radius:4px;font-size:16px;height:20px}
+.m-play .m-letter-art{font-size:48px;display:flex;align-items:center;justify-content:center;height:116px}
+.m-play .m-slots{display:flex;gap:6px;margin-bottom:16px}
+.m-play .m-slots>.m-btn{width:48px;height:60px;font-size:32px;border-bottom:4px solid #344958}
+.m-play .m-ghost{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-110%);padding:8px;background:#eaf1ff;border:2px solid #1d4ed8;border-radius:12px;font-size:16px;max-width:180px}
+@media(min-height:740px){.m-play{gap:10px}.m-play .m-work{gap:12px}.m-play .m-prompt{min-height:52px}.m-play .m-feedback{min-height:44px}}
