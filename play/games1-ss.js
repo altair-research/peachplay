@@ -111,12 +111,12 @@ const WORLD = {
   eu: { n: B('Europe', '유럽'), p: [[-10, 36], [0, 43], [-5, 48], [5, 53], [10, 57], [25, 60], [40, 67], [60, 68], [60, 55], [40, 45], [28, 41], [20, 37], [10, 38]] },
   af: { n: B('Africa', '아프리카'), p: [[-17, 15], [-6, 35], [10, 37], [32, 31], [43, 12], [51, 11], [40, -15], [33, -27], [20, -35], [12, -17], [9, 4], [-8, 5]] },
   as: { n: B('Asia', '아시아'), p: [[60, 68], [100, 76], [140, 72], [180, 66], [160, 58], [142, 46], [125, 38], [122, 25], [108, 10], [100, 3], [80, 8], [72, 20], [60, 24], [56, 17], [44, 12], [39, 21], [35, 28], [35, 38], [40, 45], [60, 55]] },
-  au: { n: B('Australia', '오스트레일리아'), p: [[113, -22], [130, -12], [142, -11], [153, -27], [146, -39], [135, -35], [116, -35]] },
+  au: { n: B('Australia (Oceania)', '오세아니아'), p: [[113, -22], [130, -12], [142, -11], [153, -27], [146, -39], [135, -35], [116, -35]] },
   an: { n: B('Antarctica', '남극 대륙'), p: [[-180, -66], [180, -66], [180, -90], [-180, -90]] }
 };
 const OCEANS = { pac: { n: B('Pacific Ocean', '태평양'), at: [[-150, 10]] }, atl: { n: B('Atlantic Ocean', '대서양'), at: [[-35, 20]] }, ind: { n: B('Indian Ocean', '인도양'), at: [[80, -20]] }, arc: { n: B('Arctic Ocean', '북극해'), at: [[0, 84]] }, sou: { n: B('Southern Ocean', '남극해'), at: [[20, -62]] } };
 const px = (lon, lat) => `${(lon + 180).toFixed(1)},${(90 - lat).toFixed(1)}`;
-const worldSvg = (hl, dot) => `<svg viewBox="0 0 360 180" class="worldsvg"><rect width="360" height="180" fill="#bfe6ff"/>${Object.entries(WORLD).map(([k, c]) => `<polygon points="${c.p.map(q => px(q[0], q[1])).join(' ')}" fill="${k === hl ? '#ef476f' : '#9ad07a'}" stroke="#4d7a3a" stroke-width="1"/>`).join('')}${dot ? `<circle cx="${dot[0] + 180}" cy="${90 - dot[1]}" r="7" fill="#ffd166" stroke="#c9951b" stroke-width="2"/>` : ''}</svg>`;
+const worldSvg = (hl, dot) => `<svg viewBox="0 0 360 180" class="worldsvg"><rect width="360" height="180" fill="#bfe6ff"/>${Object.entries(WORLD).map(([k, c]) => (typeof WORLD_PATHS !== 'undefined' && WORLD_PATHS[k] ? `<path d="${WORLD_PATHS[k]}" fill="${k === hl ? '#ef476f' : '#9ad07a'}" stroke="${k === hl ? '#ef476f' : '#9ad07a'}" stroke-width=".6" stroke-linejoin="round"/>` : `<polygon points="${c.p.map(q => px(q[0], q[1])).join(' ')}" fill="${k === hl ? '#ef476f' : '#9ad07a'}" stroke="#4d7a3a" stroke-width="1"/>`)).join('')}${dot ? `<circle cx="${dot[0] + 180}" cy="${90 - dot[1]}" r="7" fill="#ffd166" stroke="#c9951b" stroke-width="2"/>` : ''}</svg>`;
 const LAND = [['🏔️', B('mountain', '산'), B('a very high, rocky area', '아주 높고 바위가 많은 곳')], ['🏜️', B('desert', '사막'), B('a very dry place that gets little rain', '비가 거의 오지 않는 아주 건조한 곳')], ['🏞️', B('valley', '계곡'), B('low land between hills or mountains', '언덕이나 산 사이의 낮은 땅')], ['🏖️', B('coast', '해안'), B('land that meets the ocean', '바다와 닿아 있는 땅')]];
 G1T({
   id: 'worldmap', icon: '🌍', title: B('Continents and Oceans', '대륙과 대양'), sub: B('7 continents, 5 oceans, landforms', '7대륙, 5대양, 지형'), u: 'Earth',

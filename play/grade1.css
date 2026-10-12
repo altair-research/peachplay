@@ -107,3 +107,9 @@
 .storytext .say.rd{float:right;width:34px;height:34px;min-height:0;font-size:16px;margin:0 0 2px 8px;padding:0}
 .storytext{position:relative}
 .storytext .say.rd{position:absolute;float:none;top:-14px;right:-6px;width:32px;height:32px;margin:0;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.moonsvg{width:clamp(70px,min(30vw,16dvh),130px);height:auto}
+.skysvg{width:min(88vw,300px);height:auto;max-height:clamp(80px,18dvh,150px);border-radius:12px}
+.opts .skysvg{width:100%;max-height:clamp(52px,11dvh,100px)}
+.cyc{display:flex;align-items:center;justify-content:center;gap:4px;font-size:clamp(22px,min(9vw,5dvh),40px)}
+.cyc i{font-style:normal;font-size:.6em;color:#999}
+.gasvg{width:min(80vw,300px);height:auto;max-height:clamp(100px,24dvh,230px);border-radius:12px}

@@ -7,12 +7,12 @@
 
 const DIAG_IDS_1 = ['count120', 'tensones', 'compare100', 'maketen20', 'missingnum', 'growpat', 'clock1', 'coins1',
   'blends', 'longvowels', 'tricky1', 'fixsent', 'weather1', 'plants1', 'figures1', 'mapdir'];
-const DIAG_IDS_2 = ['count1000', 'place1000', 'compare1000', 'facts20', 'add2dig', 'oddeven', 'growpat2', 'clock2g', 'money2',
-  'vowels2', 'tricky2', 'grammar2', 'fables', 'lifecycle', 'gafigures', 'gaboard'];
+const DIAG_IDS_2 = ['count1000', 'place1000', 'compare1000', 'facts20', 'add2dig', 'oddeven', 'growpat2', 'clock2g',
+  'vowels2', 'tricky2', 'grammar2a', 'fables', 'lifecycle2', 'matter2', 'heroes2', 'gamap2'];
 const DIAG_IDS_K = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'shapes2d', 'pattern',
   'letters', 'sounds', 'rhyme', 'flags', 'address', 'compass', 'living', 'motion'];
 const DIAG_IDS = () => (kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
-const CHECK_SKIP = ['partitiondraw', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
+const CHECK_SKIP = ['partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
 
 // ---- check history ----

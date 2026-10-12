@@ -89,3 +89,58 @@ G1({
     window.__sb = { cp, n, k, tx, ty, pos, drop: (pi) => { /* test hook: snap piece pi to its own slot */ pos[pi].x = tx + k * cp.parts[pi].c[0]; pos[pi].y = ty + k * cp.parts[pi].c[1]; drag = { pi, ox: 0, oy: 0 }; onUp(); }, placed };
   }
 });
+
+// ---------- Grade 2: cut a rectangle into halves, thirds or fourths ----------
+registerGame({
+  id: 'partitiondraw2', grade: '2', subject: 'math', icon: '✂️', title: B('Cut It Into Equal Shares', '똑같은 조각으로 자르기'), sub: B('Draw lines for halves, thirds and fourths', '선을 그어 반, 3분의 1, 4분의 1'), u: 'Equal shares (draw)', area: B('Grade 2 Math · Equal shares (draw)', '2학년 수학 · 똑같이 나누기(그리기)'),
+  play() {
+    const lv = lvl('partitiondraw2'), n = pick(lv === 1 ? [2, 3] : [2, 3, 4]), sh = CUT_SHAPES.rect;
+    const name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : n === 3 ? B('thirds (3 equal shares)', '3분의 1 (똑같은 3조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
+    const ask = B(`Cut the rectangle into ${name.en}. Drag your finger across it to draw each line.${n === 3 ? ' You need 2 lines.' : n === 4 ? ' You need 2 lines.' : ''}`, `직사각형을 ${name.ko}으로 잘라요. 손가락을 끌어서 선을 그어요.${n === 3 || n === 4 ? ' 선은 2개가 필요해요.' : ''}`);
+    view().innerHTML = roundShell(L(ask), `<svg id="cutsvg" viewBox="0 0 100 100" class="cutsvg"><rect x="${sh.x}" y="${sh.y}" width="${sh.w}" height="${sh.h}" rx="3" fill="#ffd166" stroke="#1d3557" stroke-width="3"/><g id="cuts" stroke="#ef476f" stroke-width="3" stroke-linecap="round"></g></svg>`, `<div><button class="pill" id="clr">↺ ${L(B('Clear', '지우기'))}</button></div>`);
+    const svg = $('#cutsvg'), cuts = $('#cuts'), cx = sh.x + sh.w / 2, cy = sh.y + sh.h / 2; let lines = [], missed = false, done = false, cur = null;
+    const askNow = () => say(L(ask)); $('#sp').onclick = askNow; askNow();
+    const draw = () => { cuts.innerHTML = lines.map(l => `<line x1="${l.a.x}" y1="${l.a.y}" x2="${l.b.x}" y2="${l.b.y}"/>`).join('') + (cur ? `<line x1="${cur[0].x}" y1="${cur[0].y}" x2="${cur[1].x}" y2="${cur[1].y}" opacity=".6"/>` : ''); };
+    const kind = (a, b) => { const d = angleDeg(a, b); return d < 12 || d > 168 ? 'h' : Math.abs(d - 90) < 12 ? 'v' : 'o'; };
+    const fail = (msg) => { missed = true; const c = $('#cheer'); if (c) c.textContent = T().again; $('#fact').textContent = L(msg); sfx('no'); lines = []; draw(); };
+    const this_ = this;
+    const win = () => { done = true; $('#fact').textContent = ''; finishRound(this_, true, missed, B(n === 2 ? 'Two equal shares are halves.' : n === 3 ? 'Three equal shares are thirds.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : n === 3 ? '똑같은 3조각은 3분의 1(thirds)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.')); };
+    const onUp = (a, b) => {
+      if (Math.hypot(b.x - a.x, b.y - a.y) < 25) { draw(); return; }
+      const k = kind(a, b), tol = 7;
+      if (n === 2) {                                           // any straight cut through the middle
+        if (distToLine({ x: cx, y: cy }, a, b) > tol) return fail(B('A fair cut goes through the middle.', '공평하게 자르려면 한가운데를 지나야 해요.'));
+        const ang = angleDeg(a, b) * Math.PI / 180, f = 70; lines = [{ a: { x: cx - Math.cos(ang) * f, y: cy - Math.sin(ang) * f }, b: { x: cx + Math.cos(ang) * f, y: cy + Math.sin(ang) * f } }]; draw(); win(); return;
+      }
+      if (k === 'o') return fail(B('Draw straight up-down or straight left-right lines.', '위아래로 곧게, 또는 왼쪽 오른쪽으로 곧게 그어 보세요.'));
+      const pos = k === 'v' ? (a.x + b.x) / 2 : (a.y + b.y) / 2;
+      const ln = k === 'v' ? { k, p: pos, a: { x: pos, y: sh.y - 3 }, b: { x: pos, y: sh.y + sh.h + 3 } } : { k, p: pos, a: { x: sh.x - 3, y: pos }, b: { x: sh.x + sh.w + 3, y: pos } };
+      if (lines.length && lines[0].k !== k) return fail(B('Make both lines go the same way.', '두 선을 같은 방향으로 그어 보세요.'));
+      lines.push(ln); draw();
+      if (lines.length < 2) return;
+      const lo = k === 'v' ? sh.x : sh.y, len = k === 'v' ? sh.w : sh.h, ps = lines.map(l => l.p).sort((x, y) => x - y);
+      const want = n === 3 ? [lo + len / 3, lo + 2 * len / 3] : [lo + len / 4, lo + 3 * len / 4];
+      // fourths: two lines, one vertical and one horizontal through the middle (4 equal corners); thirds: two parallel lines at 1/3 and 2/3
+      if (n === 3) { if (Math.abs(ps[0] - want[0]) <= tol && Math.abs(ps[1] - want[1]) <= tol) win(); else fail(B('Are all three pieces the same size? Try again!', '세 조각이 모두 같은 크기일까요? 다시 해 봐요!')); }
+    };
+    if (n === 4) {
+      // fourths: one vertical and one horizontal line, each through the middle
+      var onUp4 = (a, b) => {
+        if (Math.hypot(b.x - a.x, b.y - a.y) < 25) { draw(); return; }
+        const k = kind(a, b); if (k === 'o') return fail(B('Draw straight up-down or straight left-right lines.', '위아래로 곧게, 또는 왼쪽 오른쪽으로 곧게 그어 보세요.'));
+        const pos = k === 'v' ? (a.x + b.x) / 2 : (a.y + b.y) / 2, mid = k === 'v' ? cx : cy;
+        if (Math.abs(pos - mid) > tolMid) return fail(B('A fair cut goes through the middle.', '공평하게 자르려면 한가운데를 지나야 해요.'));
+        if (lines.some(l => l.k === k)) return fail(B('Draw one up-down line and one left-right line.', '위아래 선 하나, 왼쪽 오른쪽 선 하나를 그어 보세요.'));
+        lines.push(k === 'v' ? { k, a: { x: cx, y: sh.y - 3 }, b: { x: cx, y: sh.y + sh.h + 3 } } : { k, a: { x: sh.x - 3, y: cy }, b: { x: sh.x + sh.w + 3, y: cy } }); draw();
+        if (lines.length === 2) win();
+      };
+    }
+    const tolMid = 7, handle = n === 4 ? (a, b) => onUp4(a, b) : onUp;
+    svg.addEventListener('pointerdown', (e) => { if (done) return; const p = svgPoint(svg, e); cur = [p, p]; try { svg.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); draw(); });
+    svg.addEventListener('pointermove', (e) => { if (!cur) return; cur[1] = svgPoint(svg, e); draw(); e.preventDefault(); });
+    svg.addEventListener('pointerup', () => { if (!cur) return; const a = cur[0], b = cur[1]; cur = null; if (done) return; handle(a, b); draw(); });
+    svg.addEventListener('pointercancel', () => { cur = null; draw(); });
+    $('#clr').onclick = () => { if (!done) { lines = []; cur = null; draw(); } };
+    window.__cut2 = { n, sh, cx, cy, lines: () => lines };
+  }
+});

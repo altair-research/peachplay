@@ -17,7 +17,7 @@ const PT = {
   back: B('Back', '뒤로'), who: B('Playing now', '지금 하는 아이'),
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} days in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
-const GRADE2_READY = false;                      // flip to true when the grade-2 set is complete (math is built, the rest is in progress)
+const GRADE2_READY = true;                       // flip to true when the grade-2 set is complete (math is built, the rest is in progress)
 const SITE_URL = 'https://altair-research.github.io/peachplay/';
 const AVATARS = ['🍑', '🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🚀'];
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

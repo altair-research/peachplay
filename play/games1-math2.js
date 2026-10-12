@@ -176,7 +176,7 @@ const AMPM = [[B('wake up for school', '학교에 가려고 일어나요'), 7, '
 G1({
   id: 'clock1', icon: '🕒', title: B('Hours and Half Hours', '정각과 30분'), sub: B('Analog and digital clocks', '시계 읽기'), u: 'Time',
   play() {
-    const lv = lvl('clock1'), h = 1 + rnd(12), m = lv === 1 ? 0 : pick([0, 30]), kind = pick(lv === 1 ? ['read', 'read', 'match'] : ['read', 'match', 'elapsed', 'ampm', 'read']);
+    const lv = lvl('clock1'), h = 1 + rnd(12), m = lv === 1 ? 0 : pick([0, 30]), kind = pick(lv === 1 ? ['read', 'read', 'match'] : ['read', 'match', 'elapsed', 'read']);
     const wrongTimes = (h, m) => { const set = new Set([timeStr(h, m)]); let g = 0; while (set.size < 3 && g++ < 40) set.add(timeStr(((h - 1 + pick([-2, -1, 1, 2, 3]) + 12) % 12) + 1, pick([0, 30]) * (lv === 1 ? 0 : 1))); if (lv === 2 && m === 30) set.add(timeStr(h, 0)); if (lv === 2 && m === 0) set.add(timeStr(h, 30)); return [...set]; };
     if (kind === 'read') {
       const right = timeStr(h, m), ts = [right, ...shuffle(wrongTimes(h, m).filter(t => t !== right)).slice(0, 2)];
