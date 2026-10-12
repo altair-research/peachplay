@@ -233,7 +233,7 @@ registerGame({
       const alive = () => !!document.getElementById('rrun');
       for (const k of prog) { await new Promise(r => setTimeout(r, 380)); if (!alive()) return; const nx = x + D[k][0], ny = y + D[k][1]; if (nx >= 0 && ny >= 0 && nx < N && ny < N) { x = nx; y = ny; paint(); } }
       busy = false; if (!alive()) return;
-      if (x === tx && y === ty) { solved = true; record('robot', !missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); }
+      if (x === tx && y === ty) { solved = true; recordFinal('robot', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); }
       else { missed = true; $('#cheer').textContent = T().again; setTimeout(() => { if (alive()) { x = 0; y = 0; paint(); } }, 700); }
     };
     window.__robot = { tx, ty, N, D, press: (k) => document.querySelector(`.rkeys .pill[data-k="${k}"]`).click(), run: () => $('#rrun').click() };

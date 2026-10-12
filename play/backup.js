@@ -8,7 +8,7 @@ const BK = {
   save: B('Save backup file', '백업 파일 저장'), copy: B('Copy backup code', '백업 코드 복사'), copied: B('Copied!', '복사됐어요!'),
   load: B('Restore from file', '파일에서 복원'), paste: B('Restore from code', '코드로 복원'), pasteHint: B('Paste backup code here', '백업 코드를 여기에 붙여넣기'),
   ask: B('Replace ALL progress on this device with the backup? This cannot be undone.', '이 기기의 모든 기록을 백업 내용으로 바꿀까요? 되돌릴 수 없어요.'),
-  ok: B('Restored! Reloading…', '복원했어요! 다시 불러옵니다…'), bad: B('That does not look like a PeachPlay backup.', 'PeachPlay 백업이 아니에요.'), full: B('Could not save on this device (storage full or blocked).', '이 기기에 저장하지 못했어요(저장 공간 부족 또는 차단).'),
+  ok: B('Restored! Reloading…', '복원했어요! 다시 불러옵니다…'), bad: B('That does not look like a PeachPlay backup.', 'PeachPlay 백업이 아니에요.'), full: B('Could not save on this device (storage full or blocked). Your old progress was kept.', '이 기기에 저장하지 못했어요(저장 공간 부족 또는 차단). 기존 기록은 그대로예요.'), rollbackFail: B('Restore failed and the old progress could not be fully put back. Please save a backup of what is left and contact us.', '복원에 실패했고 기존 기록을 완전히 되돌리지 못했어요. 남은 기록을 백업해 두고 문의해 주세요.'),
   fbTitle: B('Send feedback', '의견 보내기'), fbNote: B('Opens your e-mail app with a draft to the app maker. Nothing is sent until you press Send in your mail app. No tracking.', '이메일 앱에 초안이 열려요. 메일 앱에서 보내기를 누르기 전에는 아무것도 전송되지 않고, 추적도 없어요.'),
   fbKind: B('Type', '종류'), kinds: [B('Bug / something broke', '오류 / 고장'), B('Idea / request', '아이디어 / 요청'), B('Question', '질문'), B('Other', '기타')],
   fbMsg: B('What happened? What would you like?', '무슨 일이 있었나요? 바라는 점은요?'),
@@ -24,20 +24,37 @@ function backupCollect() {
 }
 function backupParse(text) {
   let o; try { o = JSON.parse(String(text).trim()); } catch (e) { return null; }
-  if (!o || o.app !== 'peachy' || o.format !== 1 || !o.data || typeof o.data !== 'object') return null;
-  const ks = Object.keys(o.data);
-  if (!ks.includes('sag.profiles') && !ks.some(k => k.startsWith('sag.v2'))) return null;
-  for (const k of ks) { if (!BK_RE.test(k) || typeof o.data[k] !== 'string') return null; try { const v = JSON.parse(o.data[k]); if (!v || typeof v !== 'object') return null; } catch (e) { return null; } }
-  return o;
+  if (!isObj(o) || (o.app !== 'peachy' && o.app !== 'peachplay') || o.format !== 1 || !isObj(o.data)) return null;
+  const ks = Object.keys(o.data); if (!ks.length || ks.length > 12) return null;
+  const parsed = {};
+  for (const k of ks) { if (!BK_RE.test(k) || typeof o.data[k] !== 'string') return null; try { parsed[k] = JSON.parse(o.data[k]); } catch (e) { return null; } if (!isObj(parsed[k])) return null; }
+  // children: every entry must be valid (not silently repaired), and the active child must exist
+  let prof = null;
+  if ('sag.profiles' in parsed) {
+    prof = cleanProf(parsed['sag.profiles']); const raw = parsed['sag.profiles'];
+    if (!prof || !Array.isArray(raw.list) || raw.list.length !== prof.list.length || raw.active !== prof.active || raw.list.some((k, i) => k.id !== prof.list[i].id || k.grade !== prof.list[i].grade)) return null;
+  } else if ('sag.v2' in parsed) prof = { active: 'p1', list: [{ id: 'p1', name: '', avatar: '🍑', grade: 'K' }] };
+  else return null;
+  const ids = new Set(prof.list.map(k => k.id)), data = {};
+  for (const k of ks) {
+    if (k === 'sag.profiles') { data[k] = JSON.stringify(prof); continue; }
+    const id = k === 'sag.v2' ? 'p1' : k.slice('sag.v2.'.length);
+    if (!ids.has(id)) return null;                                       // data for a child that is not in the list
+    data[k] = JSON.stringify(cleanState(parsed[k]));
+  }
+  return { app: o.app, format: 1, data };
 }
 function backupApply(o, say2) {
-  const old = [];
+  const snap = {};                                                       // exact copy of what is stored now
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (BK_RE.test(k)) snap[k] = localStorage.getItem(k); } } catch (e) { return say2(L(BK.full)); }
+  const written = [];
+  const rollback = () => { let ok = true; try { written.forEach(k => { if (!(k in snap)) localStorage.removeItem(k); }); Object.entries(snap).forEach(([k, v]) => { if (localStorage.getItem(k) !== v) localStorage.setItem(k, v); }); } catch (e) { ok = false; } return ok; };
   try {
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (BK_RE.test(k)) old.push([k, localStorage.getItem(k)]); }
-    try { old.forEach(([k]) => localStorage.removeItem(k)); Object.keys(o.data).forEach(k => localStorage.setItem(k, o.data[k])); }
-    catch (e) { old.forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch (e2) {} }); throw e; }   // roll back on failure
+    const keys = Object.keys(o.data).sort((a, b) => (a === 'sag.profiles') - (b === 'sag.profiles'));   // the child list is written last
+    keys.forEach(k => { localStorage.setItem(k, o.data[k]); written.push(k); });
+    Object.keys(snap).forEach(k => { if (!(k in o.data)) localStorage.removeItem(k); });                  // drop children that are not in the backup
     say2(L(BK.ok)); setTimeout(() => location.reload(), 700);
-  } catch (e) { console.warn('[peachy] restore failed', e); say2(L(BK.full)); }
+  } catch (e) { console.warn('[peachy] restore failed', e); say2(rollback() ? L(BK.full) : L(BK.rollbackFail)); }
 }
 function feedbackBody(msg, dev, prog) {
   const lines = [msg.trim(), '', '---', `PeachPlay v${APP_VERSION} (${APP_BUILD})`];

@@ -34,7 +34,7 @@ registerGame({
         pts.push(sh.pts[i].join(',')); $('#dline').setAttribute('points', pts.join(' ')); g.classList.add('done'); say(String(i + 1)); next++;
         if (next === n) {
           $('#dline').setAttribute('points', [...pts, pts[0]].join(' ')); $('#dfill').setAttribute('points', pts.join(' ')); $('#dfill').setAttribute('fill-opacity', '.55');
-          record('dots', !missed); if (!missed) addPeach();
+          recordFinal('dots', missed); if (!missed) addPeach();
           $('#cheer').textContent = `${sh.e} ${pick(T().right)} ${L(B('It is ', '이것은 '))}${L(sh.n)}!`; say(`${L(B('It is ', '이것은 '))}${L(sh.n)}!`);
           nextButton(() => this.play());
         }
@@ -185,7 +185,7 @@ registerGame({
     const playSeq = async () => { busy = true; $('#st').textContent = T().watch; await sleep(500); for (const i of seq) { if (tok !== simonTok) return; await flash(i); } if (tok !== simonTok) return; $('#st').textContent = T().yourTurn; say(T().yourTurn); busy = false; step = 0; };
     pads.forEach(p => p.onclick = async () => {
       if (busy || solved) return; const i = +p.dataset.i; p.classList.add('lit'); beep(PADS[i][1], 200); setTimeout(() => p.classList.remove('lit'), 220);
-      if (i === seq[step]) { step++; if (step === seq.length) { solved = true; record('simon', !missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); say(pick(T().right)); nextButton(() => this.play()); } }
+      if (i === seq[step]) { step++; if (step === seq.length) { solved = true; recordFinal('simon', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); say(pick(T().right)); nextButton(() => this.play()); } }
       else { if (!missed) { missed = true; record('simon', false); } $('#cheer').textContent = T().again; say(T().again); busy = true; await sleep(900); $('#cheer').textContent = ''; if (tok === simonTok) playSeq(); }
     });
     $('#rep').onclick = () => { if (!busy && !solved) { missed = true; playSeq(); } };

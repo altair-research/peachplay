@@ -25,7 +25,7 @@ function tileRound(game, cfg) {
       if (cfg.speakTiles) say(tok, 'en-US');
       if (pos === cfg.target.length) {
         if (DIAG.active) { DIAG.answer(game, !missed, null); return; }
-        record(game.id, !missed); if (!missed) addPeach();
+        recordFinal(game.id, missed); if (!missed) addPeach();
         $('#cheer').textContent = pick(T().right);
         if (cfg.after) { $('#fact').textContent = L(cfg.after); say(cfg.vocab || L(cfg.after), cfg.vocab ? 'en-US' : undefined); }
         nextButton(() => game.play());
@@ -125,7 +125,7 @@ registerGame({
       if (done) return; const r = evaluate(); window.__trace = r;
       if (r.coverage >= 0.5 && r.spill < 0.65) {
         done = true; if (DIAG.active) { DIAG.answer(this, !missed, null); return; }
-        record('trace', !missed); if (!missed) addPeach();
+        recordFinal('trace', missed); if (!missed) addPeach();
         $('#cheer').textContent = pick(T().right); say(ch, 'en-US'); disp.c.onpointerdown = null; nextButton(() => this.play());
       }
     });

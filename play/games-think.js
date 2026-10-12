@@ -23,7 +23,7 @@ registerGame({
       await sleep2(1200);
       for (let i = 0; i < N; i++) {
         if (!document.body.contains(stage)) return;
-        tapped = false; active = true; stage.classList.remove('tap'); stage.textContent = seq[i]; await sleep2(showMs); active = false;
+        tapped = false; active = true; stage.classList.remove('tap'); stage.textContent = seq[i]; await sleep2(showMs); active = false; if (!document.body.contains(stage)) return;
         const ok = (seq[i] === go) === tapped; if (ok) okc++; $('#gdots').children[i].className = ok ? 'ok' : 'bad'; $('#gfb').textContent = ok ? '✅' : '❌'; stage.textContent = ''; await sleep2(450); if (document.body.contains(stage)) $('#gfb').textContent = '';
       }
       if (!document.body.contains(stage)) return;
@@ -98,7 +98,7 @@ registerGame({
     let found = new Set(), missed = false, done = false;
     $$('.sdg.tap .sdc').forEach(b => b.onclick = () => {
       if (done) return; const i = +b.dataset.i;
-      if (diffs.includes(i)) { if (found.has(i)) return; found.add(i); b.classList.add('found'); tone(660, 120); if (found.size === k) { done = true; record('spotdiff', !missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); } }
+      if (diffs.includes(i)) { if (found.has(i)) return; found.add(i); b.classList.add('found'); tone(660, 120); if (found.size === k) { done = true; recordFinal('spotdiff', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); } }
       else { b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 400); if (!missed) { missed = true; record('spotdiff', false); } tone(200, 120, 0, 'triangle', 0.1); }
     });
     window.__sd = { diffs };

@@ -1,16 +1,41 @@
 'use strict';
 // Core: device-local state, speech, helpers, and the shared multiple-choice quiz engine.
+// Validators: saved data can come from an old version, a hand-edited file or a restored backup, so it is checked before use.
+const GRADE_LIST = ['K', '1', '2', '3', '4', '5'];
+const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+const numOr = (v, d = 0) => (Number.isFinite(v) ? v : d);
+function cleanProf(p) {                                   // -> { active, list } or null when no valid child remains
+  try {
+    const seen = new Set(), list = (p && Array.isArray(p.list) ? p.list : []).filter(k => isObj(k) && typeof k.id === 'string' && /^[A-Za-z0-9_-]{1,24}$/.test(k.id) && !seen.has(k.id) && seen.add(k.id)).slice(0, 5)
+      .map(k => ({ id: k.id, name: typeof k.name === 'string' ? k.name.slice(0, 16) : '', avatar: typeof k.avatar === 'string' && k.avatar ? k.avatar.slice(0, 8) : '🍑', grade: GRADE_LIST.includes(k.grade) ? k.grade : 'K' }));
+    return list.length ? { active: list.some(k => k.id === p.active) ? p.active : list[0].id, list } : null;
+  } catch (e) { return null; }
+}
+function cleanState(s) {                                  // keeps only known, well-typed fields
+  const o = {}; if (!isObj(s)) return o;
+  if (s.lang === 'en' || s.lang === 'ko') o.lang = s.lang;
+  if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
+  if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))) }; }); }
+  if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };
+  if (s.profile === null || isObj(s.profile)) o.profile = s.profile;
+  if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40);
+  if (Array.isArray(s.stickers)) o.stickers = s.stickers.filter(x => typeof x === 'string').slice(0, 200);
+  if (isObj(s.bp)) o.bp = { level: Math.min(31, Math.max(1, Math.floor(numOr(s.bp.level, 1)))), best: Math.max(0, numOr(s.bp.best)), stars: isObj(s.bp.stars) ? Object.fromEntries(Object.entries(s.bp.stars).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k, Math.min(3, Math.max(0, v))])) : {}, friends: Array.isArray(s.bp.friends) ? s.bp.friends.filter(Number.isInteger) : [], skin: typeof s.bp.skin === 'string' ? s.bp.skin : 'plain', daily: isObj(s.bp.daily) ? s.bp.daily : null };
+  ['muted', 'introSeen', 'showK'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
+  if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
+  return o;
+}
 // Children on this device: each has its own saved data (the first child keeps the original key).
 const PKEY = 'sag.profiles';
 let PROF = { active: 'p1', list: [{ id: 'p1', name: '', avatar: '🍑', grade: 'K' }] };
-try { const raw = localStorage.getItem(PKEY); if (raw) PROF = JSON.parse(raw); } catch (e) {}
+try { const raw = localStorage.getItem(PKEY); if (raw) PROF = cleanProf(JSON.parse(raw)) || PROF; } catch (e) {}
 const KEY = PROF.active === 'p1' ? 'sag.v2' : 'sag.v2.' + PROF.active;
 const saveProf = () => { try { localStorage.setItem(PKEY, JSON.stringify(PROF)); } catch (e) {} };
 const curKid = () => PROF.list.find(k => k.id === PROF.active) || PROF.list[0];
 const today = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const freshStat = () => ({ right: 0, wrong: 0, streak: 0, level: 1 });
 let S = { lang: 'en', peaches: 0, stats: {}, addr: { street: '', city: '' } };
-try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, cleanState(JSON.parse(raw))); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const T = () => I18N[S.lang];
 const L = (o) => (typeof o === 'string' ? o : (o[S.lang] || o.en));
@@ -45,7 +70,9 @@ function renderPeaches() {
 function addPeach() { S.peaches++; save(); renderPeaches(); }
 
 // 4 clean answers in a row -> level up (max 2); every 3rd miss -> level down.
+const MISS = {};                                     // games whose current round already logged a miss (so the finish is not logged twice)
 function record(id, ok) {
+  if (!ok) MISS[id] = true;
   const s = stat(id);
   if (SESSION.id === id) { SESSION.done = (SESSION.done || 0) + (ok ? 1 : 0); }
   const h = ((S.hist = S.hist || {})[today()] = S.hist[today()] || { r: 0, w: 0, g: {} }), hg = (h.g[id] = h.g[id] || [0, 0]);
@@ -55,6 +82,8 @@ function record(id, ok) {
   save();
 }
 
+// End of a round: a clean first-try finish counts as right; a round that had a miss counts as wrong once (not again if the miss was already logged).
+function recordFinal(id, missed) { if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
 // ---- sound effects, mascot, confetti, session bar ----
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
@@ -117,12 +146,13 @@ function dup(game, key) {
   game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
 }
 function launch(game, mix) {
+  Object.keys(MISS).forEach(k => { MISS[k] = false; });
   Object.assign(SESSION, { id: game.id, n: 0, mix: !!mix, done: 0, rounds: mix ? Math.min(3, game.rounds || 3) : (game.rounds || ROUNDS) });
   updateBar(); game.play();
 }
 function surprise() {                                // mixed run: different game every couple of rounds
   const picks = (typeof currentPicks === 'function' ? currentPicks(3) : []).map(p => p.id);
-  const pool = GAMES.filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
+  const pool = visibleGames().filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
   const g = (picks.length && rnd(2) === 0 ? GAMES.find(x => x.id === pick(picks)) : null) || pick(pool);
   SESSION.hist = [...(SESSION.hist || []), g.id]; launch(g, true);
 }
@@ -171,6 +201,7 @@ function quiz(game, item) {
     <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact"></div>`;
   const ask = () => { say(item.askSay ? L(item.askSay) : askText); if (item.askExtra) say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
+  $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
   let missed = false;
   if (DIAG.active) DIAG.decorate(game);
@@ -178,7 +209,7 @@ function quiz(game, item) {
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
-      record(game.id, !missed); if (!missed) addPeach();
+      recordFinal(game.id, missed); if (!missed) addPeach();
       $('#cheer').textContent = pick(T().right);
       if (item.after) $('#fact').textContent = L(item.after);
       say(item.vocab && S.lang !== 'en' ? item.vocab : (item.after ? L(item.after) : ''), item.vocab && S.lang !== 'en' ? 'en-US' : undefined);
@@ -206,3 +237,9 @@ const numOpts = (ans, lo, hi, n = 3) => {
 
 const GAMES = [];
 const registerGame = (g) => GAMES.push(g);
+// Which games a child sees: K games for K, 1st-grade games for grade 1; thinking games (brain/create/gifted) and handwriting are shared.
+const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subject) || ['trace', 'draw'].includes(g.id) ? 'both' : 'K');
+const GRADES = ['K', '1', '2'];
+const kidGrade = () => (GRADES.includes(curKid().grade) ? curKid().grade : 'K');
+const prevGrade = (g) => GRADES[GRADES.indexOf(g) - 1] || null;
+const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade())); });

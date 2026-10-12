@@ -13,14 +13,16 @@ function home() {
     <div class="tag">${T().tagline}</div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${picksHtml()}
-    ${SUBJECT_ORDER.map(sub => `
+    ${SUBJECT_ORDER.map(sub => visibleGames().some(g => g.subject === sub) ? `
       <section class="subj ${sub}"><h2><span>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</span>${(sub === 'brain' || sub === 'create') ? '' : `<button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button>`}</h2>
-        <div class="menu">${GAMES.filter(g => g.subject === sub).map(g => `<button class="big ${sub}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`).join('')}</div>
-      </section>`).join('')}
+        <div class="menu">${visibleGames().filter(g => g.subject === sub).map(g => `<button class="big ${sub}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button>`).join('')}</div>
+      </section>` : '').join('')}
+    ${prevGrade(kidGrade()) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
     <button class="link" id="find">${T().findStart}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   $$('.big').forEach(b => b.onclick = () => launch(GAMES.find(g => g.id === b.dataset.id)));
+  if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
   $('#parent').onclick = grownups; $('#find').onclick = intro;
   $$('.pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
@@ -39,9 +41,10 @@ function picksHtml() {
   return `<section class="subj picks"><h2>⭐ ${T().picks}</h2><div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('')}</div></section>`;
 }
 
+const gradeTag = (g) => (g === 'K' ? 'K' : S.lang === 'ko' ? g + '학년' : g + ({ 1: 'st', 2: 'nd', 3: 'rd' }[g] || 'th') + ' grade');
 function checksTable() {
   if (!S.checks.length) return `<p class="note2">${T().focusNone}</p>`;
-  const rows = [...S.checks].reverse().slice(0, 12).map(c => `<tr><td>${c.at.replace('T', ' ')}</td><td>${scopeName(c.scope)}</td><td>${c.ok}/${c.total}</td><td><span class="bar2"><i style="width:${Math.round(100 * c.ok / c.total)}%"></i></span></td></tr>`).join('');
+  const rows = [...S.checks].reverse().slice(0, 12).map(c => `<tr><td>${c.at.replace('T', ' ')}</td><td>${scopeName(c.scope)} · ${gradeTag(c.grade || 'K')}</td><td>${c.ok}/${c.total}</td><td><span class="bar2"><i style="width:${Math.round(100 * c.ok / c.total)}%"></i></span></td></tr>`).join('');
   return `<table><tr><th>${T().colDate}</th><th>${T().colArea}</th><th>${T().colScore}</th><th></th></tr>${rows}</table>`;
 }
 
@@ -52,8 +55,8 @@ function challengeTable() {
 }
 
 function grownups() {
-  const rows = GAMES.map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
-  const weak = GAMES.map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
+  const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
+  const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
@@ -72,7 +75,7 @@ function grownups() {
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; save(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };

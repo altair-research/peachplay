@@ -49,7 +49,7 @@ registerGame({
       if (cleared) { rows += cleared; tone(660, 140); tone(880, 200, 0.1); }
       else tone(220, 60, 0, 'triangle', 0.08);
       if (cleared) confetti(16);
-      if (rows >= goal) { solved = true; clearInterval(timer); draw(); record('blocks', !missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); return; }
+      if (rows >= goal) { solved = true; clearInterval(timer); draw(); recordFinal('blocks', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); return; }
       spawn(); draw();
     };
     const step = () => { if (!alive()) { clearInterval(timer); return; } if (solved) return; if (!collide(cur.cells, cur.x, cur.y + 1)) { cur.y++; draw(); } else lock(); };
