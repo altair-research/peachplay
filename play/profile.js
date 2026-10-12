@@ -43,7 +43,7 @@ function currentPicks(max = 3) {
 // ---- check-ups ----
 function buildCheck(scope) {
   if (scope === 'all') return DIAG_IDS().filter(gameById).map(id => ({ id, lv: 1 }));
-  const capable = visibleGames().filter(g => g.subject === scope && !CHECK_SKIP.includes(g.id));
+  const capable = GAMES.filter(g => { const gr = gradeOf(g); return (gr === 'both' || gr === kidGrade()) && g.subject === scope && !CHECK_SKIP.includes(g.id); });   // check-ups use the current grade only, even when earlier-grade games are shown for practice
   const items = shuffle(capable).map(g => ({ id: g.id, lv: 1 }));
   const extra = shuffle(capable).map(g => ({ id: g.id, lv: 2 }));        // second, harder question for small subjects
   while (items.length < 8 && extra.length) items.push(extra.shift());
