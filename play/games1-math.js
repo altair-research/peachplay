@@ -6,7 +6,7 @@ const AREA1 = (u) => B(`Grade 1 Math · ${u}`, `1학년 수학 · ${u}`);
 const G1 = (g) => registerGame(Object.assign({ grade: '1', subject: 'math' }, g, { area: AREA1(g.u) }));
 const ONES_W = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 const TENS_W = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-const numWord = (n) => n < 20 ? ONES_W[n] : n < 100 ? TENS_W[Math.floor(n / 10)] + (n % 10 ? '-' + ONES_W[n % 10] : '') : n === 100 ? 'one hundred' : 'one hundred ' + numWord(n - 100);
+const numWord = (n) => n < 20 ? ONES_W[n] : n < 100 ? TENS_W[Math.floor(n / 10)] + (n % 10 ? '-' + ONES_W[n % 10] : '') : n < 1000 ? ONES_W[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' ' + numWord(n % 100) : '') : numWord(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numWord(n % 1000) : '');
 const swapDigits = (m) => (m % 10) * 10 + Math.floor(m / 10);
 // number options: the right answer plus likely mistakes (bad), topped up with neighbours
 const numO = (ans, bad = [], lo = 0, hi = 999, n = 3) => {

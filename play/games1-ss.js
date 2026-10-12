@@ -32,9 +32,14 @@ G1T({
   play() {
     const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, 2), kind = lvl('figures1') === 1 ? 'who' : pick(['who', 'what']);
     if (kind === 'who') {
-      quiz(this, { ask: fact.who, opts: [fact, ...ds].map(x => { const person = FIGS.find(p => p.id === x.id); return { html: `<span class="word">${L(person.n)}</span>`, ok: x === fact }; }), cls: 'words sents', after: fact.after });
+      quiz(this, { ask: fact.who, opts: [fact, ...ds].map(x => { const person = FIGS.find(p => p.id === x.id); return { html: `<span class="word">${L(person.n)}</span>`, ok: x === fact }; }), cls: 'words sents', after: fact.after,
+        onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
+      });
     } else {
-      quiz(this, { ask: B(`What did ${f.n.en} do?`, `${f.n.ko}: 무슨 일을 했을까요?`), opts: [fact, ...ds].map(x => ({ html: `<span class="word">${L(x.deed)}</span>`, ok: x === fact })), cls: 'words sents', after: fact.after });
+      quiz(this, { ask: B(`What did ${f.n.en} do?`, `${f.n.ko}: 무슨 일을 했을까요?`), opts: [fact, ...ds].map(x => ({ html: `<span class="word">${L(x.deed)}</span>`, ok: x === fact })), cls: 'words sents', after: fact.after,
+        // Leave feedback above the engine's fixed Next button, only in this round.
+        onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
+      });
     }
   }
 });

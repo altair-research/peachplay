@@ -17,8 +17,11 @@ function cleanState(s) {                                  // keeps only known, w
   if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
   if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
   if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };
-  if (s.profile === null || isObj(s.profile)) o.profile = s.profile;
-  if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40);
+  if (s.profile === null || isObj(s.profile)) { o.profile = s.profile; if (isObj(o.profile)) { o.profile = Object.assign({}, o.profile); if ('diag' in o.profile && !(isObj(o.profile.diag) && Array.isArray(o.profile.diag.missed) && o.profile.diag.missed.every(x => typeof x === 'string'))) delete o.profile.diag; if ('report' in o.profile && !isObj(o.profile.report)) delete o.profile.report; } }
+  if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40).map(c => {
+    const items = c.items.filter(it => isObj(it) && typeof it.id === 'string' && it.id.length <= 40 && typeof it.ok === 'boolean').map(it => ({ id: it.id, lv: Math.min(3, Math.max(1, numOr(it.lv, 1))), ok: it.ok }));
+    return { at: typeof c.at === 'string' ? c.at.slice(0, 16) : '', scope: typeof c.scope === 'string' ? c.scope.slice(0, 12) : 'all', grade: GRADE_LIST.includes(c.grade) ? c.grade : 'K', items, ok: items.filter(x => x.ok).length, total: items.length };
+  }).filter(c => c.items.length);
   if (Array.isArray(s.stickers)) o.stickers = s.stickers.filter(x => typeof x === 'string').slice(0, 200);
   if (isObj(s.bp)) o.bp = { level: Math.min(31, Math.max(1, Math.floor(numOr(s.bp.level, 1)))), best: Math.max(0, numOr(s.bp.best)), stars: isObj(s.bp.stars) ? Object.fromEntries(Object.entries(s.bp.stars).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k, Math.min(3, Math.max(0, v))])) : {}, friends: Array.isArray(s.bp.friends) ? s.bp.friends.filter(Number.isInteger) : [], skin: typeof s.bp.skin === 'string' ? s.bp.skin : 'plain', daily: isObj(s.bp.daily) ? s.bp.daily : null };
   ['muted', 'introSeen', 'showK'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });

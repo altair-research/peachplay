@@ -58,7 +58,10 @@ G1S({
   id: 'precip', icon: '🌦️', title: B('Weather Pictures', '그림으로 보는 날씨'), sub: B('Rain, snow, clouds, wind, and sunshine', '비, 눈, 구름, 바람, 맑은 하늘'), u: 'Weather',
   play() {
     const w = pick(PRECIP_PICS), choices = [w, ...others(PRECIP_PICS, w, 2)];
-    quiz(this, { ask: lvl('precip') === 1 ? w.ask : w.clue, opts: choices.map(x => ({ html: precipPicture(x), ok: x === w })), cls: 'shapes', after: w.detail, vocab: w.n.en });
+    quiz(this, { ask: lvl('precip') === 1 ? w.ask : w.clue, opts: choices.map(x => ({ html: precipPicture(x), ok: x === w })), cls: 'shapes', after: w.detail, vocab: w.n.en,
+      // Reserve space for the engine's fixed Next button; this node is round-local.
+      onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
+    });
   }
 });
 

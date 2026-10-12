@@ -121,7 +121,7 @@ registerGame({
       const lo = k === 'v' ? sh.x : sh.y, len = k === 'v' ? sh.w : sh.h, ps = lines.map(l => l.p).sort((x, y) => x - y);
       const want = n === 3 ? [lo + len / 3, lo + 2 * len / 3] : [lo + len / 4, lo + 3 * len / 4];
       // fourths: two lines, one vertical and one horizontal through the middle (4 equal corners); thirds: two parallel lines at 1/3 and 2/3
-      if (n === 3) { if (Math.abs(ps[0] - want[0]) <= tol && Math.abs(ps[1] - want[1]) <= tol) win(); else fail(B('Are all three pieces the same size? Try again!', '세 조각이 모두 같은 크기일까요? 다시 해 봐요!')); }
+      if (n === 3) { if (Math.abs(ps[0] - want[0]) <= tol && Math.abs(ps[1] - want[1]) <= tol) { lines = want.map(p => (k === 'v' ? { k, a: { x: p, y: sh.y - 3 }, b: { x: p, y: sh.y + sh.h + 3 } } : { k, a: { x: sh.x - 3, y: p }, b: { x: sh.x + sh.w + 3, y: p } })); draw(); win(); } else fail(B('Are all three pieces the same size? Try again!', '세 조각이 모두 같은 크기일까요? 다시 해 봐요!')); }
     };
     if (n === 4) {
       // fourths: one vertical and one horizontal line, each through the middle
