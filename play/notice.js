@@ -6,7 +6,7 @@
 // (2) Anonymous count: when NOTICE_STATS_URL is set, the app sends one request per device per day with no cookie, no id and
 //     no child data (only the page name). It stays off until the owner turns it on and updates the privacy policy.
 (() => {
-  const NOTICE_STATS_URL = '';                      // e.g. 'https://<code>.goatcounter.com/count' (see docs/notice-and-stats.md)
+  const NOTICE_STATS_URL = 'https://peachplay.goatcounter.com/count';                      // e.g. 'https://<code>.goatcounter.com/count' (see docs/notice-and-stats.md)
   const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   const txt = (o) => (o && typeof o === 'object' ? (o[S.lang] || o.en || '') : '');
   const esc = (s) => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
