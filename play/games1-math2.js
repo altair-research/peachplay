@@ -21,7 +21,7 @@ G1({
       quiz(this, { ask: B('What comes next in the repeating pattern?', '반복되는 패턴에서 다음에 올 것은?'), show: `<div class="train pat">${seq.slice(0, total).map(s => `<div class="pc">${s}</div>`).join('')}<div class="pc gap">?</div></div>`, opts: [ans, ...ds].map(c => ({ html: `<span class="emo">${c}</span>`, ok: c === ans })), cls: 'shapes', after: B(`The pattern repeats: ${unit}.`, `패턴이 반복돼요: ${unit}.`), onCorrect() { const g = $('.pc.gap'); if (g) { g.classList.remove('gap'); g.textContent = ans; } } });
     } else {
       const g = pick([1, 2]), e = pick(['🟦', '🟩', '🟨']), rows = [1, 2, 3].map(i => g === 1 ? i : i * 2), ans = g === 1 ? 4 : 8;
-      quiz(this, { ask: B('The pattern keeps growing. How many in the next one?', '패턴이 계속 커져요. 다음 그림에는 몇 개가 있을까요?'), show: `<div class="growrow">${rows.map(n => `<div class="grow">${'<span>' + e + '</span>'.repeat(0)}${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`, opts: O(ans, [ans - 1, ans + 1, ans + 2]), after: B(`Add ${g === 1 ? 1 : 2} each time: ${ans}.`, `${g === 1 ? 1 : 2}개씩 늘어요: ${ans}.`) });
+      quiz(this, { ask: B('The pattern keeps growing. How many in the next one?', '패턴이 계속 커져요. 다음 그림에는 몇 개가 있을까요?'), show: `<div class="growrow">${rows.map(n => `<div class="grow">${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`, opts: O(ans, [ans - 1, ans + 1, ans + 2]), after: B(`Add ${g === 1 ? 1 : 2} each time: ${ans}.`, `${g === 1 ? 1 : 2}개씩 늘어요: ${ans}.`) });
     }
   }
 });
@@ -39,7 +39,7 @@ G1({
     const lv = lvl('shapeattr'), kind = pick(lv === 1 ? ['name', 'name', 'sides', 'odd'] : ['sides', 'define', 'turn', 'faces', 'odd', 'name']);
     const polys = [['triangle', 3], ['square', 4], ['rectangle', 4], ['pentagon', 5], ['hexagon', 6]];
     if (kind === 'name') {
-      const keys = ['circle', 'square', 'triangle', 'rectangle', 'hexagon', 'half', 'quarter'], t = pick(keys), ds = others(keys, t, 2);
+      const keys = ['circle', 'square', 'triangle', 'rectangle', 'hexagon', 'half', 'quarter'], t = pick(keys), ds = others(keys.filter(k => !((t === 'square' && k === 'rectangle') || (t === 'rectangle' && k === 'square'))), t, 2);
       quiz(this, { ask: B(`Tap the ${SH1[t].n.en.toUpperCase()}.`, `${SH1[t].n.ko} 모양을 눌러요.`), askSay: B(`Tap the ${SH1[t].n.en}.`, `${SH1[t].n.ko} 모양을 눌러요.`), opts: [t, ...ds].map(k => ({ html: sh1(k, rnd(4) * 90 + rnd(2) * 15, 1, pick(SHAPE_COLORS), rnd(2) === 0), ok: k === t })), cls: 'shapes', after: B(`That is a ${SH1[t].n.en}.`, `${SH1[t].n.ko} 모양이에요.`), vocab: SH1[t].n.en });
     } else if (kind === 'sides') {
       const [k, n] = pick(polys), corner = rnd(2) === 0;
@@ -54,7 +54,7 @@ G1({
       const info = { cube: 6, cone: 1, cylinder: 2, sphere: 0 }, k = pick(Object.keys(info)), thing = pick(SOLIDS[k].things);
       quiz(this, { ask: B(`How many flat faces does a ${SOLIDS[k].n.en} have?`, `${SOLIDS[k].n.ko}에는 평평한 면이 몇 개 있을까요?`), show: `<span class="emo">${thing[0]}</span>`, opts: numO(info[k], [0, 1, 2, 4, 6, 8].filter(v => v !== info[k]), 0, 8), after: B(`A ${SOLIDS[k].n.en} has ${info[k]} flat ${info[k] === 1 ? 'face' : 'faces'}.`, `${SOLIDS[k].n.ko}의 평평한 면은 ${info[k]}개예요.`), vocab: SOLIDS[k].n.en });
     } else {
-      const keys = ['circle', 'square', 'triangle', 'rectangle', 'hexagon'], f = pick(keys), g = pick(keys.filter(x => x !== f)), oddAt = rnd(4);
+      const keys = ['circle', 'square', 'triangle', 'rectangle', 'hexagon'], f = pick(keys), g = pick(keys.filter(x => x !== f && !(['square', 'rectangle'].includes(f) && ['square', 'rectangle'].includes(x)))), oddAt = rnd(4);
       const opts = Array.from({ length: 4 }, (_, i) => ({ html: sh1(i === oddAt ? g : f, rnd(4) * 40, [0.8, 1, 0.9, 1.05][i], SHAPE_COLORS[(i + rnd(3)) % 5], rnd(2) === 0), ok: i === oddAt }));
       quiz(this, { ask: B('Which shape does not belong?', '어느 모양이 다른 모양일까요?'), opts, cls: 'shapes', after: B(`Three are ${SH1[f].n.en}s.`, `세 개는 ${SH1[f].n.ko} 모양이에요.`) });
     }
@@ -83,7 +83,7 @@ G1({
   play() {
     const lv = lvl('shapecompose'), cp = pick(lv === 1 ? COMPS.filter(c => c.parts.length <= 2) : COMPS), kind = lv === 1 ? 'make' : pick(['make', 'whatpieces', 'count']);
     const sameShape = (a, b) => a.n.en === b.n.en && ((a.circle ? 1 : 0) === (b.circle ? 1 : 0)) || (a.circle && b.circle) || a.shape === b.shape;
-    const other = (n) => shuffle(COMPS.filter(c => !sameShape(c, cp))).filter((c, i, ar) => ar.findIndex(d => d.n.en === c.n.en && d.shape.slice(0, 6) === c.shape.slice(0, 6)) === i).slice(0, n);
+    const other = (n) => shuffle(COMPS.filter(c => !sameShape(c, cp) && c.what.en !== cp.what.en)).filter((c, i, ar) => ar.findIndex(d => d.n.en === c.n.en && d.shape.slice(0, 6) === c.shape.slice(0, 6)) === i).slice(0, n);
     if (kind === 'make') {
       const ds = other(2); quiz(this, { ask: B('What shape can you make with these pieces?', '이 조각들로 어떤 모양을 만들 수 있을까요?'), show: compApart(cp), opts: [cp, ...ds].map((c, i) => ({ html: compWhole(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make a ${L(cp.n)}.`, `${cp.what.ko}로 ${cp.n.ko}을 만들 수 있어요.`) });
     } else if (kind === 'whatpieces') {
@@ -211,8 +211,8 @@ G1({
       const k = pick(['penny', 'nickel', 'dime', 'quarter']);
       quiz(this, { ask: B(`How many cents is a ${COINS[k].n.en.toUpperCase()} worth?`, `${COINS[k].n.ko}의 값은 몇 센트일까요?`), askSay: B(`How many cents is a ${COINS[k].n.en} worth?`, `${COINS[k].n.ko}의 값은 몇 센트일까요?`), show: coinSvg(k), opts: [1, 5, 10, 25].map(v => ({ html: `<span class="num">${v}¢</span>`, ok: v === COINS[k].v })).filter((o, i, ar) => true).slice(0, 4), after: B(`A ${COINS[k].n.en} is ${COINS[k].v} cents.`, `${COINS[k].n.ko}의 값은 ${COINS[k].v}센트예요.`), vocab: COINS[k].n.en });
     } else if (kind === 'equal') {
-      const sets = [[['nickel', 'nickel', 'nickel', 'nickel', 'nickel'], ['quarter']], [['dime', 'dime', 'nickel'], ['quarter']], [['penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny'], ['dime']], [['dime', 'dime'], ['nickel', 'nickel', 'nickel', 'nickel']]], [a, b] = pick(sets);
-      quiz(this, { ask: B('Are these worth the SAME amount?', '이 둘은 값이 같을까요?'), show: `<div class="story">${coinRow(a)}<span class="op">=?</span>${coinRow(b)}</div>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 같아요' : 'Yes, the same'}</span>`, ok: true }, { html: `<span class="word">${S.lang === 'ko' ? '아니요, 달라요' : 'No, different'}</span>`, ok: false }], cls: 'words', after: B(`${coinTotal(a)}¢ = ${coinTotal(b)}¢`, `${coinTotal(a)}¢ = ${coinTotal(b)}¢`) });
+      const sets = [[['nickel', 'nickel', 'nickel', 'nickel', 'nickel'], ['quarter']], [['dime', 'dime', 'nickel'], ['quarter']], [['penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny'], ['dime']], [['dime', 'dime'], ['nickel', 'nickel', 'nickel', 'nickel']], [['dime', 'dime', 'dime'], ['quarter']], [['nickel', 'nickel', 'nickel', 'nickel'], ['quarter']], [['penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny'], ['dime']], [['dime', 'nickel'], ['dime', 'dime']]], [a, b] = pick(sets), same = coinTotal(a) === coinTotal(b);
+      quiz(this, { ask: B('Are these worth the SAME amount?', '이 둘은 값이 같을까요?'), show: `<div class="story">${coinRow(a)}<span class="op">=?</span>${coinRow(b)}</div>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 같아요' : 'Yes, the same'}</span>`, ok: same }, { html: `<span class="word">${S.lang === 'ko' ? '아니요, 달라요' : 'No, different'}</span>`, ok: !same }], cls: 'words', after: B(`${coinTotal(a)}¢ ${same ? '=' : '≠'} ${coinTotal(b)}¢`, `${coinTotal(a)}¢ ${same ? '=' : '≠'} ${coinTotal(b)}¢`) });
     } else {
       const mk = () => { const pool = ['penny', 'nickel', 'dime', 'quarter'], n = 1 + rnd(3), l = []; for (let i = 0; i < n; i++) l.push(pick(pool)); return l; };
       let a = mk(), b = mk(), g = 0; while ((coinTotal(a) === coinTotal(b) || coinTotal(a) > 60 || coinTotal(b) > 60) && g++ < 60) { a = mk(); b = mk(); }

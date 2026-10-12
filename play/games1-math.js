@@ -42,7 +42,7 @@ G1({
       quiz(this, { ask: up ? B('Count by tens. What comes next?', '10씩 뛰어 세어요. 다음 수는?') : B('Count back by tens. What comes next?', '10씩 거꾸로 뛰어 세어요. 다음 수는?'), show: trainHtml(seq, 3), opts: O(ans, [ans + (up ? -9 : 9), ans + 1, ans - 1]), after: B(`${ans}`, `${ans}`) });
     } else {
       const n = 99 + rnd(20), after = rnd(2) === 0, ans = after ? n + 1 : n - 1;
-      quiz(this, { ask: after ? B(`What number comes just after ${n}?`, `${n} 바로 다음 수는?`) : B(`What number comes just before ${n + 1}?`, `${n + 1} 바로 앞의 수는?`), show: '', opts: O(ans, [ans + 1, ans - 1, ans + 10]), after: B(`${ans}`, `${ans}`) });
+      quiz(this, { ask: after ? B(`What number comes just after ${n}?`, `${n} 바로 다음 수는?`) : B(`What number comes just before ${n}?`, `${n} 바로 앞의 수는?`), show: '', opts: O(ans, [ans + 1, ans - 1, ans + 10]), after: B(`${ans}`, `${ans}`) });
     }
   }
 });
@@ -84,7 +84,7 @@ G1({
       quiz(this, { ask: B(`Ten and ${m - 10} more. What number is it?`, `십 하나와 낱개 ${m - 10}개. 어떤 수일까요?`), show: `<div class="story">${frame10(10, '🍑')}<span class="op">+</span><div class="grp sm">${'<span>🍑</span>'.repeat(m - 10)}</div></div>`, opts: numO(m, [m - 10, m + 10, m - 1, m + 1], 11, 20), after: B(`Ten and ${m - 10} make ${m}.`, `10 + ${m - 10} = ${m}.`) });
     } else if (kind === 'tenwords') {
       const k = 2 + rnd(8);
-      quiz(this, { ask: B(`${k} tens is how many?`, `10이 ${k}개면 모두 얼마일까요?`), show: `<div class="b10"><div class="rods">${'<i class="rod"></i>'.repeat(k)}</div></div>`, opts: numO(k * 10, [k, k * 10 + 1, k * 100], 10, 900), after: B(`${k} tens is ${k * 10}.`, `10이 ${k}개이면 ${k * 10}.`) });
+      quiz(this, { ask: B(`${k} tens is how many?`, `10이 ${k}개면 모두 얼마일까요?`), show: `<div class="b10"><div class="rods">${'<i class="rod"></i>'.repeat(k)}</div></div>`, opts: numO(k * 10, [k, k * 10 + 1, k * 100], 1, 900), after: B(`${k} tens is ${k * 10}.`, `10이 ${k}개이면 ${k * 10}.`) });
     } else if (kind === 'ones') {
       const k = 10 + 10 * rnd(5);
       quiz(this, { ask: B(`${k} ones is the same as how many tens?`, `낱개 ${k}개는 10개씩 묶음 몇 개와 같을까요?`), show: '', opts: numO(k / 10, [k, k / 10 + 1, k / 10 - 1], 1, 20), after: B(`${k} ones = ${k / 10} ${k / 10 === 1 ? 'ten' : 'tens'}.`, `낱개 ${k}개 = 10개씩 묶음 ${k / 10}개.`) });
@@ -154,14 +154,14 @@ G1({
     const lv = lvl('wordprob'), top = lv === 1 ? 10 : 20, [n1, k1] = pick(WP_NAMES), [n2, k2] = pick(WP_NAMES.filter(x => x[0] !== n1)), [it, ik, ie] = pick(WP_ITEMS);
     const kinds = lv === 1 ? ['addR', 'addC', 'subR', 'subC', 'together'] : ['addR', 'addC', 'addS', 'subR', 'subC', 'subS', 'compare', 'together'];
     const kind = pick(kinds); let a, b, c, ask, ansV, ko;
-    if (kind === 'addR') { a = 1 + rnd(top - 2); b = 1 + rnd(top - a - 1); c = a + b; ansV = c; ask = B(`${n1} had ${a} ${it}. A friend gave ${n1} ${b} more. How many does ${n1} have now?`, `${k1}에게 ${ik} ${a}개가 있었어요. 친구가 ${b}개를 더 줬어요. 지금 모두 몇 개일까요?`); }
-    else if (kind === 'addC') { a = 1 + rnd(top - 3); c = a + 2 + rnd(top - a - 1); b = c - a; ansV = b; ask = B(`${n1} had ${a} ${it}. After getting some more, ${n1} had ${c}. How many did ${n1} get?`, `${k1}에게 ${ik} ${a}개가 있었어요. 몇 개를 더 받아서 ${c}개가 되었어요. 몇 개를 받았을까요?`); }
+    if (kind === 'addR') { a = 2 + rnd(top - 3); b = 1 + rnd(top - a - 1); c = a + b; ansV = c; ask = B(`${n1} had ${a} ${it}. A friend gave ${n1} ${b} more. How many does ${n1} have now?`, `${k1}에게 ${ik} ${a}개가 있었어요. 친구가 ${b}개를 더 줬어요. 지금 모두 몇 개일까요?`); }
+    else if (kind === 'addC') { a = 2 + rnd(top - 4); c = a + 2 + rnd(top - a - 1); b = c - a; ansV = b; ask = B(`${n1} had ${a} ${it}. After getting some more, ${n1} had ${c}. How many did ${n1} get?`, `${k1}에게 ${ik} ${a}개가 있었어요. 몇 개를 더 받아서 ${c}개가 되었어요. 몇 개를 받았을까요?`); }
     else if (kind === 'addS') { b = 2 + rnd(top - 4); c = b + 2 + rnd(top - b - 1); a = c - b; ansV = a; ask = B(`${n1} had some ${it}. Then ${n1} got ${b} more. Now ${n1} has ${c}. How many did ${n1} have at first?`, `${k1}에게 ${ik} 몇 개가 있었어요. ${b}개를 더 받아서 지금 ${c}개예요. 처음에 몇 개 있었을까요?`); }
     else if (kind === 'subR') { a = 3 + rnd(top - 2); b = 1 + rnd(a - 1); c = a - b; ansV = c; ask = B(`${n1} had ${a} ${it}. ${n1} gave ${b} to ${n2}. How many are left?`, `${k1}에게 ${ik} ${a}개가 있었어요. ${k2}에게 ${b}개를 줬어요. 몇 개 남았을까요?`); }
     else if (kind === 'subC') { a = 4 + rnd(top - 3); c = 1 + rnd(a - 2); b = a - c; ansV = b; ask = B(`${n1} had ${a} ${it}. ${n1} gave some to ${n2}. Now ${n1} has ${c}. How many did ${n1} give away?`, `${k1}에게 ${ik} ${a}개가 있었어요. ${k2}에게 몇 개를 줬더니 ${c}개가 남았어요. 몇 개를 줬을까요?`); }
     else if (kind === 'subS') { b = 1 + rnd(top - 4); c = 1 + rnd(top - b - 1); a = b + c; ansV = a; ask = B(`${n1} had some ${it}. ${n1} gave away ${b}. Now ${n1} has ${c}. How many did ${n1} have to start?`, `${k1}에게 ${ik} 몇 개가 있었어요. ${b}개를 줬더니 ${c}개가 남았어요. 처음에 몇 개 있었을까요?`); }
     else if (kind === 'compare') { a = 2 + rnd(top - 4); c = a + 1 + rnd(top - a - 1); ansV = c - a; ask = B(`${n1} has ${a} ${it}. ${n2} has ${c}. How many more does ${n2} have than ${n1}?`, `${k1}에게 ${ik} ${a}개, ${k2}에게 ${c}개가 있어요. ${k2}에게는 ${k1}보다 몇 개 더 많을까요?`); }
-    else { a = 1 + rnd(top - 2); b = 1 + rnd(top - a - 1); c = a + b; const unknownPart = rnd(2) === 0; ansV = unknownPart ? b : c; ask = unknownPart ? B(`There are ${c} ${it} in all. ${a} are in a box and the rest are on a table. How many are on the table?`, `${ik} 모두 ${c}개가 있어요. ${a}개는 상자에, 나머지는 탁자에 있어요. 탁자에는 몇 개 있을까요?`) : B(`${a} ${it} are in a box and ${b} are on a table. How many ${it} in all?`, `${ik} ${a}개는 상자에, ${b}개는 탁자에 있어요. 모두 몇 개일까요?`); }
+    else { a = 2 + rnd(top - 4); b = 2 + rnd(top - a - 2); c = a + b; const unknownPart = rnd(2) === 0; ansV = unknownPart ? b : c; ask = unknownPart ? B(`There are ${c} ${it} in all. ${a} are in a box and the rest are on a table. How many are on the table?`, `${ik} 모두 ${c}개가 있어요. ${a}개는 상자에, 나머지는 탁자에 있어요. 탁자에는 몇 개 있을까요?`) : B(`${a} ${it} are in a box and ${b} are on a table. How many ${it} in all?`, `${ik} ${a}개는 상자에, ${b}개는 탁자에 있어요. 모두 몇 개일까요?`); }
     quiz(this, { ask, show: `<span class="emo">${ie}</span>`, opts: numO(ansV, [ansV + 1, ansV - 1, (a || 0) + (b || 0), Math.abs((a || 0) - (b || 0)), c], 0, top), after: B(`The answer is ${ansV}.`, `답은 ${ansV}.`) });
   }
 });
@@ -207,7 +207,7 @@ G1({
     else if (kind === 'op') { const x = 2 + rnd(top - 2), y = 1 + rnd(x - 1), z = x - y, shown = truth ? z : z + pick([-1, 1, 2]); eq = pick([`${Math.max(0, shown)} = ${x} − ${y}`, `${x} − ${y} = ${Math.max(0, shown)}`]); if (Math.max(0, shown) === z && !truth) eq = `${z + 1} = ${x} − ${y}`; }
     else if (kind === 'comm') { const p = 1 + rnd(top - 2), q = 1 + rnd(top - p - 1); eq = truth ? `${p} + ${q} = ${q} + ${p}` : `${p} + ${q} = ${q} + ${p + 1}`; }
     else if (kind === 'two') { const p = 1 + rnd(8), q = 1 + rnd(8), s = p + q, r = 1 + rnd(s - 1), t = s - r + (truth ? 0 : pick([-1, 1, 2])); eq = `${p} + ${q} = ${r} + ${Math.max(0, t)}`; if (!truth && r + Math.max(0, t) === s) eq = `${p} + ${q} = ${r} + ${s - r + 1}`; }
-    else { const x = 6 + rnd(top - 5), y = 1 + rnd(5), p = 1 + rnd(5), v = x - y, w = p + (truth ? v - p >= 0 ? v - p : 0 : v - p + 1); eq = `${x} − ${y} = ${p} + ${Math.max(0, w)}`; }
+    else { const x = 6 + rnd(top - 5), y = 1 + rnd(Math.min(5, x - 2)), v = x - y, p = 1 + rnd(v - 1), w = truth ? v - p : v - p + 1; eq = `${x} − ${y} = ${p} + ${Math.max(0, w)}`; }
     const parse = (s) => { const [l, r] = s.split(' = '); const ev = (t) => { const m = t.match(/^(\d+)(?: ([+−]) (\d+))?$/); if (!m) return NaN; return m[2] === '+' ? +m[1] + +m[3] : m[2] === '−' ? +m[1] - +m[3] : +m[1]; }; return ev(l) === ev(r); };
     const real = parse(eq), tr = S.lang === 'ko' ? '맞아요 ✅' : 'True ✅', fa = S.lang === 'ko' ? '틀려요 ❌' : 'False ❌';
     quiz(this, { ask: B('Is this equation true or false?', '이 식은 맞을까요, 틀릴까요? 양쪽을 비교해 봐요.'), show: bigEq(eq), opts: [{ html: `<span class="word">${tr}</span>`, ok: real }, { html: `<span class="word">${fa}</span>`, ok: !real }], cls: 'words', after: real ? B('Both sides are the same amount.', '양쪽의 값이 같아요.') : B('The two sides are not the same.', '양쪽의 값이 달라요.') });

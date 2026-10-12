@@ -22,7 +22,7 @@ G1S({
       const t = pick([20, 30, 40, 80, 90, 100]), hot = t >= 80;
       quiz(this, { ask: B(`The thermometer shows ${t}°F. What is the weather like?`, `온도계가 ${t}°F를 가리켜요. 날씨는 어떨까요?`), show: thermoSvg(t), opts: sOpts(hot ? tx('hot', '더워요') : tx('cold', '추워요'), [hot ? tx('cold', '추워요') : tx('hot', '더워요')]), cls: 'words', after: B(hot ? 'High numbers mean hot weather.' : 'Low numbers mean cold weather.', hot ? '숫자가 크면 더운 날씨예요.' : '숫자가 작으면 추운 날씨예요.') });
     } else if (kind === 'tool') {
-      const tools = [[thermoSvg(70), B('thermometer', '온도계'), B('How warm or cold it is', '얼마나 덥고 추운지')], [vaneSvg(50), B('wind vane', '풍향계'), B('Which way the wind blows', '바람이 어느 쪽으로 부는지')], [gaugeSvg(50), B('rain gauge', '강수량계'), B('How much rain fell', '비가 얼마나 왔는지')]], t = pick(tools);
+      const tools = [[thermoSvg(70), B('thermometer', '온도계'), B('How warm or cold it is', '얼마나 덥고 추운지')], [vaneSvg(50), B('wind vane', '풍향계'), B('The direction the wind comes from', '바람이 어느 쪽에서 불어오는지')], [gaugeSvg(50), B('rain gauge', '강수량계'), B('How much rain fell', '비가 얼마나 왔는지')]], t = pick(tools);
       quiz(this, { ask: B(`Which tool measures this? ${L(t[2])}`, `어떤 도구로 재나요? ${t[2].ko}`), askSay: B(`Which tool measures this? ${L(t[2])}`, `어떤 도구로 재나요? ${t[2].ko}`), opts: tools.map(x => ({ html: x[0], label: x[1], ok: x === t })), cls: 'shapes tools', after: B(`A ${t[1].en} measures it.`, `${t[1].ko}로 재요.`), vocab: t[1].en });
     } else {
       const days = shuffle([0, 1, 2, 3, 4]).slice(0, 3), seq = Array.from({ length: 5 }, () => WEATHER[days[rnd(3)]]), cnt = {}; seq.forEach(w => cnt[w[0]] = (cnt[w[0]] || 0) + 1);
@@ -72,7 +72,7 @@ G1S({
 
 // ---------- 4. Magnet power ----------
 const MAG_YES = [['📎', B('paper clip', '클립')], ['🔩', B('nut and bolt', '볼트와 너트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('wrench', '렌치')]];
-const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🪨', B('rock', '돌')]];
+const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🖍️', B('crayon', '크레용')]];
 const barMagnet = (dir, x) => `<g transform="translate(${x} 0)"><rect x="0" y="0" width="38" height="22" fill="${dir ? '#ef476f' : '#118ab2'}"/><rect x="38" y="0" width="38" height="22" fill="${dir ? '#118ab2' : '#ef476f'}"/><rect x="0" y="0" width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/></g>`;
 G1S({
   id: 'magnets1', icon: '🧲', title: B('Magnet Power', '자석의 힘'), sub: B('Attract and repel', '끌어당기고 밀어내요'), u: 'Magnets',
@@ -134,7 +134,7 @@ G1S({
 });
 
 // ---------- 7. Plant parts and needs ----------
-const plantSvg = () => `<svg viewBox="0 0 120 150" class="plantsvg"><path d="M60 110 L60 60" stroke="#3a8f3a" stroke-width="6" stroke-linecap="round"/><ellipse cx="42" cy="82" rx="16" ry="8" transform="rotate(-30 42 82)" fill="#5cb85c"/><ellipse cx="78" cy="72" rx="16" ry="8" transform="rotate(30 78 72)" fill="#5cb85c"/><circle cx="60" cy="44" r="12" fill="#ffb703" stroke="#e08e00" stroke-width="2"/><g fill="#ff7a8a"><circle cx="60" cy="26" r="9"/><circle cx="78" cy="44" r="9"/><circle cx="60" cy="62" r="9"/><circle cx="42" cy="44" r="9"/></g><circle cx="60" cy="44" r="8" fill="#ffd166"/><path d="M60 110 L45 134 M60 110 L60 140 M60 110 L76 134" stroke="#8b5a2b" stroke-width="4" stroke-linecap="round"/><rect x="8" y="106" width="104" height="5" fill="#8b5a2b" opacity=".35"/><g font-size="12" font-weight="800" fill="#1d3557" text-anchor="middle"><text x="60" y="14">A</text><text x="102" y="46">B</text><text x="22" y="86">C</text><text x="60" y="148">D</text></g></svg>`;
+const plantSvg = () => `<svg viewBox="0 0 120 150" class="plantsvg"><path d="M60 110 L60 60" stroke="#3a8f3a" stroke-width="6" stroke-linecap="round"/><ellipse cx="42" cy="82" rx="16" ry="8" transform="rotate(-30 42 82)" fill="#5cb85c"/><ellipse cx="78" cy="72" rx="16" ry="8" transform="rotate(30 78 72)" fill="#5cb85c"/><circle cx="60" cy="44" r="12" fill="#ffb703" stroke="#e08e00" stroke-width="2"/><g fill="#ff7a8a"><circle cx="60" cy="26" r="9"/><circle cx="78" cy="44" r="9"/><circle cx="60" cy="62" r="9"/><circle cx="42" cy="44" r="9"/></g><circle cx="60" cy="44" r="8" fill="#ffd166"/><path d="M60 110 L45 134 M60 110 L60 140 M60 110 L76 134" stroke="#8b5a2b" stroke-width="4" stroke-linecap="round"/><rect x="8" y="106" width="104" height="5" fill="#8b5a2b" opacity=".35"/><g font-size="12" font-weight="800" fill="#1d3557" text-anchor="middle"><text x="60" y="14">A</text><text x="75" y="101">B</text><text x="22" y="86">C</text><text x="60" y="148">D</text></g></svg>`;
 const PLANT_PARTS = { A: B('flower', '꽃'), B: B('stem', '줄기'), C: B('leaf', '잎'), D: B('roots', '뿌리') };
 G1S({
   id: 'plants1', icon: '🌱', title: B('Plant Parts and Needs', '식물의 부분과 필요'), sub: B('Root, stem, leaf, flower', '뿌리, 줄기, 잎, 꽃'), u: 'Plants',
@@ -157,7 +157,7 @@ G1S({
 });
 
 // ---------- 8. Animal needs ----------
-const YOUNG = [['🐔', B('hen', '암탉'), B('chick', '병아리')], ['🐱', B('cat', '고양이'), B('kitten', '새끼 고양이')], ['🐶', B('dog', '개'), B('puppy', '강아지')], ['🦆', B('duck', '오리'), B('duckling', '새끼 오리')], ['🐸', B('frog', '개구리'), B('tadpole', '올챙이')], ['🐑', B('sheep', '양'), B('lamb', '새끼 양')], ['🐴', B('horse', '말'), B('foal', '망아지')], ['🐄', B('cow', '소'), B('calf', '송아지')], ['🐻', B('bear', '곰'), B('cub', '새끼 곰')], ['🦌', B('deer', '사슴'), B('fawn', '새끼 사슴')]];
+const YOUNG = [['🐔', B('chicken', '닭'), B('chick', '병아리')], ['🐱', B('cat', '고양이'), B('kitten', '새끼 고양이')], ['🐶', B('dog', '개'), B('puppy', '강아지')], ['🦆', B('duck', '오리'), B('duckling', '새끼 오리')], ['🐸', B('frog', '개구리'), B('tadpole', '올챙이')], ['🐑', B('sheep', '양'), B('lamb', '새끼 양')], ['🐴', B('horse', '말'), B('foal', '망아지')], ['🐄', B('cow', '소'), B('calf', '송아지')], ['🐻', B('bear', '곰'), B('cub', '새끼 곰')], ['🦌', B('deer', '사슴'), B('fawn', '새끼 사슴')]];
 G1S({
   id: 'animals1', icon: '🐾', title: B('Animal Needs', '동물에게 필요한 것'), sub: B('Air, water, food, shelter', '공기, 물, 먹이, 집'), u: 'Animals',
   play() {
@@ -166,8 +166,8 @@ G1S({
       const needs = [['💨', B('air', '공기')], ['💧', B('water', '물')], ['🍖', B('food', '먹이')], ['🏠', B('shelter (a safe home)', '집 (안전한 곳)')]], bad = [['📺', B('television', '텔레비전')], ['🎮', B('video game', '게임')], ['🪁', B('kite', '연')]], n = pick(needs), b = pick(bad);
       quiz(this, { ask: B('Which one do animals need to live?', '동물이 살아가는 데 필요한 것은?'), opts: [n, ...shuffle(bad).slice(0, 2)].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B('Animals need air, water, food, and shelter.', '동물에게는 공기, 물, 먹이, 집이 필요해요.') });
     } else if (kind === 'shelter') {
-      const homes = [['🐦', B('A bird', '새'), B('a nest', '둥지')], ['🐝', B('Bees', '벌'), B('a hive', '벌집')], ['🐻', B('A bear', '곰'), B('a cave', '동굴')], ['🐶', B('A dog', '개'), B('a doghouse', '개집')]], h = pick(homes), ds = shuffle(homes.filter(x => x !== h)).slice(0, 2);
-      quiz(this, { ask: B(`Where does ${L(h[1]).toLowerCase()} find shelter?`, `${h[1].ko}의 집은 어디일까요?`), show: `<span class="emo">${h[0]}</span>`, opts: [h, ...ds].map((x, i) => ({ html: `<span class="word">${L(x[2])}</span>`, ok: i === 0 })), cls: 'words', after: B(`${L(h[1])} lives in ${L(h[2])}.`, `${h[2].ko}: ${h[1].ko}의 집이에요.`) });
+      const homes = [['🐦', B('A bird', '새'), B('a nest', '둥지')], ['🐝', B('Honey bees', '꿀벌'), B('a hive', '벌집')], ['🐻', B('A bear', '곰'), B('a cave', '동굴')], ['🐶', B('A dog', '개'), B('a doghouse', '개집')]], h = pick(homes), ds = shuffle(homes.filter(x => x !== h)).slice(0, 2);
+      quiz(this, { ask: B(`Where ${h[0] === '🐝' ? 'do' : 'does'} ${L(h[1]).toLowerCase()} find shelter?`, `${h[1].ko}의 집은 어디일까요?`), show: `<span class="emo">${h[0]}</span>`, opts: [h, ...ds].map((x, i) => ({ html: `<span class="word">${L(x[2])}</span>`, ok: i === 0 })), cls: 'words', after: B(`${L(h[1])} ${h[0] === '🐝' ? 'live' : 'lives'} in ${L(h[2])}.`, `${h[2].ko}: ${h[1].ko}의 집이에요.`) });
     } else if (kind === 'both') {
       const qs = [[B('Both plants and animals need ___.', '식물과 동물이 모두 필요로 하는 것은? ___'), tx('water', '물'), [tx('shelter', '집'), tx('a leash', '목줄')]], [B('Animals need food, but plants make their own food using ___.', '동물에게는 먹이가 필요하지만 식물은 ___(으)로 스스로 양분을 만들어요.'), tx('sunlight', '햇빛'), [tx('shelter', '집'), tx('toys', '장난감')]], [B('Both plants and animals need ___.', '식물과 동물이 모두 필요로 하는 것은? ___'), tx('air', '공기'), [tx('a nest', '둥지'), tx('a pot', '화분')]]], q = pick(qs);
       quiz(this, { ask: q[0], opts: sOpts(q[1], q[2]), cls: 'words', after: B('Plants and animals share some needs and have some different needs.', '식물과 동물은 같은 것도, 다른 것도 필요로 해요.') });
