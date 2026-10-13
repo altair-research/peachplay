@@ -1,0 +1,23 @@
+.d-dialog { position: fixed; inset: 0; box-sizing: border-box; margin: auto; padding: 0; width: min(100%, 850px); max-width: 100%; height: 100vh; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 16px; background: #fffaf2; color: #302d3a; overflow: hidden; font-family: system-ui, sans-serif; }
+.d-dialog::backdrop { background: #20203399; }
+.d-panel { box-sizing: border-box; display: flex; flex-direction: column; height: 100%; min-height: 0; padding: 12px; gap: 8px; }
+.d-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0; }
+.d-header h2 { margin: 0; font-size: clamp(18px, 3.2vw, 26px); }
+.d-close, .d-speak { box-sizing: border-box; min-width: 48px; min-height: 48px; border: 2px solid #80623e; border-radius: 12px; background: #fff; color: #302d3a; font: inherit; cursor: pointer; }
+.d-close { padding: 6px 10px; flex-shrink: 0; }
+.d-label { display: flex; flex-direction: column; gap: 3px; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.d-search, .d-topic { box-sizing: border-box; width: 100%; min-height: 48px; padding: 8px; border: 2px solid #80623e; border-radius: 10px; background: #fff; color: #302d3a; font: 16px system-ui, sans-serif; }
+.d-note, .d-status { margin: 0; font-size: 13px; line-height: 1.4; flex-shrink: 0; }
+.d-status { min-height: 19px; font-weight: 600; }
+.d-list { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-content: start; padding: 3px; }
+.d-card { box-sizing: border-box; min-width: 0; padding: 8px; border: 1px solid #c4aa86; border-radius: 14px; background: #fff; }
+.d-icon { display: block; text-align: center; font-size: 40px; line-height: 1.3; }
+.d-word-row { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+.d-word { min-width: 0; flex: 1; overflow-wrap: anywhere; font-size: 16px; line-height: 1.3; }
+.d-word[lang=en] { font-weight: 700; }
+.d-speak { flex-shrink: 0; }
+.d-speak:disabled { opacity: .5; cursor: default; }
+.d-dialog :focus-visible { outline: 3px solid #195fbb; outline-offset: 2px; }
+.d-empty { grid-column: 1 / -1; }
+@media (min-width: 600px) { .d-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-color-scheme: dark) { .d-dialog { background: #242330; color: #fff5e6; } .d-card, .d-close, .d-speak, .d-search, .d-topic { background: #343340; color: #fff5e6; } }

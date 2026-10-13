@@ -5,6 +5,7 @@ const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', 
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
+  SESSION.review = null; NEXT_TOK++;
   $('#langBtn').textContent = T().switchTo; renderNav();
   document.documentElement.lang = S.lang;
   view().innerHTML = `
@@ -13,6 +14,7 @@ function home() {
     <div class="tag">${T().tagline}</div>
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${continueHtml()}
+    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id)) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
     <div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Like i-Ready: harder when right, easier when missed', 'i-Ready처럼 맞히면 어려워지고 틀리면 쉬워져요'))}</small></button></div>
     ${favHtml()}
@@ -22,10 +24,12 @@ function home() {
     <div id="subjtiles" class="menu">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
     ${prevGrade(kidGrade()) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
     <button class="link" id="find">${T().findStart}</button>
+    <button class="link" id="dict">📚 ${L(B('Picture Dictionary', '그림 사전'))}</button>
     <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
+  if ($('#reviewStart')) $('#reviewStart').onclick = startReview;
   $('#gsearch').oninput = (e) => {
     const q = e.target.value.trim().toLowerCase(), box = $('#gresults');
     if (!q) { box.innerHTML = ''; $('#subjtiles').style.display = ''; return; }
@@ -35,7 +39,7 @@ function home() {
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
-  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#adapt').onclick = adaptIntro; $('#find').onclick = intro;
+  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#dict').onclick = () => window.openDictionary && window.openDictionary(); $('#adapt').onclick = adaptIntro; $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   window.scrollTo(0, 0);
 }
@@ -150,7 +154,7 @@ function grownups() {
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };

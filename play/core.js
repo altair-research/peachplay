@@ -28,6 +28,10 @@ function cleanState(s) {                                  // keeps only known, w
   if (s.skin === 'peachy' || s.skin === 'explorer') o.skin = s.skin;
   if (['light', 'dark', 'system'].includes(s.theme)) o.theme = s.theme;
   if (Array.isArray(s.fav)) o.fav = s.fav.filter(x => typeof x === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x)).slice(0, 30);
+  if (Array.isArray(s.review)) {
+    const seen = new Set();
+    o.review = s.review.filter(x => isObj(x) && typeof x.key === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(x.key) && typeof x.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x.id) && Number.isInteger(x.lv) && x.lv >= 1 && x.lv <= 3 && !seen.has(x.key) && seen.add(x.key)).slice(-50).map(x => ({ key: x.key, id: x.id, lv: x.lv }));
+  }
   ['muted', 'introSeen', 'showK', 'sfxOff', 'voiceOff', 'calm', 'readable'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
   return o;
@@ -56,7 +60,7 @@ const shuffle = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--
 const others = (arr, not, n) => shuffle(arr.filter(x => x !== not)).slice(0, n);
 const stat = (id) => (S.stats[id] = S.stats[id] || freshStat());
 const DIAG = { active: false };                    // quick-check mode (see profile.js)
-const lvl = (id) => (DIAG.active ? (DIAG.lv || 1) : stat(id).level);
+const lvl = (id) => (DIAG.active ? (DIAG.lv || 1) : SESSION.review ? SESSION.review[SESSION.n].lv : stat(id).level);
 
 // Speech is always paired with visible text/visuals, so muted devices (and missing voices) still work.
 function say(text, lang, keepQueue) {
@@ -79,6 +83,17 @@ function addPeach() { S.peaches++; save(); renderPeaches(); }
 // 4 clean answers in a row -> level up (max 2); every 3rd miss -> level down.
 const MISS = {};                                     // games whose current round already logged a miss (so the finish is not logged twice)
 function record(id, ok) {
+  if (DIAG.active) return;
+  if (SESSION.review) {
+    if (ok) reviewSolved();
+    else MISS[id] = true;
+    return;
+  }
+  if (!ok && !MISS[id] && id !== 'blockpuzzle') { // puzzle score is not a first-attempt question; its bonus questions use their own IDs
+    const list = S.review = S.review || [];
+    list.push({ key: Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12), id, lv: lvl(id) });
+    S.review = list.slice(-50);
+  }
   if (!ok) MISS[id] = true;
   const s = stat(id);
   if (SESSION.id === id) { SESSION.done = (SESSION.done || 0) + (ok ? 1 : 0); }
@@ -92,7 +107,7 @@ function record(id, ok) {
 }
 
 // End of a round: a clean first-try finish counts as right; a round that had a miss counts as wrong once (not again if the miss was already logged).
-function recordFinal(id, missed) { if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
+function recordFinal(id, missed) { if (SESSION.review) { reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
 // ---- sound effects, mascot, confetti, session bar ----
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
@@ -148,6 +163,30 @@ S.stickers = S.stickers || [];
 // A play session = a few rounds of one game (or a mixed run), so rounds never repeat endlessly.
 const ROUNDS = 10;
 const SESSION = { id: null, n: 0, mix: false, done: 0 };
+// Generated rounds can contain closures and interactive state: store only game + level.
+function reviewSolved() {
+  const it = SESSION.review[SESSION.n];
+  if (!SESSION.reviewAnswered) { SESSION.done++; SESSION.reviewAnswered = true; }
+  S.review = (S.review || []).filter(x => x.key !== it.key); save();
+}
+function startReview() {
+  quitDiag();
+  const pool = (S.review || []).filter(x => x.id !== 'blockpuzzle' && gameById(x.id));
+  if (!pool.length) return home();
+  const items = Array.from({ length: ROUNDS }, (_, i) => pool[i % Math.min(pool.length, ROUNDS)]);
+  NEXT_TOK++;
+  Object.assign(SESSION, { review: items, n: 0, done: 0, mix: false, rounds: ROUNDS });
+  reviewStep();
+}
+function reviewStep() {
+  if (SESSION.n >= SESSION.rounds) {
+    SESSION.review = null;
+    view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${T().gotRight(SESSION.done, ROUNDS)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
+    $('#reviewHome').onclick = home; say(T().roundDone); return;
+  }
+  const it = SESSION.review[SESSION.n]; SESSION.id = it.id; SESSION.reviewAnswered = false;
+  MISS[it.id] = false; updateBar(); gameById(it.id).play();
+}
 const recent = {};                                   // per game: keys of the last rounds, to avoid repeats
 // true if this round's key was seen in the last rounds (caller should regenerate); gives up after 8 tries
 function dup(game, key) {
@@ -156,6 +195,7 @@ function dup(game, key) {
   game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
 }
 function launch(game, mix) {
+  SESSION.review = null; NEXT_TOK++;
   if (!DIAG.active && !mix) { S.last = game.id; save(); }                     // for the home screen's Continue button
   Object.keys(MISS).forEach(k => { MISS[k] = false; });
   Object.assign(SESSION, { id: game.id, n: 0, mix: !!mix, done: 0, rounds: mix ? Math.min(3, game.rounds || 3) : (game.rounds || ROUNDS) });
@@ -189,6 +229,8 @@ function nextButton(fn, opts = {}) {
     const go = () => {
       if (tok !== NEXT_TOK || !document.body.contains(btn)) return;
       NEXT_TOK++; SESSION.n++; updateBar();
+      if (SESSION.review) return reviewStep();
+      Object.keys(MISS).forEach(k => { MISS[k] = false; });
       const g = GAMES.find(x => x.id === SESSION.id);
       if (!g || SESSION.n < SESSION.rounds) return fn();
       return SESSION.mix ? surprise() : sessionEnd(g);
@@ -201,6 +243,7 @@ function nextButton(fn, opts = {}) {
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
 function quiz(game, item) {
+  MISS[game.id] = false;
   const askText = L(item.ask);
   const key = askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
   if (dup(game, key)) return game.play();

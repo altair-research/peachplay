@@ -42,4 +42,18 @@
 .m-play .m-slots{display:flex;gap:6px;margin-bottom:16px}
 .m-play .m-slots>.m-btn{width:48px;height:60px;font-size:32px;border-bottom:4px solid #344958}
 .m-play .m-ghost{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-110%);padding:8px;background:#eaf1ff;border:2px solid #1d4ed8;border-radius:12px;font-size:16px;max-width:180px}
+.m-play .m-fraction-model{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;height:176px;justify-content:center}
+.m-play .m-fraction-model>.m-btn{display:flex;align-items:center;gap:8px;min-height:72px;min-width:0}
+.m-play .m-fraction-model>.m-btn svg{width:calc(100% - 24px);height:48px;pointer-events:none}
+.m-play .m-circles{flex-direction:row}
+.m-play .m-circles>.m-btn{width:50%;flex-direction:column;gap:0;padding:2px}
+.m-play .m-fraction-model.m-circles>.m-btn svg{width:132px;max-width:100%;height:132px}
+.m-play .m-robot-board{display:grid;grid-template-columns:repeat(4,44px);gap:2px}
+.m-play .m-robot-board .m-btn{height:44px;padding:0;font-size:20px}
+.m-play .m-coding-panels{display:flex;align-items:center;gap:8px}
+.m-play .m-code-slots{display:grid;grid-template-columns:repeat(2,44px);gap:2px}
+.m-play .m-code-slots .m-btn{height:44px;padding:0;font-size:24px}
+.m-play:has(.m-robot-board) .m-prompt{font-size:16px;min-height:38px}
+.m-play:has(.m-robot-board) .m-feedback{min-height:40px;font-size:14px}
+.m-play:has(.m-robot-board) .m-heading{font-size:18px}
 @media(min-height:740px){.m-play{gap:10px}.m-play .m-work{gap:12px}.m-play .m-prompt{min-height:52px}.m-play .m-feedback{min-height:44px}}

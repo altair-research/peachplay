@@ -31,8 +31,9 @@
     function message(v) { feedback = text(v); }
     function change(fn) {
       const before = copy(state);
+      feedback = '';
       fn();
-      if (JSON.stringify(before) !== JSON.stringify(state)) { history.push(before); if (history.length > 60) history.shift(); feedback = ''; }
+      if (JSON.stringify(before) !== JSON.stringify(state)) { history.push(before); if (history.length > 60) history.shift(); }
     }
     function draw(focusKey) {
       root.innerHTML = `<div class="m-heading"><strong>${esc(text(tool.title))}</strong>${act('listen', words.listen, '', '🔊')}</div>
@@ -66,6 +67,7 @@
       else if (b.dataset.source !== undefined) { chosen = chosen === b.dataset.source ? null : b.dataset.source; feedback = chosen ? b.getAttribute('aria-label') : ''; }
       else if (b.dataset.drop !== undefined) {
         if (chosen !== null) put(chosen, b.dataset.drop);
+        else if (tool.tap && b.dataset.drop.startsWith('board')) change(() => tool.tap(state, b.dataset.drop));
         else if (tool.select) { chosen = tool.select(state, b.dataset.drop); feedback = chosen ? text(B('Selected. Move it or use a tool.', '골랐어요. 옮기거나 도구를 눌러요.')) : text(words.help); }
       }
       draw(key);
@@ -326,7 +328,90 @@
     check: s => s.slots.join('|') === 'c|a|t||'
   };
 
-  [cubes, patterns, baseten, clock, balance, letters].forEach(tool => registerGame({
+  // Integer units (LCM 2,3,4,6,8 = 24) keep every comparison exact.
+  const denominators = [2, 3, 4, 6, 8];
+  const fractions = {
+    id: 'mfractions', icon: '◔', title: B('Fraction Models', '분수 타일과 원'), sub: B('Parts of the same whole', '같은 전체를 나눠요'),
+    help: B('Choose a piece, then a row. Remove takes off the last piece. Bars and circles show the same whole.', '조각을 골라 줄에 놓아요. 빼기는 마지막 조각을 빼요. 막대와 원의 전체 크기는 같아요.'),
+    init: () => ({ rows: [[], []], selected: 0, circle: false }),
+    prompt: m => m === 1 ? B('Fill row A with two halves.', '반 조각 두 개로 A줄 전체를 채워요.') : m === 2 ? B('Make one half in A and the same amount with fourths in B.', 'A줄에 반 조각 하나, B줄에 같은 양의 4분의 1 조각을 놓아요.') : B('Explore equal parts of a whole.', '전체를 같은 크기 조각으로 나눠 보아요.'),
+    render({ state: s, chosen }) {
+      const model = s.rows.map((row, i) => {
+        let start = 0;
+        const parts = row.map((d, j) => {
+          const from = start; start += 24 / d;
+          if (!s.circle) return `<rect x="${from * 10}" y="0" width="${240 / d}" height="48" fill="${colors[j % 4]}" stroke="#344958"/><text x="${(from + 12 / d) * 10}" y="29" text-anchor="middle" font-size="14">1/${d}</text>`;
+          const point = u => [70 + 60 * Math.sin(u * Math.PI / 12), 70 - 60 * Math.cos(u * Math.PI / 12)];
+          const a = point(from), b = point(start);
+          return `<path d="M70 70 L${a.join(' ')} A60 60 0 0 1 ${b.join(' ')} Z" fill="${colors[j % 4]}" stroke="#344958"/>`;
+        }).join('');
+        const image = s.circle ? svg(`<circle cx="70" cy="70" r="60" fill="#fff" stroke="#344958"/>${parts}`, '0 0 140 140') : svg(`<rect width="240" height="48" fill="#fff" stroke="#344958"/>${parts}`, '0 0 240 48');
+        return target(`fraction${i}`, B(`Row ${i ? 'B' : 'A'}, ${sum(row.map(d => 24 / d))} of 24 equal units`, `${i ? 'B' : 'A'}줄, 같은 크기 24칸 중 ${sum(row.map(d => 24 / d))}칸`), `<b>${i ? 'B' : 'A'}</b>${image}`, `aria-pressed="${s.selected === i}"`);
+      }).join('');
+      return `<div class="m-fraction-model ${s.circle ? 'm-circles' : ''}">${model}</div><div class="m-tray">${denominators.map(d => source(`fractionpiece${d}`, B(`One ${d === 2 ? 'half' : 'piece: 1/' + d}`, `${d}분의 1 조각`), `1/${d}`, chosen === `fractionpiece${d}`)).join('')}</div><div class="m-tools">${act('model', s.circle ? B('Bars', '막대') : B('Circles', '원'))}${act('remove', words.remove)}</div>`;
+    },
+    select(s, d) { s.selected = +d.slice(8); return null; },
+    drop(s, src, dest, msg) {
+      if (!/^fraction[01]$/.test(dest) || !src.startsWith('fractionpiece')) return;
+      const d = +src.slice(13), i = +dest.slice(8);
+      if (!denominators.includes(d)) return;
+      if (sum(s.rows[i].map(n => 24 / n)) + 24 / d > 24) return msg(words.full);
+      s.rows[i].push(d); s.selected = i;
+    },
+    action(s, a) { if (a === 'model') s.circle = !s.circle; if (a === 'remove') s.rows[s.selected].pop(); },
+    check: (s, m) => m === 1 ? s.rows[0].join(',') === '2,2' : s.rows[0].join(',') === '2' && s.rows[1].join(',') === '4,4'
+  };
+
+  const commands = [B('Forward', '앞으로'), B('Turn left', '왼쪽 회전'), B('Turn right', '오른쪽 회전')];
+  const commandMarks = ['↑', '↶', '↷'];
+  const robotStart = () => ({ pos: 12, facing: 0, pc: 0, blocked: false });
+  function robotStep(s) {
+    if (s.pc >= s.code.length || s.blocked) return;
+    const c = s.code[s.pc++];
+    if (c === 1 || c === 2) { s.facing = (s.facing + (c === 1 ? 3 : 1)) % 4; return; }
+    const x = s.pos % 4, y = Math.floor(s.pos / 4), dx = [0, 1, 0, -1][s.facing], dy = [-1, 0, 1, 0][s.facing];
+    const next = s.pos + dx + dy * 4;
+    if (x + dx < 0 || x + dx > 3 || y + dy < 0 || y + dy > 3 || s.walls.includes(next)) s.blocked = true;
+    else s.pos = next;
+  }
+  const coding = {
+    id: 'mcoding', icon: '🤖', title: B('Coding Robot', '코딩 로봇'), sub: B('Build, run and change a path', '길을 만들고 실행하고 고쳐요'),
+    help: B('Choose a card, then a slot. Turns stay in place. Run starts over; Step runs one card. Select a slot to remove it.', '카드를 골라 칸에 놓아요. 회전은 제자리에서 해요. 실행은 처음부터, 한 단계는 카드 하나만 실행해요. 칸을 골라 뺄 수 있어요.'),
+    init: m => ({ ...robotStart(), code: m === 2 ? [0, 2, 0, 0] : [], selected: -1, goal: m === 1 ? 4 : 6, walls: m === 2 ? [9] : [], edit: 'goal', free: !m }),
+    prompt: m => m === 1 ? B('Reach the star. Start facing up.', '위를 보는 로봇을 별까지 보내요.') : m === 2 ? B('Fix the cards. Reach the star without hitting the wall.', '카드를 고쳐 벽을 피해 별까지 가요.') : B('Make a path. Move the star or add walls.', '길을 만들어요. 별을 옮기거나 벽을 놓아요.'),
+    render({ state: s, chosen, mode }) {
+      return `<div class="m-meter">${text(B('Facing', '보는 방향'))}: ${['↑', '→', '↓', '←'][s.facing]} · ${s.pc}/${s.code.length}${s.blocked ? ' ⛔' : ''}</div><div class="m-coding-panels"><div class="m-robot-board">${Array.from({ length: 16 }, (_, i) => target(`board${i}`, B(`Board row ${Math.floor(i / 4) + 1}, column ${i % 4 + 1}${s.pos === i ? ', robot' : s.walls.includes(i) ? ', wall' : s.goal === i ? ', star' : ''}`, `${Math.floor(i / 4) + 1}행 ${i % 4 + 1}열${s.pos === i ? ', 로봇' : s.walls.includes(i) ? ', 벽' : s.goal === i ? ', 별' : ''}`), s.pos === i ? `🍑${['↑', '→', '↓', '←'][s.facing]}` : s.walls.includes(i) ? '▦' : s.goal === i ? '⭐' : i === 12 ? '⌂' : '·')).join('')}</div><div class="m-code-slots">${Array.from({ length: 8 }, (_, i) => target(`code${i}`, B(`Card ${i + 1}: ${s.code[i] === undefined ? 'empty' : commands[s.code[i]].en}`, `${i + 1}번 카드: ${s.code[i] === undefined ? '빈칸' : commands[s.code[i]].ko}`), s.code[i] === undefined ? `${i + 1}` : commandMarks[s.code[i]], `aria-pressed="${s.selected === i}"`)).join('')}</div></div><div class="m-tray">${commands.map((c, i) => source(`command${i}`, c, commandMarks[i], chosen === `command${i}`)).join('')}${act('remove', words.remove)}</div><div class="m-tools">${!mode ? act('editboard', s.edit === 'goal' ? B('⭐ Move', '⭐ 옮기기') : B('▦ Walls', '▦ 벽')) : ''}${act('run', B('Run', '실행'))}${act('step', B('Step', '한 단계'))}${act('rewind', B('Start', '출발'))}</div>`;
+    },
+    tap(s, d) {
+        if (!s.free) return null;
+        const i = +d.slice(5); if (i === 12) return null;
+        if (s.edit === 'goal') { s.goal = i; s.walls = s.walls.filter(w => w !== i); }
+        else if (i !== s.goal) s.walls = s.walls.includes(i) ? s.walls.filter(w => w !== i) : [...s.walls, i];
+        Object.assign(s, robotStart()); return null;
+    },
+    select(s, d) {
+      if (d.startsWith('board')) return null;
+      s.selected = +d.slice(4); return s.selected < s.code.length ? `movecard${s.selected}` : null;
+    },
+    drop(s, src, dest) {
+      if (!/^code[0-7]$/.test(dest)) return;
+      const i = Math.min(+dest.slice(4), s.code.length);
+      if (src.startsWith('command')) { if (i === 8) return; s.code[i] = +src.slice(7); }
+      else if (src.startsWith('movecard')) { const j = +src.slice(8); if (j === i) return; const c = s.code.splice(j, 1)[0]; s.code.splice(Math.min(i, s.code.length), 0, c); }
+      s.selected = Math.min(i, s.code.length - 1); Object.assign(s, robotStart());
+    },
+    action(s, a, _, msg) {
+      if (a === 'editboard') s.edit = s.edit === 'goal' ? 'wall' : 'goal';
+      if (a === 'remove' && s.selected >= 0) { s.code.splice(s.selected, 1); s.selected = -1; Object.assign(s, robotStart()); }
+      if (a === 'rewind' || a === 'run') Object.assign(s, robotStart());
+      if (a === 'step') robotStep(s);
+      if (a === 'run') for (let i = 0; i < s.code.length; i++) robotStep(s);
+      if (s.blocked) msg(B('The robot stopped at an edge or wall. Change a card and try again.', '가장자리나 벽에서 멈췄어요. 카드를 바꿔 다시 해 봐요.'));
+    },
+    check(s) { const test = { ...copy(s), ...robotStart() }; for (let i = 0; i < test.code.length; i++) robotStep(test); return !test.blocked && test.pos === test.goal; }
+  };
+
+  [cubes, patterns, baseten, clock, balance, letters, fractions, coding].forEach(tool => registerGame({
     id: tool.id, grade: 'both', subject: 'create', icon: tool.icon, title: tool.title, sub: tool.sub,
     area: B('Manipulative Playground · Exploration', '교구 놀이터 · 탐색'),
     play() { mount(tool); }

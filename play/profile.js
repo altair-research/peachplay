@@ -14,7 +14,7 @@ const DIAG_IDS_K = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'sha
 const DIAG_IDS_3 = ['place3', 'round3', 'addsub3', 'array3', 'divide3', 'unitfraction3', 'equivalent3', 'area3', 'elapsed3',
   'decode3', 'context3', 'evidence3', 'sentence3', 'rocktest3', 'temperature3', 'federal3'];                       // filled when the grade-3 games exist (16 game ids, see docs/grade3-build-plan.md)
 const DIAG_IDS = () => (kidGrade() === '3' && DIAG_IDS_3.length ? DIAG_IDS_3 : kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
-const CHECK_SKIP = ['mcubes', 'mpatterns', 'mbaseten', 'mclock', 'mbalance', 'mletters', 'partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
+const CHECK_SKIP = ['mfractions', 'mcoding', 'mcubes', 'mpatterns', 'mbaseten', 'mclock', 'mbalance', 'mletters', 'partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
 
 // ---- check history ----
@@ -64,6 +64,7 @@ DIAG.answer = (game, ok, btn) => {
   const run = DIAG.run; setTimeout(() => { if (!DIAG.active || run !== DIAG.run) return; DIAG.busy = false; DIAG.i++; diagStep(); }, 450);
 };
 function startDiag(scope) {
+  SESSION.review = null; NEXT_TOK++;
   DIAG.adapt = null; S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = typeof scope === 'string' ? scope : 'all';
   DIAG.items = buildCheck(DIAG.scope); DIAG.active = true; DIAG.i = 0; DIAG.res = []; DIAG.busy = false; diagStep();
 }
@@ -79,7 +80,7 @@ function finishDiag() {
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift();
   S.profile = S.profile || {}; save(); checkResult(check, prev);
 }
-function quitDiag() { DIAG.adapt = null; DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
+function quitDiag() { SESSION.review = null; NEXT_TOK++; DIAG.adapt = null; DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
 const scopeName = (scope) => (scope === 'all' ? T().scopeAll : /^adapt-/.test(scope) ? `🧭 ${T().subjects[scope.slice(6)]}` : T().subjects[scope]);
 
 function checkResult(check, prev) {
