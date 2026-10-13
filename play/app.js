@@ -143,7 +143,7 @@ function grownups() {
     <div class="tablewrap">${challengeTable()}</div>
     <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>
     <h2>${T().progressTitle}</h2>
-    <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button>
+    <button class="pill" id="gprint">🖨️ ${L(B('Print practice report', '연습 보고서 인쇄'))}</button> <button class="pill" id="gcert">🏅 ${L(B('Print celebration certificate', '칭찬 수료증 인쇄'))}</button> <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button>
     <div class="tablewrap">${checksTable()}</div>
     <h2>${T().addrTitle}</h2>
     <div class="form"><input id="street" placeholder="${T().street}" value="${S.addr.street.replace(/"/g, '&quot;')}"><input id="city" placeholder="${T().city}" value="${S.addr.city.replace(/"/g, '&quot;')}">
@@ -159,7 +159,7 @@ function grownups() {
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
   if (typeof backupBind === 'function') backupBind();
-  $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
+  $('#gprint').onclick = () => window.openPrintReport && window.openPrintReport(); $('#gcert').onclick = () => window.openPrintReport && window.openPrintReport('certificate'); $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
   $('#b').onclick = home;
 }
 

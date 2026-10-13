@@ -16,9 +16,21 @@
   const words = groups.flatMap((g, topic) => g[3].split(';').map(row => {
     const [en, ko, icon] = row.split('|'); return { en, ko, icon, topic };
   }));
+  const wordKeys = new Set(words.map(w => w.en.toLowerCase()));
+  window.cleanDictionaryHistory = history => Object.fromEntries(Object.entries(history || {}).filter(([key]) => wordKeys.has(key)).slice(-300));
+  // core loads first; finish dictionary membership validation once its list is ready.
+  if (typeof S !== 'undefined' && S.metWords) { S.metWords = window.cleanDictionaryHistory(S.metWords); save(); }
+  window.rememberDictionaryWords = function (vocab) {
+    if (typeof vocab !== 'string' || !vocab.trim()) return;
+    const text = ' ' + vocab.toLowerCase().replace(/[^a-z]+/g, ' ').trim() + ' ';
+    const met = words.filter(w => text.includes(' ' + w.en.toLowerCase() + ' '));
+    if (!met.length) return;
+    S.metWords = window.cleanDictionaryHistory(cleanState(S).metWords);
+    met.forEach(w => { S.metWords[w.en.toLowerCase()] = today(); }); save();
+  };
   const strings = {
-    en: { title: 'Picture Dictionary', close: 'Close', search: 'Search English or Korean', all: 'All topics', topic: 'Topic', empty: 'No words found. Try another word.', note: 'Pictures are clues. Game word history is not available yet.', muted: 'Voice is off in settings.', unavailable: 'Voice is unavailable in this browser.', count: n => `${n} words`, english: 'Listen in English', korean: 'Listen in Korean' },
-    ko: { title: '그림 사전', close: '닫기', search: '영어나 한국어로 찾아요', all: '모든 주제', topic: '주제', empty: '낱말이 없어요. 다른 낱말로 찾아봐요.', note: '그림은 뜻을 떠올리는 힌트예요. 게임에서 만난 낱말 기록은 아직 없어요.', muted: '설정에서 음성이 꺼져 있어요.', unavailable: '이 브라우저에서는 음성을 쓸 수 없어요.', count: n => `${n}개 낱말`, english: '영어 발음 듣기', korean: '한국어 발음 듣기' }
+    en: { title: 'Picture Dictionary', close: 'Close', search: 'Search English or Korean', met: 'Words I have met', badge: '✓ Met in a game', all: 'All topics', topic: 'Topic', empty: 'No words found. Try another word.', note: 'Pictures are clues. Game words you have met are marked ✓. Only dictionary words and the latest date are saved for each child on this device.', muted: 'Voice is off in settings.', unavailable: 'Voice is unavailable in this browser.', count: n => `${n} words`, english: 'Listen in English', korean: 'Listen in Korean' },
+    ko: { title: '그림 사전', close: '닫기', search: '영어나 한국어로 찾아요', met: '내가 만난 낱말', badge: '✓ 게임에서 만났어요', all: '모든 주제', topic: '주제', empty: '낱말이 없어요. 다른 낱말로 찾아봐요.', note: '그림은 뜻을 떠올리는 힌트예요. 게임에서 만난 낱말에는 ✓ 표시가 있어요. 사전에 있는 낱말과 마지막으로 만난 날짜만 아이별로 이 기기에 저장해요.', muted: '설정에서 음성이 꺼져 있어요.', unavailable: '이 브라우저에서는 음성을 쓸 수 없어요.', count: n => `${n}개 낱말`, english: '영어 발음 듣기', korean: '한국어 발음 듣기' }
   };
   let active = null;
   window.openDictionary = function () {
@@ -27,11 +39,12 @@
     const previous = document.activeElement;
     const dialog = document.createElement('dialog'); dialog.className = 'd-dialog'; active = dialog;
     dialog.setAttribute('aria-labelledby', 'd-title');
-    dialog.innerHTML = `<section class="d-panel"><header class="d-header"><h2 id="d-title">📖 ${t.title}</h2><button type="button" class="d-close">${t.close} ✕</button></header><label class="d-label">${t.search}<input class="d-search" type="search" autocomplete="off" maxlength="80"></label><label class="d-label">${t.topic}<select class="d-topic"></select></label><p class="d-note">${t.note}</p><p class="d-status" role="status" aria-live="polite"></p><div class="d-list" tabindex="0" role="region" aria-label="${t.title}"></div></section>`;
+    dialog.innerHTML = `<section class="d-panel"><header class="d-header"><h2 id="d-title">📖 ${t.title}</h2><button type="button" class="d-close">${t.close} ✕</button></header><label class="d-label">${t.search}<input class="d-search" type="search" autocomplete="off" maxlength="80"></label><label class="d-label">${t.topic}<select class="d-topic"></select></label><label class="d-met-filter"><input type="checkbox" class="d-met">${t.met}</label><p class="d-note">${t.note}</p><p class="d-status" role="status" aria-live="polite"></p><div class="d-list" tabindex="0" role="region" aria-label="${t.title}"></div></section>`;
     const search = dialog.querySelector('input'), select = dialog.querySelector('select'), list = dialog.querySelector('.d-list'), status = dialog.querySelector('.d-status');
     [t.all, ...groups.map(g => `${g[2]} ${g[ko ? 1 : 0]}`)].forEach((label, i) => {
       const option = document.createElement('option'); option.value = String(i - 1); option.textContent = label; select.append(option);
     });
+    const metFilter = dialog.querySelector('.d-met');
     const voiceOff = () => typeof S !== 'undefined' && (S.muted || S.voiceOff);
     const supported = () => 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
     function speak(word, language) {
@@ -47,7 +60,7 @@
     }
     function render() {
       const query = search.value.trim().normalize('NFC').toLocaleLowerCase();
-      const matches = words.filter(w => (select.value === '-1' || w.topic === Number(select.value)) && `${w.en} ${w.ko}`.normalize('NFC').toLocaleLowerCase().includes(query));
+      const matches = words.filter(w => (!metFilter.checked || S.metWords?.[w.en.toLowerCase()]) && (select.value === '-1' || w.topic === Number(select.value)) && `${w.en} ${w.ko}`.normalize('NFC').toLocaleLowerCase().includes(query));
       list.replaceChildren(); list.scrollTop = 0;
       status.textContent = `${t.count(matches.length)}${voiceOff() ? ' · ' + t.muted : !supported() ? ' · ' + t.unavailable : ''}`;
       if (!matches.length) { const p = document.createElement('p'); p.className = 'd-empty'; p.textContent = t.empty; list.append(p); }
@@ -59,12 +72,15 @@
           const text = document.createElement('span'); text.lang = language; text.textContent = word[language]; text.className = 'd-word';
           const button = document.createElement('button'); button.type = 'button'; button.className = 'd-speak'; button.textContent = '🔊'; button.setAttribute('aria-label', `${label}: ${word[language]}`); button.disabled = voiceOff() || !supported(); button.onclick = () => speak(word, language);
           row.append(text, button); card.append(row);
-        }); list.append(card);
+        });
+        const date = S.metWords?.[word.en.toLowerCase()];
+        if (date) { const badge = document.createElement('span'); badge.className = 'd-met-badge'; badge.textContent = t.badge; badge.title = date; card.append(badge); }
+        list.append(card);
       });
     }
     dialog.querySelector('.d-close').onclick = () => dialog.close();
     dialog.addEventListener('close', () => { if (supported()) window.speechSynthesis.cancel(); dialog.remove(); active = null; if (previous?.isConnected) previous.focus(); });
-    search.oninput = render; select.onchange = render;
+    search.oninput = render; select.onchange = render; metFilter.onchange = render;
     document.body.append(dialog); render(); dialog.showModal();
     // Start at Close: opening on a phone must not summon its keyboard.
     dialog.querySelector('.d-close').focus();

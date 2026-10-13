@@ -34,6 +34,13 @@ function cleanState(s) {                                  // keeps only known, w
   }
   ['muted', 'introSeen', 'showK', 'sfxOff', 'voiceOff', 'calm', 'readable'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
+  if (isObj(s.metWords)) {
+    o.metWords = Object.fromEntries(Object.entries(s.metWords).filter(([word, date]) =>
+      /^[a-z]+(?: [a-z]+)*$/.test(word) && word.length <= 40 && typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+      Number.isFinite(Date.parse(date + 'T00:00:00Z')) && new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) === date &&
+      (typeof window.cleanDictionaryHistory !== 'function' || window.cleanDictionaryHistory({ [word]: date })[word])
+    ).slice(-300));
+  }
   return o;
 }
 // Children on this device: each has its own saved data (the first child keeps the original key).
@@ -271,6 +278,7 @@ function quiz(game, item) {
       btn.classList.add('ok');
       recordFinal(game.id, missed); if (!missed) addPeach();
       $('#cheer').textContent = pick(T().right);
+      if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
       if (item.after) $('#fact').textContent = L(item.after);
       say(item.vocab && S.lang !== 'en' ? item.vocab : (item.after ? L(item.after) : ''), item.vocab && S.lang !== 'en' ? 'en-US' : undefined);
       if (item.vocab && S.lang !== 'en' && item.after) say(L(item.after), undefined, true);

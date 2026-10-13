@@ -1,0 +1,28 @@
+.p-dialog { width: min(960px, 94vw); height: 90dvh; max-height: 94dvh; padding: 12px; border: 1px solid #987b68; border-radius: 12px; background: #fff; color: #302820; }
+.p-dialog::backdrop { background: #0008; }
+.p-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+.p-toolbar button { font: inherit; padding: 10px 16px; cursor: pointer; }
+.p-toolbar span { font-size: 13px; }
+.p-frame { width: 100%; height: calc(100% - 90px); border: 1px solid #ddd; background: #fff; }
+.p-document { margin: 0; background: #eee; color: #242424; font-family: Arial, 'Malgun Gothic', sans-serif; font-size: 11pt; line-height: 1.35; }
+.p-sheet { box-sizing: border-box; width: 190mm; max-width: 100%; margin: 16px auto; padding: 8mm; background: white; overflow-wrap: anywhere; }
+.p-sheet h1 { margin: 0 0 8px; font-size: 21pt; color: #713e24; }
+.p-identity { border-bottom: 1px solid #aaa; padding-bottom: 8px; }
+.p-section { margin: 10px 0; break-inside: avoid; }
+.p-section h2 { font-size: 12pt; margin: 0 0 4px; color: #713e24; }
+.p-section p { margin: 4px 0; }
+.p-section table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.p-section td { padding: 3px 5px; border-bottom: 1px solid #ddd; }
+.p-note { font-size: 8pt; color: #444; margin-top: 12px; }
+.p-certificate { text-align: center; border: 3px double #a56a40; padding: 16mm 10mm; margin-bottom: 10mm; }
+.p-peach { font-size: 46pt; }
+.p-certificate h1 { font-size: 25pt; }
+.p-certificate .p-identity { font-size: 16pt; }
+.p-cheer { font-size: 17pt; margin: 14mm 0; }
+@page { size: auto; margin: 10mm; }
+@media print {
+  .p-document { background: white; }
+  .p-sheet { width: 100%; max-width: none; margin: 0; padding: 0; }
+  .p-toolbar { display: none; }
+  .p-section, .p-certificate { break-inside: avoid; }
+}

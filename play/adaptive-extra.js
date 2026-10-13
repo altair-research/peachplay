@@ -26,8 +26,8 @@
     ['slip', 'p', 't', 'slit', ['slap', 'sip']], ['crab', 'b', 'k', 'crack', ['cab', 'crib']],
     ['grin', 'n', 'p', 'grip', ['green', 'gin']], ['flat', 't', 'p', 'flap', ['fat', 'flip']],
     ['trip', 'p', 'm', 'trim', ['tip', 'trap']], ['flag', 'g', 'p', 'flap', ['flat', 'lag']],
-    ['swan', 'n', 'p', 'swap', ['swim', 'wan']], ['crop', 'p', 's', 'cross', ['cop', 'crisp']],
-    ['plant', 't', 'k', 'plank', ['plan', 'pant']], ['brim', 'm', 'k', 'brick', ['rim', 'brisk']]
+    ['swan', 'n', 'p', 'swap', ['swim', 'wan']], ['cup', 'p', 't', 'cut', ['cap', 'cub']],
+    ['tent', 't', 's', 'tense', ['ten', 'test']], ['brim', 'm', 'k', 'brick', ['rim', 'brisk']]
   ];
   add('adchange3', '3', B('Change the Last Sound', '끝소리를 바꿔요'), soundArea, lv => {
     const t = pick(lv === 1 ? changes.slice(0, 5) : changes.slice(5));
@@ -56,10 +56,10 @@
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
   });
   const contexts = [
-    ['We wash our hands ___ lunch.', 'before', ['between', 'under']], ['The twins walk home ___.', 'together', ['inside', 'across']],
+    ['We wash our hands ___ lunch.', 'before', ['between', 'under']], ['The twins walk home ___.', 'together', ['during', 'between']],
     ['I finished this book. I want ___ one.', 'another', ['these', 'those']], ['___ child has a pencil.', 'Every', ['Many', 'Both']],
-    ['We sat ___ the round table.', 'around', ['during', 'until']], ['The red and blue hats are ___.', 'different', ['same', 'alike']],
-    ['I found ___ in the empty box: a key!', 'something', ['nothing', 'nobody']], ['This book is ___ trains.', 'about', ['between', 'under']],
+    ['We sat ___ the round table.', 'around', ['during', 'until']], ['The red and blue hats are ___.', 'different', ['during', 'between']],
+    ['I found ___ in the box: a key!', 'something', ['nothing', 'nobody']], ['This book is ___ trains.', 'about', ['between', 'under']],
     ['___ it rained, we stayed dry inside.', 'Though', ['During', 'Despite']], ['I ___ brush my teeth at bedtime, every night.', 'always', ['never', 'rarely']]
   ];
   add('adwordcontext3', '3', B('Familiar Words in Sentences', '문장 속 익숙한 낱말'), wordArea, lv => {
@@ -84,7 +84,7 @@
   for (const grade of ['K', '1']) add('adstory' + grade, grade, B('Tiny Story Details', '짧은 이야기 살펴봐요'), B('Comprehension: Literature', '이해: 이야기'), lv => {
     const name = pick(names), obj = pick(objects), ds = shuffle(objects.filter(o => o !== obj)).slice(0, 2).map(o => o[0]);
     const text = lv === 1 ? `${name} has a ${obj[0]}. ${name} takes it home.` : `${name} cannot find a ${obj[0]}. It is under the bed. ${name} picks it up.`;
-    return textRound(text, B(`What does ${name} ${lv === 1 ? 'have' : 'find'}?`, `이야기에서 ${lv === 1 ? '가지고 있는' : '찾은'} 물건을 골라요.`), obj[0], ds, B(`The story tells us: ${obj[0]}.`, `이야기에 나온 물건은 ${obj[0]}예요.`));
+    return textRound(text, B(`What does ${name} ${lv === 1 ? 'have' : 'find'}?`, `이야기에서 ${lv === 1 ? '가지고 있는' : '찾은'} 물건을 골라요.`), obj[0], ds, B(`The story tells us: ${obj[0]}.`, `이야기에 나온 물건을 확인해요: ${obj[0]}.`));
   });
   add('adstoryorderK', 'K', B('First and Next', '처음과 다음'), B('Comprehension: Literature', '이해: 이야기'), lv => {
     const name = pick(names), obj = pick(objects);

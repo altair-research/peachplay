@@ -315,7 +315,7 @@
   const alphabet = 'abcdefghijklmnopqrstuvwxyz';
   const letters = {
     id: 'mletters', icon: '🔤', title: B('Letter Tiles', '글자 타일'), sub: B('Build and change English words', '영어 낱말을 만들고 바꿔요'),
-    help: B('Choose a letter, then a space. Listen reads a whole word, not separate sounds.', '글자와 놓을 칸을 눌러요. 낱말 듣기는 낱말 전체를 읽어 줘요.'),
+    help: B('Choose a letter, then a space. Listen reads a whole word, not separate sounds.', '글자와 놓을 칸을 눌러요. cat 듣기는 cat을 통째로 읽어 줘요. 글자 하나씩 소리를 내지는 않아요.'),
     init: m => ({ slots: m === 2 ? ['c', 'a', 'p', '', ''] : ['', '', '', '', ''], page: 0, upper: false, selected: -1 }),
     prompt: m => m === 1 ? B('🐱 Build cat. Listen or use the word.', '🐱 cat을 만들어요. 듣거나 낱말을 보아요.') : m === 2 ? B('🧢 cap → 🐱 cat. Change one letter.', '🧢 cap → 🐱 cat. 글자 하나를 바꿔요.') : B('Make English words with letter tiles.', '글자 타일로 영어 낱말을 만들어요.'),
     render({ state: s, mode, chosen }) {
@@ -332,7 +332,7 @@
   const denominators = [2, 3, 4, 6, 8];
   const fractions = {
     id: 'mfractions', icon: '◔', title: B('Fraction Models', '분수 타일과 원'), sub: B('Parts of the same whole', '같은 전체를 나눠요'),
-    help: B('Choose a piece, then a row. Remove takes off the last piece. Bars and circles show the same whole.', '조각을 골라 줄에 놓아요. 빼기는 마지막 조각을 빼요. 막대와 원의 전체 크기는 같아요.'),
+    help: B('Choose a piece, then a row. Remove takes off the last piece. Bars and circles show the same whole.', '조각을 골라 줄에 놓아요. 빼기는 마지막 조각을 빼요. 두 줄의 전체는 같은 양을 나타내요.'),
     init: () => ({ rows: [[], []], selected: 0, circle: false }),
     prompt: m => m === 1 ? B('Fill row A with two halves.', '반 조각 두 개로 A줄 전체를 채워요.') : m === 2 ? B('Make one half in A and the same amount with fourths in B.', 'A줄에 반 조각 하나, B줄에 같은 양의 4분의 1 조각을 놓아요.') : B('Explore equal parts of a whole.', '전체를 같은 크기 조각으로 나눠 보아요.'),
     render({ state: s, chosen }) {
