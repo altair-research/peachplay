@@ -178,7 +178,8 @@ function reviewSolved() {
 }
 function startReview() {
   quitDiag();
-  const pool = (S.review || []).filter(x => x.id !== 'blockpuzzle' && gameById(x.id));
+  const pool = (cleanState({ review: S.review }).review || []).filter(x => gameById(x.id) && !CHECK_SKIP.includes(x.id));
+  S.review = pool; save();
   if (!pool.length) return home();
   const items = Array.from({ length: ROUNDS }, (_, i) => pool[i % Math.min(pool.length, ROUNDS)]);
   NEXT_TOK++;

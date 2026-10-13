@@ -38,7 +38,7 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 /* notice switch (notice.js) */
 .pp-notice{position:fixed;left:8px;right:8px;bottom:8px;z-index:50;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#1d3557;color:#fff;font-weight:700;box-shadow:0 4px 14px #0004}
 .pp-notice span{flex:1}.pp-notice a{color:#ffd166}.pp-notice button{min-width:44px;min-height:44px;border:0;border-radius:999px;background:#ffffff22;color:#fff;font-size:18px}
-.pp-notice-block{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:#fff7efee}
+.pp-notice-block{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;box-sizing:border-box;margin:0;width:100%;max-width:100%;height:100dvh;max-height:100dvh;border:0;padding:16px;background:#fff7ef;color:#302d3a;overflow:auto}
 .pp-nb-card{max-width:520px;text-align:center;background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 24px #0002;font-size:18px}
 
 @media(max-height:700px){.settings-screen .prefs{gap:6px;margin:6px 0}.settings-screen .pref{padding:10px 12px;min-height:50px}.settings-screen h1{margin:8px 0}.settings-screen .tag{margin:6px 0}}

@@ -20,7 +20,12 @@
 .d-dialog :focus-visible { outline: 3px solid #195fbb; outline-offset: 2px; }
 .d-empty { grid-column: 1 / -1; }
 @media (min-width: 600px) { .d-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (prefers-color-scheme: dark) { .d-dialog { background: #242330; color: #fff5e6; } .d-card, .d-close, .d-speak, .d-search, .d-topic { background: #343340; color: #fff5e6; } }
+body.theme-dark .d-dialog { background: #242330; color: #fff5e6; }
+body.theme-dark :is(.d-card,.d-close,.d-speak,.d-search,.d-topic) { background: #343340; color: #fff5e6; }
+@media (prefers-color-scheme: dark) {
+  body.theme-system:not(.theme-dark) .d-dialog { background: #242330; color: #fff5e6; }
+  body.theme-system:not(.theme-dark) :is(.d-card,.d-close,.d-speak,.d-search,.d-topic) { background: #343340; color: #fff5e6; }
+}
 
 .d-met-filter { display: flex; align-items: center; gap: 8px; min-height: 48px; flex-shrink: 0; font-size: 16px; cursor: pointer; }
 .d-met-filter input { width: 24px; height: 24px; margin: 0; accent-color: #195fbb; }

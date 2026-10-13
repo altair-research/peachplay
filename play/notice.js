@@ -10,24 +10,33 @@
   const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   const txt = (o) => (o && typeof o === 'object' ? (o[S.lang] || o.en || '') : '');
   const esc = (s) => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const safeLink = (u) => (/^https:\/\//.test(u || '') ? u : '');
+  const safeLink = (u) => { try { const url = new URL(u); return url.protocol === 'https:' ? url.href : ''; } catch { return ''; } };
 
   function show(n) {
     if (!n || typeof n !== 'object' || !n.id || (n.level !== 'info' && n.level !== 'block')) return;
     const msg = esc(txt({ en: n.en, ko: n.ko })), link = safeLink(n.link), lt = esc(txt(n.linkText)) || (S.lang === 'ko' ? '열기' : 'Open');
     if (!msg) return;
     if (n.level === 'block') {
-      const d = document.createElement('div'); d.className = 'pp-notice-block'; d.setAttribute('role', 'alertdialog');
-      d.innerHTML = `<div class="pp-nb-card"><p>${msg}</p>${link ? `<a class="next" href="${link}" rel="noopener">${lt}</a>` : ''}
+      if (document.querySelector('.pp-notice-block')) return;
+      const d = document.createElement('dialog'); d.className = 'pp-notice-block'; d.setAttribute('role', 'alertdialog');
+      d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', S.lang === 'ko' ? '중요 공지' : 'Important notice');
+      d.innerHTML = `<div class="pp-nb-card"><p>${msg}</p>${link ? `<a class="next" href="${esc(link)}" rel="noopener">${lt}</a>` : ''}
         <p class="note2">${S.lang === 'ko' ? '아이 기록을 옮기려면 보호자 화면의 백업을 먼저 저장해 주세요.' : 'To keep your child\'s progress, save a backup from the grown-ups page first.'}</p>
         <button class="link" id="ppnbBackup">${S.lang === 'ko' ? '백업 저장하러 가기' : 'Go to backup'}</button></div>`;
       document.body.appendChild(d);
-      d.querySelector('#ppnbBackup').onclick = () => { d.remove(); if (typeof grownups === 'function') grownups(); };
+      d.oncancel = e => e.preventDefault();
+      d.showModal();
+      d.querySelector('#ppnbBackup').focus();
+      d.querySelector('#ppnbBackup').onclick = () => {
+        d.close(); d.remove(); gate(grownups);
+        $('#gans').focus();
+        $('#b').onclick = () => { home(); show(n); };
+      };
       return;
     }
     if (ls('pp.notice') === n.id) return;
     const b = document.createElement('div'); b.className = 'pp-notice'; b.setAttribute('role', 'status');
-    b.innerHTML = `<span>📢 ${msg}</span>${link ? ` <a href="${link}" rel="noopener">${lt}</a>` : ''}<button aria-label="${S.lang === 'ko' ? '닫기' : 'Close'}">✕</button>`;
+    b.innerHTML = `<span>📢 ${msg}</span>${link ? ` <a href="${esc(link)}" rel="noopener">${lt}</a>` : ''}<button aria-label="${S.lang === 'ko' ? '닫기' : 'Close'}">✕</button>`;
     b.querySelector('button').onclick = () => { ls('pp.notice', n.id); b.remove(); };
     document.body.appendChild(b);
   }
