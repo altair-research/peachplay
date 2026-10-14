@@ -5,25 +5,28 @@
 // Not affiliated with or endorsed by Curriculum Associates (i-Ready); no test items are copied.
 const ADAPT_DOMAINS = {
   math: [
-    { k: 'num', n: B('Number and Operations', '수와 연산'), g: { K: ['count', 'teens', 'compare', 'addsub'], 1: ['count120', 'tensones', 'compare100', 'add100', 'facts10'], 2: ['place1000', 'compare1000', 'add2dig', 'sub2dig', 'addsub1000'], 3: ['place3', 'compare3', 'round3', 'addsub3', 'unitfraction3', 'fractioncompare3', 'equivalent3'] } },
-    { k: 'alg', n: B('Algebra and Algebraic Thinking', '대수적 사고'), g: { K: ['pattern', 'numline'], 1: ['factfam', 'truefalse', 'missingnum', 'wordprob', 'growpat'], 2: ['wordprob2', 'oddeven', 'growpat2', 'arrays', 'equalgroups'], 3: ['array3', 'divide3', 'factfamily3', 'multpattern3', 'balance3', 'multstory3', 'barstory3'] } },
-    { k: 'meas', n: B('Measurement and Data', '측정과 자료'), g: { K: ['measure', 'graph'], 1: ['cubelength', 'clock1', 'coins1', 'graph1'], 2: ['ruler', 'clock2g', 'money2', 'graph2'], 3: ['clock3', 'elapsed3', 'ruler3', 'measure3', 'graph3', 'area3'] } },
-    { k: 'geo', n: B('Geometry', '도형'), g: { K: ['shapes2d', 'shapes3d'], 1: ['shapeattr', 'shapecompose', 'partition'], 2: ['shapes2', 'symmetry', 'fractions2'], 3: ['polygon3', 'perimeter3', 'fractionline3'] } }
+    { k: 'num', n: B('Number and Operations', '수와 연산'), g: { K: ['count', 'teens', 'compare', 'addsub'], 1: ['count120', 'tensones', 'compare100', 'add100', 'facts10'], 2: ['place1000', 'compare1000', 'add2dig', 'sub2dig', 'addsub1000'], 3: ['place3', 'compare3', 'round3', 'addsub3', 'unitfraction3', 'fractioncompare3', 'equivalent3'], 4: ['place4', 'shift4', 'compare4', 'round4', 'addsub4', 'equivalent4', 'fractioncompare4', 'fractionparts4', 'fractionadd4', 'tenthhundred4', 'decimal4', 'decimalcompare4'], 5: ['place5', 'power5', 'multiply5', 'divide5', 'remainder5', 'fractiondivision5', 'fractionorder5', 'fractionadd5', 'fractionsub5', 'mixed5', 'fractionmultiply5', 'scale5', 'unitdivide5', 'wholeunitdivide5', 'decimalplace5', 'decimalcompare5', 'decimalround5', 'decimaladd5'] } },
+    { k: 'alg', n: B('Algebra and Algebraic Thinking', '대수적 사고'), g: { K: ['pattern', 'numline'], 1: ['factfam', 'truefalse', 'missingnum', 'wordprob', 'growpat'], 2: ['wordprob2', 'oddeven', 'growpat2', 'arrays', 'equalgroups'], 3: ['array3', 'divide3', 'factfamily3', 'multpattern3', 'balance3', 'multstory3', 'barstory3'], 4: ['multcompare4', 'multiply4', 'divide4', 'multistep4', 'pattern4', 'function4', 'factors4', 'prime4'], 5: ['expression5', 'patterns5'] } },
+    { k: 'meas', n: B('Measurement and Data', '측정과 자료'), g: { K: ['measure', 'graph'], 1: ['cubelength', 'clock1', 'coins1', 'graph1'], 2: ['ruler', 'clock2g', 'money2', 'graph2'], 3: ['clock3', 'elapsed3', 'ruler3', 'measure3', 'graph3', 'area3'], 4: ['elapsed4', 'metric4', 'dotplot4'], 5: ['metric5', 'customary5', 'data5'] } },
+    { k: 'geo', n: B('Geometry', '도형'), g: { K: ['shapes2d', 'shapes3d'], 1: ['shapeattr', 'shapecompose', 'partition'], 2: ['shapes2', 'symmetry', 'fractions2'], 3: ['polygon3', 'perimeter3', 'fractionline3'], 4: ['angle4', 'geometry4'], 5: ['coordinate5'] } }
   ],
   read: [
     { k: 'pa', n: B('Phonological Awareness', '소리 인식'), g: { K: ['rhyme', 'syllable', 'endsound'], 1: ['sylplay', 'onsetrime1', 'phonemes1'], 2: ['poems2', 'adremove2'], 3: ['adremove3', 'adchange3'] } },
-    { k: 'ph', n: B('Phonics', '파닉스'), g: { K: ['letters', 'sounds', 'readmatch'], 1: ['blends', 'longvowels', 'silly', 'twosyl'], 2: ['vowels2', 'syllables2', 'silly2'], 3: ['decode3', 'spell3'] } },
+    { k: 'ph', n: B('Phonics', '파닉스'), g: { K: ['letters', 'sounds', 'readmatch'], 1: ['blends', 'longvowels', 'silly', 'twosyl'], 2: ['vowels2', 'syllables2', 'silly2'], 3: ['decode3', 'spell3'], 4: ['decode4', 'spell4'], 5: ['decode5', 'spell5'] } },
     { k: 'hfw', n: B('High-Frequency Words', '자주 쓰는 낱말'), g: { K: ['sight', 'adwordsK'], 1: ['tricky1', 'adwords1'], 2: ['tricky2', 'adwords2'], 3: ['adwords3', 'adwordcontext3'] } },
-    { k: 'voc', n: B('Vocabulary', '어휘'), g: { K: ['opposites', 'admeaningK'], 1: ['wordmeaning', 'admeaning1'], 2: ['wordnuance2', 'wordparts2'], 3: ['context3', 'wordshade3', 'wordrelation3', 'affix3'] } },
-    { k: 'lit', n: B('Comprehension: Literature', '이해: 이야기'), g: { K: ['adstoryK', 'adstoryorderK'], 1: ['storyq', 'adstory1'], 2: ['fables', 'poems2'], 3: ['character3', 'plot3', 'poetry3', 'viewpoint3'] } },
-    { k: 'inf', n: B('Comprehension: Informational Text', '이해: 정보 글'), g: { K: ['adinfoK', 'adinfotopicK'], 1: ['factdet', 'adinfo1'], 2: ['info2', 'abc2'], 3: ['textstructure3', 'evidence3', 'purpose3', 'source3'] } }
+    { k: 'voc', n: B('Vocabulary', '어휘'), g: { K: ['opposites', 'admeaningK'], 1: ['wordmeaning', 'admeaning1'], 2: ['wordnuance2', 'wordparts2'], 3: ['context3', 'wordshade3', 'wordrelation3', 'affix3'], 4: ['roots4', 'context4', 'wordrelation4', 'idiom4'], 5: ['roots5', 'context5', 'analogy5', 'wordshade5', 'reference5'] } },
+    { k: 'lit', n: B('Comprehension: Literature', '이해: 이야기'), g: { K: ['adstoryK', 'adstoryorderK'], 1: ['storyq', 'adstory1'], 2: ['fables', 'poems2'], 3: ['character3', 'plot3', 'poetry3', 'viewpoint3'], 4: ['character4', 'theme4', 'viewpoint4', 'poetry4', 'figurative4'], 5: ['viewpoint5', 'character5', 'theme5', 'figurative5', 'poetry5'] } },
+    { k: 'inf', n: B('Comprehension: Informational Text', '이해: 정보 글'), g: { K: ['adinfoK', 'adinfotopicK'], 1: ['factdet', 'adinfo1'], 2: ['info2', 'abc2'], 3: ['textstructure3', 'evidence3', 'purpose3', 'source3'], 4: ['purpose4', 'structure4', 'evidence4', 'source4'], 5: ['purpose5', 'structure5', 'explain5', 'opinion5', 'source5'] } }
   ]
 };
 const ADAPT_LEN = { math: 24, read: 24 };
-const AG = ['K', '1', '2', '3'];
+const AG = ['K', '1', '2', '3', '4', '5'];
 const adaptLabel = (d) => { const g = AG[Math.floor(d / 2)], late = d % 2 === 1; return B(`${g === 'K' ? 'Kindergarten' : 'Grade ' + g}, ${late ? 'later' : 'early'} skills`, `${g === 'K' ? '유치원' : g + '학년'} ${late ? '후반' : '초반'} 수준`); };
 
-function adaptMaxGrade() { return Math.min(AG.indexOf(kidGrade()) + 1, (typeof GRADE3_READY !== 'undefined' && GRADE3_READY) ? 3 : 2); }
+function adaptMaxGrade() {
+  const ready = typeof GRADE5_READY !== 'undefined' && GRADE5_READY ? 5 : typeof GRADE4_READY !== 'undefined' && GRADE4_READY ? 4 : typeof GRADE3_READY !== 'undefined' && GRADE3_READY ? 3 : 2;
+  return Math.min(AG.indexOf(kidGrade()) + 1, ready);
+}
 function adaptLadder(dom) {                        // usable games per grade index (skips ids that are missing or not one-question games)
   return AG.map((g, i) => (i <= adaptMaxGrade() ? (dom.g[g] || []).filter(id => gameById(id) && !CHECK_SKIP.includes(id)) : []));
 }
@@ -32,7 +35,7 @@ function makeAdapt(subject) {
   const start = Math.min(AG.indexOf(kidGrade()), adaptMaxGrade()) * 2;            // start at the child's grade, early skills
   const topOf = (lad) => lad.reduce((m, l, i) => (l.length ? i : m), 0), st = doms.map(x => ({ d: Math.min(start, topOf(x.lad) * 2 + 1), hist: [] }));
   let turn = 0, cur = null;
-  const nearest = (lad, gi) => { for (let k = 0; k < 4; k++) { if (lad[gi - k] && lad[gi - k].length) return gi - k; if (lad[gi + k] && lad[gi + k].length) return gi + k; } return 0; };
+  const nearest = (lad, gi) => { for (let k = 0; k < AG.length; k++) { if (lad[gi - k] && lad[gi - k].length) return gi - k; if (lad[gi + k] && lad[gi + k].length) return gi + k; } return 0; };
   return {
     subject,
     next() {
@@ -86,12 +89,13 @@ function adaptFinish() {
   const check = { at: new Date().toISOString().slice(0, 16), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length, est: res.map(r => [r.dom.k, r.est]) };
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift(); save();
   const top = 2 * adaptMaxGrade() + 1;
-  const rel = (e) => (e >= top && e >= kidD ? B('top of this practice, great!', '이 연습의 가장 높은 단계예요!') : e >= kidD + 2 ? B('above grade level', '학년보다 높아요') : e >= kidD ? B('on grade level', '학년 수준이에요') : B('keep practicing', '더 연습해요'));
+  const domTop = (dom) => Math.min(top, 2 * adaptLadder(dom).reduce((m, l, i) => (l.length ? i : m), 0) + 1);   // some areas have no games in the upper grades
+  const rel = (e, dom) => (e >= (dom ? domTop(dom) : top) ? B('top of this practice, great!', '이 연습의 가장 높은 단계예요!') : e >= kidD + 2 ? B('above grade level', '학년보다 높아요') : e >= kidD ? B('on grade level', '학년 수준이에요') : B('keep practicing', '더 연습해요'));
   const low = [...res].sort((p, q) => p.est - q.est)[0];
   const practice = low ? adaptLadder(low.dom)[Math.floor(low.est / 2)] || [] : [];
   view().innerHTML = `<h1>🧭 ${L(B('Practice done!', '연습 끝!'))}</h1>
     <p class="tag">${a.subject === 'math' ? T().subjects.math : T().subjects.read} · ${check.ok}/${check.total}</p>
-    <div class="adres">${res.map(r => `<div class="adrow"><b>${L(r.dom.n)}</b><span class="adbar"><i style="width:${Math.round(100 * (r.est + 1) / 8)}%"></i><em style="left:${Math.round(100 * (kidD + 1) / 8)}%"></em></span><small>${L(adaptLabel(r.est))} · ${L(rel(r.est))}</small></div>`).join('')}</div>
+    <div class="adres">${res.map(r => `<div class="adrow"><b>${L(r.dom.n)}</b><span class="adbar"><i style="width:${Math.round(100 * (r.est + 1) / (AG.length * 2))}%"></i><em style="left:${Math.round(100 * (kidD + 1) / (AG.length * 2))}%"></em></span><small>${L(adaptLabel(r.est))} · ${L(rel(r.est, r.dom))}</small></div>`).join('')}</div>
     <p class="note2">${L(B('The line on each bar is the start of your grade. This is a practice estimate from a few questions, not an official i-Ready score.', '막대의 세로선은 지금 학년의 시작이에요. 몇 문제로 본 연습용 추정이며 공식 i-Ready 점수가 아니에요.'))}</p>
     ${practice.length ? `<h2>💪 ${L(B('Practice next', '다음에 연습할 게임'))}: ${L(low.dom.n)}</h2><div class="menu">${practice.slice(0, 4).map(id => gameBtn(gameById(id))).join('')}</div>` : ''}
     <div><button class="next" id="again">🧭 ${L(B('Back to practice', '진단 연습으로'))}</button></div><div><button class="link" id="b">${T().letsPlay}</button></div>`;

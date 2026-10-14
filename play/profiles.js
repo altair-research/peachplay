@@ -4,7 +4,7 @@ const PT = {
   prog: B('My Progress', '내 기록'), kids: B('Who is playing?', '누가 하나요?'),
   add: B('Add a child', '아이 추가'), edit: B('Edit', '수정'), del: B('Remove', '삭제'), name: B('Name or nickname', '이름 또는 별명'),
   grade: B('Grade', '학년'), gK: B('Kindergarten', '유치원(K)'), g1: B('1st grade', '1학년'), g2: B('2nd grade', '2학년'), g3: B('3rd grade', '3학년'), g4: B('4th grade', '4학년'), g5: B('5th grade', '5학년'), save: B('Save', '저장'), cancel: B('Cancel', '취소'),
-  kidsNote: B('Each child keeps their own peaches, stickers, levels and history on this device. Nothing is sent anywhere. The grade you pick decides which games show up (kindergarten to 3rd grade). Grades 4 and 5 are coming.', '아이마다 복숭아, 스티커, 단계, 기록이 이 기기에 따로 저장돼요. 어디로도 전송되지 않아요. 고른 학년(유치원~3학년)에 맞는 게임이 보여요. 4·5학년은 준비 중이에요.'),
+  kidsNote: B('Each child keeps their own peaches, stickers, levels and history on this device. Nothing is sent anywhere. The grade you pick decides which games show up (kindergarten to 5th grade; 5th-grade social studies is coming).', '아이마다 복숭아, 스티커, 단계, 기록이 이 기기에 따로 저장돼요. 어디로도 전송되지 않아요. 고른 학년(유치원~5학년)에 맞는 게임이 보여요. 5학년 사회는 준비 중이에요.'),
   delAsk: B('Remove this child and all of their saved progress on this device?', '이 아이와 이 기기에 저장된 기록을 모두 지울까요?'),
   today: B('Today', '오늘'), week: B('Last 7 days', '최근 7일'), streak: B('Days in a row', '연속 일수'), acc: B('Correct (7 days)', '정답률(7일)'),
   answers: B('answers', '문제'), days: B('days', '일'),
@@ -18,8 +18,9 @@ const PT = {
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} days in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
 const GRADE3_READY = true; 
-const GRADE4_READY = false;                      // flip when grade 4 is built, reviewed and approved
-const GRADE5_READY = false;                      // flip when grade 5 is built, reviewed and approved                      // flip to true when the grade-3 set is built, checked and approved
+const GRADE4_READY = true;                       // flip when grade 4 is built, reviewed and approved
+const GRADE5_READY = true; 
+const GRADE5_SS_READY = false;                   // grade 5 social studies waits for a grown-up review of sensitive history topics (docs/review/codex-done-39.md)                      // flip when grade 5 is built, reviewed and approved                      // flip to true when the grade-3 set is built, checked and approved
 const GRADE2_READY = true;                       // flip to true when the grade-2 set is complete (math is built, the rest is in progress)
 const SITE_URL = 'https://altair-research.github.io/peachplay/';
 const AVATARS = ['🍑', '🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🚀'];

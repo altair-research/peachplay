@@ -13,8 +13,10 @@ const DIAG_IDS_K = ['count', 'order', 'tens', 'teens', 'compare', 'addsub', 'sha
   'letters', 'sounds', 'rhyme', 'flags', 'address', 'compass', 'living', 'motion'];
 const DIAG_IDS_3 = ['place3', 'round3', 'addsub3', 'array3', 'divide3', 'unitfraction3', 'equivalent3', 'area3', 'elapsed3',
   'decode3', 'context3', 'evidence3', 'sentence3', 'rocktest3', 'temperature3', 'federal3'];                       // filled when the grade-3 games exist (16 game ids, see docs/grade3-build-plan.md)
-const DIAG_IDS_4 = [];                       // filled when grade 4 games exist (docs/grade4-build-plan.md)
-const DIAG_IDS_5 = [];                       // filled when grade 5 games exist (docs/grade5-build-plan.md)
+const DIAG_IDS_4 = ['place4', 'round4', 'multcompare4', 'multiply4', 'divide4', 'equivalent4', 'decimal4', 'angle4',
+  'roots4', 'context4', 'evidence4', 'structure4', 'weatherinstrument4', 'organismrole4', 'checks4', 'budget4'];                       // filled when grade 4 games exist (docs/grade4-build-plan.md)
+const DIAG_IDS_5 = ['place5', 'multiply5', 'divide5', 'fractiondivision5', 'fractionadd5', 'decimalcompare5', 'coordinate5', 'volume5',
+  'roots5', 'context5', 'character5', 'source5', 'cellparts5', 'circuit5', 'traits5', 'physical5'];   // social studies held for now                       // filled when grade 5 games exist (docs/grade5-build-plan.md)
 const DIAG_IDS = () => (kidGrade() === '5' && DIAG_IDS_5.length ? DIAG_IDS_5 : kidGrade() === '4' && DIAG_IDS_4.length ? DIAG_IDS_4 : kidGrade() === '3' && DIAG_IDS_3.length ? DIAG_IDS_3 : kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
 const CHECK_SKIP = ['mfractions', 'mcoding', 'mcubes', 'mpatterns', 'mbaseten', 'mclock', 'mbalance', 'mletters', 'partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
@@ -47,7 +49,7 @@ function currentPicks(max = 3) {
 // ---- check-ups ----
 function buildCheck(scope) {
   if (scope === 'all') return DIAG_IDS().filter(gameById).map(id => ({ id, lv: 1 }));
-  const capable = GAMES.filter(g => { const gr = gradeOf(g); return (gr === 'both' || gr === kidGrade()) && g.subject === scope && !CHECK_SKIP.includes(g.id); });   // check-ups use the current grade only, even when earlier-grade games are shown for practice
+  const capable = GAMES.filter(g => { const gr = gradeOf(g); return !heldGame(g) && (gr === 'both' || gr === kidGrade()) && g.subject === scope && !CHECK_SKIP.includes(g.id); });   // check-ups use the current grade only, even when earlier-grade games are shown for practice
   const items = shuffle(capable).map(g => ({ id: g.id, lv: 1 }));
   const extra = shuffle(capable).map(g => ({ id: g.id, lv: 2 }));        // second, harder question for small subjects
   while (items.length < 8 && extra.length) items.push(extra.shift());

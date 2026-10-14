@@ -56,6 +56,10 @@ registerGame({
   area: AREA_SS('Georgia symbols'),
   play() {
     const t = pick(GA_SYMBOLS), ds = others(GA_SYMBOLS, t, 2);
+    if (rnd(2)) {
+      quiz(this, { ask: B(`The ${t.n.en} is Georgia's state what?`, `조지아의 상징 ${t.n.ko}: 어떤 종류일까요?`), show: `<span class="emo">${t.e}</span>`, opts: [t, ...ds].map(s => ({ html: `<span class="word">${L(s.q)}</span>`, ok: s === t })), cls: 'words', vocab: t.n.en });
+      return;
+    }
     const o = (s) => ({ html: `<span class="emo">${s.e}</span>`, label: s.n, ok: s === t });
     quiz(this, {
       ask: B(`Which one is Georgia's state ${t.q.en.toUpperCase()}?`, `조지아의 주 ${t.q.ko}은(는) 어느 것일까요?`),
@@ -134,7 +138,7 @@ registerGame({
     const p = pick(CITIZEN), notQ = rnd(3) === 0;
     quiz(this, {
       ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'),
-      opts: [{ html: `<span class="emo">${p[0][0]}</span>`, label: p[0][1], ok: !notQ }, { html: `<span class="emo">${p[1][0]}</span>`, label: p[1][1], ok: notQ }], cls: 'groups',
+      opts: [{ html: `<span class="emo">${p[0][0]}</span><span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `<span class="emo">${p[1][0]}</span><span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups',
       after: B('Good citizens are kind and follow the rules!', '좋은 시민은 친절하고 규칙을 지켜요!'), vocab: 'Good citizens follow the rules!'
     });
   }
@@ -156,6 +160,10 @@ registerGame({
   area: AREA_SS('Labor Day & jobs'),
   play() {
     const t = pick(JOBS), ds = others(JOBS, t, 2);
+    if (rnd(2)) {
+      quiz(this, { ask: B('What is this worker called?', '이 일을 하는 사람의 이름을 골라요.'), askExtra: { t: L(t.q) }, show: `<span class="emo">${t.e}</span><div style="font-size:clamp(16px,3dvh,22px)">${L(t.q)}</div>`, opts: [t, ...ds].map(j => ({ html: `<span class="word">${L(j.n)}</span>`, ok: j === t })), cls: 'words', vocab: t.n.en });
+      return;
+    }
     const o = (j) => ({ html: `<span class="emo">${j.e}</span>`, label: j.n, ok: j === t });
     quiz(this, { ask: t.q, opts: [o(t), ...ds.map(o)], after: B(`A ${t.n.en} helps our community!`, `${t.n.ko}은(는) 우리 마을을 도와줘요!`), vocab: t.n.en });
   }
@@ -175,3 +183,48 @@ registerGame({
     quiz(this, { ask: B(`Which picture goes with ${t.n.en.toUpperCase()}?`, `${t.n.ko}과 어울리는 그림은?`), askSay: B(`Which picture goes with ${t.n.en}?`, `${t.n.ko}과 어울리는 그림은?`), opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`${t.n.en}!`, `${t.n.ko}!`), vocab: t.n.en });
   }
 });
+// Additional K retrieval tasks; existing SVG flag artwork remains the source.
+(() => {
+  const flags = GAMES.find(g => g.id === 'flags'), flagsPlay = flags.play;
+  const questions = [
+    [true, B('Which flag belongs to our STATE, Georgia?', '우리가 사는 조지아 주의 깃발을 찾아요.')],
+    [false, B('Which flag belongs to the United States?', '미국을 나타내는 깃발을 찾아요.')],
+    [true, B('Which flag has three wide red, white, red stripes?', '빨강·하양·빨강의 넓은 줄 세 개가 있는 깃발은?')],
+    [false, B('Which flag has 13 red and white stripes?', '빨강과 하양 줄이 모두 13개인 깃발은?')],
+    [true, B('Which flag has 13 stars in a ring?', '별 13개가 고리 모양으로 놓인 깃발은?')]
+  ];
+  flags.play = function () {
+    const mode = rnd(3);
+    if (mode === 0) return flagsPlay.call(this);
+    if (mode === 1) {
+      const ga = !!rnd(2);
+      return quiz(this, { ask: B('What is the name of this flag?', '이 깃발의 이름을 골라요.'), show: (ga ? flagGA() : flagUS()).replace('<svg ', '<svg style="width:min(70vw,42dvh);height:auto" '), opts: [true, false].map(v => ({ html: `<span class="word">${L(v ? B('Georgia flag', '조지아 주기') : B('U.S. flag', '미국 국기'))}</span>`, ok: v === ga })), cls: 'words' });
+    }
+    const [ga, ask] = pick(questions);
+    quiz(this, { ask, opts: [{ html: flagGA(), ok: ga }, { html: flagUS(), ok: !ga }], cls: 'flags' });
+  };
+  const address = GAMES.find(g => g.id === 'address'), addressPlay = address.play;
+  const kinds = [B('Street address', '도로명과 번지'), B('City', '도시'), B('State', '주'), B('Country', '나라')];
+  const examples = [['12 Maple Lane', 'Duluth', 'Georgia', 'United States'], ['25 Oak Road', 'Atlanta', 'Georgia', 'United States']];
+  address.play = function () {
+    if (!rnd(3)) return addressPlay.call(this);
+    const ex = pick(examples), i = rnd(4), reverse = !!rnd(2);
+    const ask = reverse ? B(`In this pretend address, what kind of place is ${ex[i]}?`, `연습용 주소에서 ${ex[i]}: 어떤 주소 부분일까요?`) : B(`In this pretend address, find the ${kinds[i].en.toLowerCase()}.`, `연습용 주소에서 ${kinds[i].ko} 부분을 찾아요.`);
+    const indices = [i, ...others([0, 1, 2, 3], i, 2)];
+    quiz(this, { ask, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">🏠 ${ex.join('<br>')}</div>`, opts: indices.map(j => ({ html: `<span class="word">${reverse ? L(kinds[j]) : ex[j]}</span>`, ok: j === i })), cls: 'words' });
+  };
+  // Illustrations are mnemonics, not official holiday symbols. Captions disambiguate them.
+  const holidays = GAMES.find(g => g.id === 'holidays');
+  const bank = [
+    ['👷', B('Labor Day', '노동절'), B('We honor workers.', '일하는 사람들에게 감사해요.')],
+    ['🦃', B('Thanksgiving', '추수감사절'), B('A day for giving thanks.', '감사하는 마음을 나누는 날이에요.')],
+    ['🎆', B('Independence Day', '독립기념일'), B('We celebrate U.S. independence.', '미국의 독립을 기념해요.')],
+    ['🎖️', B('Veterans Day', '재향군인의 날'), B('We honor people who served in the military.', '군에서 복무한 분들에게 감사해요.')],
+    ['🇺🇸', B('Flag Day', '국기의 날'), B('We celebrate the U.S. flag.', '미국 국기를 기념해요.')],
+    ['📅', B("New Year's Day", '새해 첫날'), B('The first day of a new year.', '새해의 첫날이에요.')]
+  ];
+  holidays.play = function () {
+    const t = pick(bank), reverse = !!rnd(2), ds = others(bank, t, 2);
+    quiz(this, { ask: reverse ? t[2] : B(`Find the card for ${t[1].en}.`, `${t[1].ko} 카드를 찾아요.`), show: reverse ? `<span class="emo">${t[0]}</span>` : '', opts: [t, ...ds].map(h => ({ html: `<span class="emo">${h[0]}</span>`, label: reverse ? h[1] : h[2], ok: h === t })), cls: 'shapes', after: t[2], vocab: t[1].en });
+  };
+})();

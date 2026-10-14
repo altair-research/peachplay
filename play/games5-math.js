@@ -10,10 +10,12 @@ const clean=x=>typeof x==='number'?String(Number(x.toFixed(8))):String(x);
 const q=(ask,show,a,w,after)=>({ask,show,opts:[...new Set([clean(a),...w.map(clean)])].slice(0,3).map((x,i)=>({html:`<span class="word">${esc(x)}</span>`,ok:i===0})),cls:'words g5-math-options',after:after||B(`Answer: ${clean(a)}`,`정답: ${clean(a)}`)});
 const nq=(ask,show,a,step=1,after)=>q(ask,show,a,[a+step,a-step],after);
 const strip=(n,d)=>`<div class="g5-math-strip" aria-label="${n}/${d}">${Array.from({length:d},(_,i)=>`<span class="${i<n?'filled':''}"></span>`).join('')}</div>`;
-const reg=(id,en,ko,code,make)=>registerGame({id,grade:'5',subject:'math',icon:'🧮',title:B(en,ko),sub:B('Models and reasoning · partial practice','모형과 추론 · 부분 연습'),area:B(`Grade 5 Math · ${code}`,`5학년 수학 · ${code}`),play(){const lv=lvl(id)>1?2:1,i=take(id,lv),it=make(lv,i);it.itemKey=`${id}:${lv}:${i}`;quiz(this,it);}});
+const support={};
+const scopeFor=id=>support[id];
+const reg=(id,en,ko,code,make)=>registerGame({id,grade:'5',subject:'math',icon:'🧮',title:B(en,ko),sub:B('Models and reasoning · partial practice','모형과 추론 · 부분 연습'),practiceScope:scopeFor(id)?B(...scopeFor(id)):undefined,area:B(`Grade 5 Math · ${code}${scopeFor(id)?" · "+scopeFor(id)[0]:""}`,`5학년 수학 · ${code}${scopeFor(id)?" · "+scopeFor(id)[1]:""}`),play(){const lv=lvl(id)>1?2:1,i=take(id,lv),it=make(lv,i);const scope=scopeFor(id);if(scope){it.show+='<div class="g5-scope">'+L(B(scope[0],scope[1]))+'</div>';}if(S.lang==='ko'&&/[A-Za-z]/.test(it.ask.ko)){it.askSay=B(it.ask.en,'질문과 자료를 보고 답을 골라요. 영어 질문도 들어 보세요.');it.askExtra={t:it.ask.en,lang:'en-US'};}it.itemKey=`${id}:${lv}:${i}`;quiz(this,it);}});
 reg('place5','Place Value Relationships','자리 사이의 관계','5.NR.1.1',(lv,i)=>{
  const digit=1+i%5,base=10**(1+Math.floor(i/5)),left=digit*base,right=digit*base/10;
- if(lv===1)return q(B('How many times as large is the left value?','왼쪽 값은 오른쪽 값의 몇 배일까요?'),eq(`${left} ← ${right}`),'10',['100','1/10'],B(`${right} × 10 = ${left}`,`${right} × 10 = ${left}`));
+ if(lv===1){const reverse=i>=5,a=reverse?right:left,b=reverse?left:right;return q(B('The first value is what multiple of the second?','첫째 값은 둘째 값의 몇 배일까요?'),eq(`${a} : ${b}`),reverse?'1/10':'10',['100',reverse?'10':'1/10'],B(`${b} × ${reverse?'1/10':'10'} = ${a}`,`${b} × ${reverse?'1/10':'10'} = ${a}`));}
  const small=digit*(i%2?100:10),big=digit*1000,div=big/small;
  return q(B('Choose the relationship from the larger value to the smaller.','큰 자릿값에서 작은 자릿값으로 가는 관계를 골라요.'),eq(`${big} → ${small}`),`÷ ${div}`,[`× ${div}`,`÷ ${div===10?100:10}`],B('Each step right gives one tenth of the value.','오른쪽으로 한 자리 갈 때마다 값은 10분의 1이 돼요.'));
 });

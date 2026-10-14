@@ -239,3 +239,34 @@ registerGame({
     window.__robot = { tx, ty, N, D, press: (k) => document.querySelector(`.rkeys .pill[data-k="${k}"]`).click(), run: () => $('#rrun').click() };
   }
 });
+// Missing-ingredient retrieval complements the original five color mixes.
+(() => {
+  const game = GAMES.find(g => g.id === 'colors'), original = game.play;
+  game.play = function () {
+    if (!rnd(3)) return original.call(this);
+    const t = pick(MIX), i = rnd(2), shown = 1 - i;
+    const colors = [...new Map(MIX.flatMap(m => [[m[0], m[3]], [m[1], m[4]]])).entries()];
+    const wrong = shuffle(colors.filter(c => c[0] !== t[i])).slice(0, 2);
+    quiz(this, { ask: B(`Which color is missing from this paint mix? ${t[shown + 3].en} and what make ${t[5].en}?`, `물감 섞기에서 빠진 색을 골라요. ${t[shown + 3].ko}에 어떤 색을 섞으면 ${t[5].ko}이 될까요?`), show: `<div class="mixrow">${CDOT(t[shown])}<span>+</span><span>?</span><span>=</span>${CDOT(t[2])}</div>`, opts: [[t[i], t[i + 3]], ...wrong].map((c, j) => ({ html: CDOT(c[0]), label: c[1], ok: j === 0 })), cls: 'shapes', vocab: t[i + 3].en });
+  };
+  // A child's stated feeling, rather than an assumed reaction, is the evidence.
+  const feeling = GAMES.find(g => g.id === 'feelings');
+  const scenes = [
+    ['🎂', B('At my party I say, "I feel happy."', '생일 파티에서 “기뻐요”라고 말해요.'), 'happy'],
+    ['🧸', B('With my friend I say, "I feel happy."', '친구와 놀며 “기뻐요”라고 말해요.'), 'happy'],
+    ['🍦', B('My treat fell. I say, "I feel sad."', '간식을 떨어뜨리고 “슬퍼요”라고 말해요.'), 'sad'],
+    ['👋', B('I miss my friend. I say, "I feel sad."', '친구가 보고 싶어서 “슬퍼요”라고 말해요.'), 'sad'],
+    ['🌑', B('In the dark I say, "I feel scared."', '어두운 곳에서 “무서워요”라고 말해요.'), 'scared'],
+    ['🔊', B('After a loud noise I say, "I feel scared."', '큰 소리를 듣고 “무서워요”라고 말해요.'), 'scared'],
+    ['🎁', B('Before opening a gift I say, "I feel excited."', '선물을 열기 전에 “신나요”라고 말해요.'), 'excited'],
+    ['🚌', B('Before our trip I say, "I feel excited."', '소풍 가기 전에 “신나요”라고 말해요.'), 'excited'],
+    ['🧩', B('Someone broke my puzzle. I say, "I feel angry."', '누군가 내 퍼즐을 망가뜨려서 “화나요”라고 말해요.'), 'angry'],
+    ['🧱', B('My tower was knocked down. I say, "I feel angry."', '누군가 내 탑을 무너뜨려서 “화나요”라고 말해요.'), 'angry'],
+    ['🛏️', B('At bedtime I say, "I feel tired."', '잘 시간에 “피곤해요”라고 말해요.'), 'tired'],
+    ['🏃', B('After running I say, "I feel tired."', '달리기를 하고 “피곤해요”라고 말해요.'), 'tired']
+  ];
+  feeling.play = function () {
+    const t = pick(scenes), keys = Object.keys(FEEL);
+    quiz(this, { ask: B('Find the face for the feeling I named.', '말한 기분에 어울리는 얼굴을 찾아요.'), askExtra: { t: L(t[1]) }, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">${t[0]} ${L(t[1])}</div>`, opts: [t[2], ...others(keys, t[2], 2)].map(k => ({ html: `<span class="emo">${FEEL[k][0]}</span>`, label: FEEL[k][1], ok: k === t[2] })), cls: 'shapes', vocab: FEEL[t[2]][1].en });
+  };
+})();

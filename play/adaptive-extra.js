@@ -48,8 +48,10 @@
     2: ['I smile ___ I am happy.', 'Three ___ are here.', 'My ___ plays with me.', 'We have ___ food for everyone.', 'Let us play ___.', 'I ___ about the story.', 'We walk ___ the gate.', 'I know the ___.', 'I ___ a bell ring.', 'We ___ read after lunch.'],
     3: ['I ___ brush my teeth at bedtime, every night.', 'The twins walk home ___.', 'I want ___ cup.', '___ child has a pencil.', 'This book is ___ trains.', 'We wash our hands ___ lunch.', 'We sit ___ the table.', 'Red and blue are ___ colors.', '___ it rained, we stayed dry.', 'I found ___ in the box: a key!']
   };
+  words.K.push(['here', 'heer', 'herre'], ['little', 'litle', 'littel']);
+  sentences.K.push('Come ___ to me.', 'I see a ___ cat.');
   for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
-    const t = pick(lv === 1 ? words[grade].slice(0, 5) : words[grade].slice(5));
+    const t = pick(grade === 'K' ? words.K : lv === 1 ? words[grade].slice(0, 5) : words[grade].slice(5));
     const sentence = sentences[grade][words[grade].indexOf(t)];
     return { ask: B('Which word fits? Choose the correct spelling.', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
       askExtra: { t: sentence.replace('___', t[0]), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], t.slice(1)), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
@@ -67,10 +69,10 @@
     return { ask: B('Which word completes the sentence?', '문장을 완성하는 낱말을 골라요.'), askExtra: { t: t[0].replace('___', 'blank'), lang: 'en-US' },
       show: passage(t[0]), opts: choices(t[1], t[2]), cls: 'words', after: B(t[0].replace('___', t[1]), t[0].replace('___', t[1])) };
   });
-  const oppositePairs = [['hot', 'cold'], ['up', 'down'], ['big', 'small'], ['open', 'closed'], ['day', 'night'], ['full', 'empty'], ['wet', 'dry'], ['near', 'far'], ['fast', 'slow'], ['soft', 'hard']];
+  const oppositePairs = [['hot', 'cold'], ['up', 'down'], ['big', 'small'], ['open', 'closed'], ['day', 'night'], ['full', 'empty'], ['wet', 'dry'], ['near', 'far'], ['fast', 'slow'], ['soft', 'hard'], ['in', 'out'], ['on', 'off']];
   for (const grade of ['K', '1']) add('admeaning' + grade, grade, B('Opposite Word Partners', '반대 뜻 짝꿍'), B('Vocabulary', '어휘'), lv => {
-    const index = (lv === 1 ? 0 : 5) + rnd(5), pair = oppositePairs[index];
-    const ds = shuffle(oppositePairs.filter((_, i) => i !== index).map(p => p[1])).slice(0, 2);
+    const index = grade === 'K' ? rnd(oppositePairs.length) : (lv === 1 ? 0 : 5) + rnd(5), source = oppositePairs[index], pair = grade === 'K' && lv === 2 ? [...source].reverse() : source;
+    const ds = shuffle(oppositePairs.slice(0, grade === 'K' ? oppositePairs.length : 10).filter((_, i) => i !== index).map(p => p[grade === 'K' && lv === 2 ? 0 : 1])).slice(0, 2);
     return { ask: B(`Which word means the opposite of "${pair[0]}"?`, `"${pair[0]}"와 반대 뜻인 낱말을 골라요.`),
       askExtra: { t: pair[0], lang: 'en-US' }, opts: choices(pair[1], ds), cls: 'words', after: B(`${pair[0]} ↔ ${pair[1]}`, `${pair[0]} ↔ ${pair[1]}`) };
   });
@@ -99,16 +101,67 @@
     ['Make a bookmark', 'Cut a paper strip', 'Draw a star', 'Color the star'], ['Plant a pretend flower', 'Get a paper cup', 'Put a paper stem inside', 'Add a paper flower'],
     ['Make a paper crown', 'Get a paper strip', 'Draw jewels', 'Join the ends'], ['Make a puppet', 'Get a paper bag', 'Draw a face', 'Add paper ears']
   ];
+  const kInstructions = [...instructions,
+    ['Draw a fish', 'Get paper', 'Draw an oval', 'Add a tail'],
+    ['Make a paper chain', 'Get paper strips', 'Make a loop', 'Add another loop']];
   for (const grade of ['K', '1']) add('adinfo' + grade, grade, B('Read the Steps', '순서 글을 읽어요'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const t = pick(lv === 1 ? instructions.slice(0, 5) : instructions.slice(5));
+    const t = pick(grade === 'K' ? kInstructions : lv === 1 ? instructions.slice(0, 5) : instructions.slice(5));
     const text = `${t[0]}: First, ${t[1].toLowerCase()}. Next, ${t[2].toLowerCase()}. Last, ${t[3].toLowerCase()}.`;
     const step = lv === 1 ? 1 : 3;
     return textRound(text, lv === 1 ? B('What is the first step?', '첫 번째 할 일을 골라요.') : B('What is the last step?', '마지막 할 일을 골라요.'), t[step], t.slice(1).filter((_, i) => i + 1 !== step), B(text, text));
   });
   add('adinfotopicK', 'K', B('What Do the Steps Make?', '무엇을 만드는 글일까요?'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const t = pick(lv === 1 ? instructions.slice(0, 5) : instructions.slice(5));
+    const t = pick(kInstructions);
     const text = `${t[0]}: ${t[1]}. ${t[2]}. ${t[3]}.`;
-    const ds = shuffle(instructions.filter(x => x !== t)).slice(0, 2).map(x => x[0]);
+    const ds = shuffle(kInstructions.filter(x => x !== t)).slice(0, 2).map(x => x[0]);
     return textRound(text, B('Which title matches these steps?', '이 순서 글에 맞는 제목을 골라요.'), t[0], ds, B(t[0], t[0]));
   });
+})();
+// K-only round selection. Identity ignores distractors/order; keep the last nine
+// tasks even across sessions so any ten consecutive rounds are distinct.
+(() => {
+  'use strict';
+  const clean = html => String(html || '').replace(/transform:[^;"']*/g, '');
+  const identity = (game, item, tile) => JSON.stringify(tile
+    ? [item.ask, item.target]
+    : [item.ask, clean(item.show), item.opts.filter(o => o.ok).map(o => [clean(o.html), o.label]),
+      game.id === 'compare' ? item.opts.map(o => clean(o.html)) : null]);
+  for (const game of GAMES.filter(g => gradeOf(g) === 'K' && g.id !== 'memory')) {
+    const make = game.play, histories = new Map(), recentKeys = [];
+    game.play = function () {
+      const slot = `${S.lang}:${lvl(this.id)}`, state = histories.get(slot) || { recent: recentKeys, pool: new Map() };
+      histories.set(slot, state);
+      const renderQuiz = window.quiz, renderTile = window.tileRound;
+      let selected;
+      try {
+        for (let attempt = 0; attempt < 256; attempt++) {
+          let candidate;
+          window.quiz = (_g, item) => { candidate = { item, tile: false }; };
+          window.tileRound = (_g, item) => { candidate = { item, tile: true }; };
+          make.call(this);
+          if (!candidate) throw new Error(`K round is not capturable: ${this.id}`);
+          const key = identity(this, candidate.item, candidate.tile);
+          state.pool.set(key, candidate);
+          if (!state.recent.includes(key)) { selected = { key, ...candidate }; break; }
+        }
+        if (!selected) {
+          const available = [...state.pool].filter(([key]) => !state.recent.includes(key));
+          if (!available.length) throw new Error(`K bank exhausted: ${this.id}`);
+          const [key, candidate] = pick(available); selected = { key, ...candidate };
+        }
+      } finally { window.quiz = renderQuiz; window.tileRound = renderTile; }
+      state.recent.push(selected.key);
+      if (state.recent.length > 9) state.recent.shift();
+      // Limit retained generated rounds; histories do not enter localStorage.
+      if (state.pool.size > 64) for (const key of state.pool.keys()) {
+        if (!state.recent.includes(key)) state.pool.delete(key);
+        if (state.pool.size <= 64) break;
+      }
+      if (!selected.tile && selected.item.opts.length > 3) {
+        const correct = selected.item.opts.find(o => o.ok);
+        selected.item = { ...selected.item, opts: [correct, ...shuffle(selected.item.opts.filter(o => !o.ok)).slice(0, 2)] };
+      }
+      return (selected.tile ? renderTile : renderQuiz)(this, selected.item);
+    };
+  }
 })();

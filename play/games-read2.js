@@ -36,7 +36,7 @@ registerGame({
 });
 
 // ---------- Count the syllables ----------
-const SYL = [['dog', '🐶', 1], ['sun', '☀️', 1], ['fish', '🐟', 1], ['apple', '🍎', 2], ['monkey', '🐵', 2], ['tiger', '🐯', 2], ['rabbit', '🐰', 2],
+const SYL = [['dog', '🐶', 1], ['sun', '☀️', 1], ['fish', '🐟', 1], ['apple', '🍎', 2], ['monkey', '🐵', 2], ['tiger', '🐯', 2], ['rabbit', '🐰', 2], ['cat', '🐱', 1], ['pig', '🐷', 1], ['hat', '🎩', 1], ['bus', '🚌', 1], ['pencil', '✏️', 2],
   ['banana', '🍌', 3], ['butterfly', '🦋', 3], ['elephant', '🐘', 3], ['umbrella', '☂️', 3], ['dinosaur', '🦖', 3]];
 registerGame({
   id: 'syllable', subject: 'read', icon: '👏', title: B('Clap the Parts', '박수로 음절 세기'), sub: B('How many parts?', '몇 개로 나뉠까?'),
@@ -58,7 +58,15 @@ registerGame({
   id: 'memory', subject: 'read', icon: '🃏', title: B('Letter Memory', '글자 기억 게임'), sub: B('Flip cards, match A with a', '카드를 뒤집어 A와 a 찾기'),
   area: AREA_READ('Alphabet'),
   play() {
-    const pairs = lvl('memory') === 1 ? 4 : 6, ls = shuffle('ABCDEFGHIJKLMNOP'.split('')).slice(0, pairs);
+    const pairs = lvl('memory') === 1 ? 4 : 6, alphabet = 'ABCDEFGHIJKLMNOP'.split('');
+    const history = (this._kBoards ||= { 4: [], 6: [] })[pairs];
+    let ls = shuffle(alphabet).slice(0, pairs), key = ls.slice().sort().join('');
+    for (let attempt = 0; history.includes(key); attempt++) {
+      // Sixteen distinct consecutive-letter sets provide a deterministic fallback.
+      ls = attempt < 32 ? shuffle(alphabet).slice(0, pairs) : Array.from({ length: pairs }, (_, i) => alphabet[(attempt + i) % 16]);
+      key = ls.slice().sort().join('');
+    }
+    history.push(key); if (history.length > 9) history.shift();
     const cards = shuffle(ls.flatMap(c => [{ k: c, t: c }, { k: c, t: c.toLowerCase() }]));
     view().innerHTML = `<div class="prompt">${S.lang === 'ko' ? '짝이 되는 큰 글자와 작은 글자를 찾아요!' : 'Find the big and little letter pairs!'}</div>
       <div class="mem">${cards.map((c, i) => `<button class="card" data-i="${i}"><span class="back">🍑</span><span class="face">${c.t}</span></button>`).join('')}</div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;

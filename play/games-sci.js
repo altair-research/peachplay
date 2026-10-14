@@ -3,7 +3,7 @@
 const AREA_SCI = (u) => B(`Science · ${u}`, `과학 · ${u}`);
 
 const LIVING = [['🐕', B('dog', '강아지'), true], ['🌱', B('seedling', '새싹'), true], ['🦋', B('butterfly', '나비'), true], ['🐟', B('fish', '물고기'), true], ['🌳', B('tree', '나무'), true],
-  ['🚗', B('car', '자동차'), false], ['⚽', B('ball', '공'), false], ['🧸', B('teddy bear', '곰 인형'), false], ['📖', B('book', '책'), false], ['⛰️', B('mountain', '산'), false]];
+  ['🚗', B('car', '자동차'), false], ['⚽', B('ball', '공'), false], ['🧸', B('teddy bear', '곰 인형'), false], ['📖', B('book', '책'), false], ['⛰️', B('mountain', '산'), false], ['🐈', B('cat', '고양이'), true], ['🌻', B('sunflower plant', '해바라기'), true], ['🪑', B('chair', '의자'), false], ['🚲', B('bicycle', '자전거'), false]];
 registerGame({
   id: 'living', subject: 'sci', icon: '🌱', title: B('Living or Not?', '살아 있을까?'), sub: B('Plants, animals, things', '식물, 동물, 물건'),
   area: AREA_SCI('Living things'),
@@ -26,7 +26,7 @@ registerGame({
   play() {
     const t = pick(SKY);
     if (rnd(2) === 0) {                                              // "which one do you see at night / in the day?"
-      const day = rnd(2) === 0, good = pick(SKY.filter(x => x[2] === day)), bad = shuffle(SKY.filter(x => x[2] !== day)).slice(0, 2);
+      const day = rnd(2) === 0, good = pick(SKY.filter(x => x[2] === day && x[1].en !== 'moon')), bad = shuffle(SKY.filter(x => x[2] !== day && x[1].en !== 'moon')).slice(0, 2);
       const o = (x) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === good });
       quiz(this, {
         ask: day ? B('Which one do you see in the DAY sky?', '낮 하늘에서 볼 수 있는 것은?') : B('Which one do you see in the NIGHT sky?', '밤 하늘에서 볼 수 있는 것은?'),
@@ -37,8 +37,8 @@ registerGame({
     quiz(this, {
       ask: B('Do you see this in the day sky or the night sky?', '낮 하늘에서 볼까요, 밤 하늘에서 볼까요?'),
       show: `<div class="bigword"><span class="emo">${t[0]}</span></div>`,
-      opts: [{ html: '<span class="emo">🌤️</span>', label: B('Day', '낮'), ok: t[2] }, { html: '<span class="emo">🌃</span>', label: B('Night', '밤'), ok: !t[2] }], cls: 'groups',
-      after: B(`You see the ${t[1].en} in the ${t[2] ? 'day' : 'night'} sky.`, `${t[1].ko}은(는) ${t[2] ? '낮' : '밤'} 하늘에서 봐요.`), vocab: t[1].en
+      opts: [{ html: '<span class="emo">🌤️</span>', label: B('Day', '낮'), ok: t[2] }, { html: '<span class="emo">🌃</span>', label: B('Night', '밤'), ok: !t[2] && t[1].en !== 'moon' }, ...(t[1].en === 'moon' ? [{ html: '<span class="emo">🌤️🌃</span>', label: B('Both', '낮에도 밤에도'), ok: true }] : [])], cls: 'groups',
+      after: t[1].en === 'moon' ? B('The Moon can be seen in the day and at night.', '달은 낮에도 밤에도 볼 수 있어요.') : B(`You see the ${t[1].en} in the ${t[2] ? 'day' : 'night'} sky.`, `${t[1].ko}은(는) ${t[2] ? '낮' : '밤'} 하늘에서 봐요.`), vocab: t[1].en
     });
   }
 });

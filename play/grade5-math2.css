@@ -3,3 +3,9 @@
 .g5-math2-model table{width:100%;border-collapse:collapse;font-size:18px}.g5-math2-model th,.g5-math2-model td{border:1px solid #88b4c4;padding:4px}.g5-math2-model th{font-size:15px}.g5-math2-model .marked{background:#ffe4a3}
 .g5-math2-options .word{font-size:18px;line-height:1.2}.g5-math2-options .opt{min-height:44px;padding:6px 8px}
 .g5-math2-model svg[viewBox="0 0 300 80"]{height:80px}
+
+.g5-scope{font-size:14px;line-height:1.25;margin:4px auto;max-width:520px;color:#34465a}
+
+@media(max-height:700px){.g5-math2-model svg{height:clamp(90px,17dvh,120px)}}
+
+.g5-math2-model .g5-lineplot td{line-height:1;padding:3px 4px}

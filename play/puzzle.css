@@ -1,0 +1,34 @@
+/* Scoped to puzzle rounds; no existing game layout is changed. */
+#view:has(.z-board) { gap: 3px; }
+#view:has(.z-board) > .prompt { font-size: clamp(17px, 4.8vw, 24px); line-height: 1.22; margin: 2px 0; }
+#view:has(.z-board) > .show { flex: 0 1 auto; margin: 0; padding: 0; min-height: 0; font-size: 20px; }
+.z-board { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; max-height: 43dvh; }
+.z-grid { display: grid; grid-template-columns: repeat(var(--z-n), minmax(0, 1fr)); grid-template-rows: repeat(var(--z-n), minmax(0, 1fr)); width: min(65vw, 25dvh, 260px); height: min(65vw, 25dvh, 260px); min-height: 0; flex-shrink: 0; gap: 1px; border: 2px solid #516b85; background: #b8c9d7; }
+.z-cell { display: flex; align-items: center; justify-content: center; color: #18364e; background: #fff; font-size: clamp(12px, 3.8vw, 20px); min-width: 0; min-height: 0; }
+.z-mark { background: #fff0ba; font-weight: bold; }
+.z-edge { border-right: 2px solid #516b85; }
+.z-bottom { border-bottom: 2px solid #516b85; }
+.z-drop { border: 2px dashed #567c8e; border-radius: 10px; min-width: 52px; min-height: 28px; font-size: 20px; background: #f1f9fc; color: #18364e; }
+.z-line { font-size: clamp(17px, 4.9vw, 25px); line-height: 1.25; text-align: center; }
+.z-clues { font-size: clamp(16px, 4.5vw, 22px); line-height: 1.3; max-width: 330px; }
+.z-pixel { display: grid; grid-template-columns: 35px repeat(var(--z-n), 1fr); width: min(73vw, 24dvh, 280px); aspect-ratio: 1; gap: 2px; font-size: 12px; }
+.z-pixel b { font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.z-pixel .z-cell { border: 1px solid #aabac9; }
+.z-pyramid { display: flex; justify-content: center; gap: 4px; }
+.z-pyramid b { background: #fff2c9; border: 1px solid #c7954a; border-radius: 5px; min-width: 38px; padding: 3px; color: #18364e; font-size: 18px; }
+.z-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.z-matrix .z-grid { width: min(21vw, 8dvh, 80px); height: min(21vw, 8dvh, 80px); }
+.z-tools { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
+.z-hint { flex: 0 0 auto; min-height: 44px; padding: 4px 8px; font-size: 13px; border-radius: 10px; }
+.z-tip { max-width: 185px; font-size: 12px; line-height: 1.2; }
+.z-options { display: grid !important; grid-template-columns: repeat(var(--z-count, 4), minmax(0, 1fr)); gap: 6px !important; margin-top: 2px !important; }
+.z-options .opt { min-width: 0 !important; min-height: 48px !important; padding: 5px !important; touch-action: none; }
+.z-options .z-grid { width: min(17vw, 9dvh, 100px); height: min(17vw, 9dvh, 100px); margin: auto; }
+.z-options .z-cell { font-size: clamp(8px, 2.6vw, 13px); }
+.z-code { font-size: clamp(12px, 3.8vw, 22px); white-space: nowrap; }
+.z-number { font-size: clamp(18px, 5vw, 28px); line-height: 1.15; }
+.z-drag { outline: 3px solid #e58a31; opacity: .7; }
+#view:has(.z-board) > .cheer { margin-top: 0; min-height: 30px; font-size: 18px; }
+#view:has(.z-board) > .fact { font-size: 14px; min-height: 18px; }
+#view:has(.z-board) .next { margin-top: 2px; min-height: 44px; padding: 4px 12px; }
+@media (prefers-reduced-motion: reduce) { .z-options .opt { transition: none; } }

@@ -3,3 +3,5 @@
 .g5-math-area{display:flex;gap:4px}.g5-math-area span{flex:1;padding:12px 3px;border:2px solid #357b96;background:#d9eef5}
 .g5-math-strip{display:flex;height:18px;margin:5px 0;border:1px solid #17364a}.g5-math-strip span{flex:1;border-right:1px solid #17364a;background:white}.g5-math-strip .filled{background:#79b4cd}
 .g5-math-options .word{font-size:18px;line-height:1.2}.g5-math-options .opt{min-height:44px;padding:6px 8px}
+
+.g5-scope{font-size:14px;line-height:1.25;margin:4px auto;max-width:520px;color:#34465a}

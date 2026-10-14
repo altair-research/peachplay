@@ -56,8 +56,8 @@ registerGame({
 
 // ---------- 2. Build a sentence ----------
 const SENTENCES = {
-  1: [['I see a cat.', '🐱'], ['I like my dog.', '🐶'], ['We can go up.', '⬆️'], ['The sun is hot.', '☀️'], ['I can run.', '🏃'], ['My hat is red.', '🎩']],
-  2: [['I see a big dog.', '🐕'], ['We like to play.', '⚽'], ['The cat is on the bed.', '🐱'], ['I can see the moon.', '🌙'], ['The bird can fly up.', '🐦'], ['My mom and I read.', '📖']]
+  1: [['I see a cat.', '🐱'], ['I like my dog.', '🐶'], ['We can go up.', '⬆️'], ['The sun is hot.', '☀️'], ['I can run.', '🏃'], ['My hat is here.', '🧢'], ['I see a pig.', '🐷'], ['I see a bus.', '🚌'], ['I see a fox.', '🦊'], ['I see a hen.', '🐔'], ['I see a bat.', '🦇'], ['I see a pen.', '🖊️']],
+  2: [['I see a big dog.', '🐕'], ['We like to play.', '⚽'], ['The cat is on the bed.', '🐱'], ['I can see the moon.', '🌙'], ['The bird can fly up.', '🐦'], ['My mom and I read.', '📖'], ['I can see a fish.', '🐟'], ['I can see a star.', '⭐'], ['I can see a tree.', '🌳'], ['I can see a duck.', '🦆'], ['I can see a bear.', '🐻'], ['I can see a ship.', '🚢']]
 };
 registerGame({
   id: 'sentence', subject: 'write', icon: '📝', title: B('Build a Sentence', '문장 만들기'), sub: B('Put the words in order', '단어를 순서대로'),

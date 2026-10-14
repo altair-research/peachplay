@@ -32,7 +32,7 @@ registerGame({
 
 const DAYTIME = [['⏰', B('Waking up', '잠에서 깨요'), 'morning'], ['🥞', B('Eating breakfast', '아침밥을 먹어요'), 'morning'], ['🚌', B('Riding the bus to school', '학교 버스를 타요'), 'morning'],
   ['🥪', B('Eating lunch', '점심을 먹어요'), 'afternoon'], ['⚽', B('Playing outside after school', '방과 후에 밖에서 놀아요'), 'afternoon'],
-  ['🛁', B('Taking a bath before bed', '자기 전에 목욕해요'), 'night'], ['📖', B('Reading a bedtime story', '잠자리 동화를 읽어요'), 'night'], ['😴', B('Going to sleep', '잠을 자요'), 'night'], ['🌙', B('Seeing the moon and stars', '달과 별을 봐요'), 'night']];
+  ['🛁', B('Taking a bath before bed', '자기 전에 목욕해요'), 'night'], ['📖', B('Reading a bedtime story', '잠자리 동화를 읽어요'), 'night'], ['😴', B('Going to sleep', '잠을 자요'), 'night'], ['🌙', B('Seeing stars in a dark night sky', '깜깜한 밤하늘에서 별을 봐요'), 'night'], ['🪥', B('Brushing teeth after breakfast', '아침밥을 먹고 이를 닦아요'), 'morning'], ['🎒', B('Packing a bag before morning school', '아침에 학교 가기 전 가방을 챙겨요'), 'morning'], ['🖍️', B('Drawing after lunch, before dinner', '점심 먹고 저녁 먹기 전에 그림을 그려요'), 'afternoon']];
 registerGame({
   id: 'daytime', subject: 'math', icon: '🕐', title: B('My Day', '나의 하루'), sub: B('Morning, afternoon, night', '아침, 오후, 밤'),
   area: AREA_MATH('Time patterns'),

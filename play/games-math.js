@@ -109,7 +109,7 @@ registerGame({
     if (!same && a === b) b = a === 10 ? 9 : a + 1;
     const more = lv === 1 ? rnd(2) === 0 : true;
     const askMore = lv === 2 ? B('Which group has MORE? Or are they the SAME?', '어느 쪽이 더 많을까요? 아니면 같을까요?') : more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?');
-    const opts = [{ html: emojiRow(a, e, 'sm'), ok: !same && (more ? a > b : a < b) || false }, { html: emojiRow(b, e, 'sm'), ok: !same && (more ? b > a : b < a) || false }];
+    const opts = [{ html: '<small>A</small>' + emojiRow(a, e, 'sm'), ok: !same && (more ? a > b : a < b) || false }, { html: '<small>B</small>' + emojiRow(b, e, 'sm'), ok: !same && (more ? b > a : b < a) || false }];
     if (lv === 2) opts.push({ html: '<span class="num">=</span>', label: B('Same', '같아요'), ok: same });
     quiz(this, { ask: askMore, opts, cls: 'groups', after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`) });
   }
@@ -248,3 +248,12 @@ registerGame({
     }
   }
 });
+
+(() => {
+  const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
+  game.play = function () {
+    if (!rnd(2)) return original.call(this);
+    const keys = Object.keys(SOLIDS), t = pick(keys), [e, name] = pick(SOLIDS[t].things);
+    quiz(this, { ask: B('What solid shape does this look like?', '어떤 입체 모양과 닮았을까요?'), askExtra: { t: L(name) }, show: '<span class="emo">' + e + '</span><div style="font-size:clamp(16px,3dvh,22px)">' + L(name) + '</div>', opts: [t, ...others(keys, t, 2)].map(k => ({ html: '<span class="word">' + L(SOLIDS[k].n) + '</span>', ok: k === t })), cls: 'words', after: name, vocab: name.en });
+  };
+})();

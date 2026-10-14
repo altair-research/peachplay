@@ -2,3 +2,7 @@
 .g5-sci-model table{width:100%;border-collapse:collapse;font-size:18px}.g5-sci-model th,.g5-sci-model td{border:1px solid #9abdb8;padding:4px}.g5-sci-model svg{height:130px;max-width:100%;font-size:13px}.g5-sci-model small{font-size:14px}
 .g5-sci-options .word{font-size:18px;line-height:1.2}.g5-sci-options .opt{min-height:44px;padding:6px 8px}
 .g5-sci-model svg[viewBox="0 0 280 80"]{height:100px}
+
+.g5-scope{font-size:14px;line-height:1.25;margin:4px auto;max-width:520px;color:#34465a}
+
+@media(max-height:700px){.g5-sci-model svg{height:clamp(80px,15dvh,110px)}.g5-sci-model svg[viewBox="0 0 280 80"]{height:70px}}

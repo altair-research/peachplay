@@ -3,7 +3,7 @@
 
 const SENSES = { eyes: ['👀', B('eyes', '눈')], ears: ['👂', B('ears', '귀')], nose: ['👃', B('nose', '코')], tongue: ['👅', B('tongue', '혀')], hands: ['✋', B('hands', '손')] };
 const SENSE_Q = [['🌸', B('smell a flower', '꽃 냄새를 맡아요'), 'nose'], ['🌈', B('see a rainbow', '무지개를 봐요'), 'eyes'], ['🎵', B('hear music', '음악을 들어요'), 'ears'], ['🍦', B('taste ice cream', '아이스크림 맛을 봐요'), 'tongue'],
-  ['🧸', B('feel a soft teddy bear', '부드러운 곰 인형을 만져요'), 'hands'], ['🔔', B('hear a bell', '종소리를 들어요'), 'ears'], ['🍋', B('taste a lemon', '레몬 맛을 봐요'), 'tongue'], ['🍪', B('smell a warm cookie', '따뜻한 쿠키 냄새를 맡아요'), 'nose']];
+  ['🧸', B('feel a soft teddy bear', '부드러운 곰 인형을 만져요'), 'hands'], ['🔔', B('hear a bell', '종소리를 들어요'), 'ears'], ['🍋', B('taste a lemon', '레몬 맛을 봐요'), 'tongue'], ['🍪', B('smell a warm cookie', '따뜻한 쿠키 냄새를 맡아요'), 'nose'], ['⭐', B('see a star', '별을 봐요'), 'eyes'], ['🧊', B('feel a cold ice cube', '차가운 얼음을 만져요'), 'hands'], ['🥁', B('hear a drum', '북소리를 들어요'), 'ears'], ['🍎', B('taste an apple', '사과 맛을 봐요'), 'tongue']];
 registerGame({
   id: 'senses', subject: 'sci', icon: '👃', title: B('My Five Senses', '오감 탐험'), sub: B('Eyes, ears, nose, tongue, hands', '눈, 귀, 코, 혀, 손'),
   area: AREA_SCI('Five senses'),
@@ -17,6 +17,7 @@ registerGame({
 });
 
 const NEEDS = [
+  ...[['CAT', '고양이'], ['RABBIT', '토끼']].map(([en, ko]) => ({ q: B(`What does a ${en} need to live?`, `${ko}에게 무엇이 필요할까요?`), good: [['💧', B('water', '물')], ['🥣', B('food', '먹이')]], bad: [['🎮', B('video game', '게임')], ['📺', B('TV', '텔레비전')], ['📱', B('phone', '휴대폰')]] })),
   { q: B('What does a PLANT need to grow?', '식물이 자라려면 무엇이 필요할까요?'), good: [['💧', B('water', '물')], ['☀️', B('sunlight', '햇빛')]], bad: [['🍕', B('pizza', '피자')], ['🧸', B('toys', '장난감')], ['📱', B('phone', '휴대폰')]] },
   { q: B('What does a DOG need to live?', '강아지가 살려면 무엇이 필요할까요?'), good: [['🍖', B('food', '먹이')], ['💧', B('water', '물')], ['🏠', B('shelter', '쉴 곳')]], bad: [['🎮', B('video game', '게임')], ['👟', B('shoes', '신발')], ['📺', B('TV', '텔레비전')]] },
   { q: B('What do PEOPLE need to live?', '사람이 살려면 무엇이 필요할까요?'), good: [['🍎', B('food', '음식')], ['💧', B('water', '물')], ['🌬️', B('air', '공기')]], bad: [['🎮', B('video game', '게임')], ['🧸', B('toys', '장난감')], ['🍬', B('candy', '사탕')]] }
