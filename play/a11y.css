@@ -47,3 +47,9 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 
 .settings-screen{padding-bottom:12px}.settings-screen .tag{font-size:16px}.settings-screen .pref{font-size:15px;gap:8px;padding:8px 10px;min-height:48px}.settings-screen .pref .pi{font-size:22px}.settings-screen .pref.look .ps{max-width:46%;font-size:14px}.settings-screen .prefs{gap:6px}.settings-screen .next{margin:6px 0;padding:10px 24px}
 @media(max-height:700px){.settings-screen .pref{padding:6px 10px;min-height:44px}.settings-screen .prefs{gap:4px}.settings-screen .tag{font-size:14px}}
+
+/* home: grade chips */
+.graderow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:8px 0 4px}
+.graderow .grl{font-weight:800;margin-right:4px}
+.gchip{min-height:44px;min-width:56px;padding:6px 12px;border-radius:999px;border:2px solid #f0c9a8;background:#fff;font:inherit;font-weight:800;cursor:pointer}
+.gchip.on{background:#ff7e5f;border-color:#ff7e5f;color:#fff}

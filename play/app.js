@@ -12,6 +12,7 @@ function home() {
     <div class="hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}</div></div>
     <h1>${T().app}</h1>
     <div class="tag">${T().tagline}</div>
+    ${gradeRowHtml()}
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${continueHtml()}
     ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id)) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${T().reviewSub}</small></button></div>` : ''}
@@ -28,6 +29,7 @@ function home() {
     <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
+  $$('.gchip').forEach(b => b.onclick = () => { const k = curKid(); if (k && k.grade !== b.dataset.g) { k.grade = b.dataset.g; saveProf(); S.showK = false; save(); } home(); });
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
   if ($('#reviewStart')) $('#reviewStart').onclick = startReview;
   $('#gsearch').oninput = (e) => {
@@ -82,6 +84,12 @@ function settings(focusKey, focusLook) {
   $('#b').onclick = home; window.scrollTo(0, 0);
   view().classList.add('settings-screen');
   const target = focusKey ? $(`.pref[data-k="${focusKey}"]`) : focusLook ? $(`.pref[data-look="${focusLook}"]`) : null; if (target) target.focus();
+}
+// Grade chips at the top of home: which grade's games this child sees (only grades that are open).
+function gradeRowHtml() {
+  const open = ['K', '1', ...(typeof GRADE2_READY === 'undefined' || GRADE2_READY ? ['2'] : []), ...(typeof GRADE3_READY !== 'undefined' && GRADE3_READY ? ['3'] : []), ...(typeof GRADE4_READY !== 'undefined' && GRADE4_READY ? ['4'] : []), ...(typeof GRADE5_READY !== 'undefined' && GRADE5_READY ? ['5'] : [])];
+  const cur = kidGrade(), name = (g) => (g === 'K' ? L(B('K', '유치원')) : L(B(`Grade ${g}`, `${g}학년`)));
+  return `<div class="graderow" role="group" aria-label="${L(B('Grade', '학년'))}"><span class="grl">${L(B('Grade', '학년'))}</span>${open.map(g => `<button class="gchip${g === cur ? ' on' : ''}" data-g="${g}" aria-pressed="${g === cur}">${name(g)}</button>`).join('')}</div>`;
 }
 function continueHtml() {
   const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';

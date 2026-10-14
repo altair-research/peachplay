@@ -1,0 +1,62 @@
+(() => {
+'use strict';
+const decks=new Map();
+const take=(id,lv)=>{const k=`${id}:${lv}:${S.lang}`;let d=decks.get(k);if(!d){d=shuffle(Array.from({length:10},(_,i)=>i));decks.set(k,d);}const i=d.shift();d.push(i);return i;};
+const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+const clean=x=>typeof x==='number'?String(Number(x.toFixed(8))):String(x);
+const panel=s=>`<div class="g5-math2-model">${s}</div>`,eq=s=>panel(`<div class="g5-math2-equation">${s}</div>`);
+const q=(ask,show,a,w,after)=>({ask,show,opts:[...new Set([clean(a),...w.map(clean)])].slice(0,3).map((x,i)=>({html:`<span class="word">${esc(x)}</span>`,ok:i===0})),cls:'words g5-math2-options',after:after||B(`Answer: ${clean(a)}`,`정답: ${clean(a)}`)});
+const nq=(ask,show,a,step=1,after)=>q(ask,show,a,[a+step,a-step],after);
+const reg=(id,en,ko,code,make)=>registerGame({id,grade:'5',subject:'math',icon:'📐',title:B(en,ko),sub:B('Models and data · partial practice','모형과 자료 · 부분 연습'),area:B(`Grade 5 Math · ${code}`,`5학년 수학 · ${code}`),play(){const lv=lvl(id)>1?2:1,i=take(id,lv),it=make(lv,i);it.itemKey=`${id}:${lv}:${i}`;if(S.lang==='ko'&&/[A-Za-z]/.test(it.ask.ko)){it.askSay=B(it.ask.en,'질문과 모형을 보고 알맞은 답을 골라요. 영어 단위와 기호가 들어간 질문을 들어 보세요.');it.askExtra={t:it.ask.en,lang:'en-US'};}quiz(this,it);}});
+reg('decimalplace5','Decimal Place Table','소수 자리표','5.NR.4.1',(lv,i)=>{
+ const units=(lv===1?[125,208,350,406,517,620,703,840,905,5]:[1035,2048,3090,4006,5072,6081,7025,8009,9040,1098])[i],value=(units/1000).toFixed(3),digits=value.replace('.','').split(''),place=lv===1?i%3:2,den=10**(place+1),digit=Number(value.split('.')[1][place]),a=digit/den;
+ const table=`<table><tr>${[B('Ones','일의 자리'),B('Tenths','소수 첫째 자리'),B('Hundredths','소수 둘째 자리'),B('Thousandths','소수 셋째 자리')].map((x,j)=>`<th class="${j===place+1?'marked':''}">${L(x)}</th>`).join('')}</tr><tr>${digits.map((d,j)=>`<td class="${j===place+1?'marked':''}">${d}</td>`).join('')}</tr></table>`;
+ if(lv===1)return q(B('What is the value of the highlighted digit?','표시한 자리의 숫자가 나타내는 값은 얼마일까요?'),panel(table),a,[a===0?0.01:a*10,a===0?0.1:a/10],B(`${digit}/${den} = ${clean(a)}`,`${digit}/${den} = ${clean(a)}`));
+ const ds=value.split('.')[1],exp=`${Math.floor(units/1000)} + ${Number(ds[0])/10} + ${Number(ds[1])/100} + ${Number(ds[2])/1000}`;
+ return q(B('Choose the expanded form.','각 자리의 값을 더한 식을 골라요.'),panel(`${value}${table}`),exp,[`${Math.floor(units/1000)} + ${Number(ds[0])/100} + ${Number(ds[1])/10} + ${Number(ds[2])/1000}`,`${Math.floor(units/1000)} + ${Number(ds[0])/10} + ${Number(ds[1])/100} + ${Number(ds[2])/100}`],B(exp,exp));
+});
+reg('decimalcompare5','Compare Decimals','소수 비교','5.NR.4.2',(lv,i)=>{
+ const pairs=[[405,450],[500,500],[75,705],[99,100],[620,602],[308,380],[999,990],[1005,1050],[230,203],[810,801]],[a,b]=pairs[i],fmt=n=>(n/1000).toFixed(3);
+ if(lv===1)return q(B('Choose the comparison sign.','알맞은 비교 기호를 골라요.'),eq(`${i===1?'0.5':fmt(a)} □ ${fmt(b)}`),a<b?'<':a>b?'>':'=',['<','=','>'].filter(x=>x!==(a<b?'<':a>b?'>':'=')),B('Match place values; ending zeros do not change the value.','자리끼리 비교해요. 소수 끝에 붙인 0은 값을 바꾸지 않아요.'));
+ const ns=(a===b?[a+1000,a+1001,a+1002]:[a+1000,b+1000,Math.max(a,b)+1001]).sort((x,y)=>x-y);const labels=ns.map(fmt),ans=labels.join(' < ');
+ return q(B('Order from least to greatest.','작은 수부터 큰 수까지 차례로 놓은 보기를 골라요.'),eq(shuffle(labels).join(' · ')),ans,[[...labels].reverse().join(' < '),[labels[1],labels[0],labels[2]].join(' < ')],B(ans,ans));
+});
+reg('decimalround5','Round to Hundredths','소수 둘째 자리까지 반올림','5.NR.4.3',(lv,i)=>{
+ const n=(lv===1?[123,246,371,482,514,638,752,869,903,107]:[995,1005,2345,2099,3004,8765,4505,9995,5000,7051])[i],lo=Math.floor(n/10)*10,hi=lo+10,ans=(Math.floor((n+5)/10)/100).toFixed(2);
+ return q(B('Round to the nearest hundredth. At halfway, choose the larger value.','소수 셋째 자리에서 반올림해 소수 둘째 자리까지 나타내요. 딱 중간이면 더 큰 수를 골라요.'),panel(`<div>${(n/1000).toFixed(3)}</div><svg viewBox="0 0 300 80" role="img" aria-label="${lo/1000} to ${hi/1000}"><path d="M30 35H270" stroke="currentColor"/><circle cx="${30+(n-lo)*24}" cy="35" r="6" fill="#bd5025"/><text x="30" y="65">${(lo/1000).toFixed(2)}</text><text x="240" y="65">${(hi/1000).toFixed(2)}</text></svg>`),ans,[(Math.floor((n+5)/10)/100+0.01).toFixed(2),(Math.floor((n+5)/10)/100-0.01).toFixed(2)],B(`${(n/1000).toFixed(3)} → ${ans}`,`${(n/1000).toFixed(3)} → ${ans}`));
+});
+reg('decimaladd5','Decimal Money Stories','소수 더하고 빼기','5.NR.4.4',(lv,i)=>{
+ const a=[125,208,375,460,519,625,708,840,965,1099][i],b=[75,94,126,208,317,99,215,406,128,501][i];
+ if(lv===1)return nq(B('Add the two decimal amounts.','두 소수를 더해요.'),eq(`${(a/100).toFixed(2)} + ${(b/100).toFixed(2)}`),(a+b)/100,0.01,B(`${a} + ${b} hundredths = ${a+b} hundredths.`,`백분의 일이 ${a}개와 ${b}개예요. 합하면 ${a+b}개예요.`));
+ const paid=2000+i*100,ans=(paid-a-b)/100;return nq(B(`Pay $${(paid/100).toFixed(2)} for items costing $${(a/100).toFixed(2)} and $${(b/100).toFixed(2)}. Change?`,`${(paid/100).toFixed(2)}달러를 내요. 물건 값은 ${(a/100).toFixed(2)}달러와 ${(b/100).toFixed(2)}달러예요. 거스름돈은 몇 달러일까요?`),eq(`${paid/100} − (${a/100} + ${b/100})`),ans,0.1,B(`Change: $${ans.toFixed(2)}`,`거스름돈: ${ans.toFixed(2)}달러`));
+});
+reg('expression5','Stories and Expressions','이야기에 맞는 식','5.NR.5.1',(lv,i)=>{
+ const a=3+i,b=2+i%4,c=4+i%5;
+ if(lv===1)return q(B(`${a} boxes have ${b} red and ${c} blue cards EACH. Which expression counts all cards?`,`상자 ${a}개에 각각 빨간 카드 ${b}장과 파란 카드 ${c}장이 있어요. 전체 카드 수를 구하는 식을 골라요.`),panel(`<div>${a} ${L(B('boxes','상자'))}</div><table><tr><th>${L(B('Per box','상자 하나'))}</th><th>${L(B('Red','빨강'))}</th><th>${L(B('Blue','파랑'))}</th></tr><tr><td>${L(B('Cards','카드'))}</td><td>${b}</td><td>${c}</td></tr></table>`),`${a} × (${b} + ${c})`,[`${a} × ${b} + ${c}`,`${a} + ${b} + ${c}`],B('Combine the cards per box, then multiply by boxes.','상자 하나의 카드 수를 더한 뒤 상자 수를 곱해요.'));
+ return nq(B(`Start with ${a} packs of ${b} cards, then give away ${c} cards. How many remain?`,`${b}장짜리 카드 ${a}묶음에서 ${c}장을 나눠 줘요. 몇 장이 남을까요?`),eq(`(${a} × ${b}) − ${c}`),a*b-c,1,B(`${a*b} − ${c} = ${a*b-c}`,`${a*b} − ${c} = ${a*b-c}`));
+});
+reg('patterns5','Two Rule Tables','두 규칙의 표','5.PAR.6.1',(lv,i)=>{
+ const k=2+i%5,x=1+i,offset=lv===1?0:3+i,ys=[x,x+1,x+2],a=ys[2]*k+offset;
+ return nq(B(lv===1?`Rule A: add 1. Rule B: multiply A by ${k}. Fill B.`:`A starts at ${x}, adding 1. B = A × ${k} + ${offset}. Fill B.`,lv===1?`A는 1씩 늘어요. B는 A의 ${k}배예요. B의 빈칸을 구해요.`:`A는 ${x}부터 1씩 늘어요. B = A × ${k} + ${offset} 관계예요. 빈칸을 구해요.`),panel(`<table><tr><th>A</th>${ys.map(y=>`<td>${y}</td>`).join('')}</tr><tr><th>B</th>${ys.map((y,j)=>`<td>${j===2?'?':y*k+offset}</td>`).join('')}</tr></table>`),a,k,B(`For each pair: B = A × ${k}${offset?` + ${offset}`:''}`,`각 짝의 관계: B = A × ${k}${offset?` + ${offset}`:''}`));
+});
+reg('coordinate5','Coordinate Paths','좌표의 자리','5.PAR.6.2',(lv,i)=>{
+ const pairs=lv===1?[[3,2],[1,4],[5,1],[2,5],[4,3],[0,2],[2,0],[1,3],[3,5],[5,4]]:[[4,2],[2,4],[6,1],[1,6],[5,3],[3,6],[0,5],[5,0],[2,6],[6,4]],[x,y]=pairs[i];
+ const grid=`<svg viewBox="0 0 250 200" role="img" aria-label="x horizontal, y vertical; point (${x},${y})">${Array.from({length:7},(_,j)=>`<path d="M35 ${165-j*23}H173 M${35+j*23} 27V165" stroke="#b9c9cc"/><text x="${35+j*23}" y="183" text-anchor="middle">${j}</text><text x="20" y="${170-j*23}">${j}</text>`).join('')}<path d="M35 20V165H185" fill="none" stroke="#17364a" stroke-width="2"/><text x="191" y="170">x</text><text x="30" y="17">y</text><circle cx="${35+x*23}" cy="${165-y*23}" r="6" fill="#bd5025"/></svg>`;
+ return q(B(lv===1?'What is the ordered pair of the dot?':`Start at (0, 0). Move right ${x}, then up ${y}. Where do you finish?`,lv===1?'점의 좌표를 골라요.':`(0, 0)에서 오른쪽으로 ${x}, 위로 ${y}만큼 가요. 어디에 도착할까요?`),panel(grid),`(${x}, ${y})`,[`(${y}, ${x})`,`(${x+1}, ${y})`,`(${x}, ${y+1})`],B(`x first, then y: (${x}, ${y})`,`가로 x를 먼저, 세로 y를 나중에 써요: (${x}, ${y})`));
+});
+const metric=[['m','cm',100],['cm','mm',10],['km','m',1000],['kg','g',1000],['L','mL',1000],['m','mm',1000],['cm','m',0.01],['g','kg',0.001],['mL','L',0.001],['m','km',0.001]];
+const customary=[['ft','in',12],['yd','ft',3],['mi','ft',5280],['yd','in',36],['lb','oz (weight)',16],['ton','lb',2000],['cup','fl oz (US)',8],['pt (US)','cup',2],['qt (US)','pt (US)',2],['gal (US)','qt (US)',4]];
+const convert=(rows,lv,i)=>{const [from,to,factor]=rows[i],n=lv===1?2+i:factor<1?(i+2)/factor:5+i,extra=lv===1?0:i+1,a=n*factor-extra;return nq(B(lv===1?`Convert ${n} ${from} to ${to}.`:`Start with ${n} ${from}. Remove ${extra} ${to}. How many ${to} remain?`,lv===1?`주어진 양은 ${n} ${from}. ${to} 단위로 바꾼 값을 골라요.`:`${n} ${from}에서 ${extra} ${to}만큼 덜어요. 남은 양을 ${to} 단위로 나타낸 값을 골라요.`),panel(`1 ${from} = ${factor} ${to}<br>${n} ${from}${extra?` − ${extra} ${to}`:''}`),a,factor>=1?1:factor,B(`${n} × ${factor}${extra?` − ${extra}`:''} = ${clean(a)} ${to}`,`${n} × ${factor}${extra?` − ${extra}`:''} = ${clean(a)} ${to}`));};
+reg('metric5','Metric Conversions','미터법 환산','5.MDR.7.1, 7.3',(lv,i)=>convert(metric,lv,i));
+reg('customary5','US Unit Conversions','미국 단위 환산','5.MDR.7.1, 7.4',(lv,i)=>convert(customary,lv,i));
+reg('data5','Read a Line Plot','점 도표 읽기','5.MDR.7.1–7.2',(lv,i)=>{
+ const cs=[1+i%3,2+i%4,1+Math.floor(i/3)],units=[1,2,3],total=cs.reduce((a,b)=>a+b,0),sum=cs.reduce((a,b,j)=>a+b*units[j]/4,0),a=lv===1?total:sum;
+ return nq(B(lv===1?'Each X is one ribbon. How many ribbons?':'Find the total ribbon length in meters.',lv===1?'X 하나가 리본 하나예요. 리본은 모두 몇 개일까요?':'리본 길이를 모두 더하면 몇 미터일까요?'),panel(`<small>${L(B('Invented ribbon lengths (m)','가상 리본 길이 (미터)'))}</small><table><tr>${cs.map(n=>`<td>${Array(n).fill('X').join('<br>')}</td>`).join('')}</tr><tr>${units.map(n=>`<th>${n}/4</th>`).join('')}</tr></table>`),a,lv===1?1:0.25,B(lv===1?`${total} observations`:`(${cs.map((n,j)=>`${n} × ${units[j]}/4`).join(' + ')}) = ${sum} m`,lv===1?`자료는 모두 ${total}개예요.`:`길이의 합: ${sum}미터`));
+});
+reg('volume5','Shapes and Volume','도형과 부피','5.GSR.8.1–8.4',(lv,i)=>{
+ // Five classification cases and five volume cases; diagnostics must select volume explicitly.
+ if(i<5){const rows=lv===1?[[B('Four equal sides and four right angles','네 변이 같고 네 각이 직각이에요'),B('Square','정사각형'),B('Triangle','삼각형'),B('Pentagon','오각형')],[B('Exactly three sides','변이 정확히 세 개예요'),B('Triangle','삼각형'),B('Rectangle','직사각형'),B('Hexagon','육각형')],[B('Exactly five sides','변이 정확히 다섯 개예요'),B('Pentagon','오각형'),B('Quadrilateral','사각형'),B('Hexagon','육각형')],[B('Exactly six sides','변이 정확히 여섯 개예요'),B('Hexagon','육각형'),B('Pentagon','오각형'),B('Triangle','삼각형')],[B('A rectangle has four right angles. Number of sides?','직사각형은 네 각이 직각이에요. 변은 몇 개일까요?'),B('4','4'),B('3','3'),B('5','5')]]:[[B('Every square has four right angles. Which larger group contains squares?','모든 정사각형은 네 각이 직각이에요. 어느 도형 무리에 포함될까요?'),B('Rectangles','직사각형'),B('Triangles','삼각형'),B('Pentagons','오각형')],[B('Every square has four equal sides. Which larger group contains squares?','모든 정사각형은 네 변이 같아요. 어느 도형 무리에 포함될까요?'),B('Rhombuses','마름모'),B('Triangles','삼각형'),B('Pentagons','오각형')],[B('A parallelogram has both pairs of opposite sides parallel. Are all rectangles parallelograms?','평행사변형은 마주 보는 두 쌍의 변이 평행해요. 모든 직사각형은 평행사변형일까요?'),B('Yes','맞아요'),B('No','아니에요')],[B('A four-sided polygon has four equal sides but no right angles. Which fits?','네 변이 같지만 직각이 없는 사각형이에요. 무엇일까요?'),B('Rhombus','마름모'),B('Square','정사각형'),B('Triangle','삼각형')],[B('Do all rectangles have four equal sides?','모든 직사각형의 네 변 길이가 같을까요?'),B('No','아니에요'),B('Yes','맞아요')]],r=rows[i];return {ask:r[0],show:panel(L(B('Use the stated properties.','설명한 성질을 이용해요.'))),opts:r.slice(1).map((x,j)=>({html:`<span class="word">${L(x)}</span>`,ok:j===0})),cls:'words g5-math2-options',after:B(r[1].en,`정답: ${r[1].ko}`),mode:'classification'};}
+ const j=i-5,w=2+j,d=2+j%3,h=3+j,a=lv===1?w*d*h:h;
+ return {...nq(B(lv===1?'Each layer is filled, including hidden cubes. Total volume in cubic units?':'Volume and base area are given. How many layers high?',lv===1?'보이지 않는 곳도 큐브로 채워져 있어요. 부피는 몇 세제곱단위일까요?':'부피와 밑넓이가 있어요. 높이는 몇 층일까요?'),panel(`<div>${L(B('Rectangular prism · filled layers','직육면체 · 꽉 찬 층'))}</div><div>${lv===1?`${w} × ${d} ${L(B('cubes per layer','한 층의 큐브'))}<br>${h} ${L(B('layers','층'))}`:`${L(B('Base area','밑넓이'))}: ${w*d}<br>${L(B('Volume','부피'))}: ${w*d*h}`}</div>`),a,1,B(`${w*d} × ${h} = ${w*d*h}`,`밑넓이 ${w*d} × 높이 ${h} = 부피 ${w*d*h}`)),mode:'volume'};
+});
+})();

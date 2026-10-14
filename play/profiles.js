@@ -3,7 +3,7 @@
 const PT = {
   prog: B('My Progress', '내 기록'), kids: B('Who is playing?', '누가 하나요?'),
   add: B('Add a child', '아이 추가'), edit: B('Edit', '수정'), del: B('Remove', '삭제'), name: B('Name or nickname', '이름 또는 별명'),
-  grade: B('Grade', '학년'), gK: B('Kindergarten', '유치원(K)'), g1: B('1st grade', '1학년'), g2: B('2nd grade', '2학년'), g3: B('3rd grade', '3학년'), save: B('Save', '저장'), cancel: B('Cancel', '취소'),
+  grade: B('Grade', '학년'), gK: B('Kindergarten', '유치원(K)'), g1: B('1st grade', '1학년'), g2: B('2nd grade', '2학년'), g3: B('3rd grade', '3학년'), g4: B('4th grade', '4학년'), g5: B('5th grade', '5학년'), save: B('Save', '저장'), cancel: B('Cancel', '취소'),
   kidsNote: B('Each child keeps their own peaches, stickers, levels and history on this device. Nothing is sent anywhere. The grade you pick decides which games show up (kindergarten to 3rd grade). Grades 4 and 5 are coming.', '아이마다 복숭아, 스티커, 단계, 기록이 이 기기에 따로 저장돼요. 어디로도 전송되지 않아요. 고른 학년(유치원~3학년)에 맞는 게임이 보여요. 4·5학년은 준비 중이에요.'),
   delAsk: B('Remove this child and all of their saved progress on this device?', '이 아이와 이 기기에 저장된 기록을 모두 지울까요?'),
   today: B('Today', '오늘'), week: B('Last 7 days', '최근 7일'), streak: B('Days in a row', '연속 일수'), acc: B('Correct (7 days)', '정답률(7일)'),
@@ -17,7 +17,9 @@ const PT = {
   back: B('Back', '뒤로'), who: B('Playing now', '지금 하는 아이'),
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} days in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
-const GRADE3_READY = true;                       // flip to true when the grade-3 set is built, checked and approved
+const GRADE3_READY = true; 
+const GRADE4_READY = false;                      // flip when grade 4 is built, reviewed and approved
+const GRADE5_READY = false;                      // flip when grade 5 is built, reviewed and approved                      // flip to true when the grade-3 set is built, checked and approved
 const GRADE2_READY = true;                       // flip to true when the grade-2 set is complete (math is built, the rest is in progress)
 const SITE_URL = 'https://altair-research.github.io/peachplay/';
 const AVATARS = ['🍑', '🦄', '🐶', '🐱', '🐼', '🦁', '🐯', '🐸', '🐙', '🦋', '🐢', '🚀'];
@@ -32,7 +34,7 @@ function switchKid(id) { save(); PROF.active = id; saveProf(); location.reload()
 
 function profilesScreen(editId) {
   const cards = PROF.list.map(k => `<div class="kid ${k.id === PROF.active ? 'on' : ''}">
-      <button class="kidgo" data-id="${k.id}"><span class="kav">${k.avatar}</span><span class="kn">${kidLabel(k)}<small>${k.grade === '3' ? L(PT.g3) : k.grade === '2' ? L(PT.g2) : k.grade === '1' ? L(PT.g1) : L(PT.gK)}${k.id === PROF.active ? ' · ' + L(PT.who) : ''}</small></span></button>
+      <button class="kidgo" data-id="${k.id}"><span class="kav">${k.avatar}</span><span class="kn">${kidLabel(k)}<small>${k.grade === '5' ? L(PT.g5) : k.grade === '4' ? L(PT.g4) : k.grade === '3' ? L(PT.g3) : k.grade === '2' ? L(PT.g2) : k.grade === '1' ? L(PT.g1) : L(PT.gK)}${k.id === PROF.active ? ' · ' + L(PT.who) : ''}</small></span></button>
       <button class="link kedit" data-id="${k.id}">✏️ ${L(PT.edit)}</button></div>`).join('');
   view().innerHTML = `<h1>👧👦 ${L(PT.kids)}</h1><div class="kids">${cards}</div>
     ${PROF.list.length < 5 ? `<div><button class="pill" id="kadd">➕ ${L(PT.add)}</button></div>` : ''}
@@ -48,7 +50,7 @@ function kidForm(id) {
   const k = id ? PROF.list.find(x => x.id === id) : { name: '', avatar: AVATARS[PROF.list.length % AVATARS.length], grade: 'K' }; let av = k.avatar;
   $('#kform').innerHTML = `<div class="form kf"><input id="kname" maxlength="16" placeholder="${L(PT.name)}" value="${esc(k.name)}">
     <div class="avs">${AVATARS.map(a => `<button class="av ${a === av ? 'on' : ''}" data-a="${a}">${a}</button>`).join('')}</div>
-    <div class="grades">${[['K', PT.gK], ['1', PT.g1], ...(GRADE2_READY ? [['2', PT.g2]] : []), ...(GRADE3_READY ? [['3', PT.g3]] : [])].map(([v, lab]) => `<label><input type="radio" name="gr" value="${v}" ${(GRADES.includes(k.grade) ? k.grade : 'K') === v ? 'checked' : ''}> ${L(lab)}</label>`).join('')}</div>
+    <div class="grades">${[['K', PT.gK], ['1', PT.g1], ...(GRADE2_READY ? [['2', PT.g2]] : []), ...(GRADE3_READY ? [['3', PT.g3]] : []), ...(GRADE4_READY ? [['4', PT.g4]] : []), ...(GRADE5_READY ? [['5', PT.g5]] : [])].map(([v, lab]) => `<label><input type="radio" name="gr" value="${v}" ${(GRADES.includes(k.grade) ? k.grade : 'K') === v ? 'checked' : ''}> ${L(lab)}</label>`).join('')}</div>
     <button class="next" id="ksave">${L(PT.save)}</button> <button class="link" id="kcancel">${L(PT.cancel)}</button>${id && PROF.list.length > 1 ? ` <button class="link" id="kdel">🗑 ${L(PT.del)}</button>` : ''}</div>`;
   $$('.av').forEach(b => b.onclick = () => { av = b.dataset.a; $$('.av').forEach(x => x.classList.toggle('on', x === b)); });
   $('#kcancel').onclick = () => { $('#kform').innerHTML = ''; };

@@ -308,7 +308,7 @@ const GAMES = [];
 const registerGame = (g) => GAMES.push(g);
 // Which games a child sees: K games for K, 1st-grade games for grade 1; thinking games (brain/create/gifted) and handwriting are shared.
 const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subject) || ['trace', 'draw'].includes(g.id) ? 'both' : 'K');
-const GRADES = ['K', '1', '2', '3'];
+const GRADES = ['K', '1', '2', '3', '4', '5'];
 const kidGrade = () => (GRADES.includes(curKid().grade) ? curKid().grade : 'K');
 const prevGrade = (g) => GRADES[GRADES.indexOf(g) - 1] || null;
 const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade())); });
