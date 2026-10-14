@@ -5,6 +5,7 @@ const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', 
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
+  document.body.classList.remove('pk-playing'); SESSION.pkMixed=false;
   SESSION.review = null; NEXT_TOK++;
   $('#langBtn').textContent = T().switchTo; renderNav(); if (typeof renderProfBtn === 'function') renderProfBtn();
   document.documentElement.lang = S.lang;
@@ -15,16 +16,16 @@ function home() {
     ${gradeRowHtml()}
     <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
     ${continueHtml()}
-    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id)) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${T().reviewSub}</small></button></div>` : ''}
+    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
-    <div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Like i-Ready: harder when right, easier when missed', 'i-Ready처럼 맞히면 어려워지고 틀리면 쉬워져요'))}</small></button></div>
+    ${kidGrade() === 'P' ? '' : `<div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Like i-Ready: harder when right, easier when missed', 'i-Ready처럼 맞히면 어려워지고 틀리면 쉬워져요'))}</small></button></div>`}
     ${favHtml()}
     ${picksHtml()}
     <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
     <div id="gresults"></div>
     <div id="subjtiles" class="menu">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
-    ${prevGrade(kidGrade()) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
-    <button class="link" id="find">${T().findStart}</button>
+    ${prevGrade(kidGrade()) && (prevGrade(kidGrade()) !== 'P' || PREK_READY) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'P' ? 'Pre-K' : prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'P' ? '프리케이' : prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'P' ? 'Pre-K' : prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'P' ? '프리케이' : prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
+    ${kidGrade() === 'P' ? '' : `<button class="link" id="find">${T().findStart}</button>`}
     <button class="link" id="dict">📚 ${L(B('Picture Dictionary', '그림 사전'))}</button>
     <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
     <button class="link" id="parent">${T().grownups}</button>
@@ -41,7 +42,7 @@ function home() {
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
-  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#dict').onclick = () => window.openDictionary && window.openDictionary(); $('#adapt').onclick = adaptIntro; $('#find').onclick = intro;
+  $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#dict').onclick = () => window.openDictionary && window.openDictionary(); if ($('#adapt')) $('#adapt').onclick = adaptIntro; if ($('#find')) $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   window.scrollTo(0, 0);
 }
@@ -63,6 +64,7 @@ function favHtml() {
 }
 const GOAL = 20;                                   // answers per day (a gentle target, not a timer)
 function goalHtml() {
+  if (kidGrade() === 'P') return `<p class="pk-adult">${T().prekTogether}</p>`;
   const h = (S.hist || {})[today()] || { r: 0, w: 0 }, n = h.r + h.w, st = typeof streakDays === 'function' ? streakDays() : 0, pct = Math.min(100, Math.round(100 * n / GOAL));
   return `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
 }
@@ -87,8 +89,8 @@ function settings(focusKey, focusLook) {
 }
 // Grade chips at the top of home: which grade's games this child sees (only grades that are open).
 function gradeRowHtml() {
-  const open = ['K', '1', ...(typeof GRADE2_READY === 'undefined' || GRADE2_READY ? ['2'] : []), ...(typeof GRADE3_READY !== 'undefined' && GRADE3_READY ? ['3'] : []), ...(typeof GRADE4_READY !== 'undefined' && GRADE4_READY ? ['4'] : []), ...(typeof GRADE5_READY !== 'undefined' && GRADE5_READY ? ['5'] : [])];
-  const cur = kidGrade(), name = (g) => (g === 'K' ? L(B('K', '유치원')) : L(B(`Grade ${g}`, `${g}학년`)));
+  const open = [...(PREK_READY ? ['P'] : []), 'K', '1', ...(typeof GRADE2_READY === 'undefined' || GRADE2_READY ? ['2'] : []), ...(typeof GRADE3_READY !== 'undefined' && GRADE3_READY ? ['3'] : []), ...(typeof GRADE4_READY !== 'undefined' && GRADE4_READY ? ['4'] : []), ...(typeof GRADE5_READY !== 'undefined' && GRADE5_READY ? ['5'] : [])];
+  const cur = kidGrade(), name = (g) => (g === 'P' ? L(PT.gP) : g === 'K' ? L(B('K', '유치원')) : L(B(`Grade ${g}`, `${g}학년`)));
   return `<div class="graderow" role="group" aria-label="${L(B('Grade', '학년'))}"><span class="grl">${L(B('Grade', '학년'))}</span>${open.map(g => `<button class="gchip${g === cur ? ' on' : ''}" data-g="${g}" aria-pressed="${g === cur}">${name(g)}</button>`).join('')}</div>`;
 }
 function continueHtml() {
@@ -98,7 +100,7 @@ function continueHtml() {
 function subjectScreen(sub) {
   const games = visibleGames().filter(g => g.subject === sub);
   view().innerHTML = `<h1>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</h1>
-    ${(sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
+    ${(kidGrade() === 'P' || sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
     <div class="menu">${games.map(gameBtn).join('')}</div>
     <div><button class="next" id="b">${T().back}</button></div>`;
   wireGames(); $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub)); $('#b').onclick = home;
@@ -117,7 +119,7 @@ function picksHtml() {
   return `<section class="subj picks"><h2>⭐ ${T().picks}</h2><div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('')}</div></section>`;
 }
 
-const gradeTag = (g) => (g === 'K' ? 'K' : S.lang === 'ko' ? g + '학년' : g + ({ 1: 'st', 2: 'nd', 3: 'rd' }[g] || 'th') + ' grade');
+const gradeTag = (g) => (g === 'P' ? L(PT.gP) : g === 'K' ? 'K' : S.lang === 'ko' ? g + '학년' : g + ({ 1: 'st', 2: 'nd', 3: 'rd' }[g] || 'th') + ' grade');
 function checksTable() {
   if (!S.checks.length) return `<p class="note2">${T().focusNone}</p>`;
   const rows = [...S.checks].reverse().slice(0, 12).map(c => `<tr><td>${c.at.replace('T', ' ')}</td><td>${scopeName(c.scope)} · ${gradeTag(c.grade || 'K')}</td><td>${c.ok}/${c.total}</td><td><span class="bar2"><i style="width:${Math.round(100 * c.ok / c.total)}%"></i></span></td></tr>`).join('');
@@ -142,6 +144,8 @@ function gate(next) {
 }
 
 function grownups() {
+  if (kidGrade() === 'P') return prekGrownups();
+
   const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>

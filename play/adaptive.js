@@ -31,6 +31,7 @@ function adaptLadder(dom) {                        // usable games per grade ind
   return AG.map((g, i) => (i <= adaptMaxGrade() ? (dom.g[g] || []).filter(id => gameById(id) && !CHECK_SKIP.includes(id)) : []));
 }
 function makeAdapt(subject) {
+  if (kidGrade() === 'P') { quitDiag(); return null; }
   const doms = ADAPT_DOMAINS[subject].map(dom => ({ dom, lad: adaptLadder(dom) })).filter(x => x.lad.some(l => l.length));
   const start = Math.min(AG.indexOf(kidGrade()), adaptMaxGrade()) * 2;            // start at the child's grade, early skills
   const topOf = (lad) => lad.reduce((m, l, i) => (l.length ? i : m), 0), st = doms.map(x => ({ d: Math.min(start, topOf(x.lad) * 2 + 1), hist: [] }));
@@ -58,6 +59,7 @@ function makeAdapt(subject) {
 }
 
 function adaptIntro() {
+  if (kidGrade() === 'P') { quitDiag(); return home(); }
   const tips = [B('One question at a time. Take your time: there is no timer.', '한 번에 한 문제씩 나와요. 천천히 해도 돼요. 시간 제한은 없어요.'),
     B('Right answers make the next question harder. Misses make it easier. That is normal!', '맞히면 다음 문제가 조금 어려워지고, 틀리면 조금 쉬워져요. 원래 그런 거예요!'),
     B('Some questions will feel hard. Do your best and pick "I don\'t know" if you really don\'t know.', '어려운 문제도 나와요. 최선을 다하고, 정말 모르면 "잘 모르겠어요"를 눌러요.'),
@@ -79,6 +81,7 @@ function adaptHistoryHtml() {
   return `<p class="note2">${L(B('Last practice:', '지난 연습:'))} ${past.map(c => `${c.scope === 'adapt-math' ? '🔢' : '📖'} ${c.at.slice(0, 10)} ${c.ok}/${c.total}`).join(' · ')}</p>`;
 }
 function startAdapt(subject) {
+  if (kidGrade() === 'P') { quitDiag(); return home(); }
   S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = 'adapt-' + subject;
   DIAG.adapt = makeAdapt(subject); DIAG.items = new Array(ADAPT_LEN[subject]).fill(null);
   DIAG.active = true; DIAG.i = 0; DIAG.res = []; DIAG.busy = false; diagStep();

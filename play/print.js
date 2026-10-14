@@ -10,7 +10,7 @@
     const kid = curKid(), grade = kid.grade, now = new Date();
     const dateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const offset = n => { const d = new Date(now); d.setDate(d.getDate() - n); return dateKey(d); };
-    const gradeName = g => g === 'K' ? tr('Kindergarten', '유치원') : tr(`Grade ${g}`, `${g}학년`);
+    const gradeName = g => g === 'P' ? tr('Pre-K','프리케이') : g === 'K' ? tr('Kindergarten', '유치원') : tr(`Grade ${g}`, `${g}학년`);
     const empty = tr('No record yet', '아직 기록이 없어요');
     const percent = (r, n) => n ? `${Math.round(100 * r / n)}%` : '—';
     const subjects = ['math', 'read', 'write', 'sci', 'ss', 'life', 'brain'];
@@ -67,7 +67,7 @@
     toolbar.append(print, close, status);
     const frame = document.createElement('iframe'); frame.className = 'p-frame'; frame.title = title;
     frame.setAttribute('sandbox', 'allow-same-origin allow-modals');
-    frame.srcdoc = `<!doctype html><html lang="${ko ? 'ko' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'none'; font-src 'none'"><title>PeachPlay</title><link rel="stylesheet" href="${escape(cssURL)}"></head><body class="p-document"><main class="p-sheet">${kind === 'certificate' ? certificate : report}<footer class="p-note">${escape(note)}</footer></main></body></html>`;
+    frame.srcdoc = `<!doctype html><html lang="${ko ? 'ko' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'none'; font-src 'none'"><title>PeachPlay</title><link rel="stylesheet" href="${escape(cssURL)}"></head><body class="p-document"><main class="p-sheet">${grade === 'P' ? `<h1>${escape(tr(kind === 'certificate' ? 'A celebration of play' : 'Play record',kind === 'certificate' ? '놀이 칭찬 수료증' : '놀이 기록'))}</h1>${identity}<p>${escape(T().prekTogether)}</p><p>${escape(T().prekPolicy)}</p>${kind==='certificate'?'':PK.playRecordHtml()}<p>${escape(tr('Stickers collected: '+stickers,'모은 스티커: '+stickers+'개'))}</p>` : kind === 'certificate' ? certificate : report}<footer class="p-note">${escape(note)}</footer></main></body></html>`;
     frame.onload = () => {
       const loaded = frame.contentDocument.styleSheets.length > 0;
       print.disabled = !loaded;

@@ -1,0 +1,34 @@
+/* Pre-K: picture-only choices, fixed space for gentle feedback, no required drag. */
+.pk-picture { width: min(100%, 120px); height: min(15dvh, 100px); display: inline-block; vertical-align: middle; }
+.pk-group { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; gap: 4px; max-width: 240px; margin: auto; }
+.pk-group .pk-picture { width: min(12dvw, 52px); height: min(8dvh, 48px); }
+.pk-arr1 { grid-template-columns: repeat(2, 1fr); }
+.pk-counted { opacity: .55; outline: 3px solid #588443; border-radius: 8px; }
+.pk-scene { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.pk-scene > * { min-width: 0; flex: 1; }
+.pk-scene > .pk-arrow { flex: 0 0 16px; width: 16px; height: 20px; }
+.pk-pattern { display: flex; justify-content: center; align-items: center; max-width: 400px; margin: auto; }
+.pk-pattern .pk-picture { width: 20%; height: 12dvh; }
+.pk-turn { display: flex; justify-content: space-around; }
+.pk-turn > div { position: relative; width: 48%; border: 2px solid #d9c8ae; border-radius: 8px; }
+.pk-turn .pk-picture + .pk-picture { width: 35%; position: absolute; bottom: 0; right: 0; }
+.pk-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pk-options .opt { min-height: 84px; padding: 8px; }
+.pk-adult { font-size: 13px; line-height: 1.3; text-align: center; margin: 4px 0; }
+.pk-canvas { display: flex; justify-content: center; height: 8dvh; }
+.pk-canvas .pk-picture { height: 8dvh; width: 65px; }
+body.pk-playing #view { padding: 8px 12px; }
+body.pk-playing .prompt { min-height: 48px; margin: 0; font-size: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+body.pk-playing .show { display: flex; justify-content: center; align-items: center; min-height: 12dvh; max-height: 21dvh; margin: 5px 0; }
+body.pk-playing .show > * { max-width: 100%; }
+body.pk-playing .show .pk-scene .pk-scene { flex-direction: column; }
+body.pk-playing .show .pk-scene .pk-scene .pk-picture { height: 7dvh; }
+body.pk-playing .cheer { min-height: 36px; margin: 5px 0; font-size: 16px; }
+body.pk-playing .fact { display: none; }
+body.pk-playing .next { margin: 4px; min-height: 44px; }
+body.pk-playing .pk-options .opt:active { transform: none; }
+body.pk-playing .newsticker .stk { width: 64px; height: 64px; font-size: 40px; }
+body.pk-playing .menu.intro .big { flex: 0 1 145px; min-width: 130px; min-height: 88px; padding: 6px; font-size: 18px; }
+body.pk-playing .menu.intro .big .gi { font-size: 26px; }
+body.pk-playing .menu.intro .big small { font-size: 12px; }
+@media (max-height: 680px) { body.pk-playing .pk-picture { max-height: 12dvh; } body.pk-playing .pk-group .pk-picture { max-height: 6dvh; } }

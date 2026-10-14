@@ -87,6 +87,7 @@ function gamesFor(item) {
 
 // -> { picks:[{id, score, reasons:[string]}], unmapped:[string] }
 function scoreReport(parsed) {
+  if (kidGrade() === 'P') return { picks: [], unmapped: [] };
   const score = {}, reasons = {}, unmapped = [];
   for (const it of parsed.items) {
     const p = GRADE_POINTS[it.grade]; if (!p) continue;      // E or unknown grades add nothing

@@ -1,7 +1,7 @@
 'use strict';
 // Core: device-local state, speech, helpers, and the shared multiple-choice quiz engine.
 // Validators: saved data can come from an old version, a hand-edited file or a restored backup, so it is checked before use.
-const GRADE_LIST = ['K', '1', '2', '3', '4', '5'];
+const GRADE_LIST = ['P', 'K', '1', '2', '3', '4', '5'];
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const numOr = (v, d = 0) => (Number.isFinite(v) ? v : d);
 function cleanProf(p) {                                   // -> { active, list } or null when no valid child remains
@@ -90,6 +90,7 @@ function addPeach() { S.peaches++; save(); renderPeaches(); }
 // 4 clean answers in a row -> level up (max 2); every 3rd miss -> level down.
 const MISS = {};                                     // games whose current round already logged a miss (so the finish is not logged twice)
 function record(id, ok) {
+  if (gradeOf(gameById(id) || {}) === 'P') { if (SESSION.review) { if (ok) reviewSolved(); return; } if (ok) { SESSION.done++; const st=stat(id); st.right++; PK.recordPlay(id); save(); } return; }
   if (DIAG.active) return;
   if (SESSION.review) {
     if (ok) reviewSolved();
@@ -178,18 +179,21 @@ function reviewSolved() {
 }
 function startReview() {
   quitDiag();
-  const pool = (cleanState({ review: S.review }).review || []).filter(x => gameById(x.id) && !CHECK_SKIP.includes(x.id));
-  S.review = pool; save();
+  const eligible = (cleanState({ review: S.review }).review || []).filter(x => gameById(x.id) && !CHECK_SKIP.includes(x.id));
+  const pool = kidGrade() === 'P' ? eligible.filter(x => gradeOf(gameById(x.id)) === 'P' && !gameById(x.id).pkOpen) : eligible.filter(x => gradeOf(gameById(x.id)) !== 'P');
+  // Keep other grades' saved review entries intact.
+  S.review = eligible; save();
   if (!pool.length) return home();
-  const items = Array.from({ length: ROUNDS }, (_, i) => pool[i % Math.min(pool.length, ROUNDS)]);
+  const rounds = kidGrade() === 'P' ? 5 : ROUNDS;
+  const items = Array.from({ length: rounds }, (_, i) => pool[i % Math.min(pool.length, rounds)]);
   NEXT_TOK++;
-  Object.assign(SESSION, { review: items, n: 0, done: 0, mix: false, rounds: ROUNDS });
+  Object.assign(SESSION, { review: items, n: 0, done: 0, mix: false, rounds });
   reviewStep();
 }
 function reviewStep() {
   if (SESSION.n >= SESSION.rounds) {
     SESSION.review = null;
-    view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${T().gotRight(SESSION.done, ROUNDS)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
+    view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${kidGrade() === 'P' ? T().prekDone : T().gotRight(SESSION.done, SESSION.rounds)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
     $('#reviewHome').onclick = home; say(T().roundDone); return;
   }
   const it = SESSION.review[SESSION.n]; SESSION.id = it.id; SESSION.reviewAnswered = false;
@@ -203,13 +207,18 @@ function dup(game, key) {
   game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
 }
 function launch(game, mix) {
+  SESSION.pkMixed=false;
+  document.body.classList.toggle('pk-playing', game.grade === 'P');
+  if (game.grade === 'P' && DIAG.active) quitDiag();
   SESSION.review = null; NEXT_TOK++;
   if (!DIAG.active && !mix) { S.last = game.id; save(); }                     // for the home screen's Continue button
   Object.keys(MISS).forEach(k => { MISS[k] = false; });
   Object.assign(SESSION, { id: game.id, n: 0, mix: !!mix, done: 0, rounds: mix ? Math.min(3, game.rounds || 3) : (game.rounds || ROUNDS) });
   updateBar(); game.play();
 }
-function surprise() {                                // mixed run: different game every couple of rounds
+function surprise() {
+  if (kidGrade() === 'P') { const pool=visibleGames(); if (!pool.length) return home(); SESSION.pkMixed=true; launch(pick(pool)); SESSION.pkMixed=true; return; }
+  SESSION.pkMixed=false;                                // mixed run: different game every couple of rounds
   const picks = (typeof currentPicks === 'function' ? currentPicks(3) : []).map(p => p.id);
   const pool = visibleGames().filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
   const g = (picks.length && rnd(2) === 0 ? GAMES.find(x => x.id === pick(picks)) : null) || pick(pool);
@@ -218,7 +227,7 @@ function surprise() {                                // mixed run: different gam
 function sessionEnd(game) {
   const t = T(), good = SESSION.done, free = ALL_STICKERS.filter(s => !S.stickers.includes(s)), sticker = free.length && !SESSION.mix ? pick(free) : null;
   if (sticker) { S.stickers.push(sticker); save(); renderPeaches(); }
-  view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.gotRight(good, SESSION.rounds)}</p>
+  view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${game.grade === 'P' ? t.prekDone : t.gotRight(good, SESSION.rounds)}</p>
     ${sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : ''}
     <div class="menu intro"><button class="big math" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
     <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>
@@ -240,6 +249,7 @@ function nextButton(fn, opts = {}) {
       if (SESSION.review) return reviewStep();
       Object.keys(MISS).forEach(k => { MISS[k] = false; });
       const g = GAMES.find(x => x.id === SESSION.id);
+      if (g && g.grade === 'P' && SESSION.pkMixed && SESSION.n < SESSION.rounds) { const next=pick(visibleGames()); SESSION.id=next.id; return next.play(); }
       if (!g || SESSION.n < SESSION.rounds) return fn();
       return SESSION.mix ? surprise() : sessionEnd(g);
     };
@@ -251,18 +261,26 @@ function nextButton(fn, opts = {}) {
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
 function quiz(game, item) {
+  const pk=game.grade === 'P';
+  document.body.classList.toggle('pk-playing', pk);
   MISS[game.id] = false;
   const askText = L(item.ask);
   const key = askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
   if (dup(game, key)) return game.play();
   const opts = shuffle(item.opts);
   view().innerHTML = `
-    <div class="prompt">${askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
+    <div class="prompt"${pk ? ` aria-label="${askText.replace(/"/g, '&quot;')}"` : ''}>${pk ? '' : askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
+    ${pk ? `<div class="pk-adult">${T().prekTogether}</div>` : ''}
     ${item.show ? `<div class="show">${item.show}</div>` : ''}
     <div class="opts ${item.cls || ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}">${o.html}${o.label ? `<span class="ol">${labelText(o.label)}</span>` : ''}</button>`).join('')}</div>
-    <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact" role="status"></div>`;
+    ${pk ? '<div class="cheer" id="cheer" role="status" aria-live="polite"></div>' : '<pk-cheer class="cheer" id="cheer"></pk-cheer>'}<div class="fact" id="fact" role="status"></div>`;
   const ask = () => { say(item.askSay ? L(item.askSay) : askText); if (item.askExtra) say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
+  if (pk) {
+    $$('[data-pk-en]').forEach(e=>e.setAttribute('aria-label',e.getAttribute('data-pk-'+S.lang)));
+    const rb=document.createElement('button'); rb.className='say'; rb.id='pkReadChoices'; rb.textContent='🔉'; rb.setAttribute('aria-label',L(B('Hear the pictures','그림 이름 듣기')));
+    rb.onclick=()=>opts.forEach((o,i)=>{ const temp=document.createElement('div'); temp.innerHTML=o.html; const e=temp.querySelector('[aria-label]'); const label=e?.getAttribute('data-pk-'+S.lang)||e?.getAttribute('aria-label'); say(o.say ? L(o.say) : label || L(B('Picture '+(i+1),'그림 '+(i+1))), item.pkChoiceLang, i>0); }); $('#sp').after(rb);
+  }
   const optTexts = () => $$('.opt').map(b => (b.querySelector('.word,.num') || b).innerText.replace(/\s+/g, ' ').trim()).filter(t => /[A-Za-zㄱ-힝0-9]{2,}/.test(t));
   if (optTexts().length >= 2 && optTexts().join('').length >= 8 && !$$('.opt svg').length) {      // read the choices aloud (text choices only; pictures have nothing to read)
     const rb = document.createElement('button'); rb.className = 'say'; rb.id = 'spo'; rb.textContent = '🔉'; rb.setAttribute('aria-label', L(B('Read the choices', '보기 읽어 주기')));
@@ -272,21 +290,24 @@ function quiz(game, item) {
   $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
   let missed = false;
+  // Sound games remain guided picture practice: browser audio success is not observable reliably.
+  const practice = pk && item.pkSound;
   if (DIAG.active) DIAG.decorate(game);
   $$('.opt').forEach(btn => btn.onclick = () => {
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
-      recordFinal(game.id, missed); if (!missed) addPeach();
-      $('#cheer').textContent = pick(T().right);
+      if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
+      $('#cheer').textContent = pk ? T().prekNice : pick(T().right);
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
       if (item.after) $('#fact').textContent = L(item.after);
       say(item.vocab && S.lang !== 'en' ? item.vocab : (item.after ? L(item.after) : ''), item.vocab && S.lang !== 'en' ? 'en-US' : undefined);
       if (item.vocab && S.lang !== 'en' && item.after) say(L(item.after), undefined, true);
       $$('.opt').forEach(o => o.disabled = true);
       if (item.onCorrect) item.onCorrect();
-      nextButton(() => game.play());
+      nextButton(() => game.play(), pk ? {auto:false} : {});
     } else {
+      if (pk) { $('#cheer').textContent=T().prekAgain; say(T().prekAgain); return; }
       btn.classList.add('no'); missed = true; record(game.id, false);
       $('#cheer').textContent = T().again; say(T().again);
       setTimeout(() => btn.classList.remove('no'), 400);
@@ -308,8 +329,8 @@ const GAMES = [];
 const registerGame = (g) => GAMES.push(g);
 // Which games a child sees: K games for K, 1st-grade games for grade 1; thinking games (brain/create/gifted) and handwriting are shared.
 const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subject) || ['trace', 'draw'].includes(g.id) ? 'both' : 'K');
-const GRADES = ['K', '1', '2', '3', '4', '5'];
+const GRADES = ['P', 'K', '1', '2', '3', '4', '5'];
 const kidGrade = () => (GRADES.includes(curKid().grade) ? curKid().grade : 'K');
 const prevGrade = (g) => GRADES[GRADES.indexOf(g) - 1] || null;
-const heldGame = (g) => g.grade === '5' && g.subject === 'ss' && !(typeof GRADE5_SS_READY !== 'undefined' && GRADE5_SS_READY);   // opened later; still reachable by ?game= for review
-const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return !heldGame(g) && (gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade()))); });
+const heldGame = (g) => (g.grade === 'P' && !PREK_READY) || g.grade === '5' && g.subject === 'ss' && !(typeof GRADE5_SS_READY !== 'undefined' && GRADE5_SS_READY);   // opened later; still reachable by ?game= for review
+const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return !heldGame(g) && (kidGrade() === 'P' ? gr === 'P' : (gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade())))); });

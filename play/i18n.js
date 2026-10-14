@@ -3,6 +3,9 @@
 // in games-*.js; a missing language falls back to English.
 const I18N = {
   en: {
+    prekTogether: 'Play with a grown-up. Rest whenever you want. If you cannot hear, ask a grown-up to show you.',
+    prekDone: 'Five little activities together!', prekNice: 'Thanks for exploring!', prekAgain: 'Let’s look together again.', prekReview: '5 picture activities to explore again',
+    prekPolicy: 'Two picture choices, five activities. No check-ups, diagnostic practice or report-card import. Sound games are guided practice, not listening scores. Levels 1 and 2 are chosen by a grown-up.',
     reviewTitle: 'Try again', reviewSub: '10 questions from games to practice again',
     offlinePreparing: 'Preparing for offline use…', offlineReady: 'Ready to use offline', offlineFailed: 'Offline preparation could not finish. Open again with internet to retry.', offlineUnavailable: 'Offline use is unavailable in this browser.',
     speech: 'en-US', switchTo: '한국어',
@@ -44,6 +47,9 @@ const I18N = {
     clear: 'Clear', done: 'Done', tellAbout: 'Now tell a grown-up about your drawing!'
   },
   ko: {
+    prekTogether: '어른과 함께 해요. 언제든 쉬어도 돼요. 소리가 안 들리면 어른이 그림으로 알려 주세요.',
+    prekDone: '작은 놀이 다섯 번을 함께 했어요!', prekNice: '함께 살펴봤어요!', prekAgain: '함께 다시 살펴봐요.', prekReview: '그림 놀이 5개를 다시 살펴봐요',
+    prekPolicy: '그림 보기 두 개, 놀이 다섯 번이에요. 점검·진단 평가 연습·성적표 가져오기는 하지 않아요. 소리 게임은 함께 하는 놀이이며 듣기 점수가 아니에요. 어른이 1·2단계를 골라 주세요.',
     reviewTitle: '다시 도전', reviewSub: '어려웠던 게임으로 10문제를 다시 풀어요',
     offlinePreparing: '인터넷 없이 쓸 준비 중이에요…', offlineReady: '인터넷 없이도 쓸 준비가 됐어요', offlineFailed: '오프라인 준비를 끝내지 못했어요. 인터넷에 연결해 다시 열면 재시도해요.', offlineUnavailable: '이 브라우저에서는 오프라인 사용을 준비할 수 없어요.',
     speech: 'ko-KR', switchTo: 'English',

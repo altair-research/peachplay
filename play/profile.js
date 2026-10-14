@@ -17,7 +17,7 @@ const DIAG_IDS_4 = ['place4', 'round4', 'multcompare4', 'multiply4', 'divide4', 
   'roots4', 'context4', 'evidence4', 'structure4', 'weatherinstrument4', 'organismrole4', 'checks4', 'budget4'];                       // filled when grade 4 games exist (docs/grade4-build-plan.md)
 const DIAG_IDS_5 = ['place5', 'multiply5', 'divide5', 'fractiondivision5', 'fractionadd5', 'decimalcompare5', 'coordinate5', 'volume5',
   'roots5', 'context5', 'character5', 'source5', 'cellparts5', 'circuit5', 'traits5', 'physical5'];   // social studies held for now                       // filled when grade 5 games exist (docs/grade5-build-plan.md)
-const DIAG_IDS = () => (kidGrade() === '5' && DIAG_IDS_5.length ? DIAG_IDS_5 : kidGrade() === '4' && DIAG_IDS_4.length ? DIAG_IDS_4 : kidGrade() === '3' && DIAG_IDS_3.length ? DIAG_IDS_3 : kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
+const DIAG_IDS = () => (kidGrade() === 'P' ? [] : kidGrade() === '5' && DIAG_IDS_5.length ? DIAG_IDS_5 : kidGrade() === '4' && DIAG_IDS_4.length ? DIAG_IDS_4 : kidGrade() === '3' && DIAG_IDS_3.length ? DIAG_IDS_3 : kidGrade() === '2' ? DIAG_IDS_2 : kidGrade() === '1' ? DIAG_IDS_1 : DIAG_IDS_K);
 const CHECK_SKIP = ['mfractions', 'mcoding', 'mcubes', 'mpatterns', 'mbaseten', 'mclock', 'mbalance', 'mletters', 'partitiondraw', 'partitiondraw2', 'shapebuild', 'ten', 'draw', 'memory', 'dots', 'lines', 'maze', 'simon', 'robot', 'blocks', 'blockpuzzle', 'gonogo', 'sortcards', 'missing', 'spotdiff', 'imagine', 'scene', 'storyspark', 'uses'];                       // games that cannot be scored as one question
 const gameById = (id) => GAMES.find(g => g.id === id);
 
@@ -32,6 +32,7 @@ function latestResults() {                                          // per game:
 
 // ---- picks ----
 function currentPicks(max = 3) {
+  if (kidGrade() === 'P') return [...new Set([S.last,...(S.fav || []),'countP','shapeP','listenP'])].filter(id=>visibleGames().some(g=>g.id===id)).slice(0,max).map(id=>({id,why:['__play__']}));
   const P = S.profile || {}, res = latestResults();
   const need = {}, why = {};
   const add = (id, v, r) => { need[id] = (need[id] || 0) + v; (why[id] = why[id] || []).push(r); };
@@ -48,6 +49,7 @@ function currentPicks(max = 3) {
 
 // ---- check-ups ----
 function buildCheck(scope) {
+  if (kidGrade() === 'P') return [];
   if (scope === 'all') return DIAG_IDS().filter(gameById).map(id => ({ id, lv: 1 }));
   const capable = GAMES.filter(g => { const gr = gradeOf(g); return !heldGame(g) && (gr === 'both' || gr === kidGrade()) && g.subject === scope && !CHECK_SKIP.includes(g.id); });   // check-ups use the current grade only, even when earlier-grade games are shown for practice
   const items = shuffle(capable).map(g => ({ id: g.id, lv: 1 }));
@@ -68,6 +70,7 @@ DIAG.answer = (game, ok, btn) => {
   const run = DIAG.run; setTimeout(() => { if (!DIAG.active || run !== DIAG.run) return; DIAG.busy = false; DIAG.i++; diagStep(); }, 450);
 };
 function startDiag(scope) {
+  if (kidGrade() === 'P') { quitDiag(); S.introSeen=true; return home(); }
   SESSION.review = null; NEXT_TOK++;
   DIAG.adapt = null; S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = typeof scope === 'string' ? scope : 'all';
   DIAG.items = buildCheck(DIAG.scope); DIAG.active = true; DIAG.i = 0; DIAG.res = []; DIAG.busy = false; diagStep();
@@ -117,6 +120,7 @@ async function pdfToLines(file) {
 }
 
 function importScreen() {
+  if (kidGrade() === 'P') { quitDiag(); S.introSeen=true; return home(); }
   S.introSeen = true; save();
   view().innerHTML = `<h1>📄 ${T().importTitle}</h1>
     <p class="note2">${T().importHelp}</p>
@@ -157,11 +161,13 @@ function picksScreen(fromQuiz) {
   $('#home').onclick = home;
 }
 function whyText(p) {
+  if (kidGrade() === 'P') return L(B('Explore together','함께 둘러봐요'));
   const quick = p.why.includes('__quick__'), rep = p.why.find(x => x !== '__quick__');
   return [rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
 }
 
 function intro() {
+  if (kidGrade() === 'P') { quitDiag(); S.introSeen=true; return home(); }
   quitDiag();
   view().innerHTML = `<h1>🍑 ${T().app}</h1>
     <div class="tag">${T().introLead}</div>
