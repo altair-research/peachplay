@@ -6,7 +6,7 @@ GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
   SESSION.review = null; NEXT_TOK++;
-  $('#langBtn').textContent = T().switchTo; renderNav();
+  $('#langBtn').textContent = T().switchTo; renderNav(); if (typeof renderProfBtn === 'function') renderProfBtn();
   document.documentElement.lang = S.lang;
   view().innerHTML = `
     <div class="hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}</div></div>

@@ -53,3 +53,7 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 .graderow .grl{font-weight:800;margin-right:4px}
 .gchip{min-height:44px;min-width:56px;padding:6px 12px;border-radius:999px;border:2px solid #f0c9a8;background:#fff;font:inherit;font-weight:800;cursor:pointer}
 .gchip.on{background:#ff7e5f;border-color:#ff7e5f;color:#fff}
+
+/* header: current grade next to the child's face */
+#profBtn{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+#profBtn .pgr{font-size:12px;font-weight:900;line-height:1;padding:3px 6px;border-radius:999px;background:#ff7e5f;color:#fff}
