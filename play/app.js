@@ -5,6 +5,7 @@ const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', 
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
+  window.LearnLog.leave();
   document.body.classList.remove('pk-playing'); SESSION.pkMixed=false;
   SESSION.review = null; NEXT_TOK++;
   $('#langBtn').textContent = T().switchTo; renderNav(); if (typeof renderProfBtn === 'function') renderProfBtn();
@@ -65,6 +66,7 @@ function favHtml() {
 const GOAL = 20;                                   // answers per day (a gentle target, not a timer)
 function goalHtml() {
   if (kidGrade() === 'P') return `<p class="pk-adult">${T().prekTogether}</p>`;
+  const tailored = window.Learner.goal(); if (tailored) return tailored;
   const h = (S.hist || {})[today()] || { r: 0, w: 0 }, n = h.r + h.w, st = typeof streakDays === 'function' ? streakDays() : 0, pct = Math.min(100, Math.round(100 * n / GOAL));
   return `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
 }
@@ -80,10 +82,12 @@ function settings(focusKey, focusLook) {
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
     <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
     <p class="offline-status" role="status" data-offline-status>${T()[window.peachOfflineState || 'offlinePreparing']}</p>
+    ${kidGrade() === 'P' ? '' : `<button class="pill" id="learnerPrefs">${L(B('Child profile: learning approach', '아이 프로필: 학습 접근 방식'))}</button>`}
     <div><button class="next" id="b">${T().back}</button></div>`;
   $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(null, b.dataset.look); });
   $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(k); });
   $('#b').onclick = home; window.scrollTo(0, 0);
+  if ($('#learnerPrefs')) $('#learnerPrefs').onclick = () => gate(window.Learner.styleSettings);
   view().classList.add('settings-screen');
   const target = focusKey ? $(`.pref[data-k="${focusKey}"]`) : focusLook ? $(`.pref[data-look="${focusLook}"]`) : null; if (target) target.focus();
 }
@@ -115,7 +119,9 @@ function stickerBook() {
 }
 
 function picksHtml() {
-  const picks = currentPicks(3); if (!picks.length) return '';
+  const picks = currentPicks(3);
+  window.Learner.offer(picks);
+  if (!picks.length) return '';
   return `<section class="subj picks"><h2>⭐ ${T().picks}</h2><div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('')}</div></section>`;
 }
 
@@ -149,6 +155,9 @@ function grownups() {
   const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
+    <div id="learnReport">${window.SessionReport.html(window.SessionReport.range)}</div>
+    ${window.Learner.panel()}
+    ${window.Learner.stylePanel()}
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
     <h2>${T().challengeTitle}</h2>
@@ -166,7 +175,10 @@ function grownups() {
     <button class="link" id="reset">${T().reset}</button>
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
+  window.SessionReport.bind();
+  window.Learner.bind();
+  window.Learner.bindStyle();
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };

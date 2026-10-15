@@ -53,7 +53,7 @@
     if (!(S.checks || []).length && S.profile && S.profile.diag) (S.profile.diag.missed || []).forEach(id => { results[id] = false; });
     Object.keys(results).forEach(id => { if (results[id] === false) need[id] = (need[id] || 0) + 3; });
     const visible = visibleGames();
-    const picks = Object.keys(need).filter(id => { const g = game(id), st = (S.stats || {})[id] || {}; return g && visible.includes(g) && count(st.right) - count(st.wrong) < 8; }).sort((a, b) => need[b] - need[a]).slice(0, 3);
+    const picks = currentPicks(3).map(item => item.id);
     const note = tr('Practice on this device only. These are app records and estimates, not official school scores or an i-Ready score. Nothing is sent. A saved PDF may contain the nickname; choose where to keep it.', '이 기기의 앱 연습 기록과 추정이며 학교 공식 점수나 i-Ready 점수가 아니에요. 아무것도 전송하지 않아요. 저장한 PDF에는 별명이 들어갈 수 있으니 보관 위치를 골라 주세요.');
     const identity = `<p class="p-identity">${escape(kid.name || tr('Child', '아이'))} · ${escape(gradeName(grade))} · ${dateKey(now)}</p>`;
     const certificate = `<div class="p-certificate"><div class="p-peach" aria-hidden="true">🍑</div><h1>${escape(title)}</h1>${identity}<p class="p-cheer">${escape(goals ? tr('You kept showing up to practice. Peachy celebrates your effort!', '꾸준히 연습했어요. 피치가 노력한 여러분을 축하해요!') : tr('Every little try is worth celebrating. Keep exploring with Peachy!', '작은 도전도 축하할 일이에요. 피치와 함께 계속 탐험해요!'))}</p><p>${escape(tr(`Goal days this week: ${goals}`, `이번 주 목표 달성: ${goals}일`))}</p><p>${escape(tr(`Stickers collected: ${stickers} (all time)`, `모은 스티커: ${stickers}개 (누적)`))}</p><p class="p-note">${escape(tr(`This week: ${offset(mondayOffset)} – ${offset(0)} · Daily goal: 20 answers`, `이번 주: ${offset(mondayOffset)} ~ ${offset(0)} · 하루 목표: 20문제`))}</p><p>PeachPlay · Peachy</p></div>`;
@@ -68,6 +68,7 @@
     const frame = document.createElement('iframe'); frame.className = 'p-frame'; frame.title = title;
     frame.setAttribute('sandbox', 'allow-same-origin allow-modals');
     frame.srcdoc = `<!doctype html><html lang="${ko ? 'ko' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'none'; font-src 'none'"><title>PeachPlay</title><link rel="stylesheet" href="${escape(cssURL)}"></head><body class="p-document"><main class="p-sheet">${grade === 'P' ? `<h1>${escape(tr(kind === 'certificate' ? 'A celebration of play' : 'Play record',kind === 'certificate' ? '놀이 칭찬 수료증' : '놀이 기록'))}</h1>${identity}<p>${escape(T().prekTogether)}</p><p>${escape(T().prekPolicy)}</p>${kind==='certificate'?'':PK.playRecordHtml()}<p>${escape(tr('Stickers collected: '+stickers,'모은 스티커: '+stickers+'개'))}</p>` : kind === 'certificate' ? certificate : report}<footer class="p-note">${escape(note)}</footer></main></body></html>`;
+    if (grade !== 'P' && kind !== 'certificate') frame.srcdoc = frame.srcdoc.replace('<footer', window.SessionReport.html(window.SessionReport.range, false) + '<footer');
     frame.onload = () => {
       const loaded = frame.contentDocument.styleSheets.length > 0;
       print.disabled = !loaded;

@@ -41,10 +41,11 @@ function currentPicks(max = 3) {
     P.report.picks.filter(p => isObj(p) && Number.isFinite(p.score) && Array.isArray(p.reasons)).forEach(p => add(p.id, (p.score / top) * 3, p.reasons[0]));
   }
   Object.keys(res).forEach(id => { if (res[id] === false) add(id, 3, '__quick__'); });
-  return Object.keys(need)
-    .filter(id => gameById(id) && visibleGames().includes(gameById(id)) && (stat(id).right - stat(id).wrong) < 8)        // drop once clearly mastered in play
-    .sort((a, b) => need[b] - need[a]).slice(0, max)
+  const base = Object.keys(need)
+    .filter(id => { const saved = S.stats[id] || freshStat(); return gameById(id) && visibleGames().includes(gameById(id)) && saved.right - saved.wrong < 8; })
+    .sort((a, b) => need[b] - need[a])
     .map(id => ({ id, need: need[id], why: why[id] }));
+  return window.Learner.recommendations(base, max);
 }
 
 // ---- check-ups ----
@@ -61,10 +62,11 @@ DIAG.decorate = (game) => {
   const n = DIAG.i + 1, tot = DIAG.items.length;
   view().insertAdjacentHTML('afterbegin', `<div class="progress"><div style="width:${Math.round(100 * DIAG.i / tot)}%"></div><span>${n}/${tot}</span></div>`);
   $('.prompt').insertAdjacentHTML('afterend', `<button class="skip" id="skip">🤷 ${T().dontKnow}</button>`);
-  $('#skip').onclick = () => DIAG.answer(game, false, null);
+  $('#skip').onclick = () => DIAG.answer(game, false, null, true);
 };
-DIAG.answer = (game, ok, btn) => {
+DIAG.answer = (game, ok, btn, unknown = false) => {
   if (DIAG.busy) return; DIAG.busy = true;
+  window.LearnLog.answer(game.id, unknown ? 2 : ok ? 1 : 0);
   DIAG.res.push({ id: game.id, lv: DIAG.lv, ok }); if (DIAG.adapt) DIAG.adapt.update(ok);
   if (btn) btn.classList.add('picked');
   const run = DIAG.run; setTimeout(() => { if (!DIAG.active || run !== DIAG.run) return; DIAG.busy = false; DIAG.i++; diagStep(); }, 450);
@@ -81,13 +83,15 @@ function diagStep() {
   const it = DIAG.items[DIAG.i]; DIAG.lv = it.lv; gameById(it.id).play();
 }
 function finishDiag() {
+  window.LearnLog.finish();
+  if (DIAG.confirm) { DIAG.active = false; return window.Learner.finishConfirm(); }
   DIAG.active = false; if (DIAG.adapt) return adaptFinish();
   const gr = kidGrade(), prev = [...S.checks].reverse().find(c => c.scope === DIAG.scope && (c.grade || 'K') === gr);   // only compare check-ups of the same grade
   const check = { at: new Date().toISOString().slice(0, 16), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length };
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift();
   S.profile = S.profile || {}; save(); checkResult(check, prev);
 }
-function quitDiag() { SESSION.review = null; NEXT_TOK++; DIAG.adapt = null; DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
+function quitDiag() { window.LearnLog.leave(); SESSION.review = null; NEXT_TOK++; DIAG.confirm = null; DIAG.confirmBinary = false; DIAG.adapt = null; DIAG.active = false; DIAG.busy = false; DIAG.run = (DIAG.run || 0) + 1; }
 const scopeName = (scope) => (scope === 'all' ? T().scopeAll : /^adapt-/.test(scope) ? `🧭 ${T().subjects[scope.slice(6)]}` : T().subjects[scope]);
 
 function checkResult(check, prev) {
@@ -141,6 +145,7 @@ function importScreen() {
       const graded = parsed.items.filter(i => GRADE_POINTS[i.grade] >= 2);
       S.profile = S.profile || {};
       S.profile.report = { at: new Date().toISOString().slice(0, 10), count: parsed.items.length, weak: graded.length, picks: sc.picks.slice(0, 8), unmapped: sc.unmapped };
+      window.Learner.saveStrong(parsed);
       save();
       out.innerHTML = `<p>✅ ${T().found(parsed.items.length, graded.length)}</p>
         ${sc.unmapped.length ? `<p class="note2">${T().unmapped}: ${sc.unmapped.join(' · ')}</p>` : ''}
@@ -153,6 +158,7 @@ function importScreen() {
 // ---- screens ----
 function picksScreen(fromQuiz) {
   const picks = currentPicks(3);
+  window.Learner.offer(picks);
   view().innerHTML = `<h1>⭐ ${T().picksTitle}</h1>
     <p class="tag">${fromQuiz ? T().quizDone : T().reportDone}</p>
     <div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('') || `<p>${T().noPicks}</p>`}</div>
@@ -162,8 +168,8 @@ function picksScreen(fromQuiz) {
 }
 function whyText(p) {
   if (kidGrade() === 'P') return L(B('Explore together','함께 둘러봐요'));
-  const quick = p.why.includes('__quick__'), rep = p.why.find(x => x !== '__quick__');
-  return [rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
+  const quick = p.why.includes('__quick__'), rep = p.why.find(x => x && !x.startsWith('__'));
+  return [p.why.includes('__up__') ? L(B('One step up', '한 단계 위')) : '', p.why.includes('__warm__') ? L(B('Warm-up', '몸풀기')) : '', p.why.includes('__style__') ? L(B('A familiar game', '익숙한 게임')) : '', rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
 }
 
 function intro() {

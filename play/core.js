@@ -13,6 +13,12 @@ function cleanProf(p) {                                   // -> { active, list }
 }
 function cleanState(s) {                                  // keeps only known, well-typed fields
   const o = {}; if (!isObj(s)) return o;
+  if (Array.isArray(s.log)) o.log = window.LearnLog.clean(s.log);
+  if (isObj(s.mastery) && window.Learner) o.mastery = window.Learner.cleanMastery(s.mastery);
+  if (['slow', 'challenge', 'unknown'].includes(s.learningStyle)) o.learningStyle = s.learningStyle;
+  if (Array.isArray(s.pickLog)) o.pickLog = window.Learner.cleanPickLog(s.pickLog);
+  if (isObj(s.learnDays)) o.learnDays = window.Learner.cleanDays(s.learnDays);
+  if (isObj(s.strongAreas) && GRADE_LIST.includes(s.strongAreas.grade) && s.strongAreas.grade !== 'P' && Array.isArray(s.strongAreas.domains)) o.strongAreas = { grade: s.strongAreas.grade, domains: [...new Set(s.strongAreas.domains.filter(key => ['num', 'alg', 'meas', 'geo', 'pa', 'ph', 'hfw', 'voc', 'lit', 'inf'].includes(key)))] };
   if (s.lang === 'en' || s.lang === 'ko') o.lang = s.lang;
   if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
   if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
@@ -67,7 +73,7 @@ const shuffle = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--
 const others = (arr, not, n) => shuffle(arr.filter(x => x !== not)).slice(0, n);
 const stat = (id) => (S.stats[id] = S.stats[id] || freshStat());
 const DIAG = { active: false };                    // quick-check mode (see profile.js)
-const lvl = (id) => (DIAG.active ? (DIAG.lv || 1) : SESSION.review ? SESSION.review[SESSION.n].lv : stat(id).level);
+const lvl = (id) => (DIAG.active ? (DIAG.lv || 1) : SESSION.review ? SESSION.review[SESSION.n].lv : SESSION.easyLevel ? 1 : stat(id).level);
 
 // Speech is always paired with visible text/visuals, so muted devices (and missing voices) still work.
 function say(text, lang, keepQueue) {
@@ -90,6 +96,7 @@ function addPeach() { S.peaches++; save(); renderPeaches(); }
 // 4 clean answers in a row -> level up (max 2); every 3rd miss -> level down.
 const MISS = {};                                     // games whose current round already logged a miss (so the finish is not logged twice)
 function record(id, ok) {
+  window.LearnLog.answer(id, ok ? 1 : 0);
   if (gradeOf(gameById(id) || {}) === 'P') { if (SESSION.review) { if (ok) reviewSolved(); return; } if (ok) { SESSION.done++; const st=stat(id); st.right++; PK.recordPlay(id); save(); } return; }
   if (DIAG.active) return;
   if (SESSION.review) {
@@ -109,13 +116,13 @@ function record(id, ok) {
   if (ok) { h.r++; hg[0]++; } else { h.w++; hg[1]++; }
   // level follows RECENT play (last 6 rounds): 5 clean answers in a row go up (a 2-option guess does that 1 time in 32), 3 misses in the last 5 go down
   s.recent = ((s.recent || '') + (ok ? '1' : '0')).slice(-6);
-  if (ok) { s.right++; s.streak++; if (s.streak >= 5 && s.level < 2) { s.level++; s.streak = 0; s.recent = ''; } }
+  if (ok) { s.right++; s.streak++; if (s.streak >= (SESSION.learnerMode === 'challenge' ? 4 : 5) && s.level < 2) { s.level++; s.streak = 0; s.recent = ''; } }
   else { s.wrong++; s.streak = 0; if (s.level > 1 && (s.recent.slice(-5).match(/0/g) || []).length >= 3) { s.level--; s.recent = ''; } }
   save();
 }
 
 // End of a round: a clean first-try finish counts as right; a round that had a miss counts as wrong once (not again if the miss was already logged).
-function recordFinal(id, missed) { if (SESSION.review) { reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
+function recordFinal(id, missed) { window.LearnLog.answer(id, missed ? 0 : 1); if (SESSION.review) { reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
 // ---- sound effects, mascot, confetti, session bar ----
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
@@ -192,6 +199,7 @@ function startReview() {
 }
 function reviewStep() {
   if (SESSION.n >= SESSION.rounds) {
+    window.LearnLog.finish();
     SESSION.review = null;
     view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${kidGrade() === 'P' ? T().prekDone : T().gotRight(SESSION.done, SESSION.rounds)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
     $('#reviewHome').onclick = home; say(T().roundDone); return;
@@ -207,6 +215,8 @@ function dup(game, key) {
   game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
 }
 function launch(game, mix) {
+  window.LearnLog.leave();
+  window.Learner.choose(game);
   SESSION.pkMixed=false;
   document.body.classList.toggle('pk-playing', game.grade === 'P');
   if (game.grade === 'P' && DIAG.active) quitDiag();
@@ -214,17 +224,25 @@ function launch(game, mix) {
   if (!DIAG.active && !mix) { S.last = game.id; save(); }                     // for the home screen's Continue button
   Object.keys(MISS).forEach(k => { MISS[k] = false; });
   Object.assign(SESSION, { id: game.id, n: 0, mix: !!mix, done: 0, rounds: mix ? Math.min(3, game.rounds || 3) : (game.rounds || ROUNDS) });
-  updateBar(); game.play();
+  SESSION.misses = 0; SESSION.easyNext = false; SESSION.easyLevel = false;
+  SESSION.learnerMode = kidGrade() === 'P' || gradeOf(game) === 'P' ? 'unknown' : window.Learner.style();
+  SESSION.styleWeak = kidGrade() !== 'P' && gradeOf(game) !== 'P' && window.Learner.weakDomain(window.Learner.domainFor(game.id));
+  SESSION.styleCompleted = false; SESSION.cleanStreak = 0;
+  if (SESSION.learnerMode === 'slow') SESSION.rounds = Math.min(5, SESSION.rounds);
+  SESSION.easyLevel = kidGrade() !== 'P' && !DIAG.active && currentPicks(3).some(item => item.id === game.id && item.why.includes('__warm__'));
+  try { updateBar(); game.play(); } finally { SESSION.easyLevel = false; }
 }
 function surprise() {
   if (kidGrade() === 'P') { const pool=visibleGames(); if (!pool.length) return home(); SESSION.pkMixed=true; launch(pick(pool)); SESSION.pkMixed=true; return; }
   SESSION.pkMixed=false;                                // mixed run: different game every couple of rounds
   const picks = (typeof currentPicks === 'function' ? currentPicks(3) : []).map(p => p.id);
   const pool = visibleGames().filter(g => g.id !== SESSION.id && !(SESSION.hist || []).slice(-4).includes(g.id));
-  const g = (picks.length && rnd(2) === 0 ? GAMES.find(x => x.id === pick(picks)) : null) || pick(pool);
+  const g = window.Learner.mixGame() || (picks.length && rnd(2) === 0 ? GAMES.find(x => x.id === pick(picks)) : null) || pick(pool);
   SESSION.hist = [...(SESSION.hist || []), g.id]; launch(g, true);
 }
 function sessionEnd(game) {
+  window.LearnLog.finish();
+  window.Learner.complete();
   const t = T(), good = SESSION.done, free = ALL_STICKERS.filter(s => !S.stickers.includes(s)), sticker = free.length && !SESSION.mix ? pick(free) : null;
   if (sticker) { S.stickers.push(sticker); save(); renderPeaches(); }
   view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${game.grade === 'P' ? t.prekDone : t.gotRight(good, SESSION.rounds)}</p>
@@ -238,6 +256,7 @@ function sessionEnd(game) {
 let NEXT_TOK = 0;
 // Shows a "Next" button and moves on by itself after a short pause (tap to go sooner).
 function nextButton(fn, opts = {}) {
+  if (!DIAG.active && SESSION.n + 1 >= SESSION.rounds) window.LearnLog.finish();
   const tok = ++NEXT_TOK;
   setTimeout(() => {
     const cheer = $('#cheer'); if (!cheer || tok !== NEXT_TOK) return;
@@ -250,8 +269,11 @@ function nextButton(fn, opts = {}) {
       Object.keys(MISS).forEach(k => { MISS[k] = false; });
       const g = GAMES.find(x => x.id === SESSION.id);
       if (g && g.grade === 'P' && SESSION.pkMixed && SESSION.n < SESSION.rounds) { const next=pick(visibleGames()); SESSION.id=next.id; return next.play(); }
-      if (!g || SESSION.n < SESSION.rounds) return fn();
-      return SESSION.mix ? surprise() : sessionEnd(g);
+      if (!g || SESSION.n < SESSION.rounds) {
+        SESSION.easyLevel = !!SESSION.easyNext; SESSION.easyNext = false;
+        try { return fn(); } finally { SESSION.easyLevel = false; }
+      }
+      window.LearnLog.finish(); if (SESSION.mix) window.Learner.complete(); return SESSION.mix ? surprise() : sessionEnd(g);
     };
     btn.onclick = go;
     if (opts.auto !== false && !DIAG.active) { const f = $('#fact'); setTimeout(go, opts.auto || Math.min(4200, 1300 + 45 * (f ? f.textContent.length : 0))); }
@@ -264,9 +286,12 @@ function quiz(game, item) {
   const pk=game.grade === 'P';
   document.body.classList.toggle('pk-playing', pk);
   MISS[game.id] = false;
-  const askText = L(item.ask);
+  const boss = !pk && !DIAG.active && !SESSION.review && SESSION.learnerMode === 'challenge' && lvl(game.id) >= 2;
+  const askText = (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + L(item.ask);
   const key = askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
   if (dup(game, key)) return game.play();
+  if (DIAG.confirm) window.Learner.confirmOptions(item.opts.length);
+  window.LearnLog.begin(game, lvl(game.id));
   const opts = shuffle(item.opts);
   view().innerHTML = `
     <div class="prompt"${pk ? ` aria-label="${askText.replace(/"/g, '&quot;')}"` : ''}>${pk ? '' : askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
@@ -295,10 +320,16 @@ function quiz(game, item) {
   if (DIAG.active) DIAG.decorate(game);
   $$('.opt').forEach(btn => btn.onclick = () => {
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
+    if (!pk && kidGrade() !== 'P' && !missed && !SESSION.review) {
+      SESSION.cleanStreak = opts[+btn.dataset.i].ok ? (SESSION.cleanStreak || 0) + 1 : 0;
+      if (boss) window.Learner.noteBoss();
+      SESSION.misses = opts[+btn.dataset.i].ok ? 0 : (SESSION.misses || 0) + 1;
+      if (SESSION.misses >= 3) { SESSION.easyNext = true; SESSION.misses = 0; }
+    }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
       if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
-      $('#cheer').textContent = pk ? T().prekNice : pick(T().right);
+      $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
       if (item.after) $('#fact').textContent = L(item.after);
       say(item.vocab && S.lang !== 'en' ? item.vocab : (item.after ? L(item.after) : ''), item.vocab && S.lang !== 'en' ? 'en-US' : undefined);
