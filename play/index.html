@@ -43,12 +43,12 @@
 <body>
 <header>
   <button id="homeBtn" class="icon" aria-label="Home">🏠</button>
-  <div class="hinfo"><button id="profBtn" class="chip" aria-label="Who is playing?">🍑</button><div id="peaches" aria-live="polite">🍑0</div><button id="stkChip" class="chip" aria-label="Stickers">🏆0</button></div>
+  <div class="hinfo"><button id="profBtn" class="chip" aria-label="Who is playing?">🍑</button><div id="peaches" aria-live="polite">🍑0</div><span id="cleanStreak" class="clean-streak" aria-live="polite" aria-atomic="true" hidden></span><button id="stkChip" class="chip" aria-label="Stickers">🏆0</button></div>
   <button id="muteBtn" class="icon" aria-label="Sound on/off">🔊</button>
   <button id="langBtn" class="pill">한국어</button>
   <nav id="hnav"><button id="navProg" class="pill">📈</button><button id="navFaq" class="pill">❓</button></nav>
 </header>
-<div id="sbar"><i></i></div>
+<div id="sbar" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="10"><i></i></div>
 <main id="view"></main>
 <div id="rot" role="alert"><div class="rotbox"><div class="rotico">📱↻</div><p>Turn your phone upright<br><span>폰을 세로로 돌려 주세요</span></p><button id="rotok" class="pill">Play anyway · 그냥 하기</button></div></div>
 <script src="version.js"></script>

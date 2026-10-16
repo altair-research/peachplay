@@ -65,3 +65,17 @@ body:is(.skin-explorer,.theme-dark,.theme-system) :is(button,input,textarea,sele
 body:is(.skin-explorer,.theme-dark,.theme-system) :is(.map,.mc,.cell,.maze,.rgrid,.rc,.sdg,.sdc,.ac,.mxc,.cbox,.gstage){color:#183247}
 /* Shape only: preserve touch areas, border widths, fonts and spacing. */
 body.skin-explorer :is(.big,.opt,.icon,.pill,.bubble,.pref,.scorebox,.bpcard,details.faq,details.gi){border-radius:12px}
+/* Request 45: neutral, striped retry feedback in every theme. */
+body:is(.skin-explorer,.theme-dark,.theme-system) #view .opt.no{background:#fff7d6;background-image:repeating-linear-gradient(135deg,transparent 0 8px,#e0b23a33 8px 12px);color:#614a14;border-color:#b58a18;box-shadow:inset 0 0 0 3px #b58a18,0 4px 0 #b58a18;opacity:1}
+body:is(.skin-explorer,.theme-dark,.theme-system) pk-cheer.is-wrong{color:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) #sbar.dots-progress{background:transparent;color:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .round-dot{border-color:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .round-dot.done{background:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .round-dot.current{outline-color:var(--theme-shell)}
+body:is(.skin-explorer,.theme-dark,.theme-system) #view .round-primary{background:#9de1da;color:#183247;border-color:#176b70}
+body:is(.skin-explorer,.theme-dark,.theme-system) #view .round-primary small{color:#183247}
+body.skin-explorer #view .home-primary .cont{background:#9de1da;color:#183247;border-color:#176b70}
+body.skin-explorer #view .home-primary .cont small{color:#183247}
+body:is(.skin-explorer,.theme-dark,.theme-system) .quest-content .note2{color:var(--ink)}
+body:is(.skin-explorer,.theme-dark,.theme-system) #cleanStreak{background:#c9e8e5;color:#183247}
+body.skin-explorer:not(.grade-prek):not(.pk-playing){min-height:100dvh}

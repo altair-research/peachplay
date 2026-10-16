@@ -32,6 +32,8 @@ const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 function renderNav() { [['homeBtn', B('Home','홈')], ['profBtn', B('Who is playing?','누가 놀이하나요?')], ['stkChip', B('Stickers','스티커')], ['muteBtn', B('Sound on/off','소리 켜기/끄기')]].forEach(([id, label]) => { const el = document.getElementById(id); if (el) el.setAttribute('aria-label', L(label)); }); const p = $('#navProg'), f = $('#navFaq'); if (p) { p.textContent = '📈 ' + L(PT.prog); f.textContent = '❓ ' + T().faqBtn; } }
 new MutationObserver(() => { const v = view(); document.body.classList.toggle('playing', !!(v && v.firstElementChild && !v.querySelector(':scope > h1, :scope > .hero'))); }).observe(view(), { childList: true });
 function renderProfBtn() {                       // avatar + current grade, always visible in the header (also during games)
+  document.body.classList.toggle('grade-prek', kidGrade() === 'P');
+  applyPrefs();
   const b = $('#profBtn'); if (!b) return; const g = kidGrade(), gl = g === 'P' ? (PREK_READY ? L(PT.gP) : '') : g === 'K' ? L(B('K', '유치원')) : L(B(`Gr ${g}`, `${g}학년`));
   b.innerHTML = `${curKid().avatar}<span class="pgr">${gl}</span>`; b.setAttribute('aria-label', `${L(B('Who is playing?', '누가 하고 있나요?'))} ${gl}`);
 }

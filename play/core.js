@@ -31,7 +31,8 @@ function cleanState(s) {                                  // keeps only known, w
   if (Array.isArray(s.stickers)) o.stickers = s.stickers.filter(x => typeof x === 'string').slice(0, 200);
   if (isObj(s.bp)) o.bp = { level: Math.min(31, Math.max(1, Math.floor(numOr(s.bp.level, 1)))), best: Math.max(0, numOr(s.bp.best)), stars: isObj(s.bp.stars) ? Object.fromEntries(Object.entries(s.bp.stars).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k, Math.min(3, Math.max(0, v))])) : {}, friends: Array.isArray(s.bp.friends) ? s.bp.friends.filter(Number.isInteger) : [], skin: typeof s.bp.skin === 'string' ? s.bp.skin : 'plain', daily: isObj(s.bp.daily) ? s.bp.daily : null };
   if (typeof s.last === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(s.last)) o.last = s.last;
-  if (s.skin === 'peachy' || s.skin === 'explorer') o.skin = s.skin;
+  o.skin = ['auto', 'peachy', 'explorer'].includes(s.skin) ? s.skin : 'auto';
+  o.rounds = isObj(s.rounds) ? Object.fromEntries(Object.entries(s.rounds).filter(([key, value]) => ['math', 'read', 'write', 'ss', 'sci', 'life', 'create', 'gifted', 'brain'].includes(key) && Number.isFinite(value)).map(([key, value]) => [key, Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.floor(value)))])) : {};
   if (['light', 'dark', 'system'].includes(s.theme)) o.theme = s.theme;
   if (Array.isArray(s.fav)) o.fav = s.fav.filter(x => typeof x === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x)).slice(0, 30);
   if (Array.isArray(s.review)) {
@@ -140,34 +141,56 @@ function sfx(kind) {
   else if (kind === 'win') [523, 659, 784, 1047].forEach((f, i) => tone(f, 300, i * 0.15));
 }
 function confetti(count = 60) {
+  confetti.clear?.();
   try {
-    if (S.calm || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
-    const c = document.getElementById('fx'); if (!c) return; const ctx = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
+    const c = document.getElementById('fx'); if (!c) return;
+    const ctx = c.getContext('2d'); let frame;
+    confetti.screen = view().firstElementChild;
+    if (!confetti.observer) { confetti.observer = new MutationObserver(() => { if (view().firstElementChild !== confetti.screen) confetti.clear?.(); }); confetti.observer.observe(view(), { childList: true }); }
+    confetti.clear = () => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, c.width, c.height); };
+    if (S.calm || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    c.width = innerWidth; c.height = innerHeight;
     const cols = ['#ff7e5f', '#ffd166', '#06d6a0', '#118ab2', '#ef476f', '#8338ec'];
-    const ps = Array.from({ length: count }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 140, y: innerHeight * 0.45, vx: (Math.random() - .5) * 10, vy: -Math.random() * 10 - 3, r: 4 + Math.random() * 5, c: cols[rnd(cols.length)], rot: Math.random() * 6, vr: (Math.random() - .5) * .4 }));
-    let f = 0; const step = () => { ctx.clearRect(0, 0, c.width, c.height); ps.forEach(p => { p.vy += 0.35; p.x += p.vx; p.y += p.vy; p.rot += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); }); if (++f < 85) requestAnimationFrame(step); else ctx.clearRect(0, 0, c.width, c.height); };
-    requestAnimationFrame(step);
-    setTimeout(() => ctx.clearRect(0, 0, c.width, c.height), 2800);       // safety: never leave confetti on screen
+    const ps = Array.from({ length: count }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 140, y: innerHeight * .45, vx: (Math.random() - .5) * 10, vy: -Math.random() * 10 - 3, r: 4 + Math.random() * 5, c: pick(cols), rot: Math.random() * 6 }));
+    const start = performance.now(); let prev = start;
+    const step = now => {
+      ctx.clearRect(0, 0, c.width, c.height);
+      if (now - start >= 1600 || S.calm || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const dt = Math.min(3, (now - prev) / (1000 / 60)); prev = now;
+      ps.forEach(p => { p.vy += .35 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += .1 * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); });
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
   } catch (e) {}
 }
 // Peachy, the peach mascot
 const PEACH_SVG = (mood = 'happy') => `<svg viewBox="0 0 64 64" class="peachy ${mood}" aria-hidden="true"><defs><radialGradient id="pg" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#ffd9bd"/><stop offset=".55" stop-color="#ff9a76"/><stop offset="1" stop-color="#ef6a58"/></radialGradient></defs>
 <path d="M32 12c-14 0-24 10-24 25 0 12 10 20 24 20s24-8 24-20C56 22 46 12 32 12z" fill="url(#pg)"/><path d="M32 14c1-7 6-11 13-11-1 7-6 11-13 11z" fill="#4caf50"/><path d="M32 13c3-3 6-5 9-6" stroke="#2e7d32" stroke-width="1.4" fill="none" stroke-linecap="round"/>
 <circle cx="19" cy="40" r="4.2" fill="#ff7f8a" opacity=".55"/><circle cx="45" cy="40" r="4.2" fill="#ff7f8a" opacity=".55"/>
-${mood === 'oops' ? '<path d="M20 28l7 2M44 28l-7 2" stroke="#3a2a2a" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="34" r="3" fill="#3a2a2a"/><circle cx="40" cy="34" r="3" fill="#3a2a2a"/><path d="M25 48q7-6 14 0" stroke="#3a2a2a" stroke-width="2.4" fill="none" stroke-linecap="round"/>' : '<circle cx="24" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="40" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="25.2" cy="32.8" r="1.1" fill="#fff"/><circle cx="41.2" cy="32.8" r="1.1" fill="#fff"/><path d="M24 43q8 9 16 0" stroke="#3a2a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>'}</svg>`;
+${['oops', 'think'].includes(mood) ? '<path d="M19 27q5-3 9-1M36 26q5-2 9 1" stroke="#3a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="25" cy="33" r="3.2" fill="#3a2a2a"/><circle cx="41" cy="33" r="3.2" fill="#3a2a2a"/><circle cx="26.2" cy="31.6" r="1.1" fill="#fff"/><circle cx="42.2" cy="31.6" r="1.1" fill="#fff"/><path d="M28 45q5 2 9-1" stroke="#3a2a2a" stroke-width="2.4" fill="none" stroke-linecap="round"/><text x="50" y="20" font-size="14" font-weight="900" fill="#1d4ed8">?</text>' : mood === 'yay' ? '<path d="M20 35q4-6 8 0M36 35q4-6 8 0" stroke="#3a2a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M23 42q9 12 18 0z" fill="#3a2a2a"/><path d="M27 46q5 4 10 0" fill="#ff7f8a"/>' : '<circle cx="24" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="40" cy="34" r="3.4" fill="#3a2a2a"/><circle cx="25.2" cy="32.8" r="1.1" fill="#fff"/><circle cx="41.2" cy="32.8" r="1.1" fill="#fff"/><path d="M24 43q8 9 16 0" stroke="#3a2a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>'}</svg>`;
 // <pk-cheer>: assigning textContent shows the mascot, plays a sound and (for good answers) throws confetti
 class PkCheer extends HTMLElement {
   connectedCallback() { this.setAttribute("role", "status"); this.setAttribute("aria-live", "polite"); }
   set textContent(v) {
-    this._t = v || ''; this.replaceChildren(); if (!this._t) return;
+    this._t = v || ''; this.classList.remove('is-wrong'); this.replaceChildren(); if (!this._t) return;
     const bad = (this._t === T().again || this._t === T().tooMany);
+    this.classList.toggle('is-wrong', bad);
     this.insertAdjacentHTML('beforeend', PEACH_SVG(bad ? 'oops' : 'happy')); const s = document.createElement('span'); s.textContent = this._t; this.appendChild(s);
     if (bad) sfx('no'); else { sfx('ok'); confetti(34); try { navigator.vibrate && navigator.vibrate(25); } catch (e) {} }
   }
   get textContent() { return this._t || ''; }
 }
 if (!customElements.get('pk-cheer')) customElements.define('pk-cheer', PkCheer);
-function updateBar() { const i = document.querySelector('#sbar i'); if (i) i.style.width = Math.min(100, Math.round(100 * SESSION.n / (SESSION.rounds || ROUNDS))) + '%'; }
+function updateBar() {
+  const bar = $('#sbar'); if (!bar) return;
+  const max = SESSION.rounds || ROUNDS, n = Math.min(max, SESSION.n);
+  bar.setAttribute('role', 'progressbar'); bar.setAttribute('aria-label', L(B('Round progress', '한 판 진행')));
+  bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', max); bar.setAttribute('aria-valuenow', n);
+  const dots = kidGrade() !== 'P' && gradeOf(gameById(SESSION.id) || {}) !== 'P' && max <= 12 && !DIAG.active && !SESSION.review;
+  bar.classList.toggle('dots-progress', dots);
+  bar.innerHTML = dots ? `<span class="round-dots" aria-hidden="true">${Array.from({ length: max }, (_, i) => `<b class="round-dot${i < n ? ' done' : i === n ? ' current' : ''}"></b>`).join('')}</span><span class="round-count">${n}/${max}</span>` : `<i style="width:${Math.round(100 * n / max)}%"></i>`;
+  if (n === 0) { SESSION.startPeaches = S.peaches; SESSION.roundCounted = false; const chip = $('#cleanStreak'); if (chip) { chip.hidden = true; chip.replaceChildren(); } }
+}
 // a new screen always starts at the top (the home list may have been scrolled)
 new MutationObserver((ms) => { if (ms.some(m => [...m.addedNodes].some(n => n.id !== 'nx'))) window.scrollTo(0, 0); }).observe(document.getElementById('view'), { childList: true });
 new MutationObserver(() => { const b = document.getElementById('sbar'); if (b) b.style.visibility = (document.querySelector('#view > .prompt') && !DIAG.active) ? 'visible' : 'hidden'; }).observe(document.getElementById('view'), { childList: true });
@@ -243,11 +266,18 @@ function surprise() {
 function sessionEnd(game) {
   window.LearnLog.finish();
   window.Learner.complete();
-  const t = T(), good = SESSION.done, free = ALL_STICKERS.filter(s => !S.stickers.includes(s)), sticker = free.length && !SESSION.mix ? pick(free) : null;
+  const t = T(), pk = game.grade === 'P', free = ALL_STICKERS.filter(s => !S.stickers.includes(s)), sticker = free.length && !SESSION.mix ? pick(free) : null;
   if (sticker) { S.stickers.push(sticker); save(); renderPeaches(); }
-  view().innerHTML = `<h1>🎉 ${t.roundDone}</h1><p class="tag">${game.grade === 'P' ? t.prekDone : t.gotRight(good, SESSION.rounds)}</p>
-    ${sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : ''}
-    <div class="menu intro"><button class="big math" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
+  let newly = false;
+  if (!pk && !SESSION.roundCounted) {
+    S.rounds ||= {}; S.rounds[game.subject] = Math.min(Number.MAX_SAFE_INTEGER, (S.rounds[game.subject] || 0) + 1);
+    SESSION.roundCounted = true; newly = ROUND_BADGES.some(([at]) => at === S.rounds[game.subject]); save();
+  }
+  const reward = sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : '';
+  const peaches = Math.max(0, S.peaches - (SESSION.startPeaches ?? S.peaches));
+  confetti.clear?.();
+  view().innerHTML = `${pk ? `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.prekDone}</p>${reward}` : `<h1 class="round-title">${PEACH_SVG('yay')}${L(B('Round complete! Nice work!', '한 판 끝! 멋져요!'))}</h1><div class="round-rewards"><div class="round-reward" aria-label="${L(B(`${peaches} peaches this round`, `이번 판에 받은 복숭아 ${peaches}개`))}">🍑 +${peaches}</div>${reward}</div>${goalHtml(true)}${document.body.classList.contains('skin-explorer') ? roundBadgeHtml(game.subject, newly) : ''}`}
+    <div class="menu intro${pk ? '' : ' round-actions'}"><button class="big math${pk ? '' : ' round-primary'}" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
     <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>
     <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}<small>${t.anotherSub}</small></button></div>`;
   $('#again').onclick = () => launch(game); $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
@@ -283,6 +313,7 @@ function nextButton(fn, opts = {}) {
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
 function quiz(game, item) {
+  confetti.clear?.();
   const pk=game.grade === 'P';
   document.body.classList.toggle('pk-playing', pk);
   MISS[game.id] = false;
@@ -314,6 +345,14 @@ function quiz(game, item) {
   }
   $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
+  const showStreak = () => {
+    const chip = $('#cleanStreak'); if (!chip) return;
+    const show = !pk && kidGrade() !== 'P' && !DIAG.active && !SESSION.review && document.body.classList.contains('skin-explorer') && SESSION.cleanStreak >= 3;
+    chip.hidden = !show;
+    if (!show) chip.replaceChildren();
+    else chip.innerHTML = `<span aria-hidden="true">🔥 ${SESSION.cleanStreak}</span><span class="sr-only">${L(B(`${SESSION.cleanStreak} in a row`, `${SESSION.cleanStreak}번 연속`))}</span>`;
+  };
+  showStreak();
   let missed = false;
   // Sound games remain guided picture practice: browser audio success is not observable reliably.
   const practice = pk && item.pkSound;
@@ -322,6 +361,7 @@ function quiz(game, item) {
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
     if (!pk && kidGrade() !== 'P' && !missed && !SESSION.review) {
       SESSION.cleanStreak = opts[+btn.dataset.i].ok ? (SESSION.cleanStreak || 0) + 1 : 0;
+      showStreak();
       if (boss) window.Learner.noteBoss();
       SESSION.misses = opts[+btn.dataset.i].ok ? 0 : (SESSION.misses || 0) + 1;
       if (SESSION.misses >= 3) { SESSION.easyNext = true; SESSION.misses = 0; }
@@ -329,7 +369,7 @@ function quiz(game, item) {
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
       if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
-      $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
+      $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && !document.body.classList.contains('skin-explorer') && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
       if (item.after) $('#fact').textContent = L(item.after);
       say(item.vocab && S.lang !== 'en' ? item.vocab : (item.after ? L(item.after) : ''), item.vocab && S.lang !== 'en' ? 'en-US' : undefined);
@@ -339,6 +379,7 @@ function quiz(game, item) {
       nextButton(() => game.play(), pk ? {auto:false} : {});
     } else {
       if (pk) { $('#cheer').textContent=T().prekAgain; say(T().prekAgain); return; }
+      SESSION.cleanStreak = 0; showStreak();
       btn.classList.add('no'); missed = true; record(game.id, false);
       $('#cheer').textContent = T().again; say(T().again);
       setTimeout(() => btn.classList.remove('no'), 400);

@@ -57,3 +57,6 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 /* header: current grade next to the child's face */
 #profBtn{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
 #profBtn .pgr{font-size:12px;font-weight:900;line-height:1;padding:3px 6px;border-radius:999px;background:#ff7e5f;color:#fff}
+/* Actual animation removal, including computed animation-name for feedback. */
+body.calm .opt.no,body.calm .peachy{animation:none!important}
+@media(prefers-reduced-motion:reduce){.opt.no,.peachy{animation:none!important}}

@@ -1,15 +1,17 @@
 'use strict';
 // App shell: home menu grouped by school subject, grown-ups panel, language switch.
 const SUBJECT_ORDER = ['math', 'read', 'write', 'ss', 'sci', 'life', 'create', 'gifted', 'brain'];
-const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🍑', sci: '🔬', life: '🌈', create: '🎭', gifted: '🚀', brain: '🧠' };
+const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🗺️', sci: '🔬', life: '🌈', create: '🎭', gifted: '🚀', brain: '🧠' };
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
 function home() {
+  confetti.clear?.();
   window.LearnLog.leave();
   document.body.classList.remove('pk-playing'); SESSION.pkMixed=false;
   SESSION.review = null; NEXT_TOK++;
   $('#langBtn').textContent = T().switchTo; renderNav(); if (typeof renderProfBtn === 'function') renderProfBtn();
   document.documentElement.lang = S.lang;
+  if (kidGrade() === 'P') {
   view().innerHTML = `
     <div class="hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}</div></div>
     <h1>${T().app}</h1>
@@ -19,7 +21,7 @@ function home() {
     ${continueHtml()}
     ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
-    ${kidGrade() === 'P' ? '' : `<div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Like i-Ready: harder when right, easier when missed', 'i-Ready처럼 맞히면 어려워지고 틀리면 쉬워져요'))}</small></button></div>`}
+    ${kidGrade() === 'P' ? '' : `<div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Questions change to fit you', '나에게 맞게 문제가 바뀌어요'))}</small></button></div>`}
     ${favHtml()}
     ${picksHtml()}
     <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
@@ -31,6 +33,35 @@ function home() {
     <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
     <button class="link" id="parent">${T().grownups}</button>
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
+  } else {
+  view().innerHTML = `
+    <div class="hero home-hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}<button class="home-say" id="helloSay" aria-label="${T().listen}">🔊</button></div></div>
+    <h1 class="sr-only">${T().app}</h1>
+    <div class="tag sr-only">${T().tagline}</div>
+    ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}
+    <div id="subjtiles" class="menu home-subjects">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
+    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
+    ${goalHtml()}
+    ${favHtml()}
+    ${picksHtml()}
+    <div class="toprow"><button class="big surprise" id="surprise"><span class="gi">🎲</span><span class="bt">${T().surprise}<small>${T().surpriseSub}</small></span></button><button class="big surprise" id="stickers"><span class="gi">🏆</span>${T().stickers} ${S.stickers.length}/${ALL_STICKERS.length}</button></div>
+    ${kidGrade() === 'P' ? '' : `<div class="controw"><button class="big adapt" id="adapt"><span class="gi">🧭</span>${L(B('Diagnostic Practice', '진단 평가 연습'))}<small>${L(B('Questions change to fit you', '나에게 맞게 문제가 바뀌어요'))}</small></button></div>`}
+    <div class="searchrow"><input id="gsearch" type="search" autocomplete="off" placeholder="🔍 ${L(B('Search games', '게임 찾기'))}" aria-label="${L(B('Search games', '게임 찾기'))}"></div>
+    <div id="gresults"></div>
+    ${gradeRowHtml()}
+    <div class="home-tools"><button class="pill" id="homeProg">📈 ${L(PT.prog)}</button><button class="pill" id="homeFaq">❓ ${T().faqBtn}</button></div>
+    ${prevGrade(kidGrade()) && (prevGrade(kidGrade()) !== 'P' || PREK_READY) ? `<button class="link" id="showk">${S.showK ? L(B(`Hide ${prevGrade(kidGrade()) === 'P' ? 'Pre-K' : prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games`, `${prevGrade(kidGrade()) === 'P' ? '프리케이' : prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임 숨기기`)) : L(B(`Show ${prevGrade(kidGrade()) === 'P' ? 'Pre-K' : prevGrade(kidGrade()) === 'K' ? 'kindergarten' : 'grade ' + prevGrade(kidGrade())} games too`, `${prevGrade(kidGrade()) === 'P' ? '프리케이' : prevGrade(kidGrade()) === 'K' ? '유치원(K)' : prevGrade(kidGrade()) + '학년'} 게임도 보기`))}</button>` : ''}
+    ${kidGrade() === 'P' ? '' : `<button class="link" id="find">${T().findStart}</button>`}
+    <button class="link" id="dict">📚 ${L(B('Picture Dictionary', '그림 사전'))}</button>
+    <button class="link" id="settings">⚙️ ${L(B('Settings', '설정'))}</button>
+    <button class="link" id="parent">${T().grownups}</button>
+    <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
+  }
+  if ($('#helloSay')) $('#helloSay').onclick = () => say(T().heroHi);
+  $$('.subject-say').forEach(b => b.onclick = () => say(T().subjects[b.dataset.saySub]));
+  if ($('#primarySurprise')) $('#primarySurprise').onclick = surprise;
+  if ($('#homeProg')) $('#homeProg').onclick = progressScreen;
+  if ($('#homeFaq')) $('#homeFaq').onclick = faqScreen;
   $$('.gchip').forEach(b => b.onclick = () => { const k = curKid(); if (k && k.grade !== b.dataset.g) { k.grade = b.dataset.g; saveProf(); S.showK = false; save(); } home(); });
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
   if ($('#reviewStart')) $('#reviewStart').onclick = startReview;
@@ -51,7 +82,15 @@ function home() {
 // ---- home helpers: games are shown per subject (tiles -> subject screen), with continue, picks and search
 const isFav = (id) => (S.fav || []).includes(id);
 const gameBtn = (g) => `<div class="gwrap"><button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button><button class="fav${isFav(g.id) ? ' on' : ''}" data-fav="${g.id}" aria-pressed="${isFav(g.id)}" aria-label="${L(B('Favorite', '즐겨찾기')) + ': ' + L(g.title).replace(/"/g, '&quot;')}">${isFav(g.id) ? '★' : '☆'}</button></div>`;
-const subjTile = (sub) => { const n = visibleGames().filter(g => g.subject === sub).length; return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`; };
+const subjTile = (sub) => {
+  const games = visibleGames().filter(g => g.subject === sub), n = games.length;
+  if (kidGrade() === 'P') return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`;
+  const explorer = document.body.classList.contains('skin-explorer');
+  const current = games.filter(g => gradeOf(g) === kidGrade() || gradeOf(g) === 'both');
+  const tried = current.filter(g => { const v = stat(g.id); return v.right + v.wrong > 0; }).length;
+  const info = explorer ? L(B(`Tried ${tried}/${current.length}`, `해 본 게임 ${tried}/${current.length}`)) : L(B(`${n} games`, `게임 ${n}개`));
+  return `<div class="subject-wrap"><button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span><span class="tile-name">${T().subjects[sub]}</span><small>${info}</small>${explorer ? `<span class="tried-track" aria-hidden="true"><i style="width:${current.length ? 100 * tried / current.length : 0}%"></i></span>` : ''}</button><button class="home-say subject-say" data-say-sub="${sub}" aria-label="${L(B('Say the name', '이름 듣기'))}: ${T().subjects[sub]}">🔊</button></div>`;
+};
 const wireGames = () => {
   $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
   $$('.fav[data-fav]').forEach(b => b.onclick = () => {
@@ -64,23 +103,33 @@ function favHtml() {
   return `<section class="subj favs"><h2>⭐ ${L(B('My favorites', '즐겨찾기'))}</h2><div class="menu">${gs.map(gameBtn).join('')}</div></section>`;
 }
 const GOAL = 20;                                   // answers per day (a gentle target, not a timer)
-function goalHtml() {
+function goalHtml(compact = false) {
   if (kidGrade() === 'P') return `<p class="pk-adult">${T().prekTogether}</p>`;
-  const tailored = window.Learner.goal(); if (tailored) return tailored;
+  const tailored = window.Learner.goal();
   const h = (S.hist || {})[today()] || { r: 0, w: 0 }, n = h.r + h.w, st = typeof streakDays === 'function' ? streakDays() : 0, pct = Math.min(100, Math.round(100 * n / GOAL));
-  return `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
+  const html = tailored || `<div class="goalrow"><span>🎯 ${L(B(`Today ${Math.min(n, GOAL)}/${GOAL}`, `오늘의 목표 ${Math.min(n, GOAL)}/${GOAL}`))}${n >= GOAL ? ' ✅' : ''}</span><span class="goalbar"><i style="width:${pct}%"></i></span>${st > 1 ? `<span>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</span>` : ''}</div>`;
+  if (compact || !document.body.classList.contains('skin-explorer')) return html;
+  // Derive the ring from the same visible goal fractions, including Learner's tailored goals.
+  const text = document.createElement('div'); text.innerHTML = html;
+  const fractions = [...text.textContent.matchAll(/(\d+)\/(\d+)/g)];
+  const done = fractions.reduce((sum, m) => sum + Math.min(+m[1], +m[2]), 0), total = fractions.reduce((sum, m) => sum + +m[2], 0) || GOAL;
+  return `<section class="quest-card"><div class="quest-ring" style="--quest-pct:${Math.min(100, 100 * done / total)}" aria-hidden="true"><span>${done}/${total}</span></div><div class="quest-content"><h2>${L(B("Today's quest", '오늘의 퀘스트'))}</h2>${html}${tailored && st > 1 ? `<small>🔥 ${L(B(`${st} days in a row`, `${st}일 연속`))}</small>` : ''}</div></section>`;
 }
 const PREFS = [['sfxOff', '🎵', B('Sound effects', '효과음'), true], ['voiceOff', '🗣️', B('Read-aloud voice', '읽어 주는 목소리'), true], ['calm', '🌙', B('Less motion (no confetti or shaking)', '움직임 줄이기 (색종이·흔들림 없음)'), false], ['readable', '🔤', B('Easy-to-read letters', '읽기 쉬운 글꼴'), false]];
 function applyPrefs() {
+  if (!['auto', 'peachy', 'explorer'].includes(S.skin)) S.skin = 'auto';
+  S.rounds ||= {};
+  const explorer = S.skin === 'explorer' || S.skin === 'auto' && ['3', '4', '5'].includes(kidGrade());
+  document.body.classList.toggle('voice-off', !!S.voiceOff);
   document.body.classList.toggle('calm', !!S.calm); document.body.classList.toggle('readable', !!S.readable);
-  document.body.classList.toggle('skin-explorer', S.skin === 'explorer'); document.body.classList.toggle('theme-dark', S.theme === 'dark'); document.body.classList.toggle('theme-system', S.theme === 'system');
+  document.body.classList.toggle('skin-explorer', explorer); document.body.classList.toggle('theme-dark', S.theme === 'dark'); document.body.classList.toggle('theme-system', S.theme === 'system');
 }
-const LOOKS = [['skin', '🎨', B('Look', '스킨'), [['peachy', B('Peachy', '피치')], ['explorer', B('Explorer (for older kids)', '탐험가 (큰 아이용)')]]], ['theme', '🌓', B('Screen', '화면 모드'), [['light', B('Light', '밝게')], ['dark', B('Night', '어둡게')], ['system', B('Follow device', '기기 설정 따르기')]]]];
+const LOOKS = [['skin', '🎨', B('Look', '스킨'), [['auto', B('Match grade (auto)', '학년에 맞게 (자동)')], ['peachy', B('Peachy', '피치')], ['explorer', B('Explorer (for older kids)', '탐험가 (큰 아이용)')]]], ['theme', '🌓', B('Screen', '화면 모드'), [['light', B('Light', '밝게')], ['dark', B('Night', '어둡게')], ['system', B('Follow device', '기기 설정 따르기')]]]];
 function settings(focusKey, focusLook) {
   // the first two are stored as "off" switches so that older saves keep sound on
   const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
-    <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
+    <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}${p[0] === 'skin' ? `<small>${L(B('Now: ', '현재: '))}${document.body.classList.contains('skin-explorer') ? L(B('Explorer', '탐험가')) : L(B('Peachy', '피치'))}</small>` : ''}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
     <p class="offline-status" role="status" data-offline-status>${T()[window.peachOfflineState || 'offlinePreparing']}</p>
     ${kidGrade() === 'P' ? '' : `<button class="pill" id="learnerPrefs">${L(B('Child profile: learning approach', '아이 프로필: 학습 접근 방식'))}</button>`}
     <div><button class="next" id="b">${T().back}</button></div>`;
@@ -99,7 +148,7 @@ function gradeRowHtml() {
 }
 function continueHtml() {
   const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';
-  return `<div class="controw"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">▶️</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
+  return `<div class="controw${kidGrade() === 'P' ? '' : ' home-primary'}"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">▶️</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
 }
 function subjectScreen(sub) {
   const games = visibleGames().filter(g => g.subject === sub);
@@ -113,9 +162,22 @@ function subjectScreen(sub) {
 
 function stickerBook() {
   view().innerHTML = `<h1>🏆 ${T().stickersTitle}</h1><p class="tag">${T().stickerHint}</p>
+    ${kidGrade() === 'P' ? '' : roundBadgeBookHtml()}
     <div class="stickergrid">${ALL_STICKERS.map(s => S.stickers.includes(s) ? `<div class="stk got">${s}</div>` : `<div class="stk lock">🔒</div>`).join('')}</div>
     <div><button class="next" id="b">${T().back}</button></div>`;
   $('#b').onclick = home;
+}
+
+const ROUND_BADGES = [[5, '🥉'], [15, '🥈'], [30, '🥇'], [60, '🏆']];
+function roundBadgeHtml(subject, newly = false) {
+  const n = (S.rounds || {})[subject] || 0, next = ROUND_BADGES.find(([at]) => at > n);
+  const before = [...ROUND_BADGES].reverse().find(([at]) => at <= n), start = before ? before[0] : 0;
+  const max = next ? next[0] - start : 1, done = next ? n - start : 1;
+  const label = next ? L(B(`${T().subjects[subject]} badge: ${next[0] - n} more rounds`, `${T().subjects[subject]} 배지까지 ${next[0] - n}판`)) : L(B(`${T().subjects[subject]}: ${n} rounds`, `${T().subjects[subject]} ${n}판`));
+  return `<section class="round-badge"><strong>${label}</strong>${newly ? `<span class="new-badge">${before ? before[1] : ''} ${L(B('New badge!', '새 배지!'))}</span>` : ''}<span class="badge-progress" role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuenow="${done}" aria-valuemax="${max}"><i style="width:${100 * done / max}%"></i></span></section>`;
+}
+function roundBadgeBookHtml() {
+  return `<section class="badge-book"><h2>${L(B('Round badges', '판 수 배지'))}</h2>${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub) || (S.rounds || {})[sub]).map(sub => `<div class="subject-badges" data-sub="${sub}"><strong>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</strong><span>${ROUND_BADGES.map(([at, icon]) => { const earned = ((S.rounds || {})[sub] || 0) >= at; return `<span class="badge-mark ${earned ? 'earned' : 'outlined'}" aria-label="${L(B(`${T().subjects[sub]}: ${at} rounds${earned ? ', earned' : ''}`, `${T().subjects[sub]} ${at}판${earned ? ' 달성' : ''}`))}">${earned ? icon : `○ ${at}`}</span>`; }).join('')}</span></div>`).join('')}</section>`;
 }
 
 function picksHtml() {
@@ -178,7 +240,7 @@ function grownups() {
   window.SessionReport.bind();
   window.Learner.bind();
   window.Learner.bindStyle();
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };

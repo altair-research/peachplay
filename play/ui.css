@@ -460,3 +460,65 @@ header #langBtn{font-size:14px;padding:8px 10px;white-space:nowrap}
 .ftab{flex:none;white-space:nowrap;font-size:14px;padding:6px 12px}
 
 .ver{text-align:center;font-size:12px;color:#a08676;margin:14px 0 6px;letter-spacing:.2px}
+/* Request 45: compact home and gentle feedback (Pre-K home retains its markup). */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+.home-hero{margin:0 0 10px;min-height:50px;gap:8px}.home-hero .peachy{width:50px;animation:none}.home-hero .bubble{display:flex;align-items:center;gap:4px;font-size:17px;padding:4px 10px;min-height:44px}
+.home-say{width:44px;height:44px;flex:none;font-size:25px;background:transparent;border-radius:50%;padding:0;color:inherit}
+body.muted .home-say,body.voice-off .home-say{display:none}
+.home-primary{margin:8px 0 14px}.home-primary .big.cont{display:grid;grid-template-columns:42px 1fr;align-items:center;min-height:76px;width:100%;padding:10px 14px;text-align:left;font-size:23px;background:#fff7eb;border:2px solid #b44c21;box-shadow:0 4px 0 #d4ac8f}.home-primary .gi{grid-row:1/3;font-size:30px}.home-primary small{margin:0;font-size:15px}
+.home-subjects{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.subject-wrap{position:relative;min-width:0;display:flex}.subject-wrap .stile{width:100%;min-width:0;min-height:104px;padding:8px 4px;border-top-width:5px;font-size:17px;line-height:1.2}.subject-wrap .gi{font-size:30px;padding-right:18px}.subject-wrap small{font-size:13px;margin-top:4px}.subject-say{position:absolute;right:0;top:0}
+.home-tools{display:flex;justify-content:center;gap:8px;margin:16px 0}.home-tools .pill{font-size:16px;min-height:44px}
+.opt.no{background:#fff7d6;background-image:repeating-linear-gradient(135deg,transparent 0 8px,#e0b23a33 8px 12px);color:#614a14;border-color:#b58a18;box-shadow:inset 0 0 0 3px #b58a18,0 4px 0 #e0b23a;opacity:1;animation:gentle-nudge .28s 1}
+pk-cheer.is-wrong{color:var(--ink)}pk-cheer .peachy.oops{animation:thinking-tilt .4s 1}
+@keyframes gentle-nudge{25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+@keyframes thinking-tilt{50%{transform:rotate(-7deg)}}
+#sbar.dots-progress{height:18px;display:flex;justify-content:center;align-items:center;gap:10px;background:transparent;overflow:visible;margin-bottom:-8px;color:var(--ink)}
+.round-dots{display:flex;gap:6px}.round-dot{width:10px;height:10px;border:2px solid #795039;border-radius:50%;background:transparent}.round-dot.done{background:#795039}.round-dot.current{outline:2px solid #795039;outline-offset:2px}.round-count{font-size:12px;font-weight:800}
+.round-title{font-size:26px;display:flex;flex-direction:column;align-items:center;gap:4px}.round-title .peachy{width:88px;height:88px}.round-reward{font-size:27px;font-weight:800;margin:8px auto}.round-actions{margin-top:14px}.round-actions .big{min-height:76px;font-size:18px;padding:8px}.round-actions .gi{font-size:26px}.round-actions small{font-size:13px}.round-actions .round-primary{background:#c94a1f;color:white;border-color:#9e3817}.round-actions .round-primary small{color:white}
+#view:has(>.round-title) .newsticker{margin:8px auto;font-size:15px}#view:has(>.round-title) .newsticker .stk{font-size:44px;width:64px;height:64px}#view:has(>.round-title) .goalrow{font-size:14px}
+@media(max-width:599px){body:not(.grade-prek):not(.pk-playing) #hnav{display:none} .home-hero~.home-primary{margin-top:4px}.home-subjects .stile{min-height:100px}.home-subjects{gap:10px 8px}}
+@media(min-width:900px) and (min-height:600px){
+ #view:has(>.prompt)>.opts.words{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;max-width:960px;align-self:center;gap:12px}
+ #view:has(>.prompt)>.opts.words .opt{width:100%;max-width:none;min-width:0;min-height:88px;font-size:24px}
+ #view:has(>.prompt)>.opts.words .opt :is(.word,.ol){font-size:24px}
+}
+.menu.intro.round-actions{display:grid;grid-template-columns:1fr;gap:8px}.menu.intro.round-actions .big{min-height:58px;min-width:0;display:grid;grid-template-columns:32px 1fr;text-align:left;align-items:center;padding:6px 12px}.menu.intro.round-actions .gi{grid-row:1/3}.menu.intro.round-actions small{margin-top:0}
+@media(min-width:600px){.menu.intro.round-actions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Request 45, Explorer: older-grade cards, quest and completed-round badges. */
+.home-primary .big.cont{height:92px;min-height:92px;line-height:1.2}.home-primary small{line-height:1.2}
+.pref.look .ps small{display:block;font-size:12px;font-weight:400;margin-top:2px}
+.round-rewards{display:flex;justify-content:center;align-items:center;gap:20px;margin:8px auto}.round-rewards .round-reward{margin:0}.round-rewards .newsticker{margin:0!important}.round-rewards .newsticker .stk{margin:0 auto 4px!important}
+#view:has(>.round-title) .goalrow{justify-content:center;margin:6px 0}#view:has(>.round-title) .goalbar{display:none}#view:has(>.round-title)>.note2{font-size:14px;margin:6px 0}
+.clean-streak{font-size:14px;line-height:1.2;font-weight:800;border-radius:999px;padding:5px 8px;background:#c9e8e5;color:#183247;white-space:nowrap}
+.clean-streak[hidden],body:not(.playing) .clean-streak{display:none}
+body.skin-explorer.playing:has(#cleanStreak:not([hidden])) #stkChip{display:none}
+body.skin-explorer .home-hero .peachy{width:40px}
+body.skin-explorer .home-subjects{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body.skin-explorer #view .home-subjects .stile{display:grid;grid-template-columns:28px minmax(0,1fr);gap:3px 6px;align-items:center;text-align:left;min-height:82px;border-top-width:3px;padding:8px 10px;font-size:16px}
+body.skin-explorer .home-subjects .gi{grid-column:1;grid-row:1/4;font-size:25px;padding:0}
+body.skin-explorer .home-subjects .tile-name{grid-column:2;padding-right:24px;line-height:1.15;overflow-wrap:anywhere}
+body.skin-explorer .home-subjects small{grid-column:2;font-size:12px;margin:0;line-height:1.2}
+body.skin-explorer .tried-track{grid-column:2;display:block;height:5px;background:var(--theme-track);border-radius:4px;overflow:hidden}
+body.skin-explorer .tried-track i{display:block;height:100%;background:#176b70}
+.quest-card{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;text-align:left;padding:12px;border:1px solid var(--theme-edge);border-radius:12px;background:var(--card);color:var(--ink);margin:10px 0}
+.quest-content h2{font-size:18px;color:inherit;margin:0 0 3px}.quest-content .goalrow{display:block;font-size:14px;margin:0}.quest-content .goalbar{display:none}.quest-content .goalrow>span{margin-right:6px}.quest-content .note2{font-size:14px;margin:0}.quest-content small{display:block;font-size:13px}
+.quest-ring{width:52px;height:52px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(#176b70 calc(var(--quest-pct)*1%),#d4e5eb 0)}.quest-ring>span{display:grid;place-items:center;width:40px;height:40px;background:var(--card);border-radius:50%;font-size:12px;font-weight:800}
+.round-badge{background:var(--card);color:var(--ink);padding:10px 12px;border:1px solid var(--theme-edge);border-radius:12px;text-align:left;margin:8px auto;font-size:15px;max-width:560px}.round-badge strong{display:block}.new-badge{display:block;font-size:14px;margin-top:2px}.badge-progress{display:block;height:9px;overflow:hidden;background:var(--theme-track,#f3dcc8);border-radius:9px;margin-top:7px}.badge-progress i{display:block;height:100%;background:#176b70}
+.badge-book{background:var(--card);color:var(--ink);border-radius:14px;padding:12px;margin:12px auto;max-width:640px}.badge-book h2{font-size:20px;color:inherit;margin:0 0 8px}.subject-badges{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;font-size:14px;text-align:left}.subject-badges>span{display:flex;gap:5px;flex:none}.badge-mark{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;font-size:20px}.badge-mark.outlined{border:1px solid #73808b;border-radius:50%;font-size:11px;font-weight:700;color:inherit}
+.subject-wrap .subject-say{color:var(--ink)}
+body.skin-explorer .round-badge{padding:8px 12px}
+#view:has(>.round-title){padding-bottom:8px}
+body.skin-explorer .round-title{font-size:24px;line-height:1.2}
+body.skin-explorer .round-title .peachy{width:64px;height:64px}
+body.skin-explorer .menu.intro.round-actions{gap:6px;margin-top:10px}
+body.skin-explorer .menu.intro.round-actions .big{min-height:54px;font-size:17px;line-height:1.2}
+body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.2}
+@media(max-width:599px){
+ body:not(.grade-prek):not(.pk-playing) #peaches{font-size:13px;width:56px;padding:3px 4px;line-height:1.1;max-height:40px;overflow:hidden;white-space:normal;text-align:center}
+ body:not(.grade-prek):not(.pk-playing) #profBtn{padding:2px 4px;gap:2px}
+ body:not(.grade-prek):not(.pk-playing) #profBtn .pgr{padding:3px 4px}
+ body:not(.grade-prek):not(.pk-playing) #stkChip{padding:3px 5px;min-width:44px}
+ body:not(.grade-prek):not(.pk-playing) .hinfo{gap:3px}
+}
+
+@media(max-width:599px){body:not(.grade-prek):not(.pk-playing) header #langBtn{padding:8px 8px}}
