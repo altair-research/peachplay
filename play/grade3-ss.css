@@ -2,3 +2,15 @@
 .g3-social svg{display:block;width:100%;height:clamp(95px,20dvh,155px);margin:auto}
 .g3-social-options .word{font-size:clamp(16px,2.65dvh,22px);line-height:1.2}
 .g3-social-options .opt{padding:6px 10px}
+/* Actual geographic maps: full phone width with a bounded Chromebook viewport. */
+#view:has(.real-map) .real-map{width:min(94vw,650px);max-width:none;margin:0;position:relative;left:50%;transform:translateX(-50%);color:#17364a;background:#edf5ed;border-radius:9px;overflow:hidden}
+#view:has(.real-map) .real-map svg{display:block;width:100%;height:auto;max-height:none;margin:0}
+.real-map-credit{font-size:10px;line-height:1.15;text-align:center;padding:2px 3px;background:#f5f8ed;color:#17364a}
+.real-map-note{font-size:11px;line-height:1.15;max-width:600px;margin:2px auto}
+#view:has(.real-map)>.prompt{font-size:clamp(18px,3dvh,26px);line-height:1.2;margin:4px 0}
+#view:has(.real-map)>.show{padding:2px 0;margin:auto 0}
+#view:has(.real-map) .opt{min-height:44px;padding:5px 7px}
+#view:has(.real-map) .opt .word{font-size:clamp(15px,2.5dvh,20px);line-height:1.15}
+@media (min-width:700px){#view:has(.real-map) .real-map{width:min(65vw,420px)}}
+#view:has(.real-map){min-height:calc(100dvh - 130px)}
+#view:has(.real-map)>.opts.sents .word{font-size:15px;line-height:1.1}

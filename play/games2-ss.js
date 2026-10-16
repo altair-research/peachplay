@@ -55,15 +55,7 @@ const GA_RIVER = [{ k: 'cha', n: B('Chattahoochee River', '채터후치강'), pt
   { k: 'alt', n: B('Altamaha River', '알타마하강'), pts: [[-82.5, 31.95], [-82.0, 31.65], [-81.6, 31.45], [-81.3, 31.3]] },
   { k: 'fl', n: B('Flint River', '플린트강'), pts: [[-84.45, 33.6], [-84.33, 32.9], [-84.03, 32.3], [-84.16, 31.58], [-84.58, 30.95], [-84.8, 30.72]] }];
 const gx = (lon) => 12 + (lon + 85.8) * 42, gy = (lat) => 8 + (35.1 - lat) * 50;
-const gaMapSvg = (o = {}) => {
-  const pt = (p) => `${gx(p[0]).toFixed(1)},${gy(p[1]).toFixed(1)}`;
-  const rivers = GA_RIVER.map(r => `<polyline points="${r.pts.map(pt).join(' ')}" fill="none" stroke="${o.river === r.k ? '#ef476f' : '#4aa3e8'}" stroke-width="${o.river === r.k ? 4 : 2.2}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
-  const cities = GA_CITY.map(c => `<circle cx="${gx(c.p[0]).toFixed(1)}" cy="${gy(c.p[1]).toFixed(1)}" r="${o.city === c.k ? 7 : 4}" fill="${o.city === c.k ? '#ef476f' : '#1d3557'}" stroke="#fff" stroke-width="1.5"/>${o.names ? `<text x="${(gx(c.p[0]) + (c.k === 'sav' || c.k === 'aug' ? -8 : 7)).toFixed(1)}" y="${(gy(c.p[1]) + (c.k === 'sav' ? 14 : 4)).toFixed(1)}" text-anchor="${c.k === 'sav' || c.k === 'aug' ? 'end' : 'start'}" font-size="11" font-weight="800" fill="#1d3557">${L(c.n)}</text>` : ''}`).join('');
-  const mtn = [[-84.2, 34.85], [-83.7, 34.85], [-84.65, 34.7]].map(p => `<polygon points="${gx(p[0]) - 6},${gy(p[1]) + 6} ${gx(p[0]) + 6},${gy(p[1]) + 6} ${gx(p[0])},${gy(p[1]) - 5}" fill="#8d6e63"/>`).join('');
-  const swamp = `<ellipse cx="${gx(-82.3).toFixed(1)}" cy="${gy(30.85).toFixed(1)}" rx="12" ry="7" fill="#9ccc65" opacity=".85"/>`;
-  const dir = o.compass ? `<g transform="translate(205 40)"><circle r="20" fill="#fff" stroke="#1d3557" stroke-width="1.5"/><path d="M0 -17 L5 0 L0 17 L-5 0Z" fill="#ef476f"/><path d="M-17 0 L0 5 L17 0 L0 -5Z" fill="#1d3557"/><text y="-22" font-size="10" font-weight="900" text-anchor="middle" fill="#1d3557">N</text></g>` : '';
-  return `<svg viewBox="0 0 240 260" class="gasvg"><rect width="240" height="260" fill="#d7efff"/><rect x="170" y="150" width="70" height="110" fill="#bfe6ff"/><polygon points="${GA_OUT.map(pt).join(' ')}" fill="#f4e6b8" stroke="#1d3557" stroke-width="2.5" stroke-linejoin="round"/>${mtn}${swamp}${rivers}${cities}${dir}${o.states ? [['TN', 70, 9], ['NC', 150, 15], ['SC', 190, 70], ['AL', 18, 112], ['FL', 100, 246]].map(t => `<text x="${t[1]}" y="${t[2]}" font-size="10" font-weight="800" fill="#7a869a" text-anchor="middle">${t[0]}</text>`).join('') : ''}<text x="212" y="236" font-size="10" font-weight="800" fill="#2a6fb0" text-anchor="middle">${S.lang === 'ko' ? '대서양' : 'Atlantic'}</text></svg>`;
-};
+const gaMapSvg = (o = {}) => PeachMaps.georgia(o);
 const dirName = (a) => [B('east', '동쪽'), B('northeast', '북동쪽'), B('north', '북쪽'), B('northwest', '북서쪽'), B('west', '서쪽'), B('southwest', '남서쪽'), B('south', '남쪽'), B('southeast', '남동쪽')][Math.round(((a % 360) + 360) % 360 / 45) % 8];
 G2SS({
   id: 'gamap2', icon: '🗺️', title: B('Map of Georgia', '조지아 지도'), sub: B('Cities, rivers, directions and neighbors', '도시, 강, 방향, 이웃 주'), u: 'Map Skills',
@@ -232,13 +224,10 @@ for(const id of ['goods2','choices2','gamap2']){const g=GAMES.find(x=>x.id===id)
  };}
 const names=[B('Appalachian Plateau','애팔래치아 고원'),B('Ridge and Valley','산등성이와 계곡'),B('Blue Ridge','블루리지 산지'),B('Piedmont','피드몬트 구릉'),B('Coastal Plain','해안 평야')];
 const terrain=[B('Northwest plateau and canyons','북서쪽 고원과 협곡'),B('Long ridges and valleys','긴 산등성이와 계곡'),B('Northern high mountains','북쪽의 높은 산지'),B('Rolling hills between mountains and plain','산지와 평야 사이 완만한 구릉'),B('Broad low southern plain','남쪽의 넓고 낮은 평야')];
-const regionSvg=(a,b=-1)=>{
- const pt=p=>`${gx(p[0])},${gy(p[1])}`,outline=GA_OUT.map(pt).join(' '),paths=['M0 0H51L34 43H0Z','M51 0H99L78 68L34 75H0V43H34Z','M99 0H250V82L78 68Z','M0 75L34 75L78 68L250 82V103L0 153Z','M0 153L250 103V260H0Z'],colors=['#dcc9ef','#c6d99b','#f1c997','#e8dfa3','#d9e9b9'],positions=[[30,23],[55,48],[113,40],[102,101],[119,178]];
- return `<svg viewBox="0 0 240 240" style="height:min(23dvh,180px);width:100%" role="img" aria-label="${L(B('Georgia regions, north is up','조지아 지역, 위쪽은 북쪽'))}"><defs><clipPath id="g50ga"><polygon points="${outline}"/></clipPath></defs><rect width="240" height="240" fill="#e0f1fb"/><g clip-path="url(#g50ga)">${paths.map((p,j)=>`<path d="${p}" fill="${colors[j]}" stroke="#35432c" stroke-width="1.5"/>`).join('')}${positions.map(([x,y],j)=>`<circle cx="${x}" cy="${y}" r="${a===j||b===j?11:8}" fill="${a===j||b===j?'#fff':'#f6f4df'}" stroke="#243747" stroke-width="${a===j||b===j?3:1}"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="12">${j+1}</text>`).join('')}<path d="M88 52l6 -10 6 10 M113 57l6 -12 6 12 M80 116q8 -10 16 0 M125 192h20" fill="none" stroke="#4c6141"/></g><polygon points="${outline}" fill="none" stroke="#243747" stroke-width="2"/><text x="205" y="20" font-size="13">N ↑</text><text x="190" y="210" font-size="10">${L(B('Atlantic','대서양'))}</text><text x="15" y="237" font-size="10">${L(B('Simplified; approximate boundaries','단순화 그림 · 대략적인 경계'))}</text></svg>`;
-};
+const regionSvg=a=>PeachMaps.georgia({region:a});
 function regionRound(lv,i){const j=i%5,other=(j+1)%5,compare=lv===2;let answer,wrong,ask;
- if(!compare){ask=B(`Name highlighted region ${j+1}. North is up.`,`강조한 ${j+1}번 지역의 이름은? 위쪽은 북쪽이에요.`);answer=names[j];wrong=[names[other],names[(j+2)%5]];}
- else{ask=B(`Compare regions ${j+1} and ${other+1}. Which pair describes their typical landscapes in order?`,`${j+1}번과 ${other+1}번의 대표 지형을 순서대로 비교한 것은?`);const pair=(a,b)=>B(`${terrain[a].en} / ${terrain[b].en}`,`${terrain[a].ko} / ${terrain[b].ko}`);answer=pair(j,other);wrong=[pair(other,j),pair((j+2)%5,(j+3)%5)];}
+ if(!compare){ask=B(`What is region ${j+1} called?`,`${j+1}번 지역의 이름은 무엇일까요?`);answer=names[j];wrong=[names[other],names[(j+2)%5]];}
+ else{ask=B(`What is the land like in region ${j+1}?`,`${j+1}번 지역은 어떤 땅일까요?`);answer=terrain[j];wrong=[terrain[other],terrain[(j+2)%5]];}
  quiz(this,{ask,show:regionSvg(j,compare?other:-1),opts:sw(answer,wrong),cls:'words sents',after:B(`${names[j].en}: ${terrain[j].en}.`,`${names[j].ko}: ${terrain[j].ko}.`)});
 }
 })();
