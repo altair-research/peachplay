@@ -10,7 +10,7 @@ const fresh = (id, level, make) => {
  }
  throw new Error(`Insufficient distinct questions: ${id}/${level}`);
 };
-// Four map-dependent candidates are deferred; see codex-done-11.md.
+// Request 49: original schematic maps, not survey or political boundaries.
 const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'ss',icon:'🌎',title:B(en,ko),sub:B('Read evidence and compare ideas','자료를 읽고 생각을 비교해요'),area:B(`Grade 3 Social Studies · ${code}`,`3학년 사회 · ${code}`),play(){quiz(this,fresh(id,lvl(id),make));}});
 const panel=s=>`<div class="g3-social">${s}</div>`;
 const q=(ask,show,r,w,after)=>({ask,show,opts:[r,...w].map((s,i)=>({html:`<span class="word">${typeof s==='object'?L(s):s}</span>`,ok:i===0})),cls:'words g3-social-options',after:after||(typeof r==='object'?r:B(String(r),String(r)))});
@@ -188,4 +188,59 @@ const exchangeQuestions=[
  hr('Which exchange is voluntary?','자발적인 교환은?',`Practice: two children want to trade ${r[0]}.`,`연습: 두 아이가 ${r[1]}을 서로 바꾸고 싶어 해요.`,'Both agree without force','강요 없이 둘 다 동의해요','One takes the item by force','한 명이 강제로 가져가요','One says no but is forced','싫다고 했지만 강요받아요'),
  hr('Which exchange is forced?','강제로 한 교환은?',`Practice: two children discuss trading ${r[0]}.`,`연습: 두 아이가 ${r[1]}을 바꾸는 일을 이야기해요.`,'One takes an item despite refusal','거절했는데도 물건을 가져가요','Both freely agree','둘 다 자유롭게 동의해요','Both can choose not to trade','둘 다 안 바꿀 자유가 있어요')])
 ];
+// Broad locations checked against USGS, NPS and Smithsonian; sources in done-49.
+const mp=([x,y])=>[(x+170)*2,(75-y)*2.5];
+const path49=ps=>ps.map((p,i)=>`${i?'L':'M'}${mp(p).join(' ')}`).join(' ');
+const land49=[[-168,65],[-145,70],[-125,70],[-105,73],[-75,65],[-55,52],[-65,45],[-75,40],[-81,25],[-84,30],[-97,26],[-105,20],[-88,16],[-78,9],[-83,8],[-100,17],[-115,30],[-125,48],[-140,60],[-168,65]];
+const mapCaption49=s=>`<div style="font-size:12px;line-height:1.2;margin:2px auto;max-width:500px">${s}</div>`;
+const map49=(rows,a,m,b=-1)=>panel(`<svg style="height:clamp(85px,17dvh,130px)" viewBox="0 0 340 175" role="img" aria-label="${L(B('Schematic North America; north is up','북쪽이 위인 북미 그림 지도'))}"><rect width="340" height="175" fill="#d9effc"/><path d="${path49(land49)} Z" fill="#deebc7" stroke="#71856a"/>${rows.map((r,i)=>`<path d="${path49(r.p)}" fill="none" stroke="${i===a?'#b52f28':i===b?'#6041a2':'#457d9a'}" stroke-width="${i===a||i===b?4:2}" stroke-linecap="round"/>`).join('')}${[a,b].filter(i=>i>=0).map((i,k)=>{const p=mp(rows[i].p[m%rows[i].p.length]);return `<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="white" stroke="#17364a"/><text x="${p[0]}" y="${p[1]+4}" font-size="12" text-anchor="middle">${k?'B':'A'}</text>`;}).join('')}<text x="310" y="17" font-size="13">N ↑</text><text x="8" y="165" font-size="11">${L(B('Pacific','태평양'))}</text><text x="272" y="145" font-size="11">${L(B('Atlantic','대서양'))}</text></svg><div style="font-size:12px">${L(B('Simplified picture map · not to scale','단순화한 그림 지도 · 축척 없음'))}</div>`);
+const rivers49=[
+ {n:B('Mississippi','미시시피강'),p:[[-95,47],[-91,43],[-90,37],[-91,32],[-89,29]]},
+ {n:B('Ohio','오하이오강'),p:[[-80,40],[-84,39],[-87,38],[-89,37]]},
+ {n:B('Rio Grande','리오그란데강'),p:[[-107,37],[-106,32],[-103,29],[-97,26]]},
+ {n:B('Colorado','콜로라도강'),p:[[-106,40],[-110,38],[-114,36],[-115,32]]},
+ {n:B('Hudson','허드슨강'),p:[[-74,44],[-74,42],[-74,41]]},
+ {n:B('St. Lawrence','세인트로렌스강'),p:[[-76,44],[-72,46],[-67,49]]}
+];
+const regions49=[
+ {n:B('Arctic','북극'),p:[[-150,68],[-110,70],[-80,67]]},
+ {n:B('Northwest Coast','북서 해안'),p:[[-137,58],[-130,53],[-124,48]]},
+ {n:B('Southwest','남서부'),p:[[-113,35],[-108,34],[-105,35]]},
+ {n:B('Plains','평원'),p:[[-105,49],[-100,44],[-99,38]]},
+ {n:B('Northeast','북동부'),p:[[-80,45],[-74,43],[-70,45]]},
+ {n:B('Southeast','남동부'),p:[[-90,34],[-84,33],[-80,35]]}
+];
+const mountains49=[
+ {n:B('Rocky Mountains','로키산맥'),p:[[-115,49],[-113,47],[-111,45],[-109,43],[-107,40],[-106,37]]},
+ {n:B('Appalachian Mountains','애팔래치아산맥'),p:[[-69,47],[-73,44],[-77,41],[-80,38],[-83,35],[-86,33]]}
+];
+const voyages49=[
+ {n:B('John Cabot','존 캐벗'),p:[[-10,52],[-35,53],[-55,50]],c:B('England','잉글랜드'),d:B('North Atlantic coast','북대서양 해안'),y:1497},
+ {n:B('Vasco Núñez de Balboa','바스코 누녜스 데 발보아'),p:[[-78,10],[-79,9],[-80,8]],c:B('Spain','스페인'),d:B('Pacific at Panama','파나마의 태평양'),y:1513},
+ {n:B('Hernando de Soto','에르난도 데소토'),p:[[-82,28],[-84,34],[-90,35]],c:B('Spain','스페인'),d:B('Southeastern interior','남동부 내륙'),y:1539},
+ {n:B('Christopher Columbus','크리스토퍼 콜럼버스'),p:[[-16,28],[-40,27],[-74,24]],c:B('Spain','스페인'),d:B('Caribbean islands','카리브해 섬'),y:1492},
+ {n:B('Henry Hudson','헨리 허드슨'),p:[[-15,50],[-50,43],[-74,41],[-74,43]],c:B('The Netherlands','네덜란드'),d:B('Hudson River','허드슨강'),y:1609},
+ {n:B('Jacques Cartier','자크 카르티에'),p:[[-5,49],[-55,49],[-66,49],[-74,45]],c:B('France','프랑스'),d:B('St. Lawrence River','세인트로렌스강'),y:1535}
+];
+const mapBank49=(id,en,ko,code,rows,note)=>{
+ const banks=[[],[]];
+ rows.forEach((r,i)=>{
+  for(let m=0;m<(id==='mountains3'?6:2);m++){
+   banks[0].push(()=>q(B('Which name matches A?','A가 있는 곳의 이름은?'),map49(rows,i,m)+(note?mapCaption49(L(note)):''),r.n,rows.filter(x=>x.n.en!==r.n.en).slice(0,2).map(x=>x.n)));
+   if(id==='explorerroute3'){
+    const cs=[B('England','잉글랜드'),B('Spain','스페인'),B('The Netherlands','네덜란드'),B('France','프랑스')];
+    banks[1].push(()=>q(m===0?B('Which country backed route A?','A 경로를 지원한 나라는?'):B('Which destination matches route A?','A 경로와 맞는 도착 지역은?'),map49(rows,i,r.p.length-1)+mapCaption49(L(r.n)+' · '+r.y),m===0?r.c:r.d,(m===0?cs:rows.map(x=>x.d)).filter(x=>x.en!==(m===0?r.c:r.d).en).slice(0,2)));
+   }else{
+    const j=id==='mountains3'?1-i:(i+1+m)%rows.length;
+    const west=r.p[m%r.p.length][0]<rows[j].p[m%rows[j].p.length][0];
+    banks[1].push(()=>q(B('Which named marker is farther WEST?','표시한 두 곳 중 더 서쪽에 있는 곳은?'),map49(rows,i,m,j)+mapCaption49('A: '+L(r.n)+' · B: '+L(rows[j].n)),west?r.n:rows[j].n,[west?rows[j].n:r.n],B('North is up; west is left on this diagram.','이 그림은 북쪽이 위, 서쪽이 왼쪽이에요.')));
+   }
+  }
+ });
+ reg(id,en,ko,code,lv=>pick(banks[lv===1?0:1])());
+};
+mapBank49('rivers3','Rivers of America','미국의 강','SS3G1.a',rivers49);
+mapBank49('mountains3','Two Mountain Ranges','두 산맥','SS3G1.b',mountains49);
+mapBank49('nativeregions3','Native Homelands','원주민의 지역','SS3H1.a (location practice)',regions49,B('Broad regions, not borders. Native nations live today.','넓은 문화 지역이며 경계가 아니에요. 원주민 공동체는 오늘도 이어져요.'));
+mapBank49('explorerroute3','Voyage Records Map','탐험 기록 지도','SS3H2.b (route practice)',voyages49);
 })();

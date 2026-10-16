@@ -1,5 +1,5 @@
 'use strict';
-// Grade 2 science (Georgia Science GSE, 2016): S2E1 Sun, Moon and stars; S2E2 changes to Earth's surface; S2P1 matter and its changes;
+// Grade 2 science (Georgia Science GSE, 2016): S2E1 star size and brightness; S2E2 Sun/Moon, shadows and day/night; S2E3 environmental changes; S2P1 matter and its changes;
 // S2P2 push, pull and motion; S2L1 life cycles, pollination and seed travel.
 const AREA2S = (u) => B(`Grade 2 Science · ${u}`, `2학년 과학 · ${U_KO[u] || u}`);
 const G2S = (g) => registerGame(Object.assign({ grade: '2', subject: 'sci' }, g, { area: AREA2S(g.u) }));

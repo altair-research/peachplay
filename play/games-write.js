@@ -153,7 +153,7 @@ registerGame({
   id: 'draw', subject: 'write', icon: '🎨', title: B('Draw & Tell', '그리고 말해요'), sub: B('Draw, then tell a story', '그림을 그리고 이야기해요'),
   area: AREA_WRITE('Drawing and writing'),
   play() {
-    const pr = pick(DRAW_PROMPTS); if (dup(this, pr.en)) return this.play();
+    const base = pick(DRAW_PROMPTS), pr = lvl('draw')===2?B(base.en+' Add a place. Why there?',base.ko+' 배경도 그리고 까닭을 말해요.'):base; if (dup(this, pr.en)) return this.play();
     const [w, h] = canvasSize(), cv = makeCanvas(w, h);
     const colors = ['#1d3557', '#ef476f', '#ff8c42', '#ffd166', '#06d6a0', '#118ab2', '#8338ec', '#8d5524'];
     let color = colors[0], size = 8;

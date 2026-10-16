@@ -97,6 +97,10 @@ registerGame({
   id: 'compass', subject: 'ss', icon: '🧭', title: B('Map Directions', '지도 방향'), sub: B('North, south, east, west', '북, 남, 동, 서'),
   area: AREA_SS('Maps & directions'),
   play() {
+    if(lvl('compass')===2){
+      const d=[B('North','북쪽'),B('East','동쪽'),B('South','남쪽'),B('West','서쪽')],start=rnd(4),right=!!rnd(2),turns=1+rnd(3),ans=(start+(right?turns:4-turns))%4;
+      quiz(this,{ask:B(`Face ${d[start].en}. Turn ${right?'right':'left'} ${turns} quarter-turn${turns===1?'':'s'}. Which way now?`,`${d[start].ko}을 바라봐요. ${right?'오른쪽':'왼쪽'}으로 90도씩 ${turns}번 돌면 어느 쪽일까요?`),show:'<div style="font-size:24px">N ↑<br>W ← · → E<br>S ↓</div>',opts:d.map((n,i)=>({html:`<span class="word">${L(n)}</span>`,ok:i===ans})),cls:'words'});return;
+    }
     const dirs = [['N', B('North', '북쪽'), [0, -1]], ['E', B('East', '동쪽'), [1, 0]], ['S', B('South', '남쪽'), [0, 1]], ['W', B('West', '서쪽'), [-1, 0]]];
     const N = 4, items = [['🏠', B('house', '집')], ['🏫', B('school', '학교')], ['🌳', B('tree', '나무')], ['🏪', B('store', '가게')], ['⛲', B('fountain', '분수')], ['🏥', B('hospital', '병원')]];
     const [a, b] = shuffle(items).slice(0, 2); let ax, ay, d, dist;
@@ -135,6 +139,10 @@ registerGame({
   id: 'citizen', subject: 'ss', icon: '🌟', title: B('Good Citizens', '착한 시민'), sub: B('Kind and fair', '친절하고 공정하게'),
   area: AREA_SS('Citizenship'),
   play() {
+    if(lvl('citizen')===2){
+      const p=pick(CITIZEN),wrong=pick(CITIZEN.filter(x=>x!==p))[1];
+      quiz(this,{ask:B('Which action helps our shared space?','함께 쓰는 곳에 도움이 되는 행동은?'),opts:[p[0],p[1],wrong].map((x,i)=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`,ok:i===0})),cls:'shapes'});return;
+    }
     const p = pick(CITIZEN), notQ = rnd(3) === 0;
     quiz(this, {
       ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'),

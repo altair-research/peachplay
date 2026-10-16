@@ -243,7 +243,7 @@ registerGame({
 (() => {
   const game = GAMES.find(g => g.id === 'colors'), original = game.play;
   game.play = function () {
-    if (!rnd(3)) return original.call(this);
+    if (lvl('colors')===1 && !rnd(3)) return original.call(this);
     const t = pick(MIX), i = rnd(2), shown = 1 - i;
     const colors = [...new Map(MIX.flatMap(m => [[m[0], m[3]], [m[1], m[4]]])).entries()];
     const wrong = shuffle(colors.filter(c => c[0] !== t[i])).slice(0, 2);

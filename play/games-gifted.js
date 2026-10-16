@@ -175,7 +175,7 @@ registerGame({
   area: AREA_CH('Creativity'), rounds: 3,
   play() {
     const u = pick(USES); if (dup(this, u.o)) return this.play();
-    const ask = B(`What else can a ${u.n.en} be used for? Tap 3 ideas that could work!`, `${u.n.ko}은(는) 또 어디에 쓸 수 있을까요? 쓸 수 있는 생각 3개를 눌러요!`), items = shuffle([...u.good.map(g => ({ g, ok: true })), ...u.bad.map(g => ({ g, ok: false }))]);
+    const ask = B(`What else can a ${u.n.en} be used for? Tap ${lvl('uses')===2?4:3} ideas that could work!`, `${u.n.ko}은(는) 또 어디에 쓸 수 있을까요? 쓸 수 있는 생각 ${lvl('uses')===2?4:3}개를 눌러요!`), items = shuffle([...u.good.map(g => ({ g, ok: true })), ...u.bad.map(g => ({ g, ok: false }))]);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="show"><span class="emo">${u.o}</span></div>
       <div class="opts shapes imagine">${items.map((it, i) => `<button class="opt idea" data-i="${i}"><span class="emo">${it.g[0]}</span><span class="ol">${labelText(it.g[1])}</span></button>`).join('')}</div>
       <div class="fact" id="fact"></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
@@ -183,7 +183,7 @@ registerGame({
     let found = 0, done = false, silly = false;
     $$('.idea').forEach(b => b.onclick = () => {
       if (done || b.classList.contains('picked')) return; const it = items[+b.dataset.i];
-      if (it.ok) { b.classList.add('picked'); found++; tone(500 + 90 * found, 120); if (found >= 3) { done = true; record('uses', !silly); if (!silly) addPeach(); $('#cheer').textContent = L(B('So creative! Can you think of one more?', '정말 창의적이에요! 하나 더 생각해 볼까요?')); nextButton(() => this.play(), { auto: 3000 }); } }
+      if (it.ok) { b.classList.add('picked'); found++; tone(500 + 90 * found, 120); if (found >= (lvl('uses')===2?4:3)) { done = true; record('uses', !silly); if (!silly) addPeach(); $('#cheer').textContent = L(B('So creative! Can you think of one more?', '정말 창의적이에요! 하나 더 생각해 볼까요?')); nextButton(() => this.play(), { auto: 3000 }); } }
       else { silly = true; b.classList.add('no'); $('#fact').textContent = L(B('Hmm, that one would not really work. Try another!', '음, 그건 어렵겠어요. 다른 생각을 해 봐요!')); setTimeout(() => b.classList.remove('no'), 500); tone(200, 120, 0, 'triangle', 0.1); }
     });
   }

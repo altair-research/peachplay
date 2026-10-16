@@ -117,7 +117,7 @@ registerGame({
   area: AREA_CREATE('Imagination'), rounds: 4,
   play() {
     const k = pick(Object.keys(IMAGINE)); if (dup(this, k)) return this.play();
-    const ask = B('What could this shape be? Tap 2 or more ideas!', '이 모양은 무엇일 수 있을까요? 2개 이상 골라요!'), need = 2;
+    const need = lvl('imagine')===2?3:2, ask = lvl('imagine')===2?B('Find 3 different ideas for this shape!','이 모양으로 서로 다른 생각 3개를 골라요!'):B('What could this shape be? Tap 2 or more ideas!', '이 모양은 무엇일 수 있을까요? 2개 이상 골라요!');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="show">${shapeSvg(k, 0).replace('class="shape"', 'class="shape big"')}</div>
       <div class="opts shapes imagine">${shuffle(IMAGINE[k]).map(it => `<button class="opt idea"><span class="emo">${it[0]}</span><span class="ol">${labelText(it[1])}</span></button>`).join('')}</div>
       <div><button class="next" id="idone" disabled>${T().done}</button></div><div class="fact" id="fact"></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
@@ -138,7 +138,7 @@ registerGame({
   id: 'scene', subject: 'create', icon: '🎨', title: B('Build a Scene', '장면 만들기'), sub: B('Place stickers and imagine', '스티커를 놓고 상상해요'),
   area: AREA_CREATE('Open-ended play'), rounds: 1,
   play() {
-    const sk = pick(Object.keys(SCENES)), sc = SCENES[sk], ask = B('Tap a sticker, then tap the picture to place it. Make your own scene!', '스티커를 누르고 그림을 눌러 놓아요. 나만의 장면을 만들어요!');
+    const sk = pick(Object.keys(SCENES)), sc = SCENES[sk], ask = lvl('scene')===2?B('Build a scene with a character, a place, and an event. Tell how they connect.','인물·장소·사건이 있는 장면을 만들고 연결해 말해요.'):B('Tap a sticker, then tap the picture to place it. Make your own scene!', '스티커를 누르고 그림을 눌러 놓아요. 나만의 장면을 만들어요!');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="scene" id="scene" style="background:${sc.bg}"></div>
       <div class="pal" id="pal">${sc.st.map(e => `<button class="stkb" data-e="${e}">${e}</button>`).join('')}</div>
@@ -165,7 +165,7 @@ registerGame({
   area: AREA_CREATE('Storytelling'), rounds: 3,
   play() {
     const s = pick(SPARK); if (dup(this, s.join(''))) return this.play();
-    const ask = B('Make up a story with all three pictures! Tell it to a grown-up.', '그림 3개로 이야기를 지어 봐요! 어른에게 들려줘요.');
+    const ask = lvl('storyspark')===2?B('Use all 3 pictures: tell what happened, why, and what happened next.','그림 3개로 사건·까닭·결과를 이어 말해요.'):B('Make up a story with all three pictures! Tell it to a grown-up.', '그림 3개로 이야기를 지어 봐요! 어른에게 들려줘요.');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="show sparkrow">${s.map(e => `<span class="spark">${e}</span>`).join('')}</div>
       <div><button class="pill" id="snew">🔄 ${L(B('New pictures', '다른 그림'))}</button> <button class="next" id="sdone2">${L(B('I told a story!', '이야기했어요!'))}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));

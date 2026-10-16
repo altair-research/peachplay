@@ -13,7 +13,7 @@ const COMPOUNDS = [['sunset', 'sun', 'set', '🌅'], ['cupcake', 'cup', 'cake', 
 G1R({
   id: 'sylplay', icon: '🥁', title: B('Syllable Play', '음절 놀이'), sub: B('Take apart and put together words', '낱말을 나누고 합쳐요'), u: 'Syllables',
   play() {
-    const kind = pick(['delete', 'delete', 'add', 'swap']), c = pick(COMPOUNDS), [w, a, b, e] = c;
+    const kind = lvl('sylplay')===2?'swap':pick(['delete', 'delete', 'add', 'swap']), c = pick(COMPOUNDS), [w, a, b, e] = c;
     if (kind === 'delete') {
       const first = rnd(2) === 0, ans = first ? b : a, drop = first ? a : b, ds = shuffle([...new Set(COMPOUNDS.flatMap(x => [x[1], x[2]]).filter(p => p !== ans && p !== drop && p !== a && p !== b))]).slice(0, 2);
       quiz(this, { ask: B(`Say "${w}". Now take away "${drop}". What is left?`, `"${w}" 낱말을 말해 봐요. 여기서 "${drop}" 소리를 빼면 무엇이 남을까요?`), show: `<div class="bigword">${e} ${a}·${b}</div>`, opts: wordOpts(ans, ds), cls: 'words', after: B(`${w} without ${drop} is ${ans}.`, `${w}에서 ${drop} 부분을 빼면 ${ans}.`), vocab: ans });
@@ -237,9 +237,9 @@ const TEXTFEAT = [[B('Which part tells the name of a book or story?', '책이나
 G1R({
   id: 'factdet', icon: '🕵️', title: B('Fact Detective', '사실 탐정'), sub: B('Main topic, details, text parts', '주제, 세부 내용, 글의 부분'), u: 'Informational text',
   play() {
-    if (rnd(4) === 0) { const f = pick(TEXTFEAT); quiz(this, { ask: f[0], opts: [f[1], ...f[2]].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Text parts help you find and understand facts.', '글의 여러 부분이 정보를 찾고 이해하는 데 도움이 돼요.') }); return; }
+    if (lvl('factdet')===1 && rnd(4) === 0) { const f = pick(TEXTFEAT); quiz(this, { ask: f[0], opts: [f[1], ...f[2]].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Text parts help you find and understand facts.', '글의 여러 부분이 정보를 찾고 이해하는 데 도움이 돼요.') }); return; }
     const x = pick(FACTS), q = pick(x.q);
-    quiz(this, { ask: q.ask, show: `<div class="storytext">${L(x.t)}</div>`, opts: [q.r, ...q.w].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Find the answer in the text.', '글에서 답을 찾아봐요.') });
+    quiz(this, { ask: q.ask, show: `<div class="storytext">${L(x.t)}</div>`, opts: [q.r, ...q.w, ...(lvl('factdet')===2?[B('The text does not say.','글에 나오지 않아요.')]:[])].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Find the answer in the text.', '글에서 답을 찾아봐요.') });
   }
 });
 
@@ -291,7 +291,7 @@ G1W({
   id: 'joinit', icon: '🔗', title: B('Join It', '문장 잇기'), sub: B('and, but, so, because', 'and, but, so, because'), u: 'Joining ideas',
   play() {
     const j = pick(JOINS), filled = j[0].replace('___', '<span class="qbox">?</span>');
-    quiz(this, { ask: B('Which word joins the ideas?', '두 생각을 이어 주는 낱말은?'), askSay: B(j[0].replace('___', 'blank'), j[1].replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(j[2], j[3]), cls: 'words', after: B(j[0].replace('___', j[2]), j[1].replace('___', j[2])), vocab: j[0].replace('___', j[2]) });
+    quiz(this, { ask: B('Which word joins the ideas?', '두 생각을 이어 주는 낱말은?'), askSay: B(j[0].replace('___', 'blank'), j[1].replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(j[2], lvl('joinit')===2?[...j[3],'under']:j[3]), cls: 'words', after: B(j[0].replace('___', j[2]), j[1].replace('___', j[2])), vocab: j[0].replace('___', j[2]) });
   }
 });
 

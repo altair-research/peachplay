@@ -30,7 +30,7 @@ const FIGURE1_FACTS = [
 G1T({
   id: 'figures1', icon: '🦸', title: B('Heroes of America', '미국의 인물들'), sub: B('Match people with what they did', '인물과 그 사람이 한 일 연결하기'), u: 'Historical figures',
   play() {
-    const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, 2), kind = pick(['who', 'what']);
+    const fact = pick(FIGURE1_FACTS), f = FIGS.find(x => x.id === fact.id), ds = others(FIGURE1_FACTS, fact, lvl('figures1')===2?3:2), kind = pick(['who', 'what']);
     if (kind === 'who') {
       quiz(this, { ask: fact.who, opts: [fact, ...ds].map(x => { const person = FIGS.find(p => p.id === x.id); return { html: `<span class="word">${L(person.n)}</span>`, ok: x === fact }; }), cls: 'words sents', after: fact.after,
         onRender() { document.getElementById('fact').style.marginBottom = 'calc(76px + env(safe-area-inset-bottom))'; }
@@ -49,6 +49,10 @@ const THEN = [[B('light', '불빛'), ['🕯️', B('a candle', '촛불')], ['�
 G1T({
   id: 'thennow', icon: '⏳', title: B('Then and Now', '그때와 지금'), sub: B('Long ago and today', '옛날과 오늘날'), u: 'Past and present',
   play() {
+    if(lvl('thennow')===2){
+      const t=pick(THEN),other=pick(THEN.filter(x=>x!==t));
+      quiz(this,{ask:B('Which modern tool serves the SAME purpose?','같은 일을 하는 오늘날의 도구는?'),show:`<div style="font-size:clamp(16px,3dvh,22px)">${L(t[0])}: ${t[1][0]} ${L(t[1][1])}</div>`,opts:[t[2],t[1],other[2]].map((x,i)=>({html:`<span class="emo">${x[0]}</span>`,label:x[1],ok:i===0})),cls:'shapes'});return;
+    }
     const t = pick(THEN), past = rnd(2) === 0, right = past ? t[1] : t[2], wrong = past ? t[2] : t[1];
     quiz(this, { ask: past ? B(`Long ago, how did people do this? ${L(t[0])}`, `옛날 사람들은 이것을 어떻게 했을까요? ${t[0].ko}`) : B(`Today, how do people do this? ${L(t[0])}`, `오늘날 사람들은 이것을 어떻게 할까요? ${t[0].ko}`), opts: [right, wrong].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === right })), cls: 'shapes', after: past ? B('That is how people did it long ago.', '옛날에는 그렇게 했어요.') : B('That is how people do it now.', '요즘에는 그렇게 해요.') });
   }
@@ -59,9 +63,9 @@ const GRPS = { colonies: B('the American colonies', '미국의 식민지 시대'
 G1T({
   id: 'placetime', icon: '🗺️', title: B('Where and When', '어디서 언제'), sub: B('Time and place shaped their lives', '시대와 장소가 삶을 만들었어요'), u: 'Time and place',
   play() {
-    const f = pick(FIGS), ds = others(Object.keys(GRPS), f.grp, 2), names = Object.fromEntries(Object.entries(GRPS));
+    const f = pick(FIGS), ds = others(Object.keys(GRPS), f.grp, lvl('placetime')===2?3:2), names = Object.fromEntries(Object.entries(GRPS));
     if (rnd(2) === 0) {
-      const wrong = shuffle(FIGS.filter(x => x.grp !== f.grp)).slice(0,2);
+      const wrong = shuffle(FIGS.filter(x => x.grp !== f.grp)).slice(0,lvl('placetime')===2?3:2);
       quiz(this, { ask: B(`Whose story is connected to ${GRPS[f.grp].en}?`, `${GRPS[f.grp].ko}: 이곳이나 시대와 관련 있는 인물은 누구일까요?`), opts: [f,...wrong].map((x,i) => ({ html: `<span class="word">${L(x.n)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) }); return;
     }
     quiz(this, { ask: B(`${f.n.en}'s story is connected to...`, `${f.n.ko}의 이야기와 관련 있는 곳과 때는?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [f.grp, ...ds].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === f.grp })), cls: 'words', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) });
@@ -79,7 +83,7 @@ G1T({
   id: 'character1', icon: '💛', title: B('Character Counts', '좋은 품성'), sub: B('Fairness, respect, courage, perseverance', '공정, 존중, 용기, 인내'), u: 'Character',
   play() {
     const s = pick(SCEN), NEAR = { fairness: ['respect', 'kindness', 'tolerance'], respect: ['kindness', 'tolerance', 'fairness'], courage: ['perseverance', 'kindness', 'fairness'], perseverance: ['courage', 'commitment'], kindness: ['respect', 'tolerance', 'fairness'], tolerance: ['respect', 'kindness', 'fairness'] }, ds = others(Object.keys(TRAITS).filter(k => k !== s[1] && !(NEAR[s[1]] || []).includes(k)), '', 2);
-    quiz(this, { ask: B('Which good trait does this show?', '어떤 좋은 품성이 보일까요?'), show: `<div class="storytext">${L(s[0])}</div>`, opts: [s[1], ...ds].map(k => ({ html: `<span class="word">${L(TRAITS[k])}</span>`, ok: k === s[1] })), cls: 'words', after: B(`That shows ${TRAITS[s[1]].en}.`, `${TRAITS[s[1]].ko}의 모습이에요.`), vocab: TRAITS[s[1]].en });
+    quiz(this, { ask: B('Which good trait does this show?', '어떤 좋은 품성이 보일까요?'), show: `<div class="storytext">${L(s[0])}</div>`, opts: [s[1], ...ds, ...(lvl('character1')===2?['carelessness']:[])].map(k => ({ html: `<span class="word">${L(TRAITS[k]||B('Carelessness','부주의'))}</span>`, ok: k === s[1] })), cls: 'words', after: B(`That shows ${TRAITS[s[1]].en}.`, `${TRAITS[s[1]].ko}의 모습이에요.`), vocab: TRAITS[s[1]].en });
   }
 });
 
@@ -213,6 +217,6 @@ const PATRIOT = [
 G1T({
   id: 'patriot', icon: '🎵', title: B('Patriotic Songs', '애국 노래의 낱말'), sub: B('"America" and "America the Beautiful"', '"America"와 "America the Beautiful"'), u: 'Patriotism',
   play() {
-    const p = pick(PATRIOT); quiz(this, { ask: p[1], show: `<div class="storytext">${L(p[0])}</div>`, opts: tOpts(p[2], p[3]), cls: 'words', after: p[0], vocab: p[2].en });
+    const p = pick(PATRIOT); quiz(this, { ask: p[1], show: `<div class="storytext">${L(p[0])}</div>`, opts: tOpts(p[2], lvl('patriot')===2?[...p[3],B('A pencil','연필')]:p[3]), cls: 'words', after: p[0], vocab: p[2].en });
   }
 });

@@ -8,6 +8,10 @@ registerGame({
   id: 'living', subject: 'sci', icon: '🌱', title: B('Living or Not?', '살아 있을까?'), sub: B('Plants, animals, things', '식물, 동물, 물건'),
   area: AREA_SCI('Living things'),
   play() {
+    if(lvl('living')===2){
+      const t=pick(LIVING), plant=['seedling','tree','sunflower plant'].includes(t[1].en), key=t[2]?(plant?'plant':'animal'):'thing';
+      quiz(this,{ask:B('Plant, animal, or nonliving thing?','식물, 동물, 살아 있지 않은 것 중 무엇일까요?'),show:`<span class="emo">${t[0]}</span>`,opts:[['plant',B('Plant','식물')],['animal',B('Animal','동물')],['thing',B('Nonliving','살아 있지 않아요')]].map(([k,n])=>({html:`<span class="word">${L(n)}</span>`,ok:k===key})),cls:'words',vocab:t[1].en});return;
+    }
     const t = pick(LIVING);
     quiz(this, {
       ask: B('Is it living or not living?', '살아 있는 것일까요, 아닐까요?'),
@@ -51,6 +55,10 @@ registerGame({
   id: 'motion', subject: 'sci', icon: '🧲', title: B('Push or Pull?', '밀기 당기기'), sub: B('How things move', '물체가 움직이는 방법'),
   area: AREA_SCI('Motion'),
   play() {
+    if(lvl('motion')===2){
+      const a=pick(MOTION),b=pick(MOTION.filter(x=>x!==a)),key=a[2]===b[2]?a[2]:'both';
+      quiz(this,{ask:B('Which forces appear in these TWO actions?','두 동작에 나타난 힘은?'),show:`<div style="font-size:clamp(16px,3dvh,22px)">${L(a[1])}<br>${L(b[1])}</div>`,opts:[['push',B('Push only','밀기만')],['pull',B('Pull only','당기기만')],['both',B('Push and pull','밀기와 당기기')]].map(([k,n])=>({html:`<span class="word">${L(n)}</span>`,ok:k===key})),cls:'words'});return;
+    }
     const t = pick(MOTION);
     if (rnd(2) === 0) {                                              // "which one is a push / a pull?"
       const kind = rnd(2) === 0 ? 'push' : 'pull', good = pick(MOTION.filter(x => x[2] === kind)), bad = shuffle(MOTION.filter(x => x[2] !== kind)).slice(0, 2);
