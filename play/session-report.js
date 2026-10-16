@@ -25,7 +25,10 @@
     const improved = report.games.find(game => game.improvement > 0);
     if (improved) recommendations.push(text(`${L(gameById(improved.id).title)}: more first-try answers in the later half.`, `${L(gameById(improved.id).title)}: 뒤쪽 절반에서 한 번에 맞힌 비율이 높아졌어요.`));
     const weak = report.games.find(game => game.count >= 5 && game.accuracy < 0.7);
-    if (weak) recommendations.push(text(`${L(gameById(weak.id).title)}: try it slowly together.`, `${L(gameById(weak.id).title)}: 함께 천천히 다시 해 보세요.`));
+    if (weak) {
+      const domain = window.Learner.domainFor(weak.id), area = domain && domain.reviewOnly ? L(domain.n) + ' · ' : '';
+      recommendations.push(text(`${area}${L(gameById(weak.id).title)}: try it slowly together.`, `${area}${L(gameById(weak.id).title)}: 함께 천천히 다시 해 보세요.`));
+    }
     if (!recommendations.length && report.count) recommendations.push(text('Keep exploring together, one short game at a time.', '함께 짧게 한 판씩 둘러보세요.'));
     const rows = report.games.map(game => {
       const registered = gameById(game.id);

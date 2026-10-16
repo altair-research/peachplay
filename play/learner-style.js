@@ -2,18 +2,28 @@
   'use strict';
   const now = () => Math.floor(Date.now() / 1000);
   const days30 = 30 * 86400;
+  const domainKeys = ['num', 'alg', 'meas', 'geo', 'pa', 'ph', 'hfw', 'voc', 'lit', 'inf', 'sci_life', 'sci_earth', 'sci_physical', 'ss_history', 'ss_geography', 'ss_civics', 'ss_economics'];
   const domainList = () => Object.values(ADAPT_DOMAINS).flat();
   const domainFor = id => domainList().find(domain => Object.values(domain.g).some(ids => ids.includes(id)));
   const domainKey = domain => kidGrade() + '_' + domain.k;
-  const cleanMastery = value => Object.fromEntries(Object.entries(isObj(value) ? value : {}).filter(([key, entry]) => /^[K1-5]_(num|alg|meas|geo|pa|ph|hfw|voc|lit|inf)$/.test(key) && isObj(entry) && Number.isInteger(entry.at) && entry.at > 0 && entry.at <= now() && [5, 8].includes(entry.total) && Number.isInteger(entry.right) && entry.right >= 0 && entry.right <= entry.total).map(([key, entry]) => [key, { at: entry.at, right: entry.right, total: entry.total, approved: Number.isInteger(entry.approved) && entry.approved >= entry.at && entry.approved <= now() ? entry.approved : 0 }]));
+  const cleanMastery = value => Object.fromEntries(Object.entries(isObj(value) ? value : {}).filter(([key, entry]) => /^[K1-5]_/.test(key) && domainKeys.includes(key.slice(2)) && isObj(entry) && Number.isInteger(entry.at) && entry.at > 0 && entry.at <= now() && [5, 8].includes(entry.total) && Number.isInteger(entry.right) && entry.right >= 0 && entry.right <= entry.total).map(([key, entry]) => [key, { at: entry.at, right: entry.right, total: entry.total, approved: Number.isInteger(entry.approved) && entry.approved >= entry.at && entry.approved <= now() ? entry.approved : 0 }]));
   const passed = (right, total) => total === 5 ? right >= 4 : total === 8 && right >= 7;
   const excluded = (domain, time = now()) => {
+    if (domain.reviewOnly) return false;
     const entry = (S.mastery || {})[domainKey(domain)];
     return !!(entry && passed(entry.right, entry.total) && entry.approved && time - entry.approved < days30);
   };
-  const domainRows = domain => window.LearnLog.clean(S.log).filter(row => Object.values(domain.g).some(ids => ids.includes(row[1])) && !(row[5] & 2));
+  const domainRows = domain => window.LearnLog.clean(S.log).filter(row => Object.values(domain.g).some(ids => ids.includes(row[1])) && !(row[5] & 2) && (!domain.reviewOnly || (domain.g[kidGrade()] || []).includes(row[1]) && gameById(row[1]) && gradeOf(gameById(row[1])) === kidGrade() && !heldGame(gameById(row[1])) && !CHECK_SKIP.includes(row[1])));
+  // Recent evidence is kept within the current grade and topic. Reuse the last played game, not an unplayed unit.
+  const reviewBands = domain => {
+    const history = domainRows(domain);
+    return (domain.topics || []).flatMap(ids => {
+      const rows = history.filter(row => ids.includes(row[1])).slice(-20);
+    return rows.length === 20 && window.LearnLog.accuracy(rows) < 0.7 ? [{ id: rows[rows.length - 1][1], need: 7, why: ['__review__'] }] : [];
+    });
+  };
   const candidates = () => kidGrade() === 'P' ? [] : domainList().filter(domain => {
-    if (excluded(domain) || !(domain.g[kidGrade()] || []).some(id => gameById(id) && !heldGame(gameById(id)) && !CHECK_SKIP.includes(id))) return false;
+    if (domain.reviewOnly || excluded(domain) || !(domain.g[kidGrade()] || []).some(id => gameById(id) && !heldGame(gameById(id)) && !CHECK_SKIP.includes(id))) return false;
     const rows = domainRows(domain).slice(-30), report = S.strongAreas;
     const entry = (S.mastery || {})[domainKey(domain)];
     return !!(entry && entry.approved && now() - entry.approved >= days30) || !!(report && report.grade === kidGrade() && report.domains.includes(domain.k)) || rows.length === 30 && window.LearnLog.accuracy(rows) >= 0.9;
@@ -21,6 +31,7 @@
   const bands = () => {
     if (kidGrade() === 'P') return [];
     return domainList().flatMap(domain => {
+      if (domain.reviewOnly) return reviewBands(domain);
       if (excluded(domain)) return [];
       const rows = domainRows(domain).slice(-20);
       if (rows.length < 20) return [];
@@ -39,7 +50,10 @@
   const recommendations = (base, max) => {
     const merged = new Map();
     bands().concat(base).forEach(item => {
+      const game = gameById(item.id);
+      if (!game || heldGame(game)) return;
       const domain = domainFor(item.id);
+      if (domain && domain.reviewOnly && gradeOf(game) !== kidGrade()) return;
       if (!domain || !excluded(domain)) {
         const old = merged.get(item.id);
         merged.set(item.id, old ? { ...old, need: Math.max(old.need || 0, item.need || 0), why: [...new Set(old.why.concat(item.why))] } : item);
@@ -75,7 +89,7 @@
   };
   const panel = () => {
     if (kidGrade() === 'P') return '';
-    return `<section><h2>${L(B('Skill confirmation', '영역 확인 테스트'))}</h2><p class="note2">${L(B('Level 2: 4 of 5, or 7 of 8 when a two-choice question appears. A grown-up approves a pass candidate. Approved areas leave recommendations for 30 days, then we suggest checking again.', '레벨 2에서 5문제 중 4개, 2지선다 문제가 있으면 8문제 중 7개가 기준이에요. 통과 후보는 보호자가 승인해요. 승인한 영역은 30일간 추천에서 빠지고, 이후 재확인을 제안해요.'))}</p>${domainList().map(domain => {
+    return `<section><h2>${L(B('Skill confirmation', '영역 확인 테스트'))}</h2><p class="note2">${L(B('Level 2: 4 of 5, or 7 of 8 when a two-choice question appears. A grown-up approves a pass candidate. Approved areas leave recommendations for 30 days, then we suggest checking again.', '레벨 2에서 5문제 중 4개, 2지선다 문제가 있으면 8문제 중 7개가 기준이에요. 통과 후보는 보호자가 승인해요. 승인한 영역은 30일간 추천에서 빠지고, 이후 재확인을 제안해요.'))}</p>${domainList().filter(domain => !domain.reviewOnly).map(domain => {
       const entry = (S.mastery || {})[domainKey(domain)], candidate = candidates().includes(domain), approved = excluded(domain);
       if (!entry && !candidate) return '';
       return `<p>${L(domain.n)} ${approved ? L(B('Approved · practice remains available', '승인됨 · 직접 연습은 가능해요')) : entry && passed(entry.right, entry.total) && !entry.approved ? `${L(B('Pass candidate', '통과 후보'))} ${entry.right}/${entry.total} <button class="pill" data-approve="${domain.k}">${L(B('Approve for 30 days', '30일 통과 승인'))}</button>` : ''} ${candidate ? `<button class="pill" data-confirm="${domain.k}">${L(entry && entry.approved ? B('Check again', '다시 확인') : B('Try confirmation', '확인 테스트 시작'))}</button>` : ''}</p>`;
@@ -85,13 +99,14 @@
     $$('[data-confirm]').forEach(button => button.onclick = () => startConfirm(button.dataset.confirm));
     $$('[data-approve]').forEach(button => button.onclick = () => {
       const domain = domainList().find(item => item.k === button.dataset.approve), entry = (S.mastery || {})[domainKey(domain)];
-      if (kidGrade() !== 'P' && entry && passed(entry.right, entry.total)) { entry.approved = now(); save(); grownups(); }
+      if (kidGrade() !== 'P' && !domain.reviewOnly && entry && passed(entry.right, entry.total)) { entry.approved = now(); save(); grownups(); }
     });
   };
-  const cleanPickLog = value => (Array.isArray(value) ? value : []).filter(row => Array.isArray(row) && row.length === 3 && Number.isInteger(row[0]) && row[0] >= now() - 60 * 86400 && row[0] <= now() && ['num', 'alg', 'meas', 'geo', 'pa', 'ph', 'hfw', 'voc', 'lit', 'inf'].includes(row[1]) && [0, 1].includes(row[2])).map(row => row.slice()).sort((left, right) => left[0] - right[0]).slice(-1500);
+  const cleanPickLog = value => (Array.isArray(value) ? value : []).filter(row => Array.isArray(row) && row.length === 3 && Number.isInteger(row[0]) && row[0] >= now() - 60 * 86400 && row[0] <= now() && domainKeys.includes(row[1]) && [0, 1].includes(row[2])).map(row => row.slice()).sort((left, right) => left[0] - right[0]).slice(-1500);
   const cleanDays = value => Object.fromEntries(Object.entries(isObj(value) ? value : {}).filter(([date, entry]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(date)) && new Date(date).toISOString().slice(0, 10) === date && date >= new Date((now() - 60 * 86400) * 1000).toISOString().slice(0, 10) && date <= new Date().toISOString().slice(0, 10) && isObj(entry)).sort(([left], [right]) => left.localeCompare(right)).slice(-60).map(([date, entry]) => [date, { weak: Math.max(0, Math.min(1000, Math.floor(Number.isFinite(entry.weak) ? entry.weak : 0))), boss: Math.max(0, Math.min(1000, Math.floor(Number.isFinite(entry.boss) ? entry.boss : 0))) }]));
   const weakDomain = domain => {
     if (!domain) return false;
+    if (domain.reviewOnly) return reviewBands(domain).length > 0;
     const rows = domainRows(domain).slice(-20);
     if (rows.length >= 20 && window.LearnLog.accuracy(rows) < 0.7) return true;
     const ids = Object.values(domain.g).flat();
@@ -99,10 +114,17 @@
     if (report && report.picks.some(item => ids.includes(item.id) && item.reasons.some(reason => /\((?:N|U)\)/.test(reason)))) return true;
     return typeof latestResults === 'function' && Object.entries(latestResults()).some(([id, right]) => ids.includes(id) && right === false);
   };
+  const weakGame = game => {
+    const domain = domainFor(game.id);
+    return domain && domain.reviewOnly ? reviewBands(domain).some(item => (domain.topics.find(ids => ids.includes(item.id)) || []).includes(game.id)) && gradeOf(game) === kidGrade() && !heldGame(game) : weakDomain(domain);
+  };
   const behavior = () => {
     if (kidGrade() === 'P') return 'unknown';
     const weak = domainList().filter(weakDomain);
-    const rows = window.LearnLog.clean(S.log).filter(row => row[0] >= now() - 14 * 86400 && !(row[5] & 2) && weak.some(domain => Object.values(domain.g).some(ids => ids.includes(row[1]))));
+    const weakIds = new Set(weak.flatMap(domain => domain.reviewOnly
+      ? reviewBands(domain).flatMap(item => domain.topics.find(ids => ids.includes(item.id)) || []).filter(id => gameById(id) && gradeOf(gameById(id)) === kidGrade() && !heldGame(gameById(id)))
+      : Object.values(domain.g).flat()));
+    const rows = window.LearnLog.clean(S.log).filter(row => row[0] >= now() - 14 * 86400 && !(row[5] & 2) && weakIds.has(row[1]));
     if (rows.length < 30) return 'unknown';
     const wrong = rows.filter(row => row[3] === 0), offered = cleanPickLog(S.pickLog).filter(row => row[0] >= now() - 14 * 86400 && weak.some(domain => domain.k === row[1]));
     const rates = [wrong.length ? wrong.filter(row => row[5] & 4).length / wrong.length : 0, rows.filter(row => row[3] === 2).length / rows.length, offered.length ? offered.filter(row => row[2] === 0).length / offered.length : 0];
@@ -116,14 +138,16 @@
   const style = () => kidGrade() === 'P' ? 'unknown' : ['slow', 'challenge'].includes(S.learningStyle) ? S.learningStyle : behavior();
   const pattern = mode => mode === 'slow' ? ['confident', 'confident', 'weak'] : mode === 'challenge' ? ['weak', 'confident'] : [];
   const confident = game => {
-    if (weakDomain(domainFor(game.id))) return false;
+    const domain = domainFor(game.id);
+    if (domain && domain.reviewOnly && (gradeOf(game) !== kidGrade() || heldGame(game))) return false;
+    if (weakGame(game)) return false;
     const rows = window.LearnLog.clean(S.log).filter(row => row[1] === game.id && !(row[5] & 2)).slice(-20), saved = S.stats[game.id] || {};
     return rows.length >= 5 ? window.LearnLog.accuracy(rows) >= 0.85 : (saved.right || 0) + (saved.wrong || 0) >= 5 && saved.right / (saved.right + (saved.wrong || 0)) >= 0.85;
   };
   const arrange = (base, max) => {
     const mode = style(), order = pattern(mode);
     if (!order.length) return base.slice(0, max);
-    const weak = base.filter(item => weakDomain(domainFor(item.id))), familiar = visibleGames().filter(game => confident(game) && !excludedGame(game));
+    const weak = base.filter(item => gameById(item.id) && weakGame(gameById(item.id))), familiar = visibleGames().filter(game => confident(game) && !excludedGame(game));
     if (!weak.length || !familiar.length) return base.slice(0, max);
     const chosen = [], seen = new Set();
     for (let index = 0; index < max; index++) {
@@ -138,12 +162,12 @@
     if (kidGrade() === 'P') return null;
     const order = pattern(style()); if (!order.length) return null;
     const slot = order[(SESSION.styleTurn || 0) % order.length]; SESSION.styleTurn = (SESSION.styleTurn || 0) + 1;
-    const games = visibleGames().filter(game => !excludedGame(game) && (slot === 'weak' ? weakDomain(domainFor(game.id)) : confident(game)));
+    const games = visibleGames().filter(game => !excludedGame(game) && (slot === 'weak' ? weakGame(game) : confident(game)));
     const different = games.filter(game => game.id !== SESSION.id);
     return (different.length || games.length) ? pick(different.length ? different : games) : null;
   };
   let offers = [];
-  const offer = picks => { offers = kidGrade() === 'P' ? [] : [...new Set(picks.map(item => domainFor(item.id)).filter(weakDomain).map(domain => domain.k))]; };
+  const offer = picks => { offers = kidGrade() === 'P' ? [] : [...new Set(picks.filter(item => gameById(item.id) && weakGame(gameById(item.id))).map(item => domainFor(item.id)).filter(weakDomain).map(domain => domain.k))]; };
   const choose = game => {
     if (kidGrade() === 'P' || gradeOf(game) === 'P') { offers = []; return; }
     if (offers.length) {
@@ -177,5 +201,5 @@
     $('#styleBack').onclick = settings;
   };
   const bindStyle = () => { if ($('#styleEdit')) $('#styleEdit').onclick = styleSettings; };
-  window.Learner = { domainFor, domainList, domainKey, cleanMastery, passed, excluded, candidates, bands, recommendations, saveStrong, startConfirm, confirmOptions, finishConfirm, panel, bind, cleanPickLog, cleanDays, weakDomain, behavior, style, pattern, arrange, mixGame, offer, choose, noteBoss, complete, goal, stylePanel, styleSettings, bindStyle };
+  window.Learner = { domainFor, domainList, domainKey, cleanMastery, passed, excluded, candidates, bands, recommendations, saveStrong, startConfirm, confirmOptions, finishConfirm, panel, bind, cleanPickLog, cleanDays, weakDomain, weakGame, behavior, style, pattern, arrange, mixGame, offer, choose, noteBoss, complete, goal, stylePanel, styleSettings, bindStyle };
 })();

@@ -169,7 +169,7 @@ function picksScreen(fromQuiz) {
 function whyText(p) {
   if (kidGrade() === 'P') return L(B('Explore together','함께 둘러봐요'));
   const quick = p.why.includes('__quick__'), rep = p.why.find(x => x && !x.startsWith('__'));
-  return [p.why.includes('__up__') ? L(B('One step up', '한 단계 위')) : '', p.why.includes('__warm__') ? L(B('Warm-up', '몸풀기')) : '', p.why.includes('__style__') ? L(B('A familiar game', '익숙한 게임')) : '', rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
+  return [p.why.includes('__review__') ? L(B('Try again', '다시 해 보기')) : '', p.why.includes('__up__') ? L(B('One step up', '한 단계 위')) : '', p.why.includes('__warm__') ? L(B('Warm-up', '몸풀기')) : '', p.why.includes('__style__') ? L(B('A familiar game', '익숙한 게임')) : '', rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
 }
 
 function intro() {

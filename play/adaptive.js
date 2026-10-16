@@ -19,6 +19,87 @@ const ADAPT_DOMAINS = {
     { k: 'inf', n: B('Comprehension: Informational Text', '이해: 정보 글'), g: { K: ['adinfoK', 'adinfotopicK'], 1: ['factdet', 'adinfo1'], 2: ['info2', 'abc2'], 3: ['textstructure3', 'evidence3', 'purpose3', 'source3'], 4: ['purpose4', 'structure4', 'evidence4', 'source4'], 5: ['purpose5', 'structure5', 'explain5', 'opinion5', 'source5'] } }
   ]
 };
+// Content groups for same-grade review only; their order is not a difficulty scale.
+Object.assign(ADAPT_DOMAINS, {
+  sci: [
+    { k: 'sci_life', n: B('Life Science', '생명과학'), g: {
+      K: ['living'],
+      1: ['plants1', 'animals1'],
+      2: ['lifecycle2', 'pollen2'],
+      3: ['habitat3', 'adaptation3', 'survival3', 'pollution3', 'conserve3'],
+      4: ['organismrole4', 'foodweb4', 'ecosystem4'],
+      5: ['vertebrate5', 'plantclass5', 'instinct5', 'traits5', 'microscope5', 'cellparts5', 'cellcompare5', 'microbenefit5', 'microharm5']
+    } },
+    { k: 'sci_earth', n: B('Earth and Space Science', '지구와 우주'), g: {
+      K: ['sky'],
+      1: ['weather1', 'precip', 'seasons1'],
+      2: ['moon2', 'sky2', 'earthchange2'],
+      3: ['rocksort3', 'rocktest3', 'soil3', 'soilwater3', 'erosion3', 'fossilclue3', 'fossilorder3'],
+      4: ['skytools4', 'starplanet4', 'solarmodel4', 'daylight4', 'moonphase4', 'seasons4', 'waterstate4', 'watercycle4', 'weatherinstrument4', 'weathermap4', 'cloud4', 'climate4'],
+      5: ['earthprocess5', 'earthmodel5', 'earthtech5']
+    } },
+    { k: 'sci_physical', n: B('Physical Science', '물질·에너지·힘'), g: {
+      K: ['motion'],
+      1: ['magnets1', 'light1', 'sound1'],
+      2: ['matter2', 'matterchange2', 'force2'],
+      3: ['heatsource3', 'temperature3', 'sundata3', 'sunshade3'],
+      4: ['lightmaterial4', 'lightpath4', 'vibration4', 'signal4', 'force4'],
+      5: ['physical5', 'waterparticles5', 'chemical5', 'electricity5', 'circuit5', 'conductor5', 'electromagnet5', 'magneticfield5']
+    } }
+  ],
+  ss: [
+    { k: 'ss_history', n: B('Historical Understandings', '역사'), g: {
+      K: ['flags', 'holidays'],
+      1: ['figures1', 'thennow'],
+      2: ['heroes2', 'nations2', 'timeline2'],
+      3: ['nativehomes3', 'nativetoday3', 'explorerwhy3', 'encounter3', 'colonyregion3', 'colonylife3', 'colonyperspective3'],
+      4: ['revolutioncause4', 'revolutionpeople4', 'revolutionbattle4', 'declaration4', 'convention4', 'compromise4', 'war18124', 'expansion4', 'removal4', 'reform4', 'civilcause4', 'civilevents4', 'civilpeople4', 'reconstruction4', 'rightsbarrier4'],
+      5: ['cattle5', 'innovation5', 'expansion5', 'immigration5', 'worldwarone5', 'twenties5', 'depression5', 'newdeal5', 'culturethirties5', 'worldwartwo5', 'wartime5', 'coldwar5', 'civilrights5', 'technology5', 'recenthistory5'] // 모두 숨김
+    } },
+    { k: 'ss_geography', n: B('Geographic Understandings', '지리'), g: {
+      K: ['compass'],
+      1: ['placetime', 'whereilive', 'mapdir', 'worldmap'],
+      2: ['gamap2'],
+      3: ['globe3', 'rivers3', 'mountains3', 'nativeregions3', 'explorerroute3'],
+      4: ['physicalmap4', 'historicmap4', 'geography4'],
+      5: ['places5', 'economicplaces5'] // hidden
+    } },
+    { k: 'ss_civics', n: B('Government and Civic Understandings', '정부와 시민'), g: {
+      K: ['citizen'],
+      1: ['character1', 'patriot'],
+      2: ['gov2'],
+      3: ['federal3', 'state3', 'civic3'],
+      4: ['sovereignty4', 'federal4', 'checks4', 'billrights4'],
+      5: ['rights5', 'amendments5'] // hidden
+    } },
+    { k: 'ss_economics', n: B('Economic Understandings', '경제'), g: {
+      K: ['jobs'],
+      1: ['goodsservices', 'savespend'],
+      2: ['goods2', 'choices2'],
+      3: ['resources3', 'publicservice3', 'trade3', 'market3', 'opportunity3'],
+      4: ['historicaleconomy4', 'productivity4', 'budget4'],
+      5: ['economy5'] // hidden; 복합 표준 한 게임
+    } }
+  ]
+});
+(() => {
+  const topics = {
+    sci_life: [['plants1'], ['animals1'], ['lifecycle2'], ['pollen2'], ['habitat3', 'adaptation3', 'survival3'], ['pollution3', 'conserve3'], ['organismrole4', 'foodweb4', 'ecosystem4'], ['vertebrate5', 'plantclass5'], ['instinct5', 'traits5'], ['microscope5', 'cellparts5', 'cellcompare5'], ['microbenefit5', 'microharm5']],
+    sci_earth: [['weather1', 'precip'], ['seasons1'], ['moon2', 'sky2'], ['earthchange2'], ['rocksort3', 'rocktest3'], ['soil3', 'soilwater3'], ['erosion3'], ['fossilclue3', 'fossilorder3'], ['skytools4', 'starplanet4', 'solarmodel4'], ['daylight4', 'seasons4'], ['moonphase4'], ['waterstate4', 'watercycle4'], ['weatherinstrument4', 'weathermap4', 'cloud4', 'climate4'], ['earthprocess5', 'earthmodel5', 'earthtech5']],
+    sci_physical: [['magnets1'], ['light1'], ['sound1'], ['matter2', 'matterchange2'], ['force2'], ['heatsource3', 'temperature3', 'sundata3', 'sunshade3'], ['lightmaterial4', 'lightpath4'], ['vibration4', 'signal4'], ['force4'], ['physical5', 'waterparticles5', 'chemical5'], ['electricity5', 'circuit5', 'conductor5'], ['electromagnet5', 'magneticfield5']],
+    ss_history: [['flags'], ['holidays'], ['figures1'], ['thennow'], ['heroes2', 'timeline2'], ['nations2'], ['nativehomes3', 'nativetoday3'], ['explorerwhy3', 'encounter3'], ['colonyregion3', 'colonylife3', 'colonyperspective3'], ['revolutioncause4', 'revolutionpeople4', 'revolutionbattle4', 'declaration4'], ['convention4', 'compromise4'], ['war18124'], ['expansion4', 'removal4'], ['reform4'], ['civilcause4', 'civilevents4', 'civilpeople4', 'reconstruction4', 'rightsbarrier4']],
+    ss_geography: [['compass'], ['placetime'], ['whereilive'], ['mapdir'], ['worldmap'], ['gamap2'], ['globe3'], ['rivers3', 'mountains3'], ['nativeregions3'], ['explorerroute3'], ['physicalmap4'], ['historicmap4', 'geography4']],
+    ss_civics: [['character1'], ['patriot'], ['gov2'], ['federal3', 'state3'], ['civic3'], ['sovereignty4', 'federal4', 'checks4', 'billrights4']],
+    ss_economics: [['goodsservices'], ['savespend'], ['goods2'], ['choices2'], ['resources3'], ['publicservice3'], ['trade3', 'market3'], ['opportunity3'], ['historicaleconomy4'], ['productivity4'], ['budget4']]
+  };
+  for (const domain of [...ADAPT_DOMAINS.sci, ...ADAPT_DOMAINS.ss]) {
+    domain.reviewOnly = true;
+    domain.diagnosticEnabled = false;
+    domain.confirmEnabled = false;
+    const ids = Object.values(domain.g).flat();
+    domain.topics = topics[domain.k].concat(ids.filter(id => !topics[domain.k].some(group => group.includes(id))).map(id => [id]));
+  }
+})();
 const ADAPT_LEN = { math: 24, read: 24 };
 const AG = ['K', '1', '2', '3', '4', '5'];
 const adaptLabel = (d) => { const g = AG[Math.floor(d / 2)], late = d % 2 === 1; return B(`${g === 'K' ? 'Kindergarten' : 'Grade ' + g}, ${late ? 'later' : 'early'} skills`, `${g === 'K' ? '유치원' : g + '학년'} ${late ? '후반' : '초반'} 수준`); };
@@ -28,10 +109,10 @@ function adaptMaxGrade() {
   return Math.min(AG.indexOf(kidGrade()) + 1, ready);
 }
 function adaptLadder(dom) {                        // usable games per grade index (skips ids that are missing or not one-question games)
-  return AG.map((g, i) => (i <= adaptMaxGrade() ? (dom.g[g] || []).filter(id => gameById(id) && !CHECK_SKIP.includes(id)) : []));
+  return AG.map((g, i) => (i <= adaptMaxGrade() ? (dom.g[g] || []).filter(id => gameById(id) && !heldGame(gameById(id)) && !CHECK_SKIP.includes(id)) : []));
 }
 function makeAdapt(subject) {
-  if (kidGrade() === 'P') { quitDiag(); return null; }
+  if (kidGrade() === 'P' || !ADAPT_LEN[subject]) { quitDiag(); return null; }
   const doms = ADAPT_DOMAINS[subject].map(dom => ({ dom, lad: adaptLadder(dom) })).filter(x => x.lad.some(l => l.length));
   const start = Math.min(AG.indexOf(kidGrade()), adaptMaxGrade()) * 2;            // start at the child's grade, early skills
   const topOf = (lad) => lad.reduce((m, l, i) => (l.length ? i : m), 0), st = doms.map(x => ({ d: Math.min(start, topOf(x.lad) * 2 + 1), hist: [] }));
@@ -81,7 +162,7 @@ function adaptHistoryHtml() {
   return `<p class="note2">${L(B('Last practice:', '지난 연습:'))} ${past.map(c => `${c.scope === 'adapt-math' ? '🔢' : '📖'} ${c.at.slice(0, 10)} ${c.ok}/${c.total}`).join(' · ')}</p>`;
 }
 function startAdapt(subject) {
-  if (kidGrade() === 'P') { quitDiag(); return home(); }
+  if (kidGrade() === 'P' || !ADAPT_LEN[subject]) { quitDiag(); return home(); }
   S.introSeen = true; DIAG.run = (DIAG.run || 0) + 1; DIAG.scope = 'adapt-' + subject;
   DIAG.adapt = makeAdapt(subject); DIAG.items = new Array(ADAPT_LEN[subject]).fill(null);
   DIAG.active = true; DIAG.i = 0; DIAG.res = []; DIAG.busy = false; diagStep();
