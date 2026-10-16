@@ -86,15 +86,31 @@ reg('polygon3','Shape Properties','도형의 성질 탐정','3.GSR.6.1–6.3',lv
  return {ask:B('Choose the true description.','맞는 설명을 골라요.'),show,opts:opts(s.symmetry===4?B('A square AND a rectangle','정사각형이면서 직사각형'):s.name,[B('A circle','원'),B('A pentagon','오각형')]),cls:'words g3-geometry-options',after:s.name};
 });
 const tiles=(w,h,cut=0)=>svg(Array.from({length:w*h},(_,i)=>{const x=i%w,y=Math.floor(i/w);return cut&&x===w-1&&y<h-1?'':`<rect x="${20+x*28}" y="${10+y*28}" width="28" height="28" fill="#d4eafa" stroke="#234"/>`;}).join(''),h*28+20);
-reg('area3','Area Tiles','넓이 타일','3.GSR.7.1–7.3',lv=>{
+reg('area3','Area Tiles','넓이 타일','3.GSR.7.1–7.3 · 3.GSR.8.2',lv=>{
+ if (gap50Next('area3')) return gap50Rect(lv, true);
  const w=2+rnd(6),h=2+rnd(4),cut=lv>1&&rnd(2),ans=w*h-(cut?h-1:0);
  return q(B('Each tile is 1 square unit. What is the area?','한 칸의 넓이는 1제곱단위(square unit)예요. 넓이는 몇 제곱단위일까요?'),tiles(w,h,cut),ans,[ans+1,ans+w],B(`${ans} square units`,`${ans}제곱단위`));
 });
 reg('perimeter3','Perimeter Plans','둘레 설계','3.GSR.8.1–8.2',lv=>{
+ if (gap50Next('perimeter3')) return gap50Rect(lv, false);
  const w=2+rnd(7),h=2+rnd(5),ans=2*(w+h);
  const scale=125/Math.max(w,h),W=w*scale,H=h*scale,x=160-W/2,y=35;
  const show=svg(`<rect x="${x}" y="${y}" width="${W}" height="${H}" fill="#fff2dd" stroke="#234" stroke-width="2"/>${text(160,y-10,`${w} cm`)}${text(160,y+H+22,`${w} cm`)}${text(x-30,y+H/2,`${h} cm`)}${text(x+W+30,y+H/2,`${h} cm`)}`,H+65);
  if(lv>1&&rnd(2))return q(B(`A rectangle has perimeter ${ans} cm and length ${w} cm. What is its width in cm?`,`직사각형 둘레는 ${ans}cm, 가로는 ${w}cm예요. 세로는 몇 cm일까요?`),panel(`<div class="g3-time">${w} + n + ${w} + n = ${ans}</div>`),h,[h+1,h+2]);
  return q(B('Add the outside edges. What is the perimeter in cm?','네 변의 길이를 모두 더해요. 둘레는 몇 cm일까요?'),show,ans,[ans+2,ans-2],B(`${w} + ${h} + ${w} + ${h} = ${ans} cm`,`${w} + ${h} + ${w} + ${h} = ${ans}cm`));
 });
+// Fixed-condition comparisons have one true explanation; no free design is scored.
+const gap50Turns={};
+const gap50Next=id=>((gap50Turns[id]=(gap50Turns[id]||0)+1)%2===1);
+const gap50Rect=(lv,sameArea)=>{
+ const pairs=sameArea?[[2,6,3,4],[2,8,4,4],[2,9,3,6],[3,8,4,6],[1,6,2,3],[1,8,2,4]]:[[1,5,2,4],[1,6,2,5],[2,5,3,4],[2,6,3,5],[1,8,3,6],[2,7,4,5]];
+ let [a,b,c,d]=pick(pairs);if(rnd(2))[a,b,c,d]=[c,d,a,b];if(rnd(2))[a,b]=[b,a];if(rnd(2))[c,d]=[d,c];
+ // Orientation changes preserve the condition; the two shapes are never rotation-only equivalents.
+ const A=a*b,C=c*d,P=2*(a+b),Q=2*(c+d),labels=[B('Same perimeter; different areas','둘레는 같고 넓이는 달라요'),B('Same area; different perimeters','넓이는 같고 둘레는 달라요'),B('Same area and perimeter','넓이와 둘레가 모두 같아요')];
+ const rect=(x,w,h,name)=>{const s=80/Math.max(w,h);return `<rect x="${x}" y="20" width="${w*s}" height="${h*s}" fill="#d4eafa" stroke="#234"/>${text(x+40,15,`${name}: ${w} × ${h}`)}`;};
+ const model=svg('<rect width="320" height="105" rx="6" fill="#fff"/>'+rect(20,a,b,'A')+rect(180,c,d,'B'),105)+panel(L(B('Side lengths: units. Area: square units.','변 길이: 단위. 넓이: 제곱단위.')));
+ if(lv===1)return q(B('Compare the two rectangles. Which statement is true?','두 직사각형을 비교해요. 무엇이 같고 다를까요?'),model,labels[sameArea?1:0],labels.filter((_,i)=>i!==(sameArea?1:0)),B(`Areas ${A}, ${C}; perimeters ${P}, ${Q}.`,`넓이는 ${A}, ${C}제곱단위, 둘레는 ${P}, ${Q}단위예요.`));
+ const evidence=(first,second)=>sameArea?`${a} × ${b} ${first} ${c} × ${d}; ${P} ${second} ${Q}`:`2 × (${a} + ${b}) ${first} 2 × (${c} + ${d}); ${A} ${second} ${C}`;
+ return q(B(sameArea?'Which evidence shows equal areas but different perimeters?':'Which evidence shows equal perimeters but different areas?',sameArea?'넓이는 같고 둘레는 다르다는 근거는?':'둘레는 같고 넓이는 다르다는 근거는?'),model,evidence('=','≠'),[evidence('≠','≠'),evidence('=','=')]);
+};
 })();

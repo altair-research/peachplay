@@ -3,3 +3,11 @@
 .g4-geometry-equation{font-size:clamp(20px,3.5dvh,28px);white-space:pre-line;padding:6px}
 .g4-geometry-options .word{font-size:clamp(18px,2.8dvh,22px);line-height:1.2}.g4-geometry-options .opt{min-height:44px;padding:6px 10px}
 .g4-geometry:has(circle) svg{height:clamp(85px,17dvh,125px)}
+/* Measurement construction: five finger-sized columns, bounded vertically. */
+.g4-gap50{font-size:clamp(12px,2dvh,16px);max-width:500px;margin:auto;line-height:1.25}
+.g4-gap50 button{min-width:44px;min-height:44px;font:inherit;border:2px solid #47667c;border-radius:8px;background:#fff;color:#17364a}
+#g50axes{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+#g50axes[hidden],#g50plot[hidden]{display:none}
+.g4-gap50-cols{display:flex;justify-content:center;gap:4px}
+.g4-gap50-cols button{width:48px;height:72px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:2px}
+.g4-gap50-cols [data-dots]{display:flex;writing-mode:vertical-rl;font-size:12px;letter-spacing:1px;line-height:1}

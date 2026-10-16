@@ -192,6 +192,8 @@ const rulerSvg = (len, unit = 'in', maxU = 8) => { const W = 30 * maxU + 30; let
 G2({
   id: 'ruler', icon: '📏', title: B('Use a Ruler', '자로 재기'), sub: B('Measure to the nearest inch', '가장 가까운 인치 눈금으로 재요'), u: 'Length',
   play() {
+    if (this.gap50Turn === undefined) this.gap50Turn = 0;
+    if (this.gap50Turn++ % 2 === 0) return this.buildUnits50();
     const lv = lvl('ruler'), len = 2 + rnd(lv === 1 ? 5 : 6), kind = pick(lv === 1 ? ['read', 'read', 'choose'] : ['read', 'choose', 'diff', 'estimate']);
     if (kind === 'read') quiz(this, { ask: B('How long is the purple strip? Use the ruler (inches).', '보라색 띠의 길이는? 자(인치)를 봐요.'), show: rulerSvg(len), opts: numO(len, [len + 1, len - 1, len + 2], 1, 9).map(o => ({ html: o.html.replace(/>(\d+)</, '>$1 in<'), ok: o.ok })), after: B(`It is ${len} inches long.`, `길이는 ${len}인치예요.`), vocab: `${len} inches` });
     else if (kind === 'choose') { const items = [[B('a pencil', '연필'), 'in'], [B('a paper clip', '클립'), 'in'], [B('a door', '문'), 'ft'], [B('a school desk', '책상'), 'ft'], [B('a football field', '미식축구장'), 'yd'], [B('a school bus', '스쿨버스'), 'yd']], it = pick(items), unit = { in: B('inches', '인치'), ft: B('feet', '피트'), yd: B('yards', '야드') }; quiz(this, { ask: B(`Which unit is best to measure ${L(it[0])}?`, `${it[0].ko}의 길이를 재기에 가장 알맞은 단위는 무엇일까요?`), show: '', opts: Object.keys(unit).map(k => ({ html: `<span class="word">${L(unit[k])}</span>`, ok: k === it[1] })), cls: 'words', after: B(`Use ${unit[it[1]].en} for ${it[0].en}.`, `${it[0].ko}의 길이는 ${unit[it[1]].ko}로 재요.`) }); }
@@ -316,3 +318,12 @@ G2({
     else quiz(this, { ask: B(`Which is bigger: one half or one fourth of the same pizza?`, `같은 피자에서 반 조각과 4분의 1 조각 중 어느 것이 더 클까요?`), show: `<div class="story">${partSvg2('circle', 2, true)}<span class="op">vs</span>${partSvg2('circle', 4, true)}</div>`, opts: [{ html: `<span class="word">${L(B('one half', '반 조각'))}</span>`, ok: true }, { html: `<span class="word">${L(B('one fourth', '4분의 1 조각'))}</span>`, ok: false }, { html: `<span class="word">${L(B('the same', '같아요'))}</span>`, ok: false }], cls: 'words', after: B('Fewer equal shares means bigger shares.', '조각 수가 적을수록 한 조각이 커요.') });
   }
 });
+(() => {
+'use strict';
+const game=GAMES.find(g=>g.id==='ruler');
+game.buildUnits50=function(){
+ const lv=lvl(this.id),n=(lv===1?2:4)+rnd(lv===1?4:5),start=lv===1?0:rnd(3),unit=L(B('1-inch model','1인치 모형'));
+ const draw=count=>`<svg viewBox="0 0 300 90" style="width:100%;height:min(11dvh,70px)" role="img" aria-label="${count} ${unit}">${Array.from({length:n},(_,i)=>`<rect x="${15+i*270/n}" y="8" width="${270/n}" height="24" fill="${i<count?'#bca4ec':'#fff'}" stroke="#493574"/><text x="${15+(i+.5)*270/n}" y="25" text-anchor="middle" font-size="10">${i<count?1:''}</text>`).join('')}${Array.from({length:n+1},(_,i)=>`<path d="M${15+i*270/n} 43 v18" stroke="#684c14"/><text x="${15+i*270/n}" y="78" font-size="12" text-anchor="middle">${start+i}</text>`).join('')}<path d="M15 43 H285" stroke="#684c14"/></svg>`;
+ quiz(this,{ask:B(`Join ${n} 1-inch models. Compare: how long?`,`1인치 모형 ${n}개를 이어요. 자와 비교하면 길이는?`),show:`<div style="font-size:14px"><div id="g50units">${draw(0)}</div><button id="g50add" style="min-height:44px">＋ ${unit}</button> <button id="g50undo" style="min-height:44px">↶ ${L(B('Undo','되돌리기'))}</button><div>${L(B('Model picture, not actual size.','실물 크기가 아닌 모형 그림이에요.'))}</div><div id="g50count" aria-live="polite">0 / ${n}</div></div>`,opts:[n,n-1,n+1].map((v,i)=>({html:`<span class="word">${v} ${L(B('inches','인치'))}</span>`,ok:i===0})),cls:'words',after:B(`${start+n} − ${start} = ${n} inches. Equal pieces meet with no gaps or overlaps.`,`${start+n} − ${start} = ${n}인치예요. 같은 조각을 틈이나 겹침 없이 이어요.`),onRender(){let count=0;const buttons=$$('.opt');buttons.forEach(b=>{b.disabled=true;b.addEventListener('click',()=>{['#g50add','#g50undo'].forEach(sel=>$(sel).disabled=true);});});const update=()=>{$('#g50units').innerHTML=draw(count);$('#g50count').textContent=`${count} / ${n}`;$('#g50add').disabled=count===n;$('#g50undo').disabled=count===0;buttons.forEach(b=>b.disabled=count!==n);};$('#g50add').onclick=()=>{if(count<n)count++;update();};$('#g50undo').onclick=()=>{if(count)count--;update();};update();}});
+};
+})();

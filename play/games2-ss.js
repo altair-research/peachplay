@@ -203,3 +203,42 @@ G2SS({
     quiz(this, { ask: askFirst ? B('Which event happened FIRST (earlier)?', '어느 일이 먼저(더 일찍) 일어났을까요?') : B('Which event happened LAST (later)?', '어느 일이 나중에(더 늦게) 일어났을까요?'), opts: [a, b].map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === (askFirst ? early : late) })), cls: 'words sents', after: B(`${early.y}: ${early.n.en}, then ${late.y}: ${late.n.en}.`, `${early.y}년: ${early.n.ko} → ${late.y}년: ${late.n.ko}`) });
   }
 });
+(() => {
+'use strict';
+// Own examples informed by gap-top5-prep; no source illustrations or questions reused.
+const methods=[B('Price','가격'),B('First-come-first-served','선착순'),B('Sharing','나누기'),B('Lottery','추첨')];
+const things=[B('bookmarks','책갈피'),B('paper sheets','종이'),B('ribbons','리본'),B('pencils','연필')];
+const turns={};
+for(const id of ['goods2','choices2','gamap2']){const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const i=turns[id]||0;turns[id]=i+1;if(i%2)return old.call(this);const lv=lvl(id),n=2+rnd(4),t=pick(things);let ask,answer,wrong,show='';
+ if(id==='goods2'){
+ const j=Math.floor(i/2)%4;
+ const events=lv===1?[
+ B(`A shop sells ${t.en} for $${n} each. Buyers pay that price.`,`가게에서 ${t.ko} 하나를 ${n}달러에 팔아요. 산 사람은 값을 내요.`),
+ B(`The first ${n} children to sign up get free art seats.`,`먼저 신청한 ${n}명이 무료 미술 자리를 받아요.`),
+ B(`${n*2} ${t.en} are divided equally among ${n} children.`,`${t.ko} ${n*2}개를 ${n}명이 똑같이 나눠요.`),
+ B(`One name is drawn randomly for a free puppet-show seat. There are ${n} applicants.`,`신청자 ${n}명 중 이름 하나를 무작위로 뽑아 무료 인형극 자리를 줘요.`)
+ ]:[
+ B(`A repairer accepts $${n} for each toy repair. Customers pay.`,`수리하는 분은 장난감 하나를 고치고 ${n}달러를 받아요.`),
+ B(`Free library workshop seats go in signup order. Only ${n} seats remain.`,`무료 도서관 수업 자리는 신청 순서대로 줘요. ${n}자리가 남았어요.`),
+ B(`Two children each use the shared easel for ${n} minutes.`,`두 아이가 공용 그림판을 ${n}분씩 나누어 써요.`),
+ B(`For one free lesson, a name is drawn randomly from ${n} applicants.`,`무료 수업 한 자리는 신청자 ${n}명 중 이름을 무작위로 뽑아 줘요.`)
+ ];ask=B(`${events[j].en} Which allocation method?`,`${events[j].ko} 어떤 배분 방법일까요?`);answer=methods[j];wrong=methods.filter((_,k)=>k!==j).slice(0,2);
+ }else if(id==='choices2'){
+ const service=Math.floor(i/2)%2===1,item=service?B('a toy repair','장난감 수리'):B('a ribbon','리본');
+ if(lv===1){const barter=Math.floor(i/4)%2===0;ask=barter?B(`Peachy offers ${n} shells for ${item.en}. The other person wants those shells and agrees. What kind of trade?`,`Peachy가 조개 ${n}개를 주고 ${item.ko}를 받아요. 상대도 조개를 원하고 동의했어요. 어떤 거래일까요?`):B(`Peachy pays $${n} for ${item.en}. What is used to trade?`,`Peachy가 ${item.ko} 값을 ${n}달러로 내요. 거래에 쓴 것은?`);answer=barter?B('Barter: goods or services directly','물물교환: 물건·서비스를 직접 교환'):B('Money','돈');wrong=barter?[B('Money','돈'),B('Lottery','추첨')]:[B('Barter without money','돈 없는 물물교환'),B('Lottery','추첨')];
+ }else{const money=Math.floor(i/4)%2===0;ask=money?B(`For ${item.en}, the seller accepts $${n}, but does not want shells. Peachy has $${n}. Why can money help?`,`${item.ko} 판매자는 조개는 원하지 않지만 ${n}달러는 받아요. Peachy에게 ${n}달러가 있어요. 돈이 어떻게 돕나요?`):B(`Peachy offers ${n} shells for ${item.en}. The other person wants a pencil, not shells. Why is barter not agreed?`,`Peachy가 ${item.ko} 대신 조개 ${n}개를 제안해요. 상대는 조개가 아닌 연필을 원해요. 왜 교환에 동의하지 않을까요?`);answer=money?B('The seller can accept money without wanting shells','조개를 원하지 않아도 돈을 받을 수 있어요'):B('Their wants do not match','서로 원하는 것이 맞지 않아요');wrong=money?[B('Money makes every service free','돈이 있으면 모든 서비스가 무료예요'),B('Money does the repair itself','돈이 저절로 수리해요')]:[B('They already paid money','이미 돈을 냈어요'),B('Both want shells','둘 다 조개를 원해요')];}
+ }else{return regionRound.call(this,lv,Math.floor(i/2));}
+ quiz(this,{ask,show,opts:sw(answer,wrong),cls:'words sents',after:answer});
+ };}
+const names=[B('Appalachian Plateau','애팔래치아 고원'),B('Ridge and Valley','산등성이와 계곡'),B('Blue Ridge','블루리지 산지'),B('Piedmont','피드몬트 구릉'),B('Coastal Plain','해안 평야')];
+const terrain=[B('Northwest plateau and canyons','북서쪽 고원과 협곡'),B('Long ridges and valleys','긴 산등성이와 계곡'),B('Northern high mountains','북쪽의 높은 산지'),B('Rolling hills between mountains and plain','산지와 평야 사이 완만한 구릉'),B('Broad low southern plain','남쪽의 넓고 낮은 평야')];
+const regionSvg=(a,b=-1)=>{
+ const pt=p=>`${gx(p[0])},${gy(p[1])}`,outline=GA_OUT.map(pt).join(' '),paths=['M0 0H51L34 43H0Z','M51 0H99L78 68L34 75H0V43H34Z','M99 0H250V82L78 68Z','M0 75L34 75L78 68L250 82V103L0 153Z','M0 153L250 103V260H0Z'],colors=['#dcc9ef','#c6d99b','#f1c997','#e8dfa3','#d9e9b9'],positions=[[30,23],[55,48],[113,40],[102,101],[119,178]];
+ return `<svg viewBox="0 0 240 240" style="height:min(23dvh,180px);width:100%" role="img" aria-label="${L(B('Georgia regions, north is up','조지아 지역, 위쪽은 북쪽'))}"><defs><clipPath id="g50ga"><polygon points="${outline}"/></clipPath></defs><rect width="240" height="240" fill="#e0f1fb"/><g clip-path="url(#g50ga)">${paths.map((p,j)=>`<path d="${p}" fill="${colors[j]}" stroke="#35432c" stroke-width="1.5"/>`).join('')}${positions.map(([x,y],j)=>`<circle cx="${x}" cy="${y}" r="${a===j||b===j?11:8}" fill="${a===j||b===j?'#fff':'#f6f4df'}" stroke="#243747" stroke-width="${a===j||b===j?3:1}"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="12">${j+1}</text>`).join('')}<path d="M88 52l6 -10 6 10 M113 57l6 -12 6 12 M80 116q8 -10 16 0 M125 192h20" fill="none" stroke="#4c6141"/></g><polygon points="${outline}" fill="none" stroke="#243747" stroke-width="2"/><text x="205" y="20" font-size="13">N ↑</text><text x="190" y="210" font-size="10">${L(B('Atlantic','대서양'))}</text><text x="15" y="237" font-size="10">${L(B('Simplified; approximate boundaries','단순화 그림 · 대략적인 경계'))}</text></svg>`;
+};
+function regionRound(lv,i){const j=i%5,other=(j+1)%5,compare=lv===2;let answer,wrong,ask;
+ if(!compare){ask=B(`Name highlighted region ${j+1}. North is up.`,`강조한 ${j+1}번 지역의 이름은? 위쪽은 북쪽이에요.`);answer=names[j];wrong=[names[other],names[(j+2)%5]];}
+ else{ask=B(`Compare regions ${j+1} and ${other+1}. Which pair describes their typical landscapes in order?`,`${j+1}번과 ${other+1}번의 대표 지형을 순서대로 비교한 것은?`);const pair=(a,b)=>B(`${terrain[a].en} / ${terrain[b].en}`,`${terrain[a].ko} / ${terrain[b].ko}`);answer=pair(j,other);wrong=[pair(other,j),pair((j+2)%5,(j+3)%5)];}
+ quiz(this,{ask,show:regionSvg(j,compare?other:-1),opts:sw(answer,wrong),cls:'words sents',after:B(`${names[j].en}: ${terrain[j].en}.`,`${names[j].ko}: ${terrain[j].ko}.`)});
+}
+})();
