@@ -157,9 +157,10 @@
         if (!state.recent.includes(key)) state.pool.delete(key);
         if (state.pool.size <= 64) break;
       }
-      if (!selected.tile && selected.item.opts.length > 3) {
+      const limit = lvl(this.id) === 2 ? 4 : 3;
+      if (!selected.tile && selected.item.opts.length > limit) {
         const correct = selected.item.opts.find(o => o.ok);
-        selected.item = { ...selected.item, opts: [correct, ...shuffle(selected.item.opts.filter(o => !o.ok)).slice(0, 2)] };
+        selected.item = { ...selected.item, opts: [correct, ...shuffle(selected.item.opts.filter(o => !o.ok)).slice(0, limit - 1)] };
       }
       return (selected.tile ? renderTile : renderQuiz)(this, selected.item);
     };

@@ -8,7 +8,7 @@ registerGame({
   id: 'senses', subject: 'sci', icon: '👃', title: B('My Five Senses', '오감 탐험'), sub: B('Eyes, ears, nose, tongue, hands', '눈, 귀, 코, 혀, 손'),
   area: AREA_SCI('Five senses'),
   play() {
-    const t = pick(SENSE_Q), keys = Object.keys(SENSES), ds = others(keys, t[2], 2), o = (k) => ({ html: `<span class="emo">${SENSES[k][0]}</span>`, label: SENSES[k][1], ok: k === t[2] });
+    const t = pick(SENSE_Q), keys = Object.keys(SENSES), ds = others(keys, t[2], lvl('senses') === 2 ? 3 : 2), o = (k) => ({ html: `<span class="emo">${SENSES[k][0]}</span>`, label: SENSES[k][1], ok: k === t[2] });
     quiz(this, {
       ask: B(`What do you use to ${t[1].en}?`, `${t[1].ko} — 무엇을 쓸까요?`), show: `<div class="bigword"><span class="emo">${t[0]}</span></div>`,
       opts: [o(t[2]), ...ds.map(o)], cls: 'shapes', after: B(`You use your ${SENSES[t[2]][1].en}!`, `${SENSES[t[2]][1].ko}을(를) 써요!`), vocab: SENSES[t[2]][1].en
@@ -26,7 +26,7 @@ registerGame({
   id: 'needs', subject: 'sci', icon: '💧', title: B('What Do They Need?', '무엇이 필요할까?'), sub: B('Plants, animals, people', '식물, 동물, 사람'),
   area: AREA_SCI('Needs of living things'),
   play() {
-    const n = pick(NEEDS), g = pick(n.good), bs = shuffle(n.bad).slice(0, 2), o = (x, ok) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok });
+    const n = pick(NEEDS), g = pick(n.good), bs = shuffle(n.bad).slice(0, lvl('needs') === 2 ? 3 : 2), o = (x, ok) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok });
     quiz(this, { ask: n.q, opts: [o(g, true), ...bs.map(b => o(b, false))], cls: 'shapes', after: B(`They need ${g[1].en}!`, `${g[1].ko}이(가) 필요해요!`), vocab: g[1].en });
   }
 });

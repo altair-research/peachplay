@@ -257,3 +257,17 @@ registerGame({
     quiz(this, { ask: B('What solid shape does this look like?', '어떤 입체 모양과 닮았을까요?'), askExtra: { t: L(name) }, show: '<span class="emo">' + e + '</span><div style="font-size:clamp(16px,3dvh,22px)">' + L(name) + '</div>', opts: [t, ...others(keys, t, 2)].map(k => ({ html: '<span class="word">' + L(SOLIDS[k].n) + '</span>', ok: k === t })), cls: 'words', after: name, vocab: name.en });
   };
 })();
+
+// L2 transfers a familiar object's solid shape to a different object.
+(() => {
+  const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
+  game.play = function () {
+    if (lvl(this.id) === 1) return original.call(this);
+    const keys=Object.keys(SOLIDS), k=pick(keys), pair=shuffle(SOLIDS[k].things), source=pair[0];
+    const items=[{x:pair[1],ok:true},...keys.filter(j=>j!==k).map(j=>({x:pick(SOLIDS[j].things),ok:false}))];
+    quiz(this,{ask:B('Which other object has the same solid shape?','입체 모양이 같은 다른 물건을 찾아요.'),
+      askExtra:{t:L(source[1])},
+      show:'<span class="emo">'+source[0]+'</span><div style="font-size:18px">'+L(source[1])+'</div>',
+      opts:items.map(v=>({html:'<span class="emo">'+v.x[0]+'</span>',label:v.x[1],ok:v.ok})),cls:'shapes'});
+  };
+})();

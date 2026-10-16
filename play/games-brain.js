@@ -143,7 +143,7 @@ registerGame({
   id: 'shadow', subject: 'brain', icon: '🌑', title: B('Shadow Match', '그림자 맞추기'), sub: B('Whose shadow is it?', '누구의 그림자일까?'),
   area: AREA_BRAIN('Visual matching'),
   play() {
-    const t = pick(SHADOW_ITEMS), ds = others(SHADOW_ITEMS, t, 2), o = (x) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === t });
+    const t = pick(SHADOW_ITEMS), ds = others(SHADOW_ITEMS, t, lvl('shadow') === 2 ? 3 : 2), o = (x) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === t });
     quiz(this, {
       ask: B('Which picture makes this shadow?', '이 그림자는 어느 그림일까요?'),
       show: `<span class="emo shadowed">${t[0]}</span>`, opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`It is a ${t[1].en}!`, `${t[1].ko}!`), vocab: t[1].en

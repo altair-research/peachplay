@@ -55,7 +55,7 @@ registerGame({
   id: 'gasymbols', subject: 'ss', icon: '🍑', title: B('Peach State Symbols', '조지아 상징'), sub: B('Peach, bee, thrasher...', '복숭아, 꿀벌...'),
   area: AREA_SS('Georgia symbols'),
   play() {
-    const t = pick(GA_SYMBOLS), ds = others(GA_SYMBOLS, t, 2);
+    const t = pick(GA_SYMBOLS), ds = others(GA_SYMBOLS, t, lvl('gasymbols') === 2 ? 3 : 2);
     if (rnd(2)) {
       quiz(this, { ask: B(`The ${t.n.en} is Georgia's state what?`, `조지아의 상징 ${t.n.ko}: 어떤 종류일까요?`), show: `<span class="emo">${t.e}</span>`, opts: [t, ...ds].map(s => ({ html: `<span class="word">${L(s.q)}</span>`, ok: s === t })), cls: 'words', vocab: t.n.en });
       return;
@@ -167,7 +167,7 @@ registerGame({
   id: 'jobs', subject: 'ss', icon: '👷', title: B('Who Helps Us?', '누가 도와줄까?'), sub: B('Workers & Labor Day', '일하는 사람들과 노동절'),
   area: AREA_SS('Labor Day & jobs'),
   play() {
-    const t = pick(JOBS), ds = others(JOBS, t, 2);
+    const t = pick(JOBS), ds = others(JOBS, t, lvl('jobs') === 2 ? 3 : 2);
     if (rnd(2)) {
       quiz(this, { ask: B('What is this worker called?', '이 일을 하는 사람의 이름을 골라요.'), askExtra: { t: L(t.q) }, show: `<span class="emo">${t.e}</span><div style="font-size:clamp(16px,3dvh,22px)">${L(t.q)}</div>`, opts: [t, ...ds].map(j => ({ html: `<span class="word">${L(j.n)}</span>`, ok: j === t })), cls: 'words', vocab: t.n.en });
       return;
@@ -215,11 +215,11 @@ registerGame({
   const kinds = [B('Street address', '도로명과 번지'), B('City', '도시'), B('State', '주'), B('Country', '나라')];
   const examples = [['12 Maple Lane', 'Duluth', 'Georgia', 'United States'], ['25 Oak Road', 'Atlanta', 'Georgia', 'United States']];
   address.play = function () {
-    if (!rnd(3)) return addressPlay.call(this);
+    if (lvl('address') === 1 && !rnd(3)) return addressPlay.call(this);
     const ex = pick(examples), i = rnd(4), reverse = !!rnd(2);
     const ask = reverse ? B(`In this pretend address, what kind of place is ${ex[i]}?`, `연습용 주소에서 ${ex[i]}: 어떤 주소 부분일까요?`) : B(`In this pretend address, find the ${kinds[i].en.toLowerCase()}.`, `연습용 주소에서 ${kinds[i].ko} 부분을 찾아요.`);
-    const indices = [i, ...others([0, 1, 2, 3], i, 2)];
-    quiz(this, { ask, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">🏠 ${ex.join('<br>')}</div>`, opts: indices.map(j => ({ html: `<span class="word">${reverse ? L(kinds[j]) : ex[j]}</span>`, ok: j === i })), cls: 'words' });
+    const indices = [i, ...others([0, 1, 2, 3], i, lvl('address') === 2 ? 3 : 2)];
+    quiz(this, { ask, show: `<div style="font-size:${lvl('address') === 2 ? '16px' : 'clamp(16px,3dvh,22px)'};line-height:${lvl('address') === 2 ? 1.15 : 1.3}">🏠 ${ex.join('<br>')}</div>`, opts: indices.map(j => ({ html: `<span class="word">${reverse ? L(kinds[j]) : ex[j]}</span>`, ok: j === i })), cls: 'words' });
   };
   // Illustrations are mnemonics, not official holiday symbols. Captions disambiguate them.
   const holidays = GAMES.find(g => g.id === 'holidays');
@@ -232,7 +232,7 @@ registerGame({
     ['📅', B("New Year's Day", '새해 첫날'), B('The first day of a new year.', '새해의 첫날이에요.')]
   ];
   holidays.play = function () {
-    const t = pick(bank), reverse = !!rnd(2), ds = others(bank, t, 2);
+    const t = pick(bank), reverse = !!rnd(2), ds = others(bank, t, lvl('holidays') === 2 ? 3 : 2);
     quiz(this, { ask: reverse ? t[2] : B(`Find the card for ${t[1].en}.`, `${t[1].ko} 카드를 찾아요.`), show: reverse ? `<span class="emo">${t[0]}</span>` : '', opts: [t, ...ds].map(h => ({ html: `<span class="emo">${h[0]}</span>`, label: reverse ? h[1] : h[2], ok: h === t })), cls: 'shapes', after: t[2], vocab: t[1].en });
   };
 })();

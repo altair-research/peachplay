@@ -46,3 +46,17 @@ registerGame({
     });
   }
 });
+
+// L2 compares two explicitly placed events within one day.
+(() => {
+  const game = GAMES.find(g => g.id === 'daytime'), original = game.play;
+  game.play = function () {
+    if (lvl(this.id) === 1) return original.call(this);
+    const a = pick(DAYTIME), b = pick(DAYTIME.filter(x => x[2] !== a[2]));
+    const order = ['morning', 'afternoon', 'night'], earlier = !!rnd(2);
+    const right = (order.indexOf(a[2]) < order.indexOf(b[2])) === earlier ? a : b;
+    const names = { morning:B('morning','아침'), afternoon:B('afternoon','오후'), night:B('night','밤') };
+    quiz(this, { ask: earlier ? B('In this one day, which comes earlier?', '같은 하루예요. 어느 일이 더 먼저일까요?') : B('In this one day, which comes later?', '같은 하루예요. 어느 일이 더 나중일까요?'),
+      opts: [a,b].map(x => ({html:'<span class="emo">'+x[0]+'</span><span class="ol">'+L(names[x[2]])+' · '+L(x[1])+'</span>', ok:x===right})), cls:'groups' });
+  };
+})();

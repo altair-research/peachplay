@@ -58,7 +58,7 @@ registerGame({
   id: 'clock', subject: 'math', icon: '🕒', title: B('What Time Is It?', '몇 시일까?'), sub: B("O'clock times", '정각 읽기'),
   area: AREA_MATH('Time (enrichment)'),
   play() {
-    const h = 1 + rnd(12), set = new Set([h]); while (set.size < 3) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
+    const h = 1 + rnd(12), set = new Set([h]); while (set.size < (lvl('clock') === 2 ? 4 : 3)) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
     quiz(this, {
       ask: B('What time does the clock show?', '시계가 가리키는 시각은?'), show: clockSvg(h),
       opts: [...set].map(v => ({ html: `<span class="num eq">${v}:00</span>`, ok: v === h })), cls: 'shapes', after: B(`It is ${h} o'clock.`, `${h}시예요.`), vocab: `${h} o'clock`
@@ -124,7 +124,7 @@ registerGame({
   id: 'opposites', subject: 'read', icon: '↔️', title: B('Opposites', '반대말'), sub: B('Hot and cold, up and down', '뜨겁다와 차갑다'),
   area: AREA_READ('Vocabulary'),
   play() {
-    const pr = pick(OPP), flip = rnd(2) === 0, a = pr[flip ? 1 : 0], b = pr[flip ? 0 : 1], pool = OPP.filter(p => p !== pr).flatMap(p => p), ds = shuffle(pool).slice(0, 2);
+    const pr = pick(OPP), flip = rnd(2) === 0, a = pr[flip ? 1 : 0], b = pr[flip ? 0 : 1], pool = OPP.filter(p => p !== pr).flatMap(p => p), ds = shuffle(pool).slice(0, lvl('opposites') === 2 ? 3 : 2);
     const o = (w, ok) => ({ html: `<span class="emo">${w[2]}</span>`, label: B(w[0], w[1]), ok });
     quiz(this, {
       ask: B(`What is the opposite of ${a[0].toUpperCase()}?`, `${a[0]}의 반대말은 무엇일까요?`), askSay: B(`What is the opposite of ${a[0]}?`, `${a[0]}의 반대말은 무엇일까요?`),
@@ -138,7 +138,7 @@ registerGame({
   id: 'endsound', subject: 'read', icon: '🔚', title: B('Last Sound', '끝소리 찾기'), sub: B('cat ends with t', 'cat은 t로 끝나요'),
   area: AREA_READ('Phonemic awareness'),
   play() {
-    const w = pick(CVC), last = w[0][w[0].length - 1], ds = others(ALPHA.filter(c => c !== last), '', 2);
+    const w = pick(CVC), last = w[0][w[0].length - 1], ds = others(ALPHA.filter(c => c !== last), '', lvl('endsound') === 2 ? 3 : 2);
     quiz(this, {
       ask: B(`Which letter does "${w[0]}" end with?`, `"${w[0]}"는 어떤 글자로 끝날까요?`), askSay: B(`Which letter does the word end with?`, `이 단어는 어떤 글자로 끝날까요?`), askExtra: { t: w[0], lang: 'en-US' },
       show: `<div class="bigword"><span class="emo">${w[1]}</span> ${w[0]}</div>`, opts: [last, ...ds].map(c => ({ html: `<span class="num">${c}</span>`, ok: c === last })), cls: 'shapes',
@@ -267,6 +267,21 @@ registerGame({
   ];
   feeling.play = function () {
     const t = pick(scenes), keys = Object.keys(FEEL);
-    quiz(this, { ask: B('Find the face for the feeling I named.', '말한 기분에 어울리는 얼굴을 찾아요.'), askExtra: { t: L(t[1]) }, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">${t[0]} ${L(t[1])}</div>`, opts: [t[2], ...others(keys, t[2], 2)].map(k => ({ html: `<span class="emo">${FEEL[k][0]}</span>`, label: FEEL[k][1], ok: k === t[2] })), cls: 'shapes', vocab: FEEL[t[2]][1].en });
+    quiz(this, { ask: B('Find the face for the feeling I named.', '말한 기분에 어울리는 얼굴을 찾아요.'), askExtra: { t: L(t[1]) }, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">${t[0]} ${L(t[1])}</div>`, opts: [t[2], ...others(keys, t[2], lvl('feelings') === 2 ? 3 : 2)].map(k => ({ html: `<span class="emo">${FEEL[k][0]}</span>`, label: FEEL[k][1], ok: k === t[2] })), cls: 'shapes', vocab: FEEL[t[2]][1].en });
+  };
+})();
+
+// L2 reads an explicit causal story; four choices include both events.
+(() => {
+  const game = GAMES.find(g => g.id === 'cause'), original = game.play;
+  game.play = function () {
+    if (lvl(this.id) === 1) return original.call(this);
+    const t = pick(CAUSE), first = !!rnd(2), target = first ? 0 : 1;
+    const story = B(t[0][1].en + ' Then: ' + t[1][1].en + '.', t[0][1].ko + ' 그다음: ' + t[1][1].ko + '.');
+    const options = [t[target], t[1 - target], ...others(CAUSE, t, 2).map(x => x[target])];
+    quiz(this, { ask: first ? B('In this story, what happened first?', '이 이야기에서 먼저 일어난 일은?') : B('In this story, what happened next?', '이 이야기에서 그다음 일어난 일은?'),
+      askExtra: { t: L(story) },
+      show: '<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">' + t[0][0] + ' ' + L(t[0][1]) + '<br>↓<br>' + t[1][0] + ' ' + L(t[1][1]) + '</div>',
+      opts: options.map((x, i) => ({ html: '<span class="emo">' + x[0] + '</span><span class="ol">' + L(x[1]) + '</span>', ok: i === 0 })), cls: 'shapes' });
   };
 })();

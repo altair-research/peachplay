@@ -25,7 +25,7 @@ registerGame({
   id: 'analogy', subject: 'gifted', icon: '🔗', title: B('Picture Analogies', '그림 짝 찾기'), sub: B('Same relationship', '같은 관계 찾기'),
   area: AREA_CH('Verbal reasoning'),
   play() {
-    const g = pick(ANALOGY), [a, b] = shuffle(g.p).slice(0, 2), others2 = ANALOGY.filter(x => x !== g).flatMap(x => x.p.map(q => q[1])), ds = shuffle([...new Set([a[1], ...others2])]).filter(e => e !== b[1]).slice(0, 2);
+    const g = pick(ANALOGY), [a, b] = shuffle(g.p).slice(0, 2), others2 = ANALOGY.filter(x => x !== g).flatMap(x => x.p.map(q => q[1])), ds = shuffle([...new Set([a[1], ...others2])]).filter(e => e !== b[1]).slice(0, lvl('analogy') === 2 ? 3 : 2);
     const cell = (e) => `<span class="ac">${e}</span>`;
     quiz(this, {
       ask: B('These two go together. Which picture goes with the third?', '위의 두 그림은 짝이에요. 아래 그림의 짝은?'),

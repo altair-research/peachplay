@@ -59,7 +59,7 @@ registerGame({
   play() {
     const gi = rnd(RHYMES.length), g = shuffle(RHYMES[gi]), t = g[0], r = g[1];
     const pool = RHYMES.flatMap((x, i) => i === gi ? [] : x);
-    const ds = shuffle(pool).slice(0, 2);
+    const ds = shuffle(pool).slice(0, lvl('rhyme') === 2 ? 3 : 2);
     const o = (w, ok) => ({ html: `<span class="emo">${w[0]}</span>`, label: w[1], ok });
     quiz(this, {
       ask: B(`Which word rhymes with ${t[1].toUpperCase()}?`, `${t[1]}와 소리가 비슷하게 끝나는 단어는?`),
