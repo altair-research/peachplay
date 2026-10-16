@@ -79,8 +79,8 @@ G2SS({
     } else if (kind === 'nbr') {
       const q = pick([[B('Which state is SOUTH of Georgia?', '조지아의 남쪽에 있는 주는?'), B('Florida', '플로리다'), [B('Tennessee', '테네시'), B('Alabama', '앨라배마')]],
         [B('Which state is WEST of Georgia?', '조지아의 서쪽에 있는 주는?'), B('Alabama', '앨라배마'), [B('Florida', '플로리다'), B('South Carolina', '사우스캐롤라이나')]],
-        [B('Which state is NORTH of Georgia (along with North Carolina)?', '조지아의 북쪽에 있는 주는? (노스캐롤라이나와 함께)'), B('Tennessee', '테네시'), [B('Florida', '플로리다'), B('Alabama', '앨라배마')]],
-        [B('Which state is EAST of Georgia, across the Savannah River?', '서배너강 건너 조지아의 동쪽에 있는 주는?'), B('South Carolina', '사우스캐롤라이나'), [B('Alabama', '앨라배마'), B('Tennessee', '테네시')]],
+        [B('Which state borders Georgia to the NORTH?', '조지아의 북쪽에 있는 주는? (노스캐롤라이나와 함께)'), B('Tennessee', '테네시'), [B('Florida', '플로리다'), B('Alabama', '앨라배마')]],
+        [B('Across the Savannah River is which state?', '서배너강 건너 조지아의 동쪽에 있는 주는?'), B('South Carolina', '사우스캐롤라이나'), [B('Alabama', '앨라배마'), B('Tennessee', '테네시')]],
         [B('Which ocean touches the east side of Georgia?', '조지아의 동쪽 바다는?'), B('Atlantic Ocean', '대서양'), [B('Pacific Ocean', '태평양'), B('Arctic Ocean', '북극해')]]]);
       quiz(this, { ask: q[0], show: gaMapSvg({ compass: true, states: q[1].en !== 'Atlantic Ocean' }), opts: sw(q[1], q[2]), cls: 'words', after: B(`${q[1].en}.`, `${q[1].ko}.`) });
     } else {
