@@ -13,7 +13,7 @@
     const gradeName = g => g === 'P' ? tr('Pre-K','프리케이') : g === 'K' ? tr('Kindergarten', '유치원') : tr(`Grade ${g}`, `${g}학년`);
     const empty = tr('No record yet', '아직 기록이 없어요');
     const percent = (r, n) => n ? `${Math.round(100 * r / n)}%` : '—';
-    const subjects = ['math', 'read', 'write', 'sci', 'ss', 'life', 'brain'];
+    const subjects = SUBJECT_GROUPS[0].subjects;
     const subjectName = s => T().subjects[s] || s;
     const game = id => GAMES.find(g => g.id === id);
     const sameGame = g => g && (gradeOf(g) === grade || gradeOf(g) === 'both');
@@ -57,7 +57,15 @@
     const note = tr('Practice on this device only. These are app records and estimates, not official school scores or an i-Ready score. Nothing is sent. A saved PDF may contain the nickname; choose where to keep it.', '이 기기의 앱 연습 기록과 추정이며 학교 공식 점수나 i-Ready 점수가 아니에요. 아무것도 전송하지 않아요. 저장한 PDF에는 별명이 들어갈 수 있으니 보관 위치를 골라 주세요.');
     const identity = `<p class="p-identity">${escape(kid.name || tr('Child', '아이'))} · ${escape(gradeName(grade))} · ${dateKey(now)}</p>`;
     const certificate = `<div class="p-certificate"><div class="p-peach" aria-hidden="true">🍑</div><h1>${escape(title)}</h1>${identity}<p class="p-cheer">${escape(goals ? tr('You kept showing up to practice. Peachy celebrates your effort!', '꾸준히 연습했어요. 피치가 노력한 여러분을 축하해요!') : tr('Every little try is worth celebrating. Keep exploring with Peachy!', '작은 도전도 축하할 일이에요. 피치와 함께 계속 탐험해요!'))}</p><p>${escape(tr(`Goal days this week: ${goals}`, `이번 주 목표 달성: ${goals}일`))}</p><p>${escape(tr(`Stickers collected: ${stickers} (all time)`, `모은 스티커: ${stickers}개 (누적)`))}</p><p class="p-note">${escape(tr(`This week: ${offset(mondayOffset)} – ${offset(0)} · Daily goal: 20 answers`, `이번 주: ${offset(mondayOffset)} ~ ${offset(0)} · 하루 목표: 20문제`))}</p><p>PeachPlay · Peachy</p></div>`;
-    const report = `<h1>${escape(title)}</h1>${identity}${section(tr('Last 14 days', '최근 2주'), `<p>${offset(13)} – ${offset(0)} · ${escape(tr(`${total} answers · ${days} practice days · ${percent(right, total)} correct`, `${total}문제 · ${days}일 연습 · 정답률 ${percent(right, total)}`))}</p>`)}${section(tr('Latest check-ups · current grade only (right / tried)', '최근 과목별 점검 · 현재 학년만 (맞은 문제 / 푼 문제)'), `<table><tbody>${subjectRows}</tbody></table>`)}${section(tr('Diagnostic practice estimates · not official scores', '진단 평가 연습 영역별 추정 · 공식 점수 아님'), domainRows ? `<table><tbody>${domainRows}</tbody></table>` : `<p>${escape(empty)}</p>`)}${section(tr("Peachy's picks", '피치의 추천'), `<p>${escape(picks.length ? picks.map(id => label(game(id).title)).join(' · ') : tr('No recommended games yet. Try a check-up together.', '아직 추천 게임이 없어요. 함께 점검을 해 보세요.'))}</p>`)}`;
+    const groupTotals = SUBJECT_GROUPS.map(group => {
+      let right = 0, total = 0;
+      GAMES.filter(g => sameGame(g) && group.subjects.includes(g.subject)).forEach(g => {
+        const stats = (S.stats || {})[g.id] || {};
+        right += count(stats.right); total += count(stats.right) + count(stats.wrong);
+      });
+      return section(`${group.icon} ${T().subjectGroups[group.id]}`, `<p>${escape(tr('Recorded answers · current grade, all time', '기록된 응답 · 현재 학년, 누적'))}: ${total} · ${escape(tr('Accuracy', '정답률'))}: ${percent(right, total)}</p>`);
+    }).join('');
+    const report = `<h1>${escape(title)}</h1>${identity}${groupTotals}${section(tr('Last 14 days', '최근 2주'), `<p>${offset(13)} – ${offset(0)} · ${escape(tr(`${total} answers · ${days} practice days · ${percent(right, total)} correct`, `${total}문제 · ${days}일 연습 · 정답률 ${percent(right, total)}`))}</p>`)}${section(tr('Latest check-ups · current grade only (right / tried)', '최근 과목별 점검 · 현재 학년만 (맞은 문제 / 푼 문제)'), `<table><tbody>${subjectRows}</tbody></table>`)}${section(tr('Diagnostic practice estimates · not official scores', '진단 평가 연습 영역별 추정 · 공식 점수 아님'), domainRows ? `<table><tbody>${domainRows}</tbody></table>` : `<p>${escape(empty)}</p>`)}${section(tr("Peachy's picks", '피치의 추천'), `<p>${escape(picks.length ? picks.map(id => label(game(id).title)).join(' · ') : tr('No recommended games yet. Try a check-up together.', '아직 추천 게임이 없어요. 함께 점검을 해 보세요.'))}</p>`)}`;
     document.querySelector('.p-dialog')?.remove();
     const dialog = document.createElement('dialog'); dialog.className = 'p-dialog';
     const toolbar = document.createElement('div'); toolbar.className = 'p-toolbar';

@@ -31,8 +31,14 @@
       const registered = gameById(game.id);
       return `<tr>${[L(registered.title), T().subjects[registered.subject] || L(registered.area), game.count, percent(game.accuracy), duration(game.median), percent(game.firstTry), game.unknown, game.review, delta(game.improvement), delta(game.weekChange)].map(value => `<td>${escape(value)}</td>`).join('')}</tr>`;
     }).join('');
+    const grouped = SUBJECT_GROUPS.map(group => {
+      const games = report.games.filter(game => group.subjects.includes(gameById(game.id).subject));
+      const count = games.reduce((sum, game) => sum + game.count, 0);
+      const correct = games.reduce((sum, game) => sum + game.count * game.accuracy, 0);
+      return `<p data-report-group="${group.id}"><strong>${group.icon} ${T().subjectGroups[group.id]}</strong> · ${text('Questions', '문제 수')}: ${count} · ${text('First-try accuracy', '첫 응답 정답률')}: ${percent(count ? correct / count : null)}</p>`;
+    }).join('');
     return `<section><h2>📋 ${text('Recent play report', '최근 놀이 리포트')}</h2>${controls ? `<label>${text('Period', '기간')} <select id="learnRange">${ranges().map(([key, label]) => `<option value="${key}"${key === range ? ' selected' : ''}>${label}</option>`).join('')}</select></label>` : `<p>${ranges().find(([key]) => key === range)[1]}</p>`}
-      <p>${text('Questions', '문제 수')}: ${report.count} · ${text('First-try accuracy', '첫 응답 정답률')}: ${percent(report.accuracy)} · ${text('Median response', '응답 시간 중앙값')}: ${duration(report.median)} · ${text('I don’t know', '잘 모르겠어요')}: ${report.unknown} · ${text('Review', '복습')}: ${report.review}</p>
+      ${grouped}<p>${text('Questions', '문제 수')}: ${report.count} · ${text('First-try accuracy', '첫 응답 정답률')}: ${percent(report.accuracy)} · ${text('Median response', '응답 시간 중앙값')}: ${duration(report.median)} · ${text('I don’t know', '잘 모르겠어요')}: ${report.unknown} · ${text('Review', '복습')}: ${report.review}</p>
       <p>${text('Focus estimate', '집중 추정')}: ${focus[report.focus] || text('Not enough data', '자료 부족')}</p><p class="note2">${text('An estimate from play behavior, not a measurement of attention. Only supported question games are included. Accuracy counts the first answer; later retries do not add questions. Fewer than five questions: not enough data.', '놀이 행동에 따른 추정이며 집중력을 측정한 결과가 아니에요. 기록 가능한 문제 게임만 포함해요. 정답률은 첫 응답 기준이며 재시도로 문제 수가 늘어나지 않아요. 5문제 미만은 자료 부족이에요.')}</p>
       ${report.count ? `<div class="tablewrap"><table><thead><tr>${[text('Game', '게임'), text('Subject', '과목'), text('Questions', '문제 수'), text('Accuracy', '정답률'), text('Median response', '응답 중앙값'), text('First try', '한 번에 맞힘'), text('Don’t know', '모르겠어요'), text('Review', '복습'), text('Later vs earlier half', '뒤/앞 절반 향상도'), text('vs prior 7 days', '지난 7일 대비')].map(label => `<th>${label}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>` : `<p>${text('No question records yet.', '아직 문제 기록이 없어요.')}</p>`}
       ${recommendations.slice(0, 2).map(recommendation => `<p>${escape(recommendation)}</p>`).join('')}</section>`;

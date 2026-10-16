@@ -522,3 +522,9 @@ body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.
 }
 
 @media(max-width:599px){body:not(.grade-prek):not(.pk-playing) header #langBtn{padding:8px 8px}}
+
+/* Shared school / thinking home sections (Pre-K keeps its existing menu). */
+.subject-group h2{display:flex;align-items:center;gap:6px;margin:6px 0;font-size:20px;line-height:1.2;min-height:44px}
+.subject-group .group-say{margin-left:auto}
+.subject-group .home-subjects{margin-top:0;margin-bottom:10px}
+.group-description{margin:0 0 10px;font-size:15px}

@@ -3,6 +3,8 @@
 // in games-*.js; a missing language falls back to English.
 const I18N = {
   en: {
+    subjectGroups: { school: 'School Learning', think: 'Think & Create' },
+    thinkDescription: 'Puzzles, imagining and brain games',
     prekTogether: 'Play with a grown-up. Rest whenever you want. If you cannot hear, ask a grown-up to show you.',
     prekDone: 'Five little activities together!', prekNice: 'Thanks for exploring!', prekAgain: 'Let’s look together again.', prekReview: '5 picture activities to explore again',
     prekPolicy: 'Two picture choices, five activities. No check-ups, diagnostic practice or report-card import. Sound games are guided practice, not listening scores. Levels 1 and 2 are chosen by a grown-up.',
@@ -47,6 +49,8 @@ const I18N = {
     clear: 'Clear', done: 'Done', tellAbout: 'Now tell a grown-up about your drawing!'
   },
   ko: {
+    subjectGroups: { school: '학교 공부', think: '생각 키우기' },
+    thinkDescription: '퍼즐, 상상, 생각 놀이',
     prekTogether: '어른과 함께 해요. 언제든 쉬어도 돼요. 소리가 안 들리면 어른이 그림으로 알려 주세요.',
     prekDone: '작은 놀이 다섯 번을 함께 했어요!', prekNice: '함께 살펴봤어요!', prekAgain: '함께 다시 살펴봐요.', prekReview: '그림 놀이 5개를 다시 살펴봐요',
     prekPolicy: '그림 보기 두 개, 놀이 다섯 번이에요. 점검·진단 평가 연습·성적표 가져오기는 하지 않아요. 소리 게임은 함께 하는 놀이이며 듣기 점수가 아니에요. 어른이 1·2단계를 골라 주세요.',

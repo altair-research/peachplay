@@ -1,6 +1,10 @@
 'use strict';
 // App shell: home menu grouped by school subject, grown-ups panel, language switch.
-const SUBJECT_ORDER = ['math', 'read', 'write', 'ss', 'sci', 'life', 'create', 'gifted', 'brain'];
+const SUBJECT_GROUPS = [
+  { id: 'school', icon: '📚', subjects: ['math', 'read', 'write', 'ss', 'sci', 'life'] },
+  { id: 'think', icon: '🧠', subjects: ['create', 'gifted', 'brain'] }
+];
+const SUBJECT_ORDER = SUBJECT_GROUPS.flatMap(group => group.subjects);
 const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🗺️', sci: '🔬', life: '🌈', create: '🎭', gifted: '🚀', brain: '🧠' };
 GAMES.forEach(g => { g.play = g.play.bind(g); });
 
@@ -39,7 +43,7 @@ function home() {
     <h1 class="sr-only">${T().app}</h1>
     <div class="tag sr-only">${T().tagline}</div>
     ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}
-    <div id="subjtiles" class="menu home-subjects">${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div>
+    <div id="subjtiles">${SUBJECT_GROUPS.map(group => `<section class="subject-group" data-group="${group.id}" aria-labelledby="group-${group.id}"><h2 id="group-${group.id}">${group.icon} ${T().subjectGroups[group.id]}<button class="home-say group-say" data-say-group="${group.id}" aria-label="${T().listen}: ${T().subjectGroups[group.id]}">🔊</button></h2>${group.id === 'think' ? `<p class="group-description">${T().thinkDescription}</p>` : ''}<div class="menu home-subjects">${group.subjects.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div></section>`).join('')}</div>
     ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
     ${favHtml()}
@@ -58,6 +62,7 @@ function home() {
     <p class="note">${T().note}</p><p class="ver">${verText()}</p>`;
   }
   if ($('#helloSay')) $('#helloSay').onclick = () => say(T().heroHi);
+  $$('.group-say').forEach(b => b.onclick = () => say(T().subjectGroups[b.dataset.sayGroup]));
   $$('.subject-say').forEach(b => b.onclick = () => say(T().subjects[b.dataset.saySub]));
   if ($('#primarySurprise')) $('#primarySurprise').onclick = surprise;
   if ($('#homeProg')) $('#homeProg').onclick = progressScreen;
