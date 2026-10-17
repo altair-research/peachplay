@@ -8,7 +8,7 @@ const sw = (right, wrongs) => [right, ...wrongs.filter(w => w.en !== right.en)].
 // ---------- 1. People who shaped Georgia and America ----------
 const HEROES2 = [
   { id: 'og', e: '⛵', n: B('James Oglethorpe', '제임스 오글소프'), what: B('founded the colony of Georgia in 1733 and started the city of Savannah', '1733년 조지아 식민지를 세우고 서배너라는 도시를 만들었어요'), clue: B('I led the settlers who landed at Savannah in 1733.', '나는 1733년 서배너에 도착한 이주민들을 이끌었어요.') },
-  { id: 'to', e: '🪶', n: B('Tomochichi', '토모치치'), what: B('was a Yamacraw Creek leader who welcomed Oglethorpe and helped the settlers', '야마크로 크리크족 지도자로 오글소프를 맞이하고 이주민을 도왔어요'), clue: B('I am a Creek leader. I welcomed the new settlers to my land.', '나는 크리크족 지도자예요. 새로 온 이주민들을 반갑게 맞았어요.') },
+  { id: 'to', e: '🤝', n: B('Tomochichi', '토모치치'), what: B('was a Yamacraw Creek leader who welcomed Oglethorpe and helped the settlers', '야마크로 크리크족 지도자로 오글소프를 맞이하고 이주민을 도왔어요'), clue: B('I am a Creek leader. I welcomed the new settlers to my land.', '나는 크리크족 지도자예요. 새로 온 이주민들을 반갑게 맞았어요.') },
   { id: 'mm', e: '🗣️', n: B('Mary Musgrove', '메리 머스그로브'), what: B('was a Creek and English interpreter and trader who helped the two groups talk and trade', '크리크 말과 영어를 통역하고 거래를 도운 사람이에요'), clue: B('I helped the Creek and the English understand each other as an interpreter.', '나는 통역으로 크리크족과 영국인이 서로 이해하도록 도왔어요.') },
   { id: 'sq', e: '✍️', n: B('Sequoyah', '세쿼이아'), what: B('created a writing system (syllabary) for the Cherokee language', '체로키 말을 위한 글자(음절 문자)를 만들었어요'), clue: B('I made a way to write the Cherokee language.', '나는 체로키 말을 적을 수 있는 글자를 만들었어요.') },
   { id: 'jl', e: '🏕️', n: B('Juliette Gordon Low', '줄리엣 고든 로'), what: B('was born in Savannah and started the Girl Scouts in the United States in 1912', '서배너에서 태어나 1912년 미국 걸스카우트를 시작했어요'), clue: B('I was born in Savannah and began the Girl Scouts.', '나는 서배너에서 태어났고 걸스카우트를 시작했어요.') },
@@ -40,7 +40,7 @@ const NATIONS = [
   { q: B('Who was a Creek and English interpreter who helped the two groups talk?', '크리크 말과 영어를 통역해 두 쪽이 대화하도록 도운 사람은?'), r: B('Mary Musgrove', '메리 머스그로브'), w: [B('Jackie Robinson', '재키 로빈슨'), B('Juliette Gordon Low', '줄리엣 고든 로')] }
 ];
 G2SS({
-  id: 'nations2', icon: '🪶', title: B('Creek and Cherokee', '크리크족과 체로키족'), sub: B('The first peoples of Georgia', '조지아의 첫 주민들'), u: 'Native Peoples',
+  id: 'nations2', icon: '🌎', title: B('Creek and Cherokee', '크리크족과 체로키족'), sub: B('The first peoples of Georgia', '조지아의 첫 주민들'), u: 'Native Peoples',
   play() {
     const n = pick(NATIONS);
     quiz(this, { ask: n.q, opts: sw(n.r, n.w.length < 2 ? [...n.w, B(n.w[0].en === 'The Creek' ? 'The Spanish' : 'Nobody', n.w[0].en === 'The Creek' ? '스페인 사람들' : '아무도 없어요')] : n.w), cls: 'words sents', after: B(`${n.r.en}.`, `${n.r.ko}.`) });
@@ -230,4 +230,37 @@ function regionRound(lv,i){const j=i%5,other=(j+1)%5,compare=lv===2;let answer,w
  else{ask=B(`What is the land like in region ${j+1}?`,`${j+1}번 지역은 어떤 땅일까요?`);answer=terrain[j];wrong=[terrain[other],terrain[(j+2)%5]];}
  quiz(this,{ask,show:regionSvg(j,compare?other:-1),opts:sw(answer,wrong),cls:'words sents',after:B(`${names[j].en}: ${terrain[j].en}.`,`${names[j].ko}: ${terrain[j].ko}.`)});
 }
+})();
+
+// Request 58: historical action evidence and environment comparisons.
+(() => {
+'use strict';
+const turns={};
+const card=s=>`<div class="gap58-card storytext">${L(s)}</div>`;
+const make=(mode,ask,text,right,wrong)=>({mode58:mode,ask,show:card(text),opts:sw(right,wrong),cls:'words sents gap58-options',after:right});
+// Trait labels describe the cited action, not a judgement of a whole person's life.
+const actions=[
+ [B('Oglethorpe met with Tomochichi to discuss a settlement.','오글소프는 토모치치와 정착에 관해 의논했어요.'),B('Civility: discussing with another leader','예의: 다른 지도자와 의논하기')],
+ [B('Tomochichi worked through talks with Oglethorpe.','토모치치는 오글소프와 대화하며 협력했어요.'),B('Civility: working through discussion','예의: 대화로 협력하기')],
+ [B('Mary Musgrove interpreted between Creek and English speakers.','메리 머스그로브는 크리크 말과 영어를 통역했어요.'),B('Helpfulness: helping people understand','도움: 서로 이해하도록 돕기')],
+ [B('Sequoyah worked for years to develop Cherokee writing.','세쿼이아는 체로키 글자를 만들려고 여러 해 노력했어요.'),B('Patience: continuing difficult work','인내: 어려운 일을 꾸준히 하기')],
+ [B('Juliette Gordon Low organized Girl Scouts so girls could learn skills.','줄리엣 고든 로는 소녀들이 기술을 배우도록 걸스카우트를 조직했어요.'),B('Service: creating chances to learn','봉사: 배움의 기회 만들기')],
+ [B('Jackie Robinson faced racist abuse while helping integrate baseball.','재키 로빈슨은 야구의 인종 장벽을 허물며 인종 차별을 겪었어요.'),B('Courage: facing unfair treatment','용기: 부당한 대우에 맞서기')],
+ [B('Martin Luther King Jr. worked for fair laws using nonviolent protest.','마틴 루서 킹 주니어는 비폭력 시위로 공정한 법을 위해 노력했어요.'),B('Civility: seeking change without violence','예의: 폭력 없이 변화를 이루려 하기')],
+ [B('Jimmy Carter worked to advance human rights and peaceful solutions.','지미 카터는 인권과 평화로운 해결을 위해 노력했어요.'),B('Compassion: caring about other people','연민: 다른 사람을 배려하기')]
+];
+const environments=[
+ [B('Cherokee Nation gardeners grow traditional plants today. Plants need suitable soil and water.','체로키 네이션은 오늘날에도 전통 식물을 길러요. 식물에는 알맞은 흙과 물이 필요해요.'),B('Soil and water support growing plants','흙과 물이 식물 재배를 도와요')],
+ [B('Historically, Muscogee towns farmed river valleys. Today Muscogee communities continue in many places.','옛 머스코기 마을은 강 계곡에서 농사를 지었어요. 오늘날에도 여러 곳에서 공동체가 이어져요.'),B('River-valley land supported farming','강 계곡의 땅이 농사에 도움이 됐어요')],
+ [B('Jimmy Carter grew up near Plains on a farm. Fields gave his family space for crops.','지미 카터는 플레인스 근처 농장에서 자랐어요. 들판은 가족이 작물을 기를 공간이었어요.'),B('Fields provided space for farming','들판에 농사 지을 공간이 있었어요')],
+ [B('Oglethorpe, Tomochichi and Mary Musgrove met near the Savannah River. Rivers offered routes for travel and trade.','오글소프, 토모치치, 메리 머스그로브는 서배너강 근처에서 만났어요. 강은 이동과 교역의 길이 됐어요.'),B('A river could connect travel and trade','강이 이동과 교역을 이을 수 있었어요')]
+];
+for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const t=turns[id]||0;turns[id]=t+1;if(t%2)return old.call(this);const lv=lvl(id),i=Math.floor(t/2);
+ if(id==='heroes2') {const r=actions[i%actions.length];quiz(this,lv===1?make('citizenship',B('Which trait is supported by this action?','이 행동이 보여 주는 시민의 태도는?'),r[0],r[1],[B('Ignoring other people','다른 사람을 무시하기'),B('Refusing every effort','아무 노력도 하지 않기')]):make('citizenship-evidence',B(`Which evidence supports this trait? ${r[1].en}`,`이 태도의 근거는 무엇인가요? ${r[1].ko}`),B('Choose the documented action, not a name or birthplace alone.','이름이나 태어난 곳만으로 판단하지 말고 기록된 행동을 골라요.'),r[0],[B('The person had a name','이름이 있었어요'),B('The person was born somewhere','태어난 곳이 있었어요')]));return;}
+ const r=environments[i%environments.length];
+ if(lv===1){quiz(this,make('environment',B('How did this environment help people?','이 환경은 사람들에게 어떤 도움이 됐나요?'),r[0],r[1],[B('Every region has identical resources','모든 지역의 자원이 같아요'),B('The environment never affects life','환경은 생활에 영향을 안 줘요')]));return;}
+ // Comparison cards are optional-location examples: never infer or collect a child's home.
+ const local=i%2===0;
+ quiz(this,make('region-compare',B('Compare the historical place with the practice community.','역사 속 장소와 가상 공동체를 비교해요.'),B(`${r[0].en} Practice community today: ${local?'a garden uses soil and water.':'trucks use roads for trade.'} Families live in many different ways.`,`${r[0].ko} 오늘날 가상 공동체: ${local?'텃밭에서 흙과 물을 이용해요.':'트럭이 도로로 물건을 운반해요.'} 가족마다 생활 모습은 다양해요.`),local?B('Both can use natural resources','두 곳 모두 자연 자원을 이용할 수 있어요'):B('People use different routes and tools','서로 다른 길과 도구를 이용해요'),[B('Every family must live the same way','모든 가족은 똑같이 살아야 해요'),B('Native peoples exist only in the past','원주민은 과거에만 있었어요')]));
+ };}
 })();

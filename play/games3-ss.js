@@ -242,3 +242,23 @@ mapBank49('mountains3','Two Mountain Ranges','두 산맥','SS3G1.b',mountains49)
 mapBank49('nativeregions3','Native Homelands','원주민의 지역','SS3H1.a (location practice)',regions49,B('Broad regions, not borders. Native nations live today.','넓은 문화 지역이며 경계가 아니에요. 원주민 공동체는 오늘도 이어져요.'));
 mapBank49('explorerroute3','Voyage Records Map','탐험 기록 지도','SS3H2.b (route practice)',voyages49);
 })();
+
+// Request 58: founding motives, alongside the existing economy modes.
+(() => {
+'use strict';
+const g=GAMES.find(x=>x.id==='colonyregion3'),old=g.play;let turn=0;
+const rows=[
+ {name:B('Plymouth','플리머스'),region:B('New England','뉴잉글랜드'),reason:B('Religious freedom','종교의 자유'),text:B('1620: Pilgrims founded Plymouth seeking freedom to practice their religion. Investors also expected repayment.','1620년 순례자들은 자신들의 종교를 믿을 자유를 찾아 플리머스를 세웠어요. 투자자들은 투자금 회수도 기대했어요.')},
+ {name:B('Pennsylvania','펜실베이니아'),region:B('Mid-Atlantic','중부 대서양'),reason:B('Religious freedom','종교의 자유'),text:B('1681: William Penn received the Pennsylvania charter. He encouraged Quakers and other faiths to settle by promising religious freedom.','1681년 윌리엄 펜은 펜실베이니아 설립 허가를 받았어요. 종교의 자유를 약속해 퀘이커와 다른 신앙의 사람들을 불렀어요.')},
+ {name:B('Jamestown, Virginia','버지니아 제임스타운'),region:B('Southern','남부'),reason:B('Profit','이윤'),text:B('1607: the Virginia Company founded Jamestown. Investors hoped the colony would earn money. Native peoples already lived in the region.','1607년 버지니아 회사는 제임스타운을 세웠어요. 투자자들은 식민지에서 돈을 벌기를 기대했어요. 그 지역에는 이미 원주민이 살고 있었어요.')}
+];
+g.play=function(){const t=turn++;if(t%2)return old.call(this);const i=Math.floor(t/2),r=rows[i%3],kind=Math.floor(i/3)%4,lv=lvl(g.id);let ask,right,wrong;
+ if(kind===0){ask=B(`Which founding motive is named for ${r.name.en}?`,`${r.name.ko}의 설립 동기로 나온 것은?`);right=r.reason;wrong=[r.reason.en==='Profit'?B('Only religious freedom','오직 종교의 자유'):B('Only military defense','오직 군사 방어'),B('Space exploration','우주 탐험')];}
+ else if(kind===1){ask=B('Which region contains this colony?','이 식민지는 어느 지역에 속하나요?');right=r.region;wrong=rows.filter(x=>x!==r).map(x=>x.region);}
+ else if(kind===2&&lv===2){ask=B('Which comparison fits Plymouth and Jamestown?','플리머스와 제임스타운의 비교로 맞는 것은?');right=B('Plymouth: religious practice; Jamestown: company profit','플리머스: 신앙 실천, 제임스타운: 회사 이윤');wrong=[B('Both were founded for space travel','둘 다 우주여행을 위해 세웠어요'),B('Jamestown had no investors','제임스타운에는 투자자가 없었어요')];}
+ else if(kind===2){ask=B('Which evidence explains the founding motive?','설립 동기를 설명하는 근거는?');right=r.reason.en==='Profit'?B('Investors hoped to earn money','투자자들이 돈을 벌기를 기대했어요'):B('Settlers sought freedom of religion','정착민들이 신앙의 자유를 원했어요');wrong=[B('The colony had a name','식민지에 이름이 있었어요'),B('It was on a map','지도에 있었어요')];}
+ else{ask=B('Which caution belongs with these founding stories?','이 설립 이야기를 읽을 때 기억할 점은?');right=B('Motives differed; freedom was not equal for everyone','동기는 다양했고 모두가 똑같은 자유를 누린 것은 아니에요');wrong=[B('All colonists had exactly one motive','모든 정착민의 동기는 딱 하나였어요'),B('Native peoples lived nowhere in these regions','그 지역에는 원주민이 전혀 없었어요')];}
+ const text=kind===2&&lv===2?B(`${rows[0].text.en} ${rows[2].text.en}`,`${rows[0].text.ko} ${rows[2].text.ko}`):r.text;
+ quiz(this,{mode58:'founding-motives',ask,show:`<div class="gap58-card storytext">${L(text)}</div>`,opts:[right,...wrong].map((v,j)=>({html:`<span class="word">${L(v)}</span>`,ok:j===0})),cls:'words sents gap58-options',after:B('Founding motives could overlap. These examples do not describe every resident or promise equal freedom.','설립 동기는 겹칠 수 있어요. 이 사례가 모든 주민을 설명하거나 동등한 자유를 보장하지는 않아요.')});
+};
+})();

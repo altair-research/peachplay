@@ -117,8 +117,8 @@ function record(id, ok) {
   if (ok) { h.r++; hg[0]++; } else { h.w++; hg[1]++; }
   // level follows RECENT play (last 6 rounds): 5 clean answers in a row go up (a 2-option guess does that 1 time in 32), 3 misses in the last 5 go down
   s.recent = ((s.recent || '') + (ok ? '1' : '0')).slice(-6);
-  if (ok) { s.right++; s.streak++; if (s.streak >= (SESSION.learnerMode === 'challenge' ? 4 : 5) && s.level < 2) { s.level++; s.streak = 0; s.recent = ''; } }
-  else { s.wrong++; s.streak = 0; if (s.level > 1 && (s.recent.slice(-5).match(/0/g) || []).length >= 3) { s.level--; s.recent = ''; } }
+  if (ok) { s.right++; s.streak++; if (s.streak >= (SESSION.learnerMode === 'challenge' ? 4 : 5) && s.level < 2 && window.Learner.canRise(id)) { s.level++; s.streak = 0; s.recent = ''; } }
+  else { s.wrong++; s.streak = 0; if (s.level > 1 && (s.recent.slice(-5).match(/0/g) || []).length >= 3) { s.level--; window.Learner.holdRise(id); s.recent = '';  } }
   save();
 }
 

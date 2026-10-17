@@ -229,3 +229,51 @@ G2S({
     }
   }
 });
+
+// Request 58: evidence modes; original modes remain on alternate rounds.
+(() => {
+'use strict';
+const turns = {};
+const card = s => `<div class="gap58-card storytext">${L(s)}</div>`;
+const table = (caption, heads, rows) => `<table class="gap58-table"><caption>${L(caption)}</caption><thead><tr>${heads.map(h=>`<th scope="col">${L(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${typeof v==='object'?L(v):v}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const item = (mode, ask, show, right, wrong, after=right) => ({mode58:mode,ask,askSay:B(ask.en+' '+show.replace(/<[^>]*>/g,' '),ask.ko+' '+show.replace(/<[^>]*>/g,' ')),show,opts:wOpts(right,wrong),cls:'words sents gap58-options',after});
+const modes = {
+ sky2(lv,i) {
+  if(i%2===0) {
+   const summer=B('June 21 · summer','6월 21일 · 여름'), winter=B('December 21 · winter','12월 21일 · 겨울');
+   const caption=B('Atlanta, 2026 · hours, rounded model','애틀랜타, 2026년 · 시간, 반올림 모형');
+   const missing=lv===2&&i%4===0, target=i%4===0?summer:winter;
+   const rows=[[summer,14,missing?'?':10],[winter,10,14]];
+   const show=table(caption,[B('Date','날짜'),B('Day','낮'),B('Night','밤')],rows);
+   if(missing)return item('daynight',B('Complete the table: June night = ? hours.','표를 완성해요. 6월의 밤은 몇 시간일까요?'),show,B('10 hours','10시간'),[B('14 hours','14시간'),B('24 hours','24시간')],B('Day + night = 24 hours. The model rounds each length to whole hours.','낮과 밤을 합하면 24시간이에요. 이 모형은 시간을 정수로 반올림했어요.'));
+   if(lv===2)return item('daynight',B('Which conclusion matches both rows?','두 줄의 자료에 맞는 결론은?'),show,B('Summer has more daylight here','이곳은 여름의 낮이 더 길어요'),[B('Winter has more daylight here','이곳은 겨울의 낮이 더 길어요'),B('Day length never changes','낮의 길이는 늘 같아요')]);
+   return item('daynight',i%4===0?B('Which date has the longer day?','낮이 더 긴 날은?'):B('Which date has the longer night?','밤이 더 긴 날은?'),show,target,[i%4===0?winter:summer]);
+  }
+  const show=card(B('Stars differ in true size and light output. Some are smaller and dimmer than the Sun; others are larger and brighter. The Sun is much closer to Earth.','별은 실제 크기와 내는 빛이 달라요. 해보다 작고 어두운 별도, 크고 밝은 별도 있어요. 해는 지구에 훨씬 가까워요.'));
+  return lv===1?item('star-evidence',B('Why does the Sun look so large and bright?','해가 아주 크고 밝게 보이는 까닭은?'),show,B('It is much closer to Earth','지구에 훨씬 가까워요'),[B('It is the largest of all stars','모든 별 중 가장 커요'),B('Other stars make no light','다른 별은 빛을 안 내요')]):item('star-evidence',B('Which evidence puts the Sun between smaller and larger stars?','해가 작은 별과 큰 별 사이임을 뒷받침하는 근거는?'),show,B('Stars exist on both sides in size and light output','해보다 작고 어두운 별과 크고 밝은 별이 있어요'),[B('Looking biggest proves it is biggest','가장 커 보이면 실제로도 가장 커요'),B('Distance cannot change its appearance','거리는 보이는 모습과 상관없어요')],B('The Sun is between smaller, dimmer stars and larger, brighter stars. Looking brightest does not prove it is biggest.','해보다 작고 어두운 별도, 크고 밝은 별도 있어요. 가장 밝게 보인다고 실제로 가장 큰 별은 아니에요.'));
+ },
+ matterchange2(lv,i) {
+  const n=lv===1?4:6;
+  const shape=(kind)=>{const points=kind===2?Array.from({length:n},(_,j)=>[j*1.15,j%2*2]):kind===0?Array.from({length:n},(_,j)=>[j,1]):Array.from({length:n},(_,j)=>[j%2,Math.floor(j/2)]);return `<svg viewBox="0 0 180 72" aria-label="${L(B(`${n} blocks, ${kind===2?'loose pieces':kind===0?'a row':'a tower'}`,`${n}개 블록, ${kind===2?'낱개 조각':kind===0?'가로줄':'탑'}`))}" role="img">${points.map(([x,y])=>`<rect x="${10+x*24}" y="${4+y*20}" width="22" height="18" rx="2" fill="#4385b5" stroke="#163d5b"/>`).join('')}</svg>`;};
+  const start=i%2,end=1-start;
+  const it=item('rebuild',B(`Use the same ${n} blocks. Take apart, rebuild, then explain.`,`같은 블록 ${n}개를 분해하고 다시 만든 뒤 설명해요.`),`<div class="gap58-build"><div id="gap58-shape">${shape(start)}</div><button id="gap58-step" type="button">${L(B('Take apart','분해하기'))}</button><div id="gap58-count" aria-live="polite">${L(B(`${n} blocks in the structure`, `구조물에 블록 ${n}개`))}</div></div>`,B('Same pieces, different arrangement','같은 조각을 다르게 배치했어요'),[B('New pieces had to appear','새 조각이 생겨야 해요'),B('The pieces disappeared','조각이 사라졌어요')]);
+  it.onRender=()=>{let step=0;const options=$$('.opt'),button=$('#gap58-step');options.forEach(b=>b.disabled=true);button.onclick=()=>{step++;if(step===1){$('#gap58-shape').innerHTML=shape(2);$('#gap58-count').textContent=L(B(`${n} loose blocks; none added or lost`, `낱개 블록 ${n}개, 더하거나 뺀 것 없음`));button.textContent=L(B('Rebuild differently','다르게 조립하기'));}else{$('#gap58-shape').innerHTML=shape(end);$('#gap58-count').textContent=L(B(`${n} blocks in the new structure`, `새 구조물에 블록 ${n}개`));button.disabled=true;options.forEach(b=>b.disabled=false);}};};
+  return it;
+ },
+ earthchange2(lv,i) {
+  const rows=[
+   [B('Practice park: rain fell. Water ran down bare soil; soil collected below.','가상 공원: 비가 내리고 맨흙 위로 물이 흘러 아래에 흙이 쌓였어요.'),B('Flowing rainwater moved soil','빗물이 흙을 옮겼어요'),B('What changed after the rain?','비가 온 뒤 무엇이 변했나요?')],
+   [B('Practice park: workers removed trees. Before: shade and nests. After: less shade and fewer nesting places.','가상 공원: 사람이 나무를 베었어요. 전에는 그늘과 새 둥지가 있었고 뒤에는 둘 다 줄었어요.'),B('Removing trees reduced shade and nesting places','나무를 베어 그늘과 둥지 자리가 줄었어요'),B('What changed after trees were removed?','나무를 벤 뒤 무엇이 변했나요?')],
+   [B('Practice stream: beavers built a dam. Before: flowing water. After: water pooled behind the dam.','가상 시냇물: 비버가 댐을 만들었어요. 전에는 물이 흘렀고 뒤에는 댐 뒤에 물이 고였어요.'),B('The dam held back water','댐이 물의 흐름을 막았어요'),B('Where did water collect after the dam?','댐을 만든 뒤 어디에 물이 고였나요?')]
+  ],r=rows[i%rows.length];
+  return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What color is my favorite toy?','내가 좋아하는 장난감은 무슨 색일까요?'),B('What is the name of a distant star?','먼 별의 이름은 무엇일까요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[B('The observations show no change','관찰 자료에는 변화가 없어요'),B('A shadow created new soil','그림자가 새 흙을 만들었어요')]);
+ },
+ force2(lv,i) {
+  const a=2+i%3,b=a+2,seconds=2;
+  const direction=lv===2&&i%2===1;
+  const show=direction?table(B('Practice cart · same push, 3 trials','가상 수레 · 같은 밀기, 3회 실험'),[B('Guide','가이드'),B('Turned left','왼쪽 회전')],[[B('Without','없음'),'0 / 3'],[B('With','있음'),'3 / 3']]):table(B(`Practice cart · same push, ${seconds} seconds each`,`가상 수레 · 같은 밀기, 각 ${seconds}초`),[B('Trial','실험'),B('No ramp (cm)','경사로 없음(cm)'),B('Ramp (cm)','경사로 있음(cm)')],[[1,a,b],[2,a+1,b+1]]);
+  return item('design-data',direction?B('Goal: turn left. Did the guide work in these trials?','목표는 왼쪽 회전이에요. 가이드가 효과가 있었나요?'):lv===1?B('Which setup went farther in both trials?','두 실험 모두에서 더 멀리 간 장치는?'):B('Goal: move faster. Which evidence supports using the ramp?','목표는 더 빠르게 이동하기예요. 경사로 사용을 뒷받침하는 근거는?'),show,direction?B('Yes: left turns increased from 0 to 3','네. 왼쪽 회전이 0회에서 3회가 됐어요'):lv===1?B('With the ramp','경사로가 있을 때'):B('It went farther in the same time in both trials','두 실험 모두 같은 시간에 더 멀리 갔어요'),direction?[B('No: it never turned left','아니요. 한 번도 왼쪽으로 안 돌았어요'),B('We measured the color only','색깔만 측정했어요')]:[B('Without the ramp it went farther','경사로가 없을 때 더 멀리 갔어요'),B('We need only the cart color','수레 색깔만 알면 돼요')],B('These are invented practice measurements, not a promise about every device.','만든 연습 측정값이에요. 모든 장치에서 같은 결과를 보장하지 않아요.'));
+ }
+};
+for(const id of Object.keys(modes)) {const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const t=turns[id]||0;turns[id]=t+1;if(t%2)return old.call(this);quiz(this,modes[id](lvl(id),Math.floor(t/2)));};}
+})();

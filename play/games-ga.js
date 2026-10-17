@@ -1,5 +1,97 @@
 'use strict';
+(() => {
+  'use strict';
+  const text=s=>`<div style="font-size:${/^[^\p{L}\p{N}<>]+$/u.test(s)?'clamp(36px,7dvh,48px)':'clamp(16px,3dvh,22px)'};line-height:1.2">${s}</div>`;
+  const choice=(a,bs)=>[a,...bs].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+  const add=(id,title,icon,make)=>registerGame({id,grade:'K',subject:'ss',icon,title,sub:B('Look, listen, and choose','보고 듣고 골라요'),area:B('Social Studies · Our world','사회 · 우리 세상'),play(){const item=make(lvl(id));item.onRender=()=>{if($$('.opt svg').length){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.setAttribute('aria-label',L(B('Hear map choices','지도 보기 듣기')));b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);}};quiz(this,item);}});
+  const places=[['🏠',B('house','집')],['🏫',B('school','학교')],['🌳',B('tree','나무')],['⛲',B('fountain','분수')]];
+  const map=(items,turn=0,scene=false)=>`<svg viewBox="0 0 120 80" style="width:120px;max-width:100%;height:80px" role="img" aria-label="${L(B(scene?'Scene beside water':'Map model from above',scene?'물가의 장면':'위에서 본 지도 모형'))}"><rect width="120" height="80" fill="${scene?'#dceefb':'#a9db9c'}"/><rect y="50" width="120" height="30" fill="#a9db9c"/><rect x="88" y="${scene?50:0}" width="32" height="80" fill="#78c8f0"/>${items.map((it,i)=>{const x=5+((i+turn)%3)*27, key=places.indexOf(it);let shape;if(scene)shape=`<text x="0" y="40" font-size="23">${it[0]}</text>`;else if(key<2)shape=`<rect x="1" y="21" width="20" height="18" fill="${key?'#f1b166':'#ec7878'}" stroke="#435269"/><path d="M1 30H21" stroke="#435269"/>`;else if(key===2)shape='<circle cx="11" cy="30" r="10" fill="#408b45" stroke="#435269"/>';else shape='<circle cx="11" cy="30" r="10" fill="#78c8f0" stroke="#435269"/><circle cx="11" cy="30" r="4" fill="white"/>';return `<g transform="translate(${x} 0)">${shape}<text x="11" y="63" text-anchor="middle" font-size="11">${key+1}</text></g>`;}).join('')}</svg>`;
+  add('mapview',B('Little Map Models','작은 지도 모형'),'🗺️',lv=>{
+    const items=shuffle(places).slice(0,3),turn=rnd(3),kind=rnd(3);
+    if(lv===1&&rnd(3)===0){const water=!!rnd(2);return {ask:water?B('Blue on this model means what?','이 모형의 파랑은 무엇일까요?'):B('Green on this model means what?','이 모형의 초록은 무엇일까요?'),show:map(items,turn),opts:choice(water?B('Water','물'):B('Land','육지'),[water?B('Land','육지'):B('Water','물'),B('Sky','하늘')]),cls:'words'};}
+    if(lv===1){const t=pick(items);return {ask:B(`Which sign shows the ${t[1].en}?`,`작은 지도에서 ${t[1].ko} 표시는?`),show:map(items,turn,true)+map(items,turn),opts:[t,...items.filter(x=>x!==t)].map((x,i)=>({html:text(x[0]),label:x[1],ok:i===0})),after:B('A map uses small signs to show places. Blue here means water.','지도는 장소를 작은 표시로 나타내요. 여기서 파랑은 물이에요.')};}
+    if(kind===0)return {ask:B('Look at the scene. Which map from above matches?','장면을 봐요. 위에서 본 지도의 배치가 같은 것은?'),show:map(items,turn,true),opts:[0,1,2].map((d,i)=>({html:map(items,(turn+d)%3),label:B('Map '+(i+1),'지도 '+(i+1)),ok:i===0})),after:B('The matching model keeps the places in the same positions.','작은 모형에서도 장소의 위치 관계는 같아요.')};
+    const t=items[kind-1];return {ask:B(`This little ${t[1].en} sign stands for what?`,`작은 ${t[1].ko} 표시는 무엇을 나타낼까요?`),show:map(items,turn),opts:choice(B(`A real ${t[1].en}`,`실제 ${t[1].ko}`),[B('A full-size place inside the screen','화면 속 실제 크기의 장소'),B('Every place in the world','세상의 모든 장소')]),after:B('A map is a smaller model viewed from above, not the real place.','지도는 장소를 위에서 본 작은 모형이에요.')};
+  });
+  const goods=[['🍎',B('apple','사과')],['📖',B('book','책')],['🧢',B('hat','모자')],['🖍️',B('crayon','크레용')],['⚽',B('ball','공')],['🧸',B('toy','장난감')]];
+  add('workmoney',B('Work, Money, Choices','일과 돈과 선택'),'🛍️',lv=>{
+    const a=pick(goods),b=pick(goods.filter(x=>x!==a)),price=1+rnd(4);
+    if(lv===1){const service=!!rnd(2);return {ask:service?B(`A worker repairs a ${a[1].en}. Goods or service?`,`일하는 사람이 ${a[1].ko} 수리를 해요. 물건일까요, 서비스일까요?`):B(`You buy a ${a[1].en}. Goods or service?`,`${a[1].ko} 구입이에요. 물건일까요, 서비스일까요?`),show:text(a[0]),opts:choice(service?B('Service: work for someone','서비스: 누군가를 위한 일'):B('Goods: a thing','재화: 물건'),[service?B('Goods: a thing','재화: 물건'):B('Service: work for someone','서비스: 누군가를 위한 일')]),after:B('People can earn money by doing work. Money buys goods and services.','사람들은 일해서 돈을 벌 수 있어요. 돈으로 물건과 서비스를 사요.')};}
+    return {ask:B(`Earn $${price}. Each costs $${price}. Can you buy both?`,`일해서 ${price}달러를 벌었어요. 하나에 ${price}달러예요. 둘 다 살 수 있나요?`),show:text(`${a[0]} $${price}　${b[0]} $${price}`),opts:choice(B('Choose one; money is limited','돈이 부족해서 하나를 골라요'),[B('Buy both with this money','이 돈으로 둘 다 사요'),B('Work means everything is free','일하면 모든 것이 공짜예요')]),cls:'words',after:B('Money earned from work is income. A limited amount means making choices.','일해서 번 돈이 소득이에요. 돈이 한정되어 있어서 선택해요.')};
+  });
+})();
 // Georgia & Our Nation (HMH Into Social Studies K: The World Around Us; Georgia K Social Studies AKS)
+(() => {
+  'use strict';
+  // Original cards; official facts and dated checks are listed in codex-done-60.md.
+  const option=(x,ok)=>({html:`<span class="word" style="font-size:clamp(15px,2.7dvh,20px)">${L(x)}</span>`,ok});
+  const card=s=>`<div style="font-size:${/^[^\p{L}\p{N}<>]+$/u.test(s)?'clamp(36px,7dvh,48px)':'clamp(16px,2.9dvh,21px)'};line-height:1.2">${s}</div>`;
+  const add=(id,title,icon,area,make)=>registerGame({id,grade:'K',subject:'ss',icon,title,sub:B('Listen to the clues','단서를 듣고 골라요'),area,play(){quiz(this,make(lvl(id)));}});
+  const symbols=[
+    [B('Pledge of Allegiance','충성 맹세'),'📜',B('Words of loyalty to the U.S. flag','미국 국기에 충성을 약속하는 말'),B('Spoken words, not the national song','국가 노래가 아니라 말로 하는 맹세')],
+    [B('The Star-Spangled Banner','성조기여 영원하라'),'🎵',B('The U.S. national anthem','미국의 국가'),B('A song used as a national symbol','나라의 상징으로 쓰는 노래')],
+    [B('Bald eagle','흰머리수리'),'🦅',B('A bird used as a U.S. emblem','미국의 상징인 새'),B('The eagle on the Great Seal','미국의 큰 인장에 그려진 독수리')],
+    [B('Statue of Liberty','자유의 여신상'),'🗽',B('A statue that stands for liberty','자유를 나타내는 조각상'),B('A statue holding a torch','횃불을 들고 있는 조각상')],
+    [B('Lincoln Memorial','링컨 기념관'),'🏛️',B('A memorial honoring Abraham Lincoln','에이브러햄 링컨을 기리는 기념관'),B('A memorial with a seated Lincoln statue','앉아 있는 링컨 조각상이 있는 기념관')],
+    [B('Washington Monument','워싱턴 기념탑'),'📐',B('A monument honoring George Washington','조지 워싱턴을 기리는 기념탑'),B('A tall, pointed stone monument','높고 끝이 뾰족한 돌 기념탑')],
+    [B('White House','백악관'),'🏠',B('The home of the U.S. president','미국 대통령의 집'),B('A building where the U.S. president works','미국 대통령이 일하는 건물')]
+  ];
+  // Generic icons are memory cues, not depictions of specific buildings or people.
+  add('nationcards',B('U.S. Symbol Clues','미국 상징 단서'),'🇺🇸',B('Social Studies · National symbols','사회 · 미국의 상징'),lv=>{
+    const t=pick(symbols),which=2+rnd(2),ds=shuffle(symbols.filter(x=>x!==t)).slice(0,lv===1?2:3);
+    return {ask:lv===1?B(`${t[which].en}. Which symbol?`,`${t[which].ko}. 어떤 상징일까요?`):B(`About ${t[0].en}: which clue fits?`,`${t[0].ko}에 맞는 단서는?`),show:card(lv===1?'🇺🇸':t[1]),opts:[option(lv===1?t[0]:t[which],true),...ds.map(x=>option(lv===1?x[0]:x[which],false))],cls:'words',after:B(`${t[0].en}: ${t[which].en}.`,`${t[0].ko}: ${t[which].ko}.`)};
+  });
+  const holidays=[
+    [B('Christmas Day','성탄절'),B('December 25','12월 25일'),B('A holiday observed by many Christians','많은 기독교인이 기념하는 날'),'🎄'],
+    [B('Columbus Day','콜럼버스의 날'),B('Second Monday in October','10월 둘째 월요일'),B('A federal holiday named for Columbus','콜럼버스의 이름을 붙인 연방 공휴일'),'⛵'],
+    [B('Juneteenth','준틴스'),B('June 19','6월 19일'),B('Remembers freedom from slavery','노예제에서 벗어난 자유를 기념해요'),'🕊️'],
+    [B('Martin Luther King Jr. Day','마틴 루서 킹 주니어의 날'),B('Third Monday in January','1월 셋째 월요일'),B('Honors a leader for equal rights','평등한 권리를 위해 힘쓴 지도자를 기려요'),'🤝'],
+    [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','군 복무 중 목숨을 잃은 분들을 기억해요'),'🌺'],
+    [B("Washington’s Birthday / Presidents Day",'워싱턴 탄생일 / 대통령의 날'),B('Third Monday in February','2월 셋째 월요일'),B('A federal holiday named for George Washington','조지 워싱턴의 이름을 붙인 연방 공휴일'),'📅']
+  ];
+  add('holidayclues',B('Holiday Stories','기념일 이야기'),'📅',B('Social Studies · Holidays','사회 · 기념일'),lv=>{
+    if(rnd(4)===0){const p=pick(people),ds=people.filter(x=>x!==p);return {ask:lv===1?B(`${p[1].en}. Who?`,`${p[1].ko}. 누구일까요?`):B(`${p[0].en}: which connection?`,`${p[0].ko}: 맞는 연결은?`),show:card('🏛️'),opts:[option(lv===1?p[0]:p[1],true),...ds.map(x=>option(lv===1?x[0]:x[1],false))],cls:'words'};}
+    const t=pick(holidays),which=1+rnd(2),ds=shuffle(holidays.filter(x=>x!==t)).slice(0,lv===1?2:3);
+    const extra=t===holidays[1]?B('Indigenous peoples already lived in the Americas. Families and communities observe different days.','아메리카에는 이미 원주민들이 살고 있었어요. 가정과 공동체마다 기념하는 날이 달라요.'):t===holidays[0]?B('Families may celebrate this holiday, another holiday, or none.','이 날을 기념하는 가정도, 다른 날을 기념하거나 기념하지 않는 가정도 있어요.'):B('People remember history in different ways.','사람들은 여러 방법으로 역사를 기억해요.');
+    return {ask:lv===1?B(`${t[which].en}. Which holiday?`,`${t[which].ko}. 어떤 날일까요?`):B(`${t[0].en}: choose its ${which===1?'date':'meaning'}.`,`${t[0].ko}: ${which===1?'언제일까요':'뜻을 골라요'}?`),show:card(t[3]),opts:[option(lv===1?t[0]:t[which],true),...ds.map(x=>option(lv===1?x[0]:x[which],false))],cls:'words',after:extra};
+  });
+  const routines=[B('read a story','이야기를 읽어요'),B('draw a picture','그림을 그려요'),B('play with blocks','블록으로 놀아요'),B('visit a park','공원에 가요'),B('sing a song','노래해요'),B('plant a seed','씨앗을 심어요')];
+  const customs=[
+    [B('Mia eats rice; Leo eats noodles.','미아는 밥을, 레오는 국수를 먹어요.'),B('Foods can differ','먹는 음식이 달라요')],
+    [B('Mia says hello; Leo says annyeong.','미아는 hello, 레오는 안녕이라고 말해요.'),B('Greetings can differ','인사말이 달라요')],
+    [B('Mia sings at a birthday; Leo tells a story.','미아는 생일에 노래하고 레오는 이야기를 해요.'),B('Celebrations can differ','축하하는 방법이 달라요')],
+    [B('Mia visits cousins; Leo calls cousins.','미아는 사촌을 만나고 레오는 전화해요.'),B('Ways to connect can differ','연락하는 방법이 달라요')],
+    [B('Mia plays a drum; Leo plays a flute.','미아는 북을, 레오는 플루트를 연주해요.'),B('Music can differ','연주하는 음악이 달라요')],
+    [B('Mia reads in English; Leo reads in Korean.','미아는 영어로, 레오는 한국어로 읽어요.'),B('Languages can differ','읽는 언어가 달라요')]
+  ];
+  const rules=[
+    [B('Toys block the path.','장난감이 길을 막아요.'),B('Put toys away','장난감을 치워요'),B('Keep a clear path','지나는 길을 비워요')],
+    [B('Running can cause a fall here.','여기서 뛰면 넘어질 수 있어요.'),B('Walk here','여기서는 걸어요'),B('Help prevent falls','넘어지지 않도록 해요')],
+    [B('Everyone wants a turn with one ball.','공 하나로 모두 놀고 싶어요.'),B('Take turns','차례로 써요'),B('Give each person a turn','모두 차례를 가질 수 있어요')],
+    [B('Loud voices hide a story being read.','목소리가 크면 읽는 이야기가 안 들려요.'),B('Use quiet voices','작은 목소리로 말해요'),B('Help people hear the story','이야기를 들을 수 있어요')],
+    [B('Trash covers the shared table.','함께 쓰는 탁자에 쓰레기가 있어요.'),B('Use the trash can','쓰레기통에 버려요'),B('Keep a shared table clean','함께 쓰는 탁자를 깨끗하게 해요')],
+    [B('People bump into each other at the door.','문에서 사람들이 부딪혀요.'),B('Leave space at the door','문 앞에서 간격을 두어요'),B('Avoid bumping into others','서로 부딪히지 않도록 해요')]
+  ];
+  add('timeculture',B('Our Days Together','함께하는 하루'),'🤝',B('Social Studies · Time, culture and rules','사회 · 시간과 문화와 규칙'),lv=>{
+    const kind=rnd(3);
+    if(kind===0){
+      const act=pick(routines),when=rnd(4),words=[B('Yesterday','어제'),B('Today','오늘'),B('Tomorrow','내일'),B('Long ago','아주 옛날')],word=words[when],tense=[B('Past','과거'),B('Present','현재'),B('Future','미래')],key=when===3?0:when;
+      const clue=[B('The day before today','오늘 전날'),B('The day happening now','지금인 날'),B('The day after today','오늘 다음 날'),B('A time before this child was born','이 아이가 태어나기 훨씬 전')][when];
+      const ask=lv===1?B(`${clue.en}: which time word?`,`${clue.ko}: 어떤 시간말일까요?`):B(`${word.en}: past, present, or future?`,`${word.ko}: 과거, 현재, 미래 중 무엇일까요?`);
+      const options=lv===1?[option(word,true),...shuffle(words.filter(x=>x!==word)).slice(0,2).map(x=>option(x,false))]:tense.map((x,i)=>option(x,i===key));
+      return {ask,show:card(`${L(act)} · ${L(lv===1?clue:word)}`),askSay:B(`${act.en}. ${ask.en}`,`${act.ko}. ${ask.ko}`),opts:options,cls:'words'};
+    }
+    if(kind===1){const t=pick(customs),story=t[0];return {ask:lv===1?B(`${story.en} What differs?`,`${story.ko} 무엇이 다를까요?`):B(`${story.en} How can we learn from each other?`,`${story.ko} 서로 어떻게 배울까요?`),opts:lv===1?[option(t[1],true),option(B('Both must do everything the same','모든 것을 똑같이 해야 해요'),false),option(B('One family stands for everyone','한 가정이 모두를 대표해요'),false)]:[option(B('Ask about their way respectfully','서로의 방법을 존중하며 물어요'),true),option(B('Say only my way is allowed','내 방법만 해야 한다고 해요'),false),option(B('Guess everyone does the same','모두 같을 거라고 생각해요'),false)],cls:'words',after:B('These are two made-up families, not a rule about a whole group.','두 가상의 가정 이야기예요. 한 집단 모두의 관습이라는 뜻은 아니에요.')};}
+    const t=pick(rules),form=rnd(2);
+    return {ask:lv===1?B(`${t[0].en} The class discusses a rule. Which helps?`,`${t[0].ko} 학급에서 규칙을 의논해요. 어떤 규칙이 좋을까요?`):B(`${t[1].en}. ${t[0].en} Why agree to this rule?`,`${t[1].ko}. ${t[0].ko} 왜 이 규칙을 정할까요?`),show:card(form?'👧 🤝 👦':'🏫 💬'),opts:lv===1?[option(t[1],true),option(B('Ignore the shared problem','함께 겪는 문제를 무시해요'),false),option(B('Only one person matters','한 사람만 중요해요'),false)]:[option(t[2],true),option(B('To stop everyone from learning','아무도 배우지 못하게 하려고요'),false),option(B('To help only one child','한 아이만 도우려고요'),false)],cls:'words',after:B('People can discuss a shared problem and agree on a helpful rule.','함께 겪는 문제를 의논하고 도움이 되는 규칙을 정할 수 있어요.')};
+  });
+  const people=[
+    [B('George Washington','조지 워싱턴'),B('The first U.S. president','미국의 첫 번째 대통령')],
+    [B('Abraham Lincoln','에이브러햄 링컨'),B('The president honored by the Lincoln Memorial','링컨 기념관에서 기리는 대통령')],
+    [B('Donald Trump (Oct. 16, 2026)','도널드 트럼프 (2026년 10월 16일)'),B('The U.S. president on October 16, 2026','2026년 10월 16일의 미국 대통령')]
+  ];
+
+})();
 // Simplified flag drawings; see docs/curriculum-analysis.md.
 const AREA_SS = (u) => B(`Social Studies · ${u}`, `사회 · ${u}`);
 const starPoly = (cx, cy, r) => {

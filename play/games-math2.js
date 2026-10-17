@@ -1,4 +1,17 @@
 'use strict';
+(() => {
+  'use strict';
+  // Tap the missing piece; on success the piece joins the outlined whole.
+  registerGame({id:'shapejoin',grade:'K',subject:'math',icon:'🧩',title:B('Join the Shape','도형 조각 합치기'),sub:B('Tap a piece to fill the outline','조각을 눌러 빈 곳을 채워요'),area:B('Math · Composing shapes','수학 · 도형 합성'),play(){
+    const lv=lvl('shapejoin'),w=pick([60,80,100,120]),h=pick([35,55,75]),vertical=!!rnd(2),tri=lv===2&&!!rnd(2),missing=!!rnd(2);
+    const points=tri?(missing?`0,0 ${w},0 ${w},${h}`:`0,0 0,${h} ${w},${h}`):'';
+    const piece=(kind,color)=>kind==='triangle'?`<polygon points="${points||`0,0 ${w},0 0,${h}`}" fill="${color}"/>`:kind==='rectangle'?`<rect width="${vertical?w/2:w}" height="${vertical?h:h/2}" fill="${color}"/>`:`<circle cx="${w/2}" cy="${h/2}" r="${Math.min(w,h)/2}" fill="${color}"/>`;
+    const right=tri?'triangle':'rectangle',name=k=>k==='triangle'?B('Triangle','삼각형'):k==='rectangle'?B('Rectangle','직사각형'):B('Circle','원');
+    const svg=(body)=>`<svg viewBox="-4 -4 ${w+8} ${h+8}" style="width:120px;max-width:100%;height:80px">${body}</svg>`;
+    const filled=tri?(missing?`<polygon points="0,0 0,${h} ${w},${h}" fill="#8acbd0"/>`:`<polygon points="0,0 ${w},0 ${w},${h}" fill="#8acbd0"/>`):`<rect x="${vertical&&missing?w/2:0}" y="${!vertical&&missing?h/2:0}" width="${vertical?w/2:w}" height="${vertical?h:h/2}" fill="#8acbd0"/>`;
+    quiz(this,{ask:B('Tap the piece that fills the empty part.','빈 부분에 꼭 맞는 조각을 눌러요.'),show:`<div id="kJoin">${svg(`<rect width="${w}" height="${h}" fill="white" stroke="#435269" stroke-width="2" stroke-dasharray="3 2"/>${filled}`)}</div>`,opts:[right,...(tri?['rectangle','circle']:['triangle','circle'])].map((k,i)=>({html:svg(piece(k,'#ed9a68')),label:name(k),ok:i===0})),cls:'shapes',onRender(){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.setAttribute('aria-label',L(B('Hear the pieces','조각 이름 듣기')));b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);},onCorrect(){const target=$('#kJoin');if(target)target.innerHTML=svg(`<rect width="${w}" height="${h}" fill="#ed9a68" stroke="#435269" stroke-width="2"/>${filled}`);},after:B('The pieces join to fill one larger shape.','조각을 합쳐 더 큰 도형을 채웠어요.')});
+  }});
+})();
 // Math extension: measurement (length / weight) and time-of-day patterns.
 
 const HEAVY_PAIRS = [

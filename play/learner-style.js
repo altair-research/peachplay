@@ -1,5 +1,14 @@
 (() => {
   'use strict';
+  // Per-profile, per-grade runtime decisions. Reloads conservatively restart observation.
+  const decisions = new WeakMap();
+  const decision = () => {
+    let grades = decisions.get(S); if (!grades) { grades = {}; decisions.set(S, grades); }
+    return grades[kidGrade()] ||= { bands: null, candidate: 'unknown', observed: 'unknown', held: new Set() };
+  };
+  const tuneFlags = { holdLevelRise: true };
+  const holdRise = id => { if (tuneFlags.holdLevelRise) decision().held.add(id); };
+  const canRise = id => !tuneFlags.holdLevelRise || !decision().held.has(id);
   const now = () => Math.floor(Date.now() / 1000);
   const days30 = 30 * 86400;
   const domainKeys = ['num', 'alg', 'meas', 'geo', 'pa', 'ph', 'hfw', 'voc', 'lit', 'inf', 'sci_life', 'sci_earth', 'sci_physical', 'ss_history', 'ss_geography', 'ss_civics', 'ss_economics'];
@@ -28,7 +37,7 @@
     const entry = (S.mastery || {})[domainKey(domain)];
     return !!(entry && entry.approved && now() - entry.approved >= days30) || !!(report && report.grade === kidGrade() && report.domains.includes(domain.k)) || rows.length === 30 && window.LearnLog.accuracy(rows) >= 0.9;
   });
-  const bands = () => {
+  const calculateBands = () => {
     if (kidGrade() === 'P') return [];
     return domainList().flatMap(domain => {
       if (domain.reviewOnly) return reviewBands(domain);
@@ -46,6 +55,16 @@
       if (rate < 0.7) return [{ id: ladder[Math.max(0, position - 1)], need: 7, why: ['__warm__'] }];
       return [];
     });
+  };
+  const bands = () => kidGrade() === 'P' ? [] : (decision().bands ?? calculateBands()).filter(item => {
+    const game = gameById(item.id), domain = domainFor(item.id);
+    return game && !heldGame(game) && (!domain || !excluded(domain)) && (!domain || !domain.reviewOnly || gradeOf(game) === kidGrade());
+  });
+  const refresh = () => {
+    if (kidGrade() === 'P') return;
+    const state = decision(), candidate = evidence().candidate;
+    state.observed = candidate !== 'unknown' && candidate === state.candidate ? candidate : 'unknown';
+    state.candidate = candidate; state.bands = calculateBands(); state.held.clear();
   };
   const recommendations = (base, max) => {
     const merged = new Map();
@@ -118,23 +137,25 @@
     const domain = domainFor(game.id);
     return domain && domain.reviewOnly ? reviewBands(domain).some(item => (domain.topics.find(ids => ids.includes(item.id)) || []).includes(game.id)) && gradeOf(game) === kidGrade() && !heldGame(game) : weakDomain(domain);
   };
-  const behavior = () => {
-    if (kidGrade() === 'P') return 'unknown';
+  const evidence = () => {
+    if (kidGrade() === 'P') return { candidate: 'unknown', total: 0, wrong: 0, offered: 0 };
     const weak = domainList().filter(weakDomain);
     const weakIds = new Set(weak.flatMap(domain => domain.reviewOnly
       ? reviewBands(domain).flatMap(item => domain.topics.find(ids => ids.includes(item.id)) || []).filter(id => gameById(id) && gradeOf(gameById(id)) === kidGrade() && !heldGame(gameById(id)))
       : Object.values(domain.g).flat()));
     const rows = window.LearnLog.clean(S.log).filter(row => row[0] >= now() - 14 * 86400 && !(row[5] & 2) && weakIds.has(row[1]));
-    if (rows.length < 30) return 'unknown';
     const wrong = rows.filter(row => row[3] === 0), offered = cleanPickLog(S.pickLog).filter(row => row[0] >= now() - 14 * 86400 && weak.some(domain => domain.k === row[1]));
-    const rates = [wrong.length ? wrong.filter(row => row[5] & 4).length / wrong.length : 0, rows.filter(row => row[3] === 2).length / rows.length, offered.length ? offered.filter(row => row[2] === 0).length / offered.length : 0];
-    if (rates.filter(rate => rate >= 0.3).length >= 2) return 'slow';
+    const rates = [wrong.length >= 10 ? wrong.filter(row => row[5] & 4).length / wrong.length : null, rows.filter(row => row[3] === 2).length / rows.length, offered.length >= 10 ? offered.filter(row => row[2] === 0).length / offered.length : null];
+    const result = candidate => ({ candidate, total: rows.length, wrong: wrong.length, offered: offered.length, rates });
+    if (rows.length < 30) return result('unknown');
+    if (rates.filter(rate => rate !== null && rate >= 0.3).length >= 2) return result('slow');
     const advanced = [...new Set(rows.map(row => row[1]))].some(id => {
       const own = rows.filter(row => row[1] === id), first = own.findIndex(row => row[2] >= 2);
       return first > 0 && first < 10 && own.slice(0, first).some(row => row[2] === 1);
     });
-    return rates.every(rate => rate < 0.3) && advanced ? 'challenge' : 'unknown';
+    return result(rates.every(rate => rate !== null && rate < 0.3) && advanced ? 'challenge' : 'unknown');
   };
+  const behavior = () => kidGrade() === 'P' || evidence().candidate !== decision().observed ? 'unknown' : decision().observed;
   const style = () => kidGrade() === 'P' ? 'unknown' : ['slow', 'challenge'].includes(S.learningStyle) ? S.learningStyle : behavior();
   const pattern = mode => mode === 'slow' ? ['confident', 'confident', 'weak'] : mode === 'challenge' ? ['weak', 'confident'] : [];
   const confident = game => {
@@ -170,6 +191,7 @@
   const offer = picks => { offers = kidGrade() === 'P' ? [] : [...new Set(picks.filter(item => gameById(item.id) && weakGame(gameById(item.id))).map(item => domainFor(item.id)).filter(weakDomain).map(domain => domain.k))]; };
   const choose = game => {
     if (kidGrade() === 'P' || gradeOf(game) === 'P') { offers = []; return; }
+    decision().bands ??= calculateBands();
     if (offers.length) {
       S.pickLog = cleanPickLog(S.pickLog).concat(offers.map(key => [now(), key, Object.values(domainList().find(domain => domain.k === key).g).some(ids => ids.includes(game.id)) ? 1 : 0])).slice(-1500);
       offers = []; save();
@@ -180,6 +202,7 @@
   const complete = () => {
     if (kidGrade() === 'P' || SESSION.styleCompleted) return;
     SESSION.styleCompleted = true;
+    refresh();
     if (SESSION.styleWeak) { dayCounts().weak++; save(); }
   };
   const goal = () => {
@@ -190,8 +213,8 @@
   const labels = () => ({ slow: L(B('Take small steps', '천천히 다가가기')), challenge: L(B('Enjoy challenges', '도전 좋아하기')), unknown: L(B('Not sure yet', '잘 모르겠어요')) });
   const stylePanel = () => {
     if (kidGrade() === 'P') return '';
-    const selected = ['slow', 'challenge'].includes(S.learningStyle) ? S.learningStyle : 'unknown', observed = behavior();
-    return `<section><h2>${L(B('Approach to learning', '학습 접근 방식'))}</h2><p>${labels()[selected]}</p>${selected !== 'unknown' && observed !== 'unknown' && observed !== selected ? `<p>${L(B(`Recent play looks closer to: ${labels()[observed]}. Your answer still takes priority.`, `요즘은 ${labels()[observed]} 쪽으로 보여요. 보호자 답을 우선 유지해요.`))}</p>` : ''}<p class="note2">${L(B('Behavior estimates start after 30 questions in areas needing practice over 14 days. With too little evidence, we keep the default. A chosen alternative counts as a skipped recommendation; simply leaving the menu does not.', '최근 14일 동안 연습할 영역의 문제가 30개 이상일 때 행동을 참고해요. 자료가 적으면 기본 방식을 유지해요. 다른 게임을 고르면 추천 넘김으로 세며, 메뉴를 나가기만 한 경우는 세지 않아요.'))}</p><button class="pill" id="styleEdit">${L(B('Child profile: learning approach', '아이 프로필: 학습 접근 방식'))}</button></section>`;
+    const selected = ['slow', 'challenge'].includes(S.learningStyle) ? S.learningStyle : 'unknown', observed = behavior(), basis = evidence();
+    return `<section><h2>${L(B('Approach to learning', '학습 접근 방식'))}</h2><p>${labels()[selected]}</p><p class="note2">${L(B('Automatic observation', '자동 관찰'))}: ${observed === 'unknown' ? L(B('Insufficient observation', '관찰 부족')) : labels()[observed]}</p>${selected !== 'unknown' && observed !== 'unknown' && observed !== selected ? `<p>${L(B(`Recent play looks closer to: ${labels()[observed]}. Your answer still takes priority.`, `요즘은 ${labels()[observed]} 쪽으로 보여요. 보호자 답을 우선 유지해요.`))}</p>` : ''}<p class="note2">${L(B('Behavior estimates start after 30 questions in areas needing practice over 14 days. With too little evidence, we keep the default. A chosen alternative counts as a skipped recommendation; simply leaving the menu does not.', '최근 14일 동안 연습할 영역의 문제가 30개 이상일 때 행동을 참고해요. 자료가 적으면 기본 방식을 유지해요. 다른 게임을 고르면 추천 넘김으로 세며, 메뉴를 나가기만 한 경우는 세지 않아요.'))}</p><p class="note2">${L(B(`Behavior estimate, not a measurement. Last 14 days: ${basis.total} weak-area answers (minimum 30); wrong answers ${basis.wrong} (minimum 10); recommendations offered ${basis.offered} (minimum 10). Ratios below their minimum are unavailable. Entry requires two consecutive completed rounds. No weakness evidence means insufficient observation.`, `측정이 아닌 행동 추정이에요. 최근 14일: 연습할 영역 ${basis.total}문제(최소 30), 오답 ${basis.wrong}개(최소 10), 추천 제시 ${basis.offered}회(최소 10). 최소 분모 미달 비율은 사용하지 않아요. 연속 2개 완료 판에서 같은 판정일 때 반영해요. 약함 근거가 없으면 관찰 부족이에요.`))}</p><button class="pill" id="styleEdit">${L(B('Child profile: learning approach', '아이 프로필: 학습 접근 방식'))}</button></section>`;
   };
   const styleSettings = () => {
     if (kidGrade() === 'P') return home();
@@ -201,5 +224,5 @@
     $('#styleBack').onclick = settings;
   };
   const bindStyle = () => { if ($('#styleEdit')) $('#styleEdit').onclick = styleSettings; };
-  window.Learner = { domainFor, domainList, domainKey, cleanMastery, passed, excluded, candidates, bands, recommendations, saveStrong, startConfirm, confirmOptions, finishConfirm, panel, bind, cleanPickLog, cleanDays, weakDomain, weakGame, behavior, style, pattern, arrange, mixGame, offer, choose, noteBoss, complete, goal, stylePanel, styleSettings, bindStyle };
+  window.Learner = { evidence, refresh, tuneFlags, holdRise, canRise, domainFor, domainList, domainKey, cleanMastery, passed, excluded, candidates, bands, recommendations, saveStrong, startConfirm, confirmOptions, finishConfirm, panel, bind, cleanPickLog, cleanDays, weakDomain, weakGame, behavior, style, pattern, arrange, mixGame, offer, choose, noteBoss, complete, goal, stylePanel, styleSettings, bindStyle };
 })();

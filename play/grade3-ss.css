@@ -14,3 +14,14 @@
 @media (min-width:700px){#view:has(.real-map) .real-map{width:min(65vw,420px)}}
 #view:has(.real-map){min-height:calc(100dvh - 130px)}
 #view:has(.real-map)>.opts.sents .word{font-size:15px;line-height:1.1}
+
+/* Request 58 evidence cards, scoped to the new activities. */
+.gap58-card,.gap58-table,.gap58-build{font-size:clamp(12px,2.25dvh,17px);line-height:1.3;max-width:600px;margin:0 auto;padding:6px 9px;border-radius:10px;background:#f1f6fc;color:#20354b;text-align:left}
+.gap58-table{border-collapse:collapse;width:100%;text-align:center}
+.gap58-table caption{font-weight:700;padding:4px}
+.gap58-table th,.gap58-table td{padding:4px;border:1px solid #9bb2c6}
+.gap58-build{text-align:center}
+.gap58-build svg{width:min(70vw,200px);height:10dvh;display:block;margin:auto}
+.gap58-build button{font:inherit;min-height:44px;padding:6px 15px;background:white;border:2px solid #3475a2;border-radius:8px}
+.gap58-options .word{font-size:clamp(12px,2.35dvh,18px);line-height:1.25}
+.gap58-card .say.rd{position:static;float:right;margin:0 0 2px 5px}

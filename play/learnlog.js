@@ -27,8 +27,12 @@
   };
   const summary = (rows, history = rows) => {
     const count = rows.length, typical = median(history.map(row => row[4]));
-    const improvement = change(rows), middle = Math.floor(count / 2);
-    const signals = rows.filter((row, index) => (row[3] === 0 && (row[4] < 1500 || row[4] < typical / 3)) || row[4] >= 60000 || (row[5] & 4) || (improvement !== null && improvement <= -0.25 && index >= middle));
+    // Compare only like questions, with at least ten observations in each half.
+    const groups = new Map();
+    rows.forEach(row => { const key = row[1] + ':' + row[2]; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(row); });
+    const declines = [...groups.values()].filter(own => own.length >= 20 && change(own) <= -0.25);
+    // A decline is contextual information, never independent attention evidence.
+    const signals = rows.filter(row => (row[3] === 0 && (row[4] < 1500 || row[4] < typical / 3)) || (row[5] & 4));
     const signalRatio = count ? signals.length / count : 0;
     const start = count ? rows[0][0] : 0;
     const previous = history.filter(row => row[0] < start && row[0] >= start - 7 * 86400);
@@ -36,7 +40,7 @@
       const own = rows.filter(row => row[1] === id), past = previous.filter(row => row[1] === id);
       return { id, count: own.length, accuracy: accuracy(own), median: median(own.map(row => row[4])), firstTry: accuracy(own), unknown: own.filter(row => row[3] === 2).length, review: own.filter(row => row[5] & 1).length, improvement: change(own), weekChange: own.length >= 5 && past.length >= 5 ? accuracy(own) - accuracy(past) : null };
     });
-    return { count, accuracy: accuracy(rows), firstTry: accuracy(rows), median: median(rows.map(row => row[4])), unknown: rows.filter(row => row[3] === 2).length, review: rows.filter(row => row[5] & 1).length, signalRatio, focus: count < 5 ? null : signalRatio < 0.1 ? 'steady' : signalRatio < 0.25 ? 'mixed' : 'wobbly', games };
+    return { count, longResponses: rows.filter(row => row[4] >= 60000).length, declines: declines.map(own => ({ id: own[0][1], level: own[0][2], count: own.length, change: change(own) })), accuracy: accuracy(rows), firstTry: accuracy(rows), median: median(rows.map(row => row[4])), unknown: rows.filter(row => row[3] === 2).length, review: rows.filter(row => row[5] & 1).length, signalRatio, focus: count < 5 ? null : signalRatio < 0.1 ? 'steady' : signalRatio < 0.25 ? 'mixed' : 'wobbly', games };
   };
   let current = null, lastRow = null;
   const eligible = game => kidGrade() !== 'P' && game && gradeOf(game) !== 'P';
