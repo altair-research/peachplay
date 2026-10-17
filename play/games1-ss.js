@@ -146,7 +146,7 @@ G1T({
     if (kind === 'cont') { const ks = Object.keys(WORLD), k = pick(ks), ds = others(ks, k, 2); quiz(this, { ask: B('Which continent is colored red?', '빨갛게 칠해진 대륙은 어디일까요?'), show: worldSvg(k), opts: [k, ...ds].map(c => ({ html: `<span class="word">${L(WORLD[c].n)}</span>`, ok: c === k })), cls: 'words', after: B(`That is ${WORLD[k].n.en}.`, `${WORLD[k].n.ko}이에요.`), vocab: WORLD[k].n.en }); }
     else if (kind === 'ocean') { const ks = Object.keys(OCEANS), k = pick(ks), ds = others(ks, k, 2); quiz(this, { ask: B('Which ocean is the yellow dot in?', '노란 점이 있는 대양은?'), show: worldSvg('', OCEANS[k].at[0]), opts: [k, ...ds].map(o => ({ html: `<span class="word">${L(OCEANS[o].n)}</span>`, ok: o === k })), cls: 'words', after: B(`That is the ${OCEANS[k].n.en}.`, `${OCEANS[k].n.ko}이에요.`), vocab: OCEANS[k].n.en }); }
     else if (kind === 'land') { const t = pick(LAND), ds = others(LAND, t, 2); quiz(this, { ask: B(`Which landform is ${L(t[2])}?`, `${t[2].ko}은 어떤 지형일까요?`), opts: [t, ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === t })), after: B(`A ${t[1].en} is ${t[2].en}.`, `${t[1].ko}은 ${t[2].ko}이에요.`), vocab: t[1].en }); }
-    else { const items = [[B('Georgia has mountains in the north. What landform is that?', '조지아 북쪽에는 산이 있어요. 어떤 지형일까요?'), LAND[0]], [B('Georgia has a coast on the Atlantic Ocean. What landform is that?', '조지아는 대서양과 맞닿은 해안이 있어요. 어떤 지형일까요?'), LAND[3]]], it = pick(items), ds = others(LAND, it[1], 2); quiz(this, { ask: it[0], opts: [it[1], ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === it[1] })), after: B('Georgia has mountains and a coast!', '조지아에는 산과 해안이 있어요!') }); }
+    else { const items = [[B('Northern Georgia has very high, rocky land. What landform is that?', '조지아 북쪽에는 아주 높고 바위가 많은 땅이 있어요. 어떤 지형일까요?'), LAND[0]], [B('In Georgia, land meets the Atlantic Ocean. What landform is that?', '조지아에는 대서양과 맞닿은 땅이 있어요. 어떤 지형일까요?'), LAND[3]]], it = pick(items), ds = others(LAND, it[1], 2); quiz(this, { ask: it[0], opts: [it[1], ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === it[1] })), after: B('Georgia has mountains and a coast!', '조지아에는 산과 해안이 있어요!') }); }
   }
 });
 
@@ -217,6 +217,6 @@ const PATRIOT = [
 G1T({
   id: 'patriot', icon: '🎵', title: B('Patriotic Songs', '애국 노래의 낱말'), sub: B('"America" and "America the Beautiful"', '"America"와 "America the Beautiful"'), u: 'Patriotism',
   play() {
-    const p = pick(PATRIOT); quiz(this, { ask: p[1], show: `<div class="storytext">${L(p[0])}</div>`, opts: tOpts(p[2], lvl('patriot')===2?[...p[3],B('A pencil','연필')]:p[3]), cls: 'words', after: p[0], vocab: p[2].en });
+    const p = pick(PATRIOT); quiz(this, { ask: p[1], show: `<div class="storytext">${L(p[0])}</div>`, opts: tOpts(p[2], p[3]), cls: 'words', after: p[0], vocab: p[2].en });
   }
 });

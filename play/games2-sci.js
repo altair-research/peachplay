@@ -82,8 +82,8 @@ G2S({
 const EARTH_CH = [
   { e: '🌋', n: B('a volcano erupts', '화산이 터져요'), fast: true }, { e: '🏚️', n: B('an earthquake shakes the ground', '지진이 땅을 흔들어요'), fast: true },
   { e: '🌊', n: B('a flood covers the land', '홍수가 땅을 덮어요'), fast: true }, { e: '⛰️', n: B('a landslide slides down a hill', '산사태가 비탈을 쓸어내려요'), fast: true },
-  { e: '🏞️', n: B('a river carves a canyon over many years', '강이 오랜 세월 협곡을 깎아요'), fast: false }, { e: '🪨', n: B('wind and rain slowly wear down a rock', '바람과 비가 바위를 천천히 닳게 해요'), fast: false },
-  { e: '🧊', n: B('a glacier slowly pushes across land', '빙하가 천천히 땅 위를 밀고 가요'), fast: false }, { e: '🏖️', n: B('ocean waves slowly wear away a beach', '바닷물결이 해변을 천천히 깎아요'), fast: false }
+  { e: '🏞️', n: B('a river carves a canyon over many years', '강이 오랜 세월 협곡을 깎아요'), fast: false }, { e: '🪨', n: B('wind and rain wear down a rock over many years', '여러 해 동안 바람과 비가 바위를 닳게 해요'), fast: false },
+  { e: '🧊', n: B('a glacier reshapes land over hundreds of years', '수백 년 동안 빙하가 땅 위를 밀고 가요'), fast: false }, { e: '🏖️', n: B('ocean waves reshape a beach over many years', '여러 해 동안 바닷물결이 해변을 깎아요'), fast: false }
 ];
 G2S({
   id: 'earthchange2', icon: '🌋', title: B('Changing Land', '변하는 땅'), sub: B('Fast changes and slow changes', '빠른 변화와 느린 변화'), u: 'Earth Changes',
@@ -196,9 +196,9 @@ G2S({
       return;
     }
     const i = kind === 'next' ? rnd(3) : kind === 'prev' ? 1 + rnd(3) : kind === 'first' ? 0 : 3;
-    const askMap = { next: [B(`${c.n.en} life cycle: what comes RIGHT AFTER the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes RIGHT BEFORE the ${c.st[i][1].en}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
+    const askMap = { next: [B(`${c.n.en} life cycle: what comes RIGHT AFTER the ${c.st[i][1].en.replace(/ \(.*\)/,'')}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko.replace('다리가 난 올챙이','다리가 난 단계')} 바로 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes RIGHT BEFORE the ${c.st[i][1].en.replace(/ \(.*\)/,'')}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko.replace('다리가 난 올챙이','다리가 난 단계')} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
     const [ask, right] = askMap[kind], wr = others(c.st, right, 3).slice(0, 2);
-    quiz(this, { ask, show: `<span class="emo">${c.e}</span>`, opts: [right, ...wr].map((s, k) => ({ html: `<span class="word">${L(s[1])}</span>`, ok: k === 0 })), cls: 'words', after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
+    quiz(this, { ask, show: '', opts: [right, ...wr].map((s, k) => ({ html: `<span class="word">${L(s===c.st[3]?B('adult','다 자란 단계'):s[1])}</span>`, ok: k === 0 })), cls: 'words', after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
   }
 });
 
@@ -249,7 +249,7 @@ const modes = {
    if(lv===2)return item('daynight',B('Which conclusion matches both rows?','두 줄의 자료에 맞는 결론은?'),show,B('Summer has more daylight here','이곳은 여름의 낮이 더 길어요'),[B('Winter has more daylight here','이곳은 겨울의 낮이 더 길어요'),B('Day length never changes','낮의 길이는 늘 같아요')]);
    return item('daynight',i%4===0?B('Which date has the longer day?','낮이 더 긴 날은?'):B('Which date has the longer night?','밤이 더 긴 날은?'),show,target,[i%4===0?winter:summer]);
   }
-  const show=card(B('Stars differ in true size and light output. Some are smaller and dimmer than the Sun; others are larger and brighter. The Sun is much closer to Earth.','별은 실제 크기와 내는 빛이 달라요. 해보다 작고 어두운 별도, 크고 밝은 별도 있어요. 해는 지구에 훨씬 가까워요.'));
+  const show=card(B('Stars differ in true size and light output. Some are smaller and dimmer than the Sun; others are larger and brighter.','별은 실제 크기와 내는 빛이 달라요. 해보다 작고 어두운 별도, 크고 밝은 별도 있어요.'));
   return lv===1?item('star-evidence',B('Why does the Sun look so large and bright?','해가 아주 크고 밝게 보이는 까닭은?'),show,B('It is much closer to Earth','지구에 훨씬 가까워요'),[B('It is the largest of all stars','모든 별 중 가장 커요'),B('Other stars make no light','다른 별은 빛을 안 내요')]):item('star-evidence',B('Which evidence puts the Sun between smaller and larger stars?','해가 작은 별과 큰 별 사이임을 뒷받침하는 근거는?'),show,B('Stars exist on both sides in size and light output','해보다 작고 어두운 별과 크고 밝은 별이 있어요'),[B('Looking biggest proves it is biggest','가장 커 보이면 실제로도 가장 커요'),B('Distance cannot change its appearance','거리는 보이는 모습과 상관없어요')],B('The Sun is between smaller, dimmer stars and larger, brighter stars. Looking brightest does not prove it is biggest.','해보다 작고 어두운 별도, 크고 밝은 별도 있어요. 가장 밝게 보인다고 실제로 가장 큰 별은 아니에요.'));
  },
  matterchange2(lv,i) {

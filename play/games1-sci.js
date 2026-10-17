@@ -69,7 +69,7 @@ G1S({
 });
 
 // ---------- 3. Seasons ----------
-const SEAS = [['winter', '겨울', '⛄', B('It is cold. Some places get snow.', '추워요. 눈이 오는 곳도 있어요.')], ['spring', '봄', '🌷', B('It is warm. Flowers bloom and it rains.', '따뜻해요. 꽃이 피고 비가 와요.')], ['summer', '여름', '🏖️', B('It is hot. The days are long.', '더워요. 낮이 길어요.')], ['fall', '가을', '🍂', B('It is cool. Leaves change color and fall.', '시원해요. 나뭇잎이 물들고 떨어져요.')]];
+const SEAS = [['winter', '겨울', '⛄', B('It is cold. Some places get snow.', '추워요. 눈이 오는 곳도 있어요.')], ['spring', '봄', '🌷', B('It is warm. Flowers bloom and it rains.', '따뜻해요. 꽃이 피고 비가 와요.')], ['summer', '여름', '🏖️', B('It is hot. The days are long.', '더워요. 낮이 길어요.')], ['fall', '가을', '🍂', B('It is cool. Leaves change color and drop to the ground.', '시원해요. 나뭇잎이 물들고 떨어져요.')]];
 G1S({
   id: 'seasons1', icon: '🍂', title: B('Seasonal Patterns', '계절의 변화'), sub: B('What changes through the year?', '1년 동안 무엇이 바뀔까?'), u: 'Seasons',
   play() {

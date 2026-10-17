@@ -89,7 +89,7 @@ The crane lifted a beam. Crane is __.|a lifting machine|a bird|an insect
 The band’s conductor raised a baton. Baton is __.|a conductor’s stick|a relay stick|a tree branch
 The river bank held grass. Bank is __.|land beside water|a money business|a cloud
 He repaired a tear in fabric. Tear is __.|a rip|a drop from an eye|a noise`)]);
-bank('wordshade5','Precise Words','뜻의 미묘한 차이','5.L.V.3.c',[B('Choose the precise action word.','행동에 정확히 맞는 낱말을 골라요.'),B('Match all the stated conditions.','설명한 조건에 모두 맞게 골라요.')],[rows(`Speak quietly so only a nearby friend hears.|whisper|shout|announce
+bank('wordshade5','Precise Words','뜻의 미묘한 차이','5.L.V.3.c',[B('Choose the precise action word.','행동에 정확히 맞는 낱말을 골라요.'),B('Match every condition in the description.','설명한 조건에 모두 맞게 골라요.')],[rows(`Speak quietly so only a nearby friend hears.|whisper|shout|announce
 Run at full speed in a short race.|sprint|stroll|crawl
 Look at the clock for just a moment.|glance|stare|ignore
 Walk slowly for pleasure, without hurry.|stroll|dash|charge

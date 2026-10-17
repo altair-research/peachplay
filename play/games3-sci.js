@@ -23,8 +23,8 @@ reg('rocksort3','Rock Observations','암석 관찰','S3E1.a',lv=>{
  return q(lv===1?B('Which sample is rough?','표면이 거친 표본은?'):B(`Which sample is BOTH ${red.en} and smooth?`,`색이 ${red.ko}이면서 표면이 매끈한 표본은?`),table([made,B('Color','색'),B('Texture','질감')],[[labels[0],red,rough],[labels[1],red,smooth],[labels[2],gray,smooth]]),lv===1?labels[0]:labels[1],lv===1?[labels[1],labels[2]]:[labels[0],labels[2]],B('Describe properties; color alone does not identify a rock.','성질을 관찰해요. 색만으로 암석 이름을 알 수는 없어요.'));
 });
 bank('rocktest3','Choose an Observation','관찰 방법 고르기','S3E1.a',[
- [B('Which test compares hardness?','단단한 정도를 비교하는 방법은?'),null,B('Compare resistance to scratching','긁힘에 견디는 정도 비교'),B('Compare color in a picture','사진의 색 비교'),B('Compare the names','이름 비교')],
- [B('Which observation describes luster?','광택을 살펴보는 방법은?'),null,B('Look at reflected light','반사되는 빛 살펴보기'),B('Count letters in its name','이름의 글자 수 세기'),B('Weigh the container','통의 무게 재기')],
+ [B('Which test compares hardness?','단단한 정도를 비교하는 방법은?'),null,B('Compare resistance to scratching','긁힘에 견디는 정도 비교'),B('Compare color in a picture','사진의 색 비교'),B('Compare the surface texture','표면 질감 비교')],
+ [B('Which observation describes luster?','광택을 살펴보는 방법은?'),null,B('Look at reflected light','반사되는 빛 살펴보기'),B('Feel the surface texture','표면 질감 살펴보기'),B('Test scratch resistance','긁힘에 견디는 정도 살펴보기')],
  [B('How can we compare scratch tests fairly?','긁기 실험을 공정하게 하려면?'),B('An adult tests two samples.','어른이 표본 두 개를 긁어 봐요.'),B('Use the same tool and method','같은 도구와 방법 사용'),B('Use a different tool for each','각각 다른 도구 사용'),B('Guess from color only','색만 보고 짐작')]]);
 reg('soil3','Soil Evidence','흙의 성질','S3E1.b',lv=>{
  const sand=40+rnd(20),clay=10+rnd(15),loam=25+rnd(10);
@@ -95,13 +95,13 @@ const sr=(en,ko,pEn,pKo,aEn,aKo,bEn,bKo,cEn,cKo)=>[B(en,ko),pEn?B(pEn,pKo):null,
 // Fact sources: NPS/USGS/EPA and Georgia DNR; see codex-done-12.md.
 const moreScience={
 rocktest3:[
- sr('Which observation is about texture?','질감을 살펴본 관찰은?','','','The surface feels rough','표면이 거칠어요','The sample weighs 20 g','무게가 20g이에요','Its name has five letters','이름이 다섯 글자예요'),
+ sr('Which observation is about texture?','질감을 살펴본 관찰은?','','','The surface feels rough','표면이 거칠어요','The sample weighs 20 g','무게가 20g이에요','It reflects a bright shine','빛을 반사해 반짝여요'),
  sr('Which is a color observation?','색을 살펴본 관찰은?','','','The sample is gray','표본이 회색이에요','It resists scratching','긁힘에 잘 견뎌요','It feels smooth','표면이 매끈해요'),
  sr('Which sample is harder in this test?','이 실험에서 더 단단한 표본은?','Same tool: A scratched, B did not.','같은 도구로 긁었어요. A에는 흠집이 나고 B에는 안 났어요.','B','B','A','A','Both scratched','둘 다 흠집이 났어요'),
- sr('Which test compares luster?','광택을 비교하는 방법은?','','','Use the same light to view reflections','같은 빛에서 반사 비교','Use different names','서로 다른 이름 사용','Count the samples','표본 수 세기'),
+ sr('Which test compares luster?','광택을 비교하는 방법은?','','','Use the same light to view reflections','같은 빛에서 반사 비교','Feel the surface texture','표면 질감 비교','Compare resistance to scratches','긁힘에 견디는 정도 비교'),
  sr('What did the test measure?','무엇을 살펴본 실험인가요?','An adult used the same tool to scratch A and B.','어른이 같은 도구로 A와 B를 긁었어요.','Hardness','단단함','Color','색','Weight of the tray','쟁반 무게'),
  sr('Can color alone identify this rock?','색만으로 이 암석 이름을 알 수 있나요?','We only know it is gray.','회색이라는 것만 알아요.','No; more evidence is needed','아니요, 근거가 더 필요해요','Yes, every gray rock is identical','네, 회색 암석은 모두 같아요','Its label decides its type','이름표가 종류를 정해요'),
- sr('Which property is a color you can see?','눈으로 보이는 색에 해당하는 성질은?','','','Color','색','The tray’s mass','쟁반의 질량','Scratch resistance','긁힘에 견디는 정도'),
+ sr('An observation says “gray.” Which property was recorded?','관찰 기록에 ‘회색’이라고 썼어요. 어떤 성질을 기록했나요?','','','Color','색','The tray’s mass','쟁반의 질량','Scratch resistance','긁힘에 견디는 정도'),
  sr('Which change makes scratch tests unfair?','긁기 실험을 공정하지 않게 만드는 것은?','','','Different tools for A and B','A와 B에 다른 도구 사용','The same tool','같은 도구 사용','Recording both results','두 결과 기록')],
 erosion3:[
  ...[['A stream carried sand to a new place.','개울물이 모래를 다른 곳으로 옮겼어요.','Flowing water','흐르는 물'],['A gust blew dry soil off a field.','돌풍이 밭의 마른 흙을 날려 옮겼어요.','Wind','바람'],['Rainwater carried soil into a ditch.','빗물이 흙을 도랑으로 옮겼어요.','Moving water','움직이는 물'],['Waves carried grains along the shore.','파도가 모래 알갱이를 해안을 따라 옮겼어요.','Waves','파도']].map(r=>sr('What moved the material?','무엇이 흙이나 모래를 옮겼나요?',...r,'A written label','글로 쓴 이름표','The tray’s color','쟁반 색')),

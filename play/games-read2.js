@@ -45,7 +45,7 @@ registerGame({
   play() {
     const pool = lvl('sight') === 1 ? SIGHT1 : SIGHT2, t = pick(pool), ds = others(pool, t, 2);
     quiz(this, {
-      ask: B(`Tap the word "${t}".`, `"${t}" 단어를 눌러요.`), askSay: B('Tap the word', '단어를 눌러요'), askExtra: { t, lang: 'en-US' },
+      ask: B('Listen, then tap that word. Silent? Ask an adult.', '듣고 단어를 눌러요. 소리가 안 나면 어른에게 부탁해요.'), askSay: B('Listen.', '들어요.'), askExtra: { t, lang: 'en-US' },
       show: `<button class="say big-say" id="hear">🔊</button>`,
       opts: [t, ...ds].map(w => ({ html: `<span class="num">${w}</span>`, ok: w === t })), cls: 'shapes',
       after: B(`${t}!`, `${t}!`), onRender() { $('#hear').onclick = () => say(t, 'en-US'); }

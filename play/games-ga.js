@@ -3,15 +3,15 @@
   'use strict';
   const text=s=>`<div style="font-size:${/^[^\p{L}\p{N}<>]+$/u.test(s)?'clamp(36px,7dvh,48px)':'clamp(16px,3dvh,22px)'};line-height:1.2">${s}</div>`;
   const choice=(a,bs)=>[a,...bs].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
-  const add=(id,title,icon,make)=>registerGame({id,grade:'K',subject:'ss',icon,title,sub:B('Look, listen, and choose','보고 듣고 골라요'),area:B('Social Studies · Our world','사회 · 우리 세상'),play(){const item=make(lvl(id));item.onRender=()=>{if($$('.opt svg').length){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.setAttribute('aria-label',L(B('Hear map choices','지도 보기 듣기')));b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);}};quiz(this,item);}});
+  const add=(id,title,icon,make)=>registerGame({id,grade:'K',subject:'ss',icon,title,sub:B('Look, listen, and choose','보고 듣고 골라요'),area:B('Social Studies · Our world','사회 · 우리 세상'),play(){const item=make(lvl(id));item.onRender=()=>{if(id==='mapview'&&$$('.opt [data-cq-name]').length){const b=document.createElement('button');b.className='say';b.textContent='🔊';b.setAttribute('aria-label',L(B('Hear picture names','그림 이름 듣기')));b.onclick=()=>$$('.opt [data-cq-name]').forEach((e,i)=>say(e.dataset.cqName,undefined,i>0));$('#sp').after(b);}if($$('.opt svg').length){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.setAttribute('aria-label',L(B('Hear map choices','지도 보기 듣기')));b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);}};quiz(this,item);}});
   const places=[['🏠',B('house','집')],['🏫',B('school','학교')],['🌳',B('tree','나무')],['⛲',B('fountain','분수')]];
   const map=(items,turn=0,scene=false)=>`<svg viewBox="0 0 120 80" style="width:120px;max-width:100%;height:80px" role="img" aria-label="${L(B(scene?'Scene beside water':'Map model from above',scene?'물가의 장면':'위에서 본 지도 모형'))}"><rect width="120" height="80" fill="${scene?'#dceefb':'#a9db9c'}"/><rect y="50" width="120" height="30" fill="#a9db9c"/><rect x="88" y="${scene?50:0}" width="32" height="80" fill="#78c8f0"/>${items.map((it,i)=>{const x=5+((i+turn)%3)*27, key=places.indexOf(it);let shape;if(scene)shape=`<text x="0" y="40" font-size="23">${it[0]}</text>`;else if(key<2)shape=`<rect x="1" y="21" width="20" height="18" fill="${key?'#f1b166':'#ec7878'}" stroke="#435269"/><path d="M1 30H21" stroke="#435269"/>`;else if(key===2)shape='<circle cx="11" cy="30" r="10" fill="#408b45" stroke="#435269"/>';else shape='<circle cx="11" cy="30" r="10" fill="#78c8f0" stroke="#435269"/><circle cx="11" cy="30" r="4" fill="white"/>';return `<g transform="translate(${x} 0)">${shape}<text x="11" y="63" text-anchor="middle" font-size="11">${key+1}</text></g>`;}).join('')}</svg>`;
   add('mapview',B('Little Map Models','작은 지도 모형'),'🗺️',lv=>{
     const items=shuffle(places).slice(0,3),turn=rnd(3),kind=rnd(3);
     if(lv===1&&rnd(3)===0){const water=!!rnd(2);return {ask:water?B('Blue on this model means what?','이 모형의 파랑은 무엇일까요?'):B('Green on this model means what?','이 모형의 초록은 무엇일까요?'),show:map(items,turn),opts:choice(water?B('Water','물'):B('Land','육지'),[water?B('Land','육지'):B('Water','물'),B('Sky','하늘')]),cls:'words'};}
-    if(lv===1){const t=pick(items);return {ask:B(`Which sign shows the ${t[1].en}?`,`작은 지도에서 ${t[1].ko} 표시는?`),show:map(items,turn,true)+map(items,turn),opts:[t,...items.filter(x=>x!==t)].map((x,i)=>({html:text(x[0]),label:x[1],ok:i===0})),after:B('A map uses small signs to show places. Blue here means water.','지도는 장소를 작은 표시로 나타내요. 여기서 파랑은 물이에요.')};}
+    if(lv===1){const t=pick(items);return {ask:B(`Which sign shows the ${t[1].en}?`,`작은 지도에서 ${t[1].ko} 표시는?`),show:map(items,turn,true)+map(items,turn),opts:[t,...items.filter(x=>x!==t)].map((x,i)=>({html:`<span class="emo" data-cq-name="${L(x[1])}" aria-label="${L(x[1])}">${x[0]}</span>`,ok:i===0})),after:B('A map uses small signs to show places. Blue here means water.','지도는 장소를 작은 표시로 나타내요. 여기서 파랑은 물이에요.')};}
     if(kind===0)return {ask:B('Look at the scene. Which map from above matches?','장면을 봐요. 위에서 본 지도의 배치가 같은 것은?'),show:map(items,turn,true),opts:[0,1,2].map((d,i)=>({html:map(items,(turn+d)%3),label:B('Map '+(i+1),'지도 '+(i+1)),ok:i===0})),after:B('The matching model keeps the places in the same positions.','작은 모형에서도 장소의 위치 관계는 같아요.')};
-    const t=items[kind-1];return {ask:B(`This little ${t[1].en} sign stands for what?`,`작은 ${t[1].ko} 표시는 무엇을 나타낼까요?`),show:map(items,turn),opts:choice(B(`A real ${t[1].en}`,`실제 ${t[1].ko}`),[B('A full-size place inside the screen','화면 속 실제 크기의 장소'),B('Every place in the world','세상의 모든 장소')]),after:B('A map is a smaller model viewed from above, not the real place.','지도는 장소를 위에서 본 작은 모형이에요.')};
+    const t=items[kind-1];return {ask:B('Which numbered place is shown by this sign?','이 표시는 지도의 몇 번 장소일까요?'),show:text(t[0])+map(items,turn),opts:[t,...items.filter(x=>x!==t)].map((x,i)=>({html:text(String(places.indexOf(x)+1)),ok:i===0})),after:B('A map sign stands for a place.','지도 표시는 장소를 나타내요.')};
   });
   const goods=[['🍎',B('apple','사과')],['📖',B('book','책')],['🧢',B('hat','모자')],['🖍️',B('crayon','크레용')],['⚽',B('ball','공')],['🧸',B('toy','장난감')]];
   add('workmoney',B('Work, Money, Choices','일과 돈과 선택'),'🛍️',lv=>{
@@ -139,7 +139,7 @@ registerGame({
 // ---------- 2. Georgia state symbols ----------
 const GA_SYMBOLS = [
   { e: '🍑', n: B('peach', '복숭아'), q: B('fruit', '과일') }, { e: '🧅', n: B('Vidalia onion', '비달리아 양파'), q: B('vegetable', '채소') },
-  { e: '🐦', n: B('brown thrasher', '브라운 트래셔(새)'), q: B('bird', '새') }, { e: '🌳', n: B('live oak', '라이브 오크(참나무)'), q: B('tree', '나무') },
+  { e: '🐦', n: B('brown thrasher', '브라운 트래셔'), q: B('bird', '새') }, { e: '🌳', n: B('live oak', '라이브 오크'), q: B('tree', '나무') },
   { e: '🐝', n: B('honeybee', '꿀벌'), q: B('insect', '곤충') }, { e: '🐢', n: B('gopher tortoise', '고퍼거북'), q: B('reptile', '파충류') },
   { e: '🌹', n: B('Cherokee rose', '체로키 장미'), q: B('flower', '꽃') }
 ];
@@ -247,7 +247,7 @@ registerGame({
 // ---------- 6. Community workers (Labor Day) ----------
 const JOBS = [
   { e: '🧑‍🚒', n: B('firefighter', '소방관'), q: B('Who puts out fires?', '불을 끄는 사람은 누구일까요?') },
-  { e: '👮', n: B('police officer', '경찰관'), q: B('Who helps keep us safe?', '우리를 안전하게 지켜 주는 사람은?') },
+  { e: '👮', n: B('police officer', '경찰관'), q: B('Who directs road traffic and enforces laws?', '도로 교통을 정리하고 법을 지키게 돕는 사람은?') },
   { e: '🧑‍🏫', n: B('teacher', '선생님'), q: B('Who teaches children at school?', '학교에서 아이들을 가르치는 사람은?') },
   { e: '🧑‍⚕️', n: B('doctor', '의사'), q: B('Who helps sick people feel better?', '아픈 사람을 낫게 도와주는 사람은?') },
   { e: '🧑‍🌾', n: B('farmer', '농부'), q: B('Who grows food on a farm?', '농장에서 먹거리를 키우는 사람은?') },

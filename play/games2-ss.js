@@ -205,7 +205,7 @@ for(const id of ['goods2','choices2','gamap2']){const g=GAMES.find(x=>x.id===id)
  if(id==='goods2'){
  const j=Math.floor(i/2)%4;
  const events=lv===1?[
- B(`A shop sells ${t.en} for $${n} each. Buyers pay that price.`,`가게에서 ${t.ko} 하나를 ${n}달러에 팔아요. 산 사람은 값을 내요.`),
+ B(`A shop sells ${t.en} for $${n} each. Buyers pay to receive one.`,`가게에서 ${t.ko} 하나를 ${n}달러에 팔아요. 산 사람은 값을 내요.`),
  B(`The first ${n} children to sign up get free art seats.`,`먼저 신청한 ${n}명이 무료 미술 자리를 받아요.`),
  B(`${n*2} ${t.en} are divided equally among ${n} children.`,`${t.ko} ${n*2}개를 ${n}명이 똑같이 나눠요.`),
  B(`One name is drawn randomly for a free puppet-show seat. There are ${n} applicants.`,`신청자 ${n}명 중 이름 하나를 무작위로 뽑아 무료 인형극 자리를 줘요.`)

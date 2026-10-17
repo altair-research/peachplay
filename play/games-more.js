@@ -68,7 +68,7 @@ registerGame({
 
 // ---------- 4. Days of the week and seasons ----------
 const DAYS = [['Sunday', '일요일'], ['Monday', '월요일'], ['Tuesday', '화요일'], ['Wednesday', '수요일'], ['Thursday', '목요일'], ['Friday', '금요일'], ['Saturday', '토요일']];
-const SEASONS = [['winter', '겨울', '⛄', B('It is cold and snowy.', '춥고 눈이 와요.')], ['spring', '봄', '🌷', B('Flowers bloom.', '꽃이 피어요.')], ['summer', '여름', '🏖️', B('It is hot and sunny.', '덥고 햇살이 강해요.')], ['fall', '가을', '🍂', B('Leaves fall from trees.', '나뭇잎이 떨어져요.')]];
+const SEASONS = [['winter', '겨울', '⛄', B('It is cold and snowy.', '춥고 눈이 와요.')], ['spring', '봄', '🌷', B('Flowers bloom.', '꽃이 피어요.')], ['summer', '여름', '🏖️', B('It is hot and sunny.', '덥고 햇살이 강해요.')], ['fall', '가을', '🍂', B('Leaves turn orange and drop from trees.', '나뭇잎이 떨어져요.')]];
 registerGame({
   id: 'days', subject: 'life', icon: '📅', title: B('Days & Seasons', '요일과 계절'), sub: B('What comes next?', '다음은 무엇일까?'),
   area: AREA_LIFE('Calendar'),
@@ -247,7 +247,7 @@ registerGame({
     const t = pick(MIX), i = rnd(2), shown = 1 - i;
     const colors = [...new Map(MIX.flatMap(m => [[m[0], m[3]], [m[1], m[4]]])).entries()];
     const wrong = shuffle(colors.filter(c => c[0] !== t[i])).slice(0, 2);
-    quiz(this, { ask: B(`Which color is missing from this paint mix? ${t[shown + 3].en} and what make ${t[5].en}?`, `물감 섞기에서 빠진 색을 골라요. ${t[shown + 3].ko}에 어떤 색을 섞으면 ${t[5].ko}이 될까요?`), show: `<div class="mixrow">${CDOT(t[shown])}<span>+</span><span>?</span><span>=</span>${CDOT(t[2])}</div>`, opts: [[t[i], t[i + 3]], ...wrong].map((c, j) => ({ html: CDOT(c[0]), label: c[1], ok: j === 0 })), cls: 'shapes', vocab: t[i + 3].en });
+    quiz(this, { ask: B(`Which color belongs in the empty spot? Look at the paint mix.`, `물감 섞기 그림을 보고 빈칸에 들어갈 색을 골라요.`), show: `<div class="mixrow">${CDOT(t[shown])}<span>+</span><span>?</span><span>=</span>${CDOT(t[2])}</div>`, opts: [[t[i], t[i + 3]], ...wrong].map((c, j) => ({ html: CDOT(c[0]), label: c[1], ok: j === 0 })), cls: 'shapes', vocab: t[i + 3].en });
   };
   // A child's stated feeling, rather than an assumed reaction, is the evidence.
   const feeling = GAMES.find(g => g.id === 'feelings');

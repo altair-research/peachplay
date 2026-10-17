@@ -11,26 +11,27 @@
     ['plastic cup','플라스틱 컵','🥤','plastic','플라스틱'],['plastic ruler','플라스틱 자','📏','plastic','플라스틱'],['plastic toy','플라스틱 장난감','🧸','plastic','플라스틱'],
     ['paper bag','종이 봉투','🛍️','paper','종이'],['paper card','종이 카드','💌','paper','종이'],['paper sheet','종이 한 장','📄','paper','종이']
   ];
+  const materialClues={wood:B('Cut from a trunk; its grain has lines.','줄기에서 잘라 만들었고 나뭇결이 보여요.'),metal:B('Shiny, conducts heat, and rings when struck.','반짝이고 열이 잘 전해지며 두드리면 맑은 소리가 나요.'),plastic:B('Molded into shape; light and waterproof.','틀로 모양을 만들었고 가벼우며 물에 젖지 않아요.'),paper:B('Made from pressed fibers; thin and easy to fold or tear.','섬유를 눌러 만들었고 얇아서 접거나 찢기 쉬워요.')};
   const rock = (color,big,dots) => `<svg viewBox="0 0 120 60" style="width:120px;height:60px" role="img" aria-label="${L(B('Rock model','암석 모형'))}"><ellipse cx="60" cy="30" rx="${big?48:28}" ry="${big?25:16}" fill="${color}" stroke="#25324a" stroke-width="2"/>${dots?'<g fill="#fff"><circle cx="48" cy="25" r="3"/><circle cx="65" cy="34" r="3"/><circle cx="73" cy="24" r="3"/></g>':''}</svg>`;
   add('materials',B('Material Detectives','재질 탐정'),'🪨',lv=>{
     if(lv===1){
       const t=pick(materials),names=[B('wood','나무'),B('metal','금속'),B('plastic','플라스틱'),B('paper','종이')];
-      return {ask:B(`This is a ${t[0]}. What material?`,`${t[1]}이에요. 어떤 재질일까요?`),show:card(t[2]),opts:opts(B(t[3],t[4]),shuffle(names.filter(n=>n.en!==t[3])).slice(0,2)),cls:'words'};
+      return {ask:B(`${materialClues[t[3]].en} What material?`,`${materialClues[t[3]].ko} 어떤 재질일까요?`),show:card(t[2]),opts:opts(B(t[3],t[4]),shuffle(names.filter(n=>n.en!==t[3])).slice(0,2)),cls:'words'};
     }
     const t=pick(materials), mate=pick(materials.filter(x=>x!==t&&x[3]===t[3]));
     const ds=shuffle(materials.filter(x=>x[3]!==t[3])).slice(0,3);
-    return {ask:B(`Same material as this ${t[0]}?`,`${t[1]}과 같은 재질인 물건은?`),show:card(t[2]),opts:opts(B(mate[0],mate[1]),ds.map(x=>B(x[0],x[1]))),cls:'words'};
+    return {ask:B(`${materialClues[t[3]].en} Which object uses this material?`,`${materialClues[t[3]].ko} 이 재질로 만든 물건은?`),show:card(t[2]),opts:opts(B(mate[0],mate[1]),ds.map(x=>B(x[0],x[1]))),cls:'words'};
   });
   const earth=[
-    ['💧',B('Water in a cup','컵 속 물'),'water'],['💧',B('Water in a puddle','웅덩이의 물'),'water'],['💧',B('Water in a river','강의 물'),'water'],
-    ['🪨',B('A hard rock by a path','길가의 단단한 암석'),'rock'],['🪨',B('A small hard pebble','작고 단단한 자갈'),'rock'],['🪨',B('A large hard boulder','크고 단단한 바위'),'rock'],
-    ['🌱',B('Loose soil under a plant','식물 아래의 흙'),'soil'],['🌱',B('Loose soil in a garden','정원의 흙'),'soil'],['🌱',B('Loose soil in a pot','화분 속 흙'),'soil'],
-    ['🎈',B('Air inside a balloon','풍선 속 공기'),'air'],['💨',B('Moving air turns a pinwheel','공기가 움직여 바람개비를 돌려요'),'air'],['🛞',B('Air inside a tire','타이어 속 공기'),'air']
+    ['💧',B('Water in a cup','컵 속 물'),'water',B('It fills a drinking cup and pours out','마실 컵에 담겨 있고 기울이면 쏟아져요')],['💧',B('Water in a puddle','웅덩이의 물'),'water',B('After rain it collects in a shallow dip','비가 온 뒤 얕게 팬 곳에 고여요')],['💧',B('Water in a river','강의 물'),'water',B('It flows between two banks toward the sea','양쪽 둑 사이로 바다를 향해 흘러요')],
+    ['🪨',B('A hard rock by a path','길가의 단단한 암석'),'rock',B('A hard solid piece lies beside a path','길가에 단단한 덩어리가 놓여 있어요')],['🪨',B('A small hard pebble','작고 단단한 자갈'),'rock',B('A tiny hard solid keeps its shape in your hand','손에 든 작은 덩어리가 단단하고 모양이 그대로예요')],['🪨',B('A large hard boulder','크고 단단한 바위'),'rock',B('A huge hard solid is too heavy to lift','아주 크고 단단해서 들어 올리기 무거운 덩어리예요')],
+    ['🌱',B('Loose soil under a plant','식물 아래의 흙'),'soil',B('Roots spread through loose ground below a plant','식물 아래 부드러운 땅속으로 뿌리가 뻗어요')],['🌱',B('Loose soil in a garden','정원의 흙'),'soil',B('A gardener digs loose ground for seeds','씨앗을 심으려고 정원의 부드러운 땅을 파요')],['🌱',B('Loose soil in a pot','화분 속 흙'),'soil',B('Roots grow among tiny grains inside a flowerpot','화분 속 작은 알갱이 사이로 뿌리가 자라요')],
+    ['🎈',B('Air inside a balloon','풍선 속 공기'),'air',B('Invisible stuff fills a balloon and stretches it','보이지 않는 것이 풍선을 채워 부풀려요')],['💨',B('Moving air turns a pinwheel','공기가 움직여 바람개비를 돌려요'),'air',B('Invisible moving stuff turns a pinwheel','보이지 않는 것이 움직여 바람개비를 돌려요')],['🛞',B('Air inside a tire','타이어 속 공기'),'air',B('Invisible stuff is pumped into a tire','펌프로 보이지 않는 것을 타이어 안에 넣어요')]
   ];
   const earthNames={water:B('Water','물'),rock:B('Rock','암석'),soil:B('Soil','흙'),air:B('Air','공기')};
   add('earthstuff',B('Earth Materials','지구의 물질'),'🌱',lv=>{
     const t=pick(earth),same=pick(earth.filter(x=>x!==t&&x[2]===t[2])),ds=shuffle(earth.filter(x=>x[2]!==t[2])).slice(0,lv===1?2:3);
-    return {ask:lv===1?B(`${t[1].en}. Which material?`,`${t[1].ko}. 어떤 물질일까요?`):B(`${t[1].en}. Find the same material.`,`${t[1].ko}. 같은 물질이 있는 곳은?`),show:card(t[0]),opts:lv===1?opts(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k])):opts(same[1],ds.map(x=>x[1])),cls:'words'};
+    return {ask:lv===1?B(`${t[3].en} Which material?`,`${t[3].ko} 어떤 물질일까요?`):B(`${t[3].en} Where is this material?`,`${t[3].ko} 이 물질이 있는 곳은?`),show:'',opts:lv===1?opts(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k])):opts(same[1],ds.map(x=>x[1])),cls:'words'};
   });
   add('rocksort',B('Rock and Earth Clues','암석과 지구 물질'),'🌎',lv=>{
     const colors=[['#b96742',B('red-brown','적갈색')],['#adb5bd',B('gray','회색')],['#e5cc88',B('tan','황갈색')]],ci=rnd(3),big=!!rnd(2),dots=!!rnd(2),c=colors[ci];
@@ -46,8 +47,8 @@
   add('lifeclues',B('Living Thing Clues','생물의 특징'),'🐾',lv=>{
     if(rnd(3)===0){const n=2+rnd(4),round=!!rnd(2);return {ask:lv===1?B('How many leaves in this model?','식물 모형의 잎은 몇 개일까요?'):B('Compare the leaf shapes. What differs?','두 식물 모형의 잎을 비교해요. 무엇이 다를까요?'),show:leaf(n,round)+(lv===2?leaf(n,!round):''),opts:lv===1?opts(String(n),[String(n+1),String(n-1)]):opts(B('Leaf shape','잎 모양'),[B('Leaf count','잎 수'),B('Leaf color','잎 색')]),cls:'words'};}
     const a=pick(animals);
-    if(lv===1)return {ask:B(`Look at the ${a[1]}. Which covering?`,`${a[2]}의 몸을 덮고 있는 것은?`),show:card(a[0]),opts:opts(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('paper','종이')]),cls:'words'};
-    return {ask:B(`An adult ${a[1]} and its young: what do both have?`,`어른 ${a[2]}와 새끼 ${a[2]}의 공통 특징은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:opts(B(a[3],a[4]),[B('Paper bodies','종이 몸'),B('Metal bodies','금속 몸')]),cls:'words',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
+    if(lv===1)return {ask:B(`Look at the ${a[1]}. Which covering?`,`${a[2]}의 몸을 덮고 있는 것은?`),show:card(a[0]),opts:opts(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')]),cls:'words'};
+    return {ask:B(`An adult ${a[1]} and its young: what do both have?`,`어른 ${a[2]}와 새끼 ${a[2]}의 공통 특징은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:opts(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')]),cls:'words',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
   });
 })();
 // Science extension: five senses, what living things need.

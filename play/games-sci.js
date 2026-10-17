@@ -31,10 +31,10 @@ registerGame({
     const t = pick(SKY);
     if (rnd(2) === 0) {                                              // "which one do you see at night / in the day?"
       const day = rnd(2) === 0, good = pick(SKY.filter(x => x[2] === day && x[1].en !== 'moon')), bad = shuffle(SKY.filter(x => x[2] !== day && x[1].en !== 'moon')).slice(0, 2);
-      const o = (x) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === good });
+      const o = (x) => ({ html: `<span class="emo" data-cq-name="${L(x[1])}" aria-label="${L(x[1])}">${x[0]}</span>`, ok: x === good });
       quiz(this, {
         ask: day ? B('Which one do you see in the DAY sky?', '낮 하늘에서 볼 수 있는 것은?') : B('Which one do you see in the NIGHT sky?', '밤 하늘에서 볼 수 있는 것은?'),
-        opts: [o(good), ...bad.map(o)], cls: 'shapes', after: B(`You see the ${good[1].en} in the ${day ? 'day' : 'night'} sky.`, `${good[1].ko}은(는) ${day ? '낮' : '밤'} 하늘에서 봐요.`), vocab: good[1].en
+        opts: [o(good), ...bad.map(o)], cls: 'shapes', onRender() { const b=document.createElement('button');b.className='say';b.textContent='🔊';b.setAttribute('aria-label',L(B('Hear picture names','그림 이름 듣기')));b.onclick=()=>$$('.opt [data-cq-name]').forEach((e,i)=>say(e.dataset.cqName,undefined,i>0));$('#sp').after(b); }, after: B(`You see the ${good[1].en} in the ${day ? 'day' : 'night'} sky.`, `${good[1].ko}은(는) ${day ? '낮' : '밤'} 하늘에서 봐요.`), vocab: good[1].en
       });
       return;
     }
