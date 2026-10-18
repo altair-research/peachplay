@@ -21,14 +21,17 @@ reg('place5','Place Value Relationships','자리 사이의 관계','5.NR.1.1',(l
 });
 reg('power5','Powers of Ten','10의 거듭제곱','5.NR.1.2',(lv,i)=>{
  const n=(lv===1?[12,34,56,78,91,23,45,67,89,16]:[125,240,375,408,560,625,704,815,936,990])[i],p=lv===1?1+i%2:2+i%2,div=i>=5,scale=10**p,a=div?n/scale:n*scale;
+ if(lv===2)return nq(B('Apply both operations. Find the final value.','두 연산을 차례로 적용해 마지막 값을 구해요.'),eq(`(${n} ${div?'÷':'×'} 10<sup>${p}</sup>) ${div?'×':'÷'} 10`),div?a*10:a/10,div?1/scale:scale);
  return nq(B('Find the value using powers of ten.','10의 거듭제곱을 이용해 값을 구해요.'),eq(`${n} ${div?'÷':'×'} 10<sup>${p}</sup>`),a,div?1/scale:scale,B(`10^${p} = ${scale}; result = ${a}`,`10의 ${p}제곱: ${scale} · 계산한 값: ${a}`));
 });
 reg('multiply5','Partial Products','부분곱으로 계산해요','5.NR.2.1',(lv,i)=>{
  const [a,b]=(lv===1?[[24,6],[35,4],[48,3],[62,5],[79,2],[86,7],[93,8],[57,9],[41,6],[68,4]]:[[124,12],[205,15],[316,24],[407,18],[528,21],[630,14],[742,25],[853,16],[964,13],[109,22]])[i],h=Math.floor(a/10)*10,t=a%10;
+ if(lv===2)return nq(B('A partial product is missing. Find it.','부분 곱 하나가 빠졌어요. 빠진 값을 구해요.'),eq(`${a} × ${b} = ${h*b} + ?`),t*b,b);
  return nq(B('Combine the partial products.','부분곱을 합쳐서 전체 곱을 구해요.'),panel(`<div class="g5-math-area"><span>${h} × ${b}</span><span>${t} × ${b}</span></div><div>${a} × ${b}</div><small>${L(B('Area model; not to scale','넓이 모형 · 실제 비율이 아니에요'))}</small>`),a*b,b,B(`${h*b} + ${t*b} = ${a*b}`,`${h*b} + ${t*b} = ${a*b}`));
 });
 reg('divide5','Division Strategies','나눗셈 전략','5.NR.2.2',(lv,i)=>{
  const [a,b]=(lv===1?[[144,6],[168,7],[192,8],[225,9],[156,4],[285,5],[174,3],[248,8],[336,7],[432,6]]:[[1440,12],[2250,15],[2880,24],[3640,20],[4250,25],[1728,16],[3192,21],[4050,18],[2464,22],[2990,23]])[i];
+ if(lv===2)return nq(B(`Divide ${a} objects equally into ${b} boxes, then remove 3 from each box. How many remain in each?`,`${a}개를 ${b}상자에 똑같이 나눈 뒤 각 상자에서 3개씩 꺼내요. 한 상자에 몇 개 남을까요?`),eq(`${a} ÷ ${b}, then −3`),a/b-3);
  return nq(B('How many equal groups?','같은 크기로 나누면 몇 묶음일까요?'),eq(`${a} ÷ ${b} = ?`),a/b,1,B(`${a/b} × ${b} = ${a}`,`${a/b} × ${b} = ${a}`));
 });
 reg('remainder5','Remainders in Stories','나머지는 무엇일까요?','5.NR.2.2',(lv,i)=>{
@@ -40,6 +43,7 @@ reg('remainder5','Remainders in Stories','나머지는 무엇일까요?','5.NR.2
 });
 reg('fractiondivision5','Fractions Are Division','분수는 나눗셈이에요','5.NR.3.1',(lv,i)=>{
  const [n,d]=(lv===1?[[1,2],[2,3],[3,4],[2,5],[4,5],[3,8],[5,6],[1,4],[5,8],[4,7]]:[[7,3],[9,4],[11,5],[13,6],[8,3],[10,4],[17,8],[19,6],[14,5],[16,7]])[i];
+ if(lv===2)return q(B(`Share ${n} loaves among ${d} people. Each person eats half their share. How many loaves remain per person?`,`빵 ${n}개를 ${d}명이 똑같이 나눠요. 각자 자기 몫의 절반을 먹으면 한 명에게 빵 몇 개가 남을까요?`),eq(`${n} ÷ ${d}, then half`),f(n,2*d),[f(n,d),f(2*n,d)]);
  return q(B(`Share ${n} identical loaves among ${d} people equally. Loaves per person?`,`같은 크기 빵 ${n}개를 ${d}명에게 똑같이 나눠요. 한 명의 몫은 빵 몇 개일까요?`),eq(`${n} ÷ ${d}`),f(n,d),[f(d,n),f(n+1,d)],B(`${n} ÷ ${d} = ${f(n,d)}`,`${n} ÷ ${d} = ${f(n,d)}`));
 });
 reg('fractionorder5','Order Fractions','분수 순서','5.NR.3.2',(lv,i)=>{
@@ -51,10 +55,12 @@ reg('fractionorder5','Order Fractions','분수 순서','5.NR.3.2',(lv,i)=>{
 const pairs=[[[1,2,1,3],[1,4,1,6],[2,5,1,3],[1,3,1,4],[3,8,1,4],[2,7,1,2],[1,5,1,2],[3,10,1,4],[1,6,2,5],[2,9,1,3]],[[3,4,2,3],[4,5,3,4],[5,6,3,5],[7,8,2,3],[5,7,4,5],[4,7,5,6],[7,9,3,4],[5,8,4,7],[8,9,2,5],[6,7,5,8]]];
 reg('fractionadd5','Add Unlike Fractions','분모가 다른 분수 더하기','5.NR.3.3',(lv,i)=>{
  const [a,b,c,d]=pairs[lv-1][i],den=b*d,ans=f(a*d+c*b,den);
+ if(lv===2)return q(B('Join the two ribbon lengths, then use 1/2 meter. How many meters remain?','두 리본을 이은 뒤 1/2미터를 써요. 남은 길이는 몇 미터일까요?'),eq(`${f(a,b)} + ${f(c,d)}, then −1/2`),f(2*(a*d+c*b)-den,2*den),[ans,f(2*(a*d+c*b)+den,2*den)]);
  return q(B(lv===1?'Add. The strips use the same whole.':'Join two ribbon lengths. Total meters?',lv===1?'전체 크기가 같은 분수 띠예요. 합을 구해요.':'두 리본 길이를 이어요. 전체 길이는 몇 미터일까요?'),panel(`${f(a,b)} + ${f(c,d)}${strip(a,b)}${strip(c,d)}`),ans,[f(Math.abs(a*d-c*b),den),f(a+c,b+d)],B(`${a*d}/${den} + ${c*b}/${den} = ${ans}`,`조각 크기를 맞춰요: ${a*d}/${den} + ${c*b}/${den} = ${ans}`));
 });
 reg('fractionsub5','Subtract Unlike Fractions','분모가 다른 분수 빼기','5.NR.3.3',(lv,i)=>{
  const [a,b,c,d]=pairs[lv-1][i],large=a*d>=c*b?[a,b]:[c,d],small=a*d>=c*b?[c,d]:[a,b],ans=f(Math.abs(a*d-c*b),b*d);
+ if(lv===2)return q(B('Find the difference, then divide that remaining ribbon into two equal pieces. Meters per piece?','두 길이의 차이만큼 남은 리본을 다시 똑같이 둘로 나눠요. 한 조각은 몇 미터일까요?'),eq(`(${f(...large)} − ${f(...small)}) ÷ 2`),f(Math.abs(a*d-c*b),2*b*d),[ans,f(a*d+c*b,2*b*d)]);
  return q(B(lv===1?'Subtract using equal-size parts.':'Cut away the smaller ribbon length. Meters left?',lv===1?'조각 크기를 같게 해서 빼요.':'더 작은 길이만큼 잘라요. 몇 미터가 남을까요?'),eq(`${f(...large)} − ${f(...small)}`),ans,[f(a*d+c*b,b*d),f(Math.abs(a-c)+1,b+d)],B(`Difference: ${ans}`,`차: ${ans}`));
 });
 reg('mixed5','Regroup Mixed Numbers','대분수를 더하고 빼요','5.NR.3.3',(lv,i)=>{
@@ -64,6 +70,7 @@ reg('mixed5','Regroup Mixed Numbers','대분수를 더하고 빼요','5.NR.3.3',
 });
 reg('fractionmultiply5','Fractions of Whole Numbers','자연수의 분수만큼','5.NR.3.4',(lv,i)=>{
  const n=lv===1?2+i%5:12+i*3,a=lv===1?1+i%2:2+i%3,b=lv===1?3+i%3:5+i%4,ans=f(n*a,b);
+ if(lv===2)return q(B(`Use ${a}/${b} of a ${n}-meter roll. How many meters are LEFT?`,`${n}미터 리본의 ${a}/${b}만큼 써요. 남은 길이는 몇 미터일까요?`),eq(`${n} − (${n} × ${a}/${b})`),f(n*(b-a),b),[f(n*(b-a)+1,b),f(n*(b-a)-1,b)]);
  return q(B(lv===1?`${n} groups of ${a}/${b}. Total?`:`Use ${a}/${b} of a ${n}-meter roll. Meters used?`,lv===1?`${a}/${b}만큼씩 ${n}묶음 있어요. 모두 얼마일까요?`:`${n}미터 리본의 ${a}/${b}만큼 써요. 몇 미터일까요?`),eq(`${n} × ${a}/${b}`),ans,[f(n+a,b),f(n*a,b+1)],B(`${n} × ${a}/${b} = ${ans}`,`${n} × ${a}/${b} = ${ans}`));
 });
 reg('scale5','Scaling by Fractions','곱해서 커지거나 작아져요','5.NR.3.5 (partial)',(lv,i)=>{
@@ -72,10 +79,12 @@ reg('scale5','Scaling by Fractions','곱해서 커지거나 작아져요','5.NR.
 });
 reg('unitdivide5','Divide a Unit Fraction','단위분수를 나누어요','5.NR.3.6',(lv,i)=>{
  const b=lv===1?2+i%5:3+i%5,n=lv===1?2+Math.floor(i/5):3+Math.floor(i/5),a=f(1,b*n);
+ if(lv===2)return q(B(`Share 1/${b} liter equally among ${n} cups. Pour two cups into one jar. Liters in the jar?`,`1/${b}리터를 컵 ${n}개에 똑같이 나눠요. 두 컵의 물을 병 하나에 부으면 몇 리터일까요?`),eq(`(1/${b} ÷ ${n}) × 2`),f(2,b*n),[a,f(2*n,b)]);
  return q(B(lv===1?'Share this unit fraction equally.':'Share this fraction of a liter equally among cups. Liters per cup?',lv===1?'단위분수를 똑같이 나눠요.':'이만큼의 액체를 컵에 똑같이 나눠요. 한 컵에는 몇 리터일까요?'),panel(`1/${b} ÷ ${n}${strip(1,b)}`),a,[f(n,b),f(1,b+n)],B(`1/${b} ÷ ${n} = ${a}`,`1/${b} ÷ ${n} = ${a}`));
 });
 reg('wholeunitdivide5','Count Fraction Groups','단위분수 몇 묶음일까요?','5.NR.3.6',(lv,i)=>{
  const n=1+i%5,b=lv===1?(i<5?2:4):(i<5?3:5);
+ if(lv===2)return nq(B(`Cut ${n} meters into 1/${b}-meter pieces. Use two pieces. How many remain?`,`${n}미터를 1/${b}미터씩 잘라요. 두 조각을 쓰면 몇 조각 남을까요?`),eq(`(${n} ÷ 1/${b}) − 2`),n*b-2);
  return nq(B(lv===1?'How many unit-fraction groups fit?':`${n} meters, cut into 1/${b}-meter pieces. How many pieces?`,lv===1?'단위분수가 몇 묶음 들어갈까요?':`${n}미터를 1/${b}미터씩 잘라요. 몇 조각일까요?`),eq(`${n} ÷ 1/${b}`),n*b,1,B(`${n} × ${b} = ${n*b}`,`자연수 1에 ${b}묶음이 있어요. ${n} × ${b} = ${n*b}`));
 });
 })();

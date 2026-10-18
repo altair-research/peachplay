@@ -29,7 +29,7 @@ G2S({
         [B('Why does the Moon look different shapes?', '달은 왜 모양이 달라 보일까요?'), B('We see more or less of its lit side.', '해가 비추는 쪽이 보이는 정도가 달라요.'), [B('The Moon gets bigger and smaller.', '달이 커졌다 작아졌다 해요.'), B('Clouds eat the Moon.', '구름이 달을 먹어요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
-      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`The Moon goes from new moon to full moon. Which shape comes after the ${MOON_NAME[order[i]].en}?`, `달은 신월에서 보름달로 변해요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
+      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`Each night the lit part of the Moon grows bigger. Which shape comes after the ${MOON_NAME[order[i]].en}?`, `밤마다 달의 밝은 부분이 커져요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
       const right = order[i + 1], wr = others([0, 1, 2, 3, 4], right, 4).filter(x => x !== order[i]).slice(0, 2);
       quiz(this, { ask, opts: [right, ...wr].map((p, k) => ({ html: moonSvg(p), label: MOON_NAME[p], ok: k === 0 })), after: B('The Moon changes shape in a pattern that repeats about every month.', '달 모양은 한 달쯤마다 되풀이되는 규칙으로 바뀌어요.') });
     }
@@ -93,7 +93,7 @@ G2S({
       const c = pick(EARTH_CH);
       quiz(this, { ask: B(`Does this change land FAST or SLOWLY? ${c.n.en}`, `땅이 이렇게 변하는 것은 빠를까요, 느릴까요? ${c.n.ko}`), show: `<span class="emo">${c.e}</span>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '빠르게' : 'Fast'}</span>`, ok: c.fast }, { html: `<span class="word">${S.lang === 'ko' ? '아주 천천히' : 'Slowly'}</span>`, ok: !c.fast }], cls: 'words', after: c.fast ? B('Volcanoes, earthquakes, floods and landslides change land fast.', '화산, 지진, 홍수, 산사태는 땅을 빠르게 바꿔요.') : B('Wind, water and ice change land slowly, over many years.', '바람, 물, 얼음은 오랜 세월에 걸쳐 땅을 천천히 바꿔요.') });
     } else {
-      const q = pick([[B('What can slowly wear down rocks over a long time?', '오랜 시간에 걸쳐 바위를 천천히 닳게 하는 것은?'), B('Wind and water', '바람과 물'), [B('A sneeze', '재채기'), B('A shadow', '그림자')]],
+      const q = pick([[B('What can slowly wear down rocks over a long time?', '오랜 시간에 걸쳐 바위를 천천히 닳게 하는 것은?'), B('Wind and water', '바람과 물'), [B('Sunlight without wind or water', '바람과 물 없이 비추는 햇빛'), B('Still air without rain', '비 없이 고요한 공기')]],
         [B('Which one can change the land FAST?', '땅을 빠르게 바꿀 수 있는 것은?'), B('A flood', '홍수'), [B('A small stream over many years', '오랜 세월 흐르는 작은 시냇물'), B('A little wind each day', '매일 부는 약한 바람')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     }
@@ -198,7 +198,7 @@ G2S({
     const i = kind === 'next' ? rnd(3) : kind === 'prev' ? 1 + rnd(3) : kind === 'first' ? 0 : 3;
     const askMap = { next: [B(`${c.n.en} life cycle: what comes RIGHT AFTER the ${c.st[i][1].en.replace(/ \(.*\)/,'')}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko.replace('다리가 난 올챙이','다리가 난 단계')} 바로 다음은?`), c.st[i + 1]], prev: [B(`${c.n.en} life cycle: what comes RIGHT BEFORE the ${c.st[i][1].en.replace(/ \(.*\)/,'')}?`, `${c.n.ko}의 한살이: ${c.st[i][1].ko.replace('다리가 난 올챙이','다리가 난 단계')} 바로 앞은?`), c.st[i - 1]], first: [B(`What is the FIRST stage of a ${c.n.en}'s life?`, `${c.n.ko}의 한살이에서 맨 처음은?`), c.st[0]], last: [B(`What is the LAST stage of a ${c.n.en}'s life cycle?`, `${c.n.ko}의 한살이에서 마지막은?`), c.st[3]] };
     const [ask, right] = askMap[kind], wr = others(c.st, right, 3).slice(0, 2);
-    quiz(this, { ask, show: '', opts: [right, ...wr].map((s, k) => ({ html: `<span class="word">${L(s===c.st[3]?B('adult','다 자란 단계'):s[1])}</span>`, ok: k === 0 })), cls: 'words', after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
+    quiz(this, { ask, show: '', opts: [right, ...wr].map((s, k) => ({ html: `<span class="word">${L(s===c.st[3] && c.n.en!=='bean plant'?B('adult','다 자란 단계'):s[1])}</span>`, ok: k === 0 })), cls: 'words', after: B(`The stages go: ${c.st.map(s => s[1].en).join(' → ')}.`, `순서: ${c.st.map(s => s[1].ko).join(' → ')}.`) });
   }
 });
 
@@ -221,7 +221,7 @@ G2S({
       quiz(this, { ask: B(`How does ${s.n.en} mostly travel to a new place?`, `${s.n.ko}: 주로 무엇의 도움으로 새로운 곳에 갈까요?`), show: `<span class="emo">${s.e}</span>`, opts: HOWS.map(h => ({ html: `<span class="word">${L(h)}</span>`, ok: h.en === s.how.en })), cls: 'words', after: s.why });
     } else if (kind === 'bee') {
       const q = pick([[B('What do bees do for flowers when they visit them?', '벌이 꽃을 찾아가면 꽃에게 어떤 도움을 줄까요?'), B('They carry pollen from flower to flower.', '꽃가루를 이 꽃에서 저 꽃으로 옮겨요.'), [B('They plant the seeds in soil.', '씨앗을 흙에 심어요.'), B('They give the flower water.', '꽃에 물을 줘요.')]],
-        [B('Why do flowers need pollen to move from flower to flower?', '꽃가루가 꽃에서 꽃으로 옮겨져야 하는 까닭은?'), B('So the flowers can make fruit and seeds', '열매와 씨앗을 만들 수 있게 하려고'), [B('So the flowers can change color', '꽃 색이 바뀌게 하려고'), B('So the flowers can walk', '꽃이 걸을 수 있게 하려고')]]]);
+        [B('Why do flowers need pollen to move from flower to flower?', '꽃가루가 꽃에서 꽃으로 옮겨져야 하는 까닭은?'), B('So the flowers can make fruit and seeds', '열매와 씨앗을 만들 수 있게 하려고'), [B('So roots can absorb more water', '뿌리가 물을 더 빨아들이게 하려고'), B('So leaves can catch more sunlight', '잎이 햇빛을 더 받게 하려고')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
       const s = pick(SEEDS);
@@ -266,7 +266,7 @@ const modes = {
    [B('Practice park: workers removed trees. Before: shade and nests. After: less shade and fewer nesting places.','가상 공원: 사람이 나무를 베었어요. 전에는 그늘과 새 둥지가 있었고 뒤에는 둘 다 줄었어요.'),B('Removing trees reduced shade and nesting places','나무를 베어 그늘과 둥지 자리가 줄었어요'),B('What changed after trees were removed?','나무를 벤 뒤 무엇이 변했나요?')],
    [B('Practice stream: beavers built a dam. Before: flowing water. After: water pooled behind the dam.','가상 시냇물: 비버가 댐을 만들었어요. 전에는 물이 흘렀고 뒤에는 댐 뒤에 물이 고였어요.'),B('The dam held back water','댐이 물의 흐름을 막았어요'),B('Where did water collect after the dam?','댐을 만든 뒤 어디에 물이 고였나요?')]
   ],r=rows[i%rows.length];
-  return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What color is my favorite toy?','내가 좋아하는 장난감은 무슨 색일까요?'),B('What is the name of a distant star?','먼 별의 이름은 무엇일까요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[B('The observations show no change','관찰 자료에는 변화가 없어요'),B('A shadow created new soil','그림자가 새 흙을 만들었어요')]);
+  return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What type of rock is deep under this park?','이 공원 땅속 깊은 곳에는 어떤 돌이 있나요?'),B('How high is the hill in another park?','다른 공원의 언덕은 얼마나 높나요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[[B('Wind carried the soil downhill','바람이 흙을 아래로 옮겼어요'),B('Tree roots pushed soil downhill','나무뿌리가 흙을 아래로 밀었어요')],[B('Extra rain reduced shade and nests','비가 더 내려 그늘과 둥지가 줄었어요'),B('Wind alone removed the nesting trees','바람만으로 둥지 나무가 없어졌어요')],[B('Rain alone made water pool','비만으로 물이 고였어요'),B('Removing the dam made water pool','댐을 없애서 물이 고였어요')]][i%rows.length]);
  },
  force2(lv,i) {
   const a=2+i%3,b=a+2,seconds=2;

@@ -101,3 +101,11 @@ registerGame({
     });
   }
 });
+
+// 63a: L2 applies a familiar word in context and compares spoken word lengths.
+(() => {
+ const replace=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
+ const sentences=[['___ can run.','we',['my','the']],['I ___ a cat.','see',['my','the']],['This is ___ hat.','my',['we','go']],['We ___ to school.','go',['my','the']],['I ___ to play.','like',['the','my']],['The dog ___ big.','is',['go','my']],['___ like apples.','I',['the','my']],['Look ___ the cat.','at',['we','he']],['The cat is ___ the box.','in',['we','my']],['___ is my sister.','she',['my','the']],['___ is my brother.','he',['my','the']],['My dog is little ___ brown.','and',['my','we']]];
+ replace('sight',()=>{const [s,r,ds]=pick(sentences);return {ask:B('Which word makes the sentence work?','문장이 되게 하는 낱말은?'),askExtra:{t:s.replace('___','blank'),lang:'en-US'},show:`<div class="bigword">${s}</div>`,opts:[r,...ds].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
+ replace('syllable',()=>{const a=pick(SYL),b=pick(SYL.filter(x=>x[2]!==a[2])),r=a[2]>b[2]?a:b,short=a[2]<b[2]?a:b;return {ask:B('Which word needs MORE claps?','박수를 더 많이 치는 낱말은?'),askExtra:{t:`${a[0]}. ${b[0]}.`,lang:'en-US'},show:`<div class="bigword">${a[0]} · ${b[0]}</div>`,opts:[r[0],short[0],L(B('Both need the same','둘 다 같아요'))].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
+})();

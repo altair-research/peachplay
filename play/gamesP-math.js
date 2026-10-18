@@ -29,8 +29,8 @@
     return task(bySize?'Find the same size.':'Find the same shape.',bySize?'크기가 같은 모양을 찾아요.':'모양이 같은 친구를 찾아요.',shape(k,size),shape(k,size),shape(bySize?k:foil,bySize?size+12:size));
   }));
   register('patternP','math','Next picture','다음 무늬','CD-MA6',banks((lv,i)=>{
-    const all=['ball','cup','book','flower','cat','fish'],a=i%6,b=(a+1+Math.floor(i/6)%5)%6,last=i%2===0,seq=last?[a,b,a,b]:[b,a,b,a];
-    return task('The pictures take turns. What comes next?','그림이 번갈아 나와요. 다음 그림은 무엇일까요?',`<div class="pk-pattern">${seq.map(x=>art(all[x])).join('')}<span>?</span></div>`,art(all[last?a:b]),art(all[last?b:a]));
+    const all=['ball','cup','book','flower','cat','fish'],a=i%6,b=(a+1+Math.floor(i/6)%5)%6,last=i%2===0,seq=lv===1?(last?[a,b,a,b]:[b,a,b,a]):(last?[a,a,b,a,a,b]:[a,b,b,a,b,b]);
+    return task('The pictures take turns. What comes next?','그림이 번갈아 나와요. 다음 그림은 무엇일까요?',`<div class="pk-pattern">${seq.map(x=>art(all[x])).join('')}<span>?</span></div>`,art(all[lv===1?(last?a:b):a]),art(all[lv===1?(last?b:a):b]));
   }));
   register('positionP','math','Where is it?','어디에 있나요','CD-MA8',banks((lv,i)=>{
     const pair=lv===1?['inside','outside']:['above','below'],n=i%2,k=['ball','cup','cat','fish','book','flower'][Math.floor(i/2)%6],words={inside:B('inside','안'),outside:B('outside','밖'),above:B('above','위'),below:B('below','아래')};

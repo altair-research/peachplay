@@ -105,3 +105,23 @@ registerGame({
     quiz(this, { ask: n.q, opts: [o(g, true), ...bs.map(b => o(b, false))], cls: 'shapes', after: B(`They need ${g[1].en}!`, `${g[1].ko}이(가) 필요해요!`), vocab: g[1].en });
   }
 });
+
+// 63a: apply senses to two clues; choose care for the missing need.
+(() => {
+ const opts=(a)=>a.map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+ const senses=GAMES.find(g=>g.id==='senses'),old=senses.play;
+ senses.play=function(){
+  if(lvl(this.id)===1)return old.call(this);
+  const a=pick(SENSE_Q),b=pick(SENSE_Q.filter(x=>x[2]!==a[2])),keys=[a[2],b[2]],wrong=Object.keys(SENSES).filter(k=>!keys.includes(k));
+  const pair=(x,y)=>B(`${SENSES[x][1].en} + ${SENSES[y][1].en}`,`${SENSES[x][1].ko} + ${SENSES[y][1].ko}`);
+  quiz(this,{ask:B('Which pair helps with BOTH clues?','두 단서에 맞는 짝은?'),askSay:B(`${a[1].en}; ${b[1].en}. Which pair?`,`${a[1].ko}, ${b[1].ko}. 어떤 짝일까요?`),show:`<div class="storytext">${L(a[1])}<br>${L(b[1])}</div>`,opts:opts([pair(...keys),pair(keys[0],wrong[0]),pair(wrong[0],wrong[1])]),cls:'words'});
+ };
+ const needs=GAMES.find(g=>g.id==='needs');
+ const species=[B('rabbit','토끼'),B('dog','강아지'),B('cat','고양이'),B('hamster','햄스터')];
+ const needCases=[
+ [B('has an empty drinking bowl','마실 그릇이 비었어요'),B('has food but an empty drinking bowl','먹이는 있지만 마실 그릇이 비었어요'),[B('Fill its drinking bowl','마실 그릇을 채워요'),B('Fill its food bowl','먹이 그릇을 채워요'),B('Make a safe resting place','안전한 쉴 곳을 마련해요')]],
+ [B('has an empty food bowl','먹이 그릇이 비었어요'),B('has water but an empty food bowl','물은 있지만 먹이 그릇이 비었어요'),[B('Fill its food bowl','먹이 그릇을 채워요'),B('Fill its drinking bowl','마실 그릇을 채워요'),B('Make a safe resting place','안전한 쉴 곳을 마련해요')]],
+ [B('has no safe place to rest','안전하게 쉴 곳이 없어요'),B('has food and water but no safe resting place','먹이와 물은 있지만 안전하게 쉴 곳이 없어요'),[B('Make a safe resting place','안전한 쉴 곳을 마련해요'),B('Fill its food bowl','먹이 그릇을 채워요'),B('Fill its drinking bowl','마실 그릇을 채워요')]]
+ ];
+ needs.play=function(){const n=pick(species),q=pick(needCases),lv=lvl(this.id),story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:opts(q[2]),cls:'words'});};
+})();

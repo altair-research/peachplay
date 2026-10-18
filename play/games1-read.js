@@ -16,13 +16,13 @@ G1R({
     const kind = lvl('sylplay')===2?'swap':pick(['delete', 'delete', 'add', 'swap']), c = pick(COMPOUNDS), [w, a, b, e] = c;
     if (kind === 'delete') {
       const first = rnd(2) === 0, ans = first ? b : a, drop = first ? a : b, ds = shuffle([...new Set(COMPOUNDS.flatMap(x => [x[1], x[2]]).filter(p => p !== ans && p !== drop && p !== a && p !== b))]).slice(0, 2);
-      quiz(this, { ask: B(`Say "${w}". Now take away "${drop}". What is left?`, `"${w}" 낱말을 말해 봐요. 여기서 "${drop}" 소리를 빼면 무엇이 남을까요?`), show: `<div class="bigword">${e} ${a}·${b}</div>`, opts: wordOpts(ans, ds), cls: 'words', after: B(`${w} without ${drop} is ${ans}.`, `${w}에서 ${drop} 부분을 빼면 ${ans}.`), vocab: ans });
+      quiz(this, { ask: B(`Say "${w}". Now take away "${drop}". What is left?`, `"${w}" 낱말을 말해 봐요. 여기서 "${drop}" 소리를 빼면 무엇이 남을까요?`), show: `<div class="bigword">${e} ${w}</div>`, opts: wordOpts(ans, ds), cls: 'words', after: B(`${w} without ${drop} is ${ans}.`, `${w}에서 ${drop} 부분을 빼면 ${ans}.`), vocab: ans });
     } else if (kind === 'add') {
       const rev = b + a, ds = [rev, a + a].filter(x => x !== w);
       quiz(this, { ask: B(`Put the word parts together: ${a} + ${b}`, `낱말 조각을 합쳐요: ${a} + ${b}`), show: `<div class="bigword">${a} + ${b} = ?</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(`${a} and ${b} make ${w}!`, `${a} + ${b} = ${w}!`), vocab: w });
     } else {
       const groups = { cake: ['cup', 'pan'], ball: ['foot', 'base', 'basket'], fish: ['star', 'gold', 'jelly'], house: ['dog', 'tree', 'doll'], time: ['bed', 'play', 'lunch'] }, key = pick(Object.keys(groups)), [p, q] = shuffle(groups[key]).slice(0, 2), from = p + key, to = q + key;
-      quiz(this, { ask: B(`Change "${p}" in "${from}" to "${q}". What is the new word?`, `"${from}"에서 "${p}" 부분을 "${q}"(으)로 바꾸면 어떤 낱말이 될까요?`), show: `<div class="bigword">${p}·${key} → ${q}·${key}</div>`, opts: wordOpts(to, [key + q, p + q]), cls: 'words', after: B(`${to}!`, `${to}!`), vocab: to });
+      quiz(this, { ask: B(`Change "${p}" in "${from}" to "${q}". What is the new word?`, `"${from}"에서 "${p}" 부분을 "${q}"(으)로 바꾸면 어떤 낱말이 될까요?`), show: `<div class="bigword">${p}·${key} → ?</div>`, opts: wordOpts(to, [key + q, p + q]), cls: 'words', after: B(`${to}!`, `${to}!`), vocab: to });
     }
   }
 });
@@ -237,6 +237,13 @@ const TEXTFEAT = [[B('Which part tells the name of a book or story?', '책이나
 G1R({
   id: 'factdet', icon: '🕵️', title: B('Fact Detective', '사실 탐정'), sub: B('Main topic, details, text parts', '주제, 세부 내용, 글의 부분'), u: 'Informational text',
   play() {
+    if(lvl('factdet')===2){
+      const q=pick([
+       [B('Mia puts on boots. Rain splashes the path. She holds her bag.','미아가 장화를 신어요. 길에 빗물이 튀어요. 가방을 들어요.'),B('Why are boots useful here?','장화가 도움이 되는 까닭은?'),[B('The path is wet.','길이 젖었어요.'),B('She has a bag.','가방이 있어요.'),B('She is outside.','밖에 있어요.')]],
+       [B('Ben packs a coat. Snow covers the park. His bag is red.','벤이 외투를 챙겨요. 공원에 눈이 쌓였어요. 가방은 빨개요.'),B('Which clue explains the coat?','외투를 챙긴 까닭을 알려 주는 단서는?'),[B('Snow covers the park.','공원에 눈이 쌓였어요.'),B('His bag is red.','가방이 빨개요.'),B('Ben packs his bag.','벤이 가방을 챙겨요.')]],
+       [B('A seedling leans toward a window. The room is dim. Its pot is round.','새싹이 창문 쪽으로 기울어요. 방은 어두워요. 화분은 둥글어요.'),B('Which clue explains the lean?','기울어진 까닭을 알려 주는 단서는?'),[B('The room is dim.','방이 어두워요.'),B('The pot is round.','화분이 둥글어요.'),B('The plant is young.','식물이 어려요.')]]
+      ]);quiz(this,{ask:q[1],show:`<div class="storytext">${L(q[0])}</div>`,opts:q[2].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});return;
+    }
     if (lvl('factdet')===1 && rnd(4) === 0) { const f = pick(TEXTFEAT); quiz(this, { ask: f[0], opts: [f[1], ...f[2]].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Text parts help you find and understand facts.', '글의 여러 부분이 정보를 찾고 이해하는 데 도움이 돼요.') }); return; }
     const x = pick(FACTS), q = pick(x.q);
     quiz(this, { ask: q.ask, show: `<div class="storytext">${L(x.t)}</div>`, opts: [q.r, ...q.w, ...(lvl('factdet')===2?[B('The text does not say.','글에 나오지 않아요.')]:[])].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Find the answer in the text.', '글에서 답을 찾아봐요.') });
@@ -290,8 +297,15 @@ const JOINS = [
 G1W({
   id: 'joinit', icon: '🔗', title: B('Join It', '문장 잇기'), sub: B('and, but, so, because', 'and, but, so, because'), u: 'Joining ideas',
   play() {
+    if(lvl('joinit')===2){
+      const q=pick([
+       ['It rained. We stayed in.',B('Which sentence gives the reason?','이유를 알려 주는 문장은?'),['We stayed in because it rained.','It rained because we stayed in.','We stayed in, but it rained.']],
+       ['Ben was tired. He kept playing.',B('Which sentence shows a surprise?','예상과 다른 일을 보여 주는 문장은?'),['Ben was tired, but he kept playing.','Ben was tired, so he kept playing.','Ben was tired because he kept playing.']],
+       ['I wanted a snack. I ate an apple.',B('Which sentence gives the reason for eating?','먹은 이유를 알려 주는 문장은?'),['I ate an apple because I wanted a snack.','I wanted a snack because I ate an apple.','I wanted a snack, but I ate an apple.']]
+      ]);quiz(this,{ask:q[1],show:`<div class="storytext">${q[0]}</div>`,opts:wordOpts(q[2][0],q[2].slice(1)),cls:'words sents'});return;
+    }
     const j = pick(JOINS), filled = j[0].replace('___', '<span class="qbox">?</span>');
-    quiz(this, { ask: B('Which word joins the ideas?', '두 생각을 이어 주는 낱말은?'), askSay: B(j[0].replace('___', 'blank'), j[1].replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(j[2], lvl('joinit')===2?[...j[3],'under']:j[3]), cls: 'words', after: B(j[0].replace('___', j[2]), j[1].replace('___', j[2])), vocab: j[0].replace('___', j[2]) });
+    quiz(this, { ask: B('Which word joins the ideas?', '두 생각을 이어 주는 낱말은?'), askSay: B(j[0].replace('___', 'blank'), j[1].replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(j[2], j[3]), cls: 'words', after: B(j[0].replace('___', j[2]), j[1].replace('___', j[2])), vocab: j[0].replace('___', j[2]) });
   }
 });
 
@@ -309,5 +323,20 @@ G1W({
   play() {
     const lv = lvl('writestarter'), w = pick(WSTART.filter(x => x[0] === lv)), extraPool = ['and', 'the', 'is', 'we', 'big', 'then', 'very'].filter(x => !w[1].includes(x));
     tileRound(this, { ask: B('Put the words in order to build a sentence!', '낱말을 차례로 놓아 문장을 만들어요!'), show: `<span class="emo">${w[2]}</span>`, target: w[1], extra: others(extraPool, '', 1), speakTiles: false, after: w[3], vocab: L(B(w[3].en, w[3].en)) });
+    // Keep the completed sentence above the fixed Next button on a short screen.
+    const feedback = $('#fact');
+    if (feedback) { feedback.style.fontSize = 'clamp(12px,2.2dvh,16px)'; feedback.style.lineHeight = '1.15'; }
+    const panel = view();
+    const picture = panel.querySelector('.show .emo');
+    if (picture) picture.style.fontSize = 'clamp(30px,5.5dvh,38px)';
+    const material = panel.querySelector('.show');
+    if (material) { material.style.flex = '0 0 auto'; material.style.margin = '2px 0'; }
+    const slots = panel.querySelector('.slots');
+    if (slots) { slots.style.gap = '4px'; slots.style.margin = '2px 0'; }
+    panel.querySelectorAll('.slot').forEach(el => { el.style.fontSize = '18px'; el.style.height = '28px'; el.style.minHeight = '28px'; el.style.minWidth = '28px'; el.style.padding = '0 3px'; el.style.borderBottomWidth = '3px'; });
+    const tiles = panel.querySelector('.tiles');
+    if (tiles) { tiles.style.display = 'grid'; tiles.style.gridTemplateColumns = 'repeat(3,minmax(0,1fr))'; tiles.style.gap = '6px'; tiles.style.marginTop = '6px'; }
+    panel.querySelectorAll('.tile').forEach(el => { el.style.fontSize = '18px'; el.style.minHeight = '44px'; el.style.padding = '4px'; el.style.width = '100%'; el.style.setProperty('min-width','0','important'); });
+    if (feedback) feedback.style.marginBottom = '76px';
   }
 });

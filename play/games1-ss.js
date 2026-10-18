@@ -77,13 +77,13 @@ const TRAITS = { fairness: B('fairness', '공정함'), respect: B('respect', '�
 const SCEN = [
   [B('Ana makes sure every friend gets the same number of turns.', '아나는 모든 친구가 같은 횟수로 차례를 갖게 해요.'), 'fairness'], [B('Ben listens when a new friend talks.', '벤은 새 친구가 말할 때 귀 기울여 들어요.'), 'respect'], [B('Mia is scared, but she tells the truth anyway.', '미아는 무섭지만 그래도 사실대로 말해요.'), 'courage'],
   [B('Sam falls off his bike, gets up, and tries again.', '샘은 자전거에서 넘어졌지만 일어나 다시 해 봐요.'), 'perseverance'], [B('Lily helps a classmate who dropped his books.', '릴리는 책을 떨어뜨린 반 친구를 도와줘요.'), 'kindness'], [B('Leo plays with a classmate who speaks a different language.', '레오는 다른 언어를 쓰는 반 친구와 함께 놀아요.'), 'tolerance'],
-  [B('Zoe keeps practicing piano every day until the song is perfect.', '조이는 곡이 완벽해질 때까지 매일 피아노를 연습해요.'), 'perseverance'], [B('Max feels nervous, but he stands up for a friend who is being teased.', '맥스는 떨리지만 놀림받는 친구의 편을 들어 줘요.'), 'courage'], [B('Ava splits the snacks equally for everyone.', '에이바는 간식을 모두에게 똑같이 나눠요.'), 'fairness'], [B('Noah picks up trash at the park to show respect for nature.', '노아는 자연을 존중하는 마음으로 공원의 쓰레기를 주워요.'), 'respect']
+  [B('Zoe keeps practicing piano every day until the song is perfect.', '조이는 곡이 완벽해질 때까지 매일 피아노를 연습해요.'), 'perseverance'], [B('Max feels nervous, but he stands up for a friend who is being teased.', '맥스는 떨리지만 놀림받는 친구의 편을 들어 줘요.'), 'courage'], [B('Ava splits the snacks equally for everyone.', '에이바는 간식을 모두에게 똑같이 나눠요.'), 'fairness'], [B('Noah leaves flowers growing and stays on the park path.', '노아는 꽃을 꺾지 않고 공원의 길로 다녀요.'), 'respect']
 ];
 G1T({
   id: 'character1', icon: '💛', title: B('Character Counts', '좋은 품성'), sub: B('Fairness, respect, courage, perseverance', '공정, 존중, 용기, 인내'), u: 'Character',
   play() {
     const s = pick(SCEN), NEAR = { fairness: ['respect', 'kindness', 'tolerance'], respect: ['kindness', 'tolerance', 'fairness'], courage: ['perseverance', 'kindness', 'fairness'], perseverance: ['courage', 'commitment'], kindness: ['respect', 'tolerance', 'fairness'], tolerance: ['respect', 'kindness', 'fairness'] }, ds = others(Object.keys(TRAITS).filter(k => k !== s[1] && !(NEAR[s[1]] || []).includes(k)), '', 2);
-    quiz(this, { ask: B('Which good trait does this show?', '어떤 좋은 품성이 보일까요?'), show: `<div class="storytext">${L(s[0])}</div>`, opts: [s[1], ...ds, ...(lvl('character1')===2?['carelessness']:[])].map(k => ({ html: `<span class="word">${L(TRAITS[k]||B('Carelessness','부주의'))}</span>`, ok: k === s[1] })), cls: 'words', after: B(`That shows ${TRAITS[s[1]].en}.`, `${TRAITS[s[1]].ko}의 모습이에요.`), vocab: TRAITS[s[1]].en });
+    quiz(this, { ask: B('Which good trait does this show?', '어떤 좋은 품성이 보일까요?'), show: `<div class="storytext">${L(s[0])}</div>`, opts: [s[1], ...ds].map(k => ({ html: `<span class="word">${L(TRAITS[k]||B('Carelessness','부주의'))}</span>`, ok: k === s[1] })), cls: 'words', after: B(`That shows ${TRAITS[s[1]].en}.`, `${TRAITS[s[1]].ko}의 모습이에요.`), vocab: TRAITS[s[1]].en });
   }
 });
 
@@ -220,3 +220,43 @@ G1T({
     const p = pick(PATRIOT); quiz(this, { ask: p[1], show: `<div class="storytext">${L(p[0])}</div>`, opts: tOpts(p[2], p[3]), cls: 'words', after: p[0], vocab: p[2].en });
   }
 });
+
+// 63a: apply the evidence to a second situation; avoid broad then/now claims.
+(() => {
+ const o=a=>a.map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+ const now=[
+ [B('a letter carried by a rider','말 탄 사람이 전하는 편지'),B('Which tool lets you talk while walking away from home?','집 밖에서 걸으며 통화하는 도구는?'),[B('a mobile phone','휴대전화'),B('a desktop computer','데스크톱 컴퓨터'),B('a typewriter','타자기')]],
+ [B('a candle','촛불'),B('Which light can you switch on without a flame?','불꽃 없이 스위치로 켜는 불빛은?'),[B('an electric lamp','전등'),B('an oil lamp','기름등'),B('a candle lantern','촛불 랜턴')]],
+ [B('scrubbing clothes by hand','손으로 빨래하기'),B('Which tool washes clothes in a powered spinning drum?','전기로 통을 돌려 빨래하는 도구는?'),[B('a washing machine','세탁기'),B('a washboard','빨래판'),B('a washing tub','빨래통')]]
+ ];
+ GAMES.find(g=>g.id==='thennow').play=function(){const q=pick(now),lv=lvl(this.id);quiz(this,{ask:q[1],show:lv===2?`<div class="storytext">${L(B('Long ago: ','옛날의 방법: '))}${L(q[0])}</div>`:'',opts:o(q[2]),cls:'words'});};
+ const examples={fairness:[B('Share turns equally','차례를 똑같이 나눠요'),B('Keep trying after a mistake','틀려도 다시 해 봐요'),B('Speak up even when afraid','무서워도 나서서 말해요')],respect:[B('Listen without interrupting','말을 끊지 않고 들어요'),B('Keep practicing a song','노래를 계속 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')],courage:[B('Tell the truth even when afraid','무서워도 사실을 말해요'),B('Wait for a friend to finish speaking','친구 말이 끝나길 기다려요'),B('Divide turns equally','차례를 똑같이 나눠요')],perseverance:[B('Try again after a mistake','틀려도 다시 해 봐요'),B('Divide snacks equally','간식을 똑같이 나눠요'),B('Welcome a new classmate','새 반 친구를 반겨요')],kindness:[B('Help carry dropped books','떨어진 책을 주워 줘요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Speak up even when afraid','무서워도 나서서 말해요')],tolerance:[B('Play with a child who uses another language','다른 말을 쓰는 아이와 놀아요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')]};
+ const ch=GAMES.find(g=>g.id==='character1'),old=ch.play;ch.play=function(){if(lvl(this.id)===1)return old.call(this);const s=pick(SCEN);quiz(this,{ask:B('Which action shows the same trait?','같은 마음을 보여 주는 행동은?'),show:`<div class="storytext">${L(s[0])}</div>`,opts:o(examples[s[1]]),cls:'words'});};
+ const patriot=[
+ [B('What does liberty mean?','liberty는 무슨 뜻일까요?'),[B('Freedom','자유'),B('Fairness','공정'),B('Duty','의무')]],
+ [B('Which action shows care for a neighbor?','이웃을 아끼는 행동은?'),[B('Help carry their bags','이웃의 짐을 들어 줘요'),B('Ask them to carry my bags','내 짐을 들어 달라고 해요'),B('Leave their bags by the door','이웃의 짐을 문 옆에 둬요')]],
+ [B('In America, sing: sweet land of ___.','America 노래: sweet land of ___'),[B('liberty','liberty'),B('unity','unity'),B('bravery','bravery')]]
+ ];
+ GAMES.find(g=>g.id==='patriot').play=function(){const q=pick(patriot);quiz(this,{ask:q[0],opts:o(q[1]),cls:'words'});};
+})();
+
+// 63a: L2 compares sourced achievements and their order, rather than adding a name.
+(() => {
+ const choices=a=>a.map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+ const figures=GAMES.find(g=>g.id==='figures1'),old=figures.play;
+ figures.play=function(){if(lvl(this.id)===1)return old.call(this);
+ const a=pick(FIGURE1_FACTS),b=pick(FIGURE1_FACTS.filter(x=>x!==a)),c=pick(FIGURE1_FACTS.filter(x=>x!==a&&x!==b));
+ const name=x=>FIGS.find(f=>f.id===x.id).n,pair=(x,y)=>B(`${name(x).en} → ${name(y).en}`,`${name(x).ko} → ${name(y).ko}`);
+ quiz(this,{ask:B('Which pair matches these deeds in order?','차례로 두 일을 한 인물의 짝은?'),show:`<div class="storytext">1: ${L(a.deed)}<br>2: ${L(b.deed)}</div>`,askExtra:{t:`${L(a.deed)}. ${L(b.deed)}`},opts:choices([pair(a,b),pair(b,a),pair(a,c)]),cls:'words sents'});
+ };
+ const place=GAMES.find(g=>g.id==='placetime'),prior=place.play;
+ const bank=[
+ [B('Franklin lived in the 1700s; Bridges entered school in 1960.','프랭클린은 1700년대에 살았고 브리지스는 1960년에 입학했어요.'),B('Who lived earlier?','누가 더 먼저 살았을까요?'),[B('Benjamin Franklin','벤저민 프랭클린'),B('Ruby Bridges','루비 브리지스'),B('They lived at the same time','같은 때에 살았어요')]],
+ [B('Lewis and Clark reached the Pacific in 1805; Bridges entered school in 1960.','탐험대는 1805년에 태평양에 닿았고 브리지스는 1960년에 입학했어요.'),B('Which event came first?','어떤 일이 더 먼저 일어났을까요?'),[B('The expedition reached the ocean','탐험대가 바다에 닿았어요'),B('Bridges entered school','브리지스가 입학했어요'),B('Both happened in the same year','같은 해에 일어났어요')]]
+ ];
+ place.play=function(){if(lvl(this.id)===1)return prior.call(this);const q=pick(bank);quiz(this,{ask:q[1],show:`<div class="storytext">${L(q[0])}</div>`,askExtra:{t:L(q[0])},opts:choices(q[2]),cls:'words sents'});};
+ const patriot=GAMES.find(g=>g.id==='patriot'),pold=patriot.play;
+ patriot.play=function(){if(lvl(this.id)===1)return pold.call(this);const qs=[
+ [B('A child may choose a game; every child gets a turn.','아이가 놀이를 고르고 모두 차례를 가져요.'),[B('Freedom + fairness','자유 + 공정'),B('Freedom + pride','자유 + 자랑스러움'),B('Pride + duty','자랑스러움 + 의무')]],
+ [B('A child helps a neighbor, then smiles at the flag of home.','아이가 이웃을 돕고 자기 나라 국기를 보며 뿌듯해해요.'),[B('Care + pride','배려 + 자랑스러움'),B('Freedom + duty','자유 + 의무'),B('Fairness + freedom','공정 + 자유')]]];const q=pick(qs);quiz(this,{ask:B('Which pair of ideas fits in order?','차례로 맞는 마음의 짝은?'),show:`<div class="storytext">${L(q[0])}</div>`,askExtra:{t:L(q[0])},opts:choices(q[1]),cls:'words'});};
+})();

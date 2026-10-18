@@ -16,6 +16,7 @@ registerGame({
   id: 'quantity', subject: 'math', icon: '🎲', title: B('Show Me the Number', '수만큼 찾기'), sub: B('Match numbers to dots', '숫자와 점 짝 맞추기'),
   area: AREA_MATH('Counting & cardinality'),
   play() {
+    if(lvl('quantity')===2){const a=1+rnd(4),b=1+rnd(5),n=a+b;quiz(this,{ask:B(`There are ${n} dots altogether. How many are hidden?`,`점은 모두 ${n}개예요. 가린 점은 몇 개일까요?`),show:tfSvg(a)+' + ?',opts:[b,b+1,b===1?3:b-1].map(v=>({html:tfSvg(v),ok:v===b})),cls:'groups'});return;}
     const lv = lvl('quantity'), n = lv === 1 ? 1 + rnd(8) : 3 + rnd(8), set = new Set([n]);
     while (set.size < 3) { const v = n + pick([-2, -1, 1, 2]); if (v >= 1 && v <= 10) set.add(v); }
     const maker = (v) => { const kinds = [() => tfSvg(v), () => scatterSvg(v)]; if (v <= 6) kinds.push(() => diceSvg(v)); return pick(kinds)(); };
@@ -58,6 +59,7 @@ registerGame({
   id: 'clock', subject: 'math', icon: '🕒', title: B('What Time Is It?', '몇 시일까?'), sub: B("O'clock times", '정각 읽기'),
   area: AREA_MATH('Time (enrichment)'),
   play() {
+    if(lvl('clock')===2){const h=1+rnd(12),step=1+rnd(2),a=(h+step-1)%12+1;quiz(this,{ask:B(`The clock shows the start. What time is ${step} hour${step>1?'s':''} later?`,`시계는 시작 시각이에요. ${step}시간 뒤는 몇 시일까요?`),show:clockSvg(h),opts:[a,h,(h-step+11)%12+1].map(v=>({html:`<span class="num eq">${v}:00</span>`,ok:v===a})),cls:'shapes'});return;}
     const h = 1 + rnd(12), set = new Set([h]); while (set.size < (lvl('clock') === 2 ? 4 : 3)) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
     quiz(this, {
       ask: B('What time does the clock show?', '시계가 가리키는 시각은?'), show: clockSvg(h),
@@ -124,12 +126,10 @@ registerGame({
   id: 'opposites', subject: 'read', icon: '↔️', title: B('Opposites', '반대말'), sub: B('Hot and cold, up and down', '뜨겁다와 차갑다'),
   area: AREA_READ('Vocabulary'),
   play() {
-    const pr = pick(OPP), flip = rnd(2) === 0, a = pr[flip ? 1 : 0], b = pr[flip ? 0 : 1], pool = OPP.filter(p => p !== pr).flatMap(p => p), ds = shuffle(pool).slice(0, lvl('opposites') === 2 ? 3 : 2);
-    const o = (w, ok) => ({ html: `<span class="emo">${w[2]}</span>`, label: B(w[0], w[1]), ok });
-    quiz(this, {
-      ask: B(`What is the opposite of ${a[0].toUpperCase()}?`, `${a[0]}의 반대말은 무엇일까요?`), askSay: B(`What is the opposite of ${a[0]}?`, `${a[0]}의 반대말은 무엇일까요?`),
-      show: `<div class="bigword"><span class="emo">${a[2]}</span> ${a[0]}</div>`, opts: [o(b, true), ...ds.map(w => o(w, false))], cls: 'shapes', after: B(`${a[0]} and ${b[0]} are opposites!`, `${a[0]}와 ${b[0]}는 반대말이에요!`), vocab: `${a[0]} and ${b[0]} are opposites!`
-    });
+    const rows=[['hot','cold','warm','뜨거운','차가운','따뜻한'],['big','small','medium','큰','작은','중간 크기의'],['up','down','sideways','위','아래','옆'],['wet','dry','damp','젖은','마른','축축한'],['fast','slow','steady','빠른','느린','일정한 속도의'],['open','closed','ajar','열린','닫힌','조금 열린'],['tall','short','medium-height','키 큰','키 작은','중간 키의'],['full','empty','half-full','가득 찬','빈','반쯤 찬'],['heavy','light','medium-weight','무거운','가벼운','중간 무게의'],['loud','quiet','medium-volume','큰 소리의','조용한','중간 소리의'],['near','far','midway','가까운','먼','중간 거리의'],['inside','outside','at the doorway','안','밖','문 앞']];
+    const r=pick(rows),lv=lvl('opposites'),target=lv===1?1:0;
+    const scenes=['The soup was cold. We heated it until it was ___.','The small bag filled up. We chose a ___ one to hold more.','The arrow pointed down. We turned it to point ___.','The dry towel went into water and became ___.','The slow toy was adjusted to move ___.','The closed lid was lifted until it was ___.','The short pole was replaced by a ___ one to reach the shelf.','The empty cup was filled until it was ___.','The light load was replaced by a ___ one that took more effort to lift.','The quiet speaker was turned up until it was ___.','The far chair was moved ___ to the table.','We were outside. We stepped through the door to go ___.'];
+    quiz(this,{ask:lv===1?B(`Which word is opposite to ${r[0]}?`,`영어 낱말 ${r[0]}의 반대말을 골라요.`):B('Choose the opposite change that completes the story.','상황에서 반대로 달라진 모습을 나타내는 영어 낱말을 골라요.'),show:lv===1?'':`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${scenes[rows.indexOf(r)]}</div>`,opts:r.slice(0,3).map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===target})),cls:'words'});
   }
 });
 
@@ -138,6 +138,7 @@ registerGame({
   id: 'endsound', subject: 'read', icon: '🔚', title: B('Last Sound', '끝소리 찾기'), sub: B('cat ends with t', 'cat은 t로 끝나요'),
   area: AREA_READ('Phonemic awareness'),
   play() {
+    if(lvl('endsound')===2){const words=['cat','hat','bat','mat','dog','log','fog','pig','wig','sun','run','fan','pen','hen','bus','gas','cup','map','cap','bed','red','mud','duck','back','rock'].map(w=>[w]),w=pick(words),last=w[0].slice(-1),good=pick(words.filter(x=>x!==w&&x[0].endsWith(last))),wrong=shuffle(words.filter(x=>!x[0].endsWith(last))).slice(0,2);quiz(this,{ask:B(`Which word ends with the same sound as ${w[0]}?`,`영어 낱말 ${w[0]}와 끝소리가 같은 낱말을 골라요.`),opts:[good,...wrong].map(x=>({html:`<span class="word">${x[0]}</span>`,ok:x===good})),cls:'words'});return;}
     const w = pick(CVC), last = w[0][w[0].length - 1], ds = others(ALPHA.filter(c => c !== last), '', lvl('endsound') === 2 ? 3 : 2);
     quiz(this, {
       ask: B(`Which letter does "${w[0]}" end with?`, `"${w[0]}"는 어떤 글자로 끝날까요?`), askSay: B(`Which letter does the word end with?`, `이 단어는 어떤 글자로 끝날까요?`), askExtra: { t: w[0], lang: 'en-US' },
@@ -271,17 +272,25 @@ registerGame({
   };
 })();
 
-// L2 reads an explicit causal story; four choices include both events.
+// Controlled scenarios keep all alternatives about the same object and hide the outcome.
 (() => {
-  const game = GAMES.find(g => g.id === 'cause'), original = game.play;
-  game.play = function () {
-    if (lvl(this.id) === 1) return original.call(this);
-    const t = pick(CAUSE), first = !!rnd(2), target = first ? 0 : 1;
-    const story = B(t[0][1].en + ' Then: ' + t[1][1].en + '.', t[0][1].ko + ' 그다음: ' + t[1][1].ko + '.');
-    const options = [t[target], t[1 - target], ...others(CAUSE, t, 2).map(x => x[target])];
-    quiz(this, { ask: first ? B('In this story, what happened first?', '이 이야기에서 먼저 일어난 일은?') : B('In this story, what happened next?', '이 이야기에서 그다음 일어난 일은?'),
-      askExtra: { t: L(story) },
-      show: '<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">' + t[0][0] + ' ' + L(t[0][1]) + '<br>↓<br>' + t[1][0] + ' ' + L(t[1][1]) + '</div>',
-      opts: options.map((x, i) => ({ html: '<span class="emo">' + x[0] + '</span><span class="ol">' + L(x[1]) + '</span>', ok: i === 0 })), cls: 'shapes' });
-  };
+ const game=GAMES.find(g=>g.id==='cause');
+ const rows=[
+  [B('A toy ball is still. A hand pushes it across a smooth floor.','장난감 공이 멈춰 있어요. 손으로 매끈한 바닥 위에서 밀어요.'),B('It starts moving.','움직이기 시작해요.'),B('It stays in the same spot.','같은 자리에 있어요.'),B('It moves toward the hand.','손 쪽으로 움직여요.')],
+  [B('A room is dark. Its working lamp is switched on.','방이 어두워요. 잘 작동하는 전등을 켜요.'),B('The room gets brighter.','방이 더 밝아져요.'),B('The room gets darker.','방이 더 어두워져요.'),B('The light stays off.','전등이 꺼진 채예요.')],
+  [B('Water is poured into an empty cup with no holes.','구멍 없는 빈 컵에 물을 부어요.'),B('The water level rises.','물 높이가 올라가요.'),B('The water level falls.','물 높이가 내려가요.'),B('The cup stays empty.','컵이 빈 채로 있어요.')],
+  [B('A flat sheet of paper is folded in half.','평평한 종이를 반으로 접어요.'),B('The paper has a fold.','종이에 접힌 자국이 생겨요.'),B('The paper stays flat.','종이가 평평한 채예요.'),B('The paper is cut in two.','종이가 두 조각으로 잘려요.')],
+  [B('A closed unlocked door is pushed open.','닫힌 문은 잠겨 있지 않아요. 밀어서 열어요.'),B('The doorway opens.','문이 열려요.'),B('The door stays shut.','문이 닫힌 채예요.'),B('The door becomes locked.','문이 잠겨요.')],
+  [B('One block is taken off the top of a stack.','쌓은 블록 맨 위에서 한 개를 꺼내요.'),B('The stack becomes shorter.','블록 더미가 낮아져요.'),B('The stack becomes taller.','블록 더미가 높아져요.'),B('The stack stays the same height.','블록 더미 높이가 같아요.')],
+  [B('A working tap is turned on over a sink.','잘 작동하는 수도꼭지를 세면대 위에서 틀어요.'),B('Water starts flowing.','물이 흐르기 시작해요.'),B('Water stops flowing.','물이 흐르지 않아요.'),B('The tap stays closed.','수도꼭지가 닫힌 채예요.')],
+  [B('A crayon is pressed and moved across plain paper.','빈 종이에 크레용을 대고 눌러서 움직여요.'),B('A colored line appears.','색 선이 생겨요.'),B('The paper stays unmarked.','종이에 표시가 없는 채예요.'),B('An old line is erased.','원래 있던 선이 지워져요.')]
+
+ ];
+ game.play=function(){const r=pick(rows),lv=lvl(this.id);
+ if(lv===1){quiz(this,{ask:B('Which result follows this action?','이 행동 다음에 어떤 결과가 생길까요?'),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(r[0])}</div>`,opts:r.slice(1).map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});return;}
+ const i=rows.indexOf(r),stops=[B('An equal opposite push stops the moving ball.','같은 크기의 반대 힘으로 움직이던 공을 멈춰요.'),B('The lamp is switched off again.','전등을 다시 꺼요.'),B('All the water is poured back out.','물을 모두 다시 따라내요.'),B('The paper is unfolded again.','종이를 다시 펼쳐요.'),B('The door is pulled shut again.','문을 다시 당겨서 닫아요.'),B('The same block is put back on top.','같은 블록을 맨 위에 다시 놓아요.'),B('The tap is turned off again.','수도꼭지를 다시 잠가요.'),B('A second colored line is drawn.','색 선을 하나 더 그어요.')],endings=[B('Still → moving → still','멈춤 → 움직임 → 멈춤'),B('Dark → bright → dark','어두움 → 밝음 → 어두움'),B('Empty → filled → empty','빈 컵 → 물 찬 컵 → 빈 컵'),B('Flat → folded → unfolded','평평함 → 접힘 → 펼침'),B('Closed → open → closed','닫힘 → 열림 → 닫힘'),B('Tall → shorter → original height','높음 → 낮아짐 → 원래 높이'),B('No flow → flowing → no flow','안 흐름 → 흐름 → 안 흐름'),B('No lines → one line → two lines','선 없음 → 한 선 → 두 선')],wrong=[B('Still → still → moving','멈춤 → 멈춤 → 움직임'),B('Dark → dark → bright','어두움 → 어두움 → 밝음'),B('Empty → empty → filled','빈 컵 → 빈 컵 → 물 찬 컵'),B('Flat → flat → folded','평평함 → 평평함 → 접힘'),B('Closed → closed → open','닫힘 → 닫힘 → 열림'),B('Tall → taller → shorter','높음 → 더 높아짐 → 낮아짐'),B('No flow → no flow → flowing','안 흐름 → 안 흐름 → 흐름'),B('No lines → two lines → one line','선 없음 → 두 선 → 한 선')],other=[B('Moving → still → moving','움직임 → 멈춤 → 움직임'),B('Bright → dark → bright','밝음 → 어두움 → 밝음'),B('Filled → empty → filled','물 찬 컵 → 빈 컵 → 물 찬 컵'),B('Folded → flat → folded','접힘 → 평평함 → 접힘'),B('Open → closed → open','열림 → 닫힘 → 열림'),B('Tall → same height → taller','높음 → 같은 높이 → 더 높음'),B('Flowing → no flow → flowing','흐름 → 안 흐름 → 흐름'),B('One line → no lines → two lines','한 선 → 선 없음 → 두 선')];
+ quiz(this,{ask:B('Follow BOTH actions. Which sequence fits?','두 행동을 모두 보고 변화 순서를 골라요.'),show:`<div style="font-size:clamp(16px,3dvh,22px)">${L(r[0])} ${L(stops[i])}</div>`,opts:[endings[i],wrong[i],other[i]].map((x,j)=>({html:`<span class="word">${L(x)}</span>`,ok:j===0})),cls:'words'});
+ };
+ const feelings=GAMES.find(g=>g.id==='feelings'),original=feelings.play;
+ feelings.play=function(){if(lvl(this.id)===1)return original.call(this);const keys=shuffle(Object.keys(FEEL)),a=keys[0],b=keys[1],c=keys[2];quiz(this,{ask:B('Follow the two feelings in order. Which pair of faces fits?','말한 두 기분의 순서에 맞는 얼굴 짝을 골라요.'),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(FEEL[a][1])} → ${L(FEEL[b][1])}</div>`,opts:[[a,b],[b,a],[a,c]].map((ks,i)=>({html:ks.map(k=>`<span class="emo">${FEEL[k][0]}</span>`).join(' → '),ok:i===0})),cls:'shapes'});};
 })();

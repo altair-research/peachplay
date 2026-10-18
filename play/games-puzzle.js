@@ -48,7 +48,7 @@
   function register(id, icon, en, ko, build) {
     registerGame({ id, icon, title: B(en, ko), sub: B('Thinking puzzles · follow the clues', '생각 퍼즐 · 단서를 따라가요'),
       grade: 'both', subject: 'gifted', area: B('Thinking puzzles', '생각 퍼즐'),
-      play() { quiz(this, build(tier(id))); } });
+      play() { quiz(this, build(tier(id) + (lvl(id) === 2 && !['zsudoku','zturn'].includes(id) ? 1 : 0)));  } });
   }
 
   // Count solutions with minimum-remaining-values search; stop after two.
@@ -149,15 +149,15 @@
   });
 
   register('zpyramid', '🔺', 'Number Pyramid', '숫자 피라미드', t => {
-    const n = 3 + Math.floor(t / 2), rows = [seq(n).map(() => 1 + rnd(3 + t))];
+    const n = t === 0 ? 2 : 3 + Math.floor(t / 2), rows = [seq(n).map(() => 1 + rnd(3 + t))];
     while (rows[rows.length - 1].length > 1) { const r = rows[rows.length - 1]; rows.push(r.slice(1).map((v, i) => v + r[i])); }
-    const at = t < 2 ? rows.length - 1 : rnd(rows.length - 1) + 1, col = rnd(rows[at].length), ans = rows[at][col];
+    const at = t <= 2 ? rows.length - 1 : rnd(rows.length - 1) + 1, col = rnd(rows[at].length), ans = rows[at][col];
     const visual = rows.slice().reverse().map((r, k) => `<div class="z-pyramid">${r.map((v, j) => `<b>${rows.length - 1 - k === at && j === col ? '?' : v}</b>`).join('')}</div>`).join('');
     return numberItem(B('Each block is the sum of the two below it. Find ?.', '아래 두 칸을 더하면 위 칸이 돼요. ?를 찾아요.'), visual, ans, B('Look at the pair directly under an empty block.', '빈칸 바로 아래 두 칸부터 보세요.'));
   });
 
   register('zbalance', '⚖️', 'Balance Clues', '저울 단서', t => {
-    const x = 1 + rnd(3 + t), y = 1 + rnd(3 + t), a = 1 + Math.floor(t / 2), b = t < 2 ? 0 : 1 + rnd(2), sum = a * x + b * y;
+    const x = 1 + rnd(3 + t), y = 1 + rnd(3 + t), a = 2 + Math.floor(t / 2), b = t < 2 ? 0 : 1 + rnd(2), sum = a * x + b * y;
     const valid = seq(50).filter(v => a * v + b * y === sum);
     if (valid.length !== 1) throw new Error('Balance is ambiguous');
     return numberItem(B('Both sides weigh the same. What is one star worth?', '양쪽 무게가 같아요. 별 하나의 무게는?'), line(`⭐${a > 1 ? ` × ${a}` : ''}${b ? ` + ● × ${b}` : ''} = ${sum}`) + (b ? line(`● + ● = ${y * 2}`) : ''), x, B(b ? 'First find one circle by sharing its total equally.' : 'Share the total equally among the stars.', b ? '동그라미 둘의 합을 똑같이 나누어 하나의 무게를 찾아요.' : '별끼리 전체 무게를 똑같이 나누어요.'));
@@ -165,6 +165,7 @@
 
   register('zmagic', '✨', 'Equal Sum Square', '합이 같은 네모', t => {
     const scale = 1 + Math.floor(t / 2), offset = rnd(3 + t), base = [8, 1, 6, 3, 5, 7, 4, 9, 2], a = base.map(v => v * scale + offset), at = rnd(9), target = 15 * scale + 3 * offset;
+    if(t===2)return numberItem(B('Find the missing number, then add 2.','빠진 수를 구한 뒤 2를 더해요.'),line(L(B(`Each row, column and diagonal totals ${target}.`,`가로·세로·대각선 합은 ${target}예요.`)))+grid(a,3,at),a[at]+2,B('First fill the grid, then apply the extra step.','먼저 빈칸을 구하고 다음 단계를 적용해요.'));
     return numberItem(B(`Every row, column and diagonal totals ${target}. Find ?.`, `가로·세로·대각선의 합이 모두 ${target}예요. ?는?`), grid(a, 3, at), a[at], B('Add the two known numbers in the row with ?.', '?가 있는 줄의 나머지 두 수부터 더해요.'));
   });
 
@@ -179,20 +180,28 @@
   });
 
   register('zrule', '🔢', 'Two Step Rule', '두 단계 수 규칙', t => {
+    if (t === 2) {
+      const a=1+rnd(3),b=1+rnd(3),x=1+rnd(5),ans=(x+a)*b;
+      return numberItem(B(`For each input: add ${a}, then multiply by ${b}. Find the output.`,`넣은 수에 ${a}을 더한 뒤 ${b}배 해요. 나온 수를 구해요.`),line(`${x} → ?`),ans,B('Use the two steps on the same number.','같은 수에 두 단계를 차례로 적용해요.'));
+    }
     const start = 1 + rnd(5), a = 1 + rnd(2 + t), b = 1 + rnd(2 + t), times = t >= 4, n = t < 2 ? 4 : 6;
     const values = [start]; for (let i = 1; i < n; i++) values.push(i % 2 ? values[i - 1] + a : times ? values[i - 1] * 2 : values[i - 1] + b);
     const rule = times ? `+${a}, ×2` : `+${a}, +${b}`;
     return numberItem(B(`Repeat these steps: ${rule}. What comes next?`, `${rule} 순서로 반복해요. 다음 수는?`), line(values.slice(0, -1).join(' → ') + ' → ?'), values[n - 1], B('Mark which of the two steps comes next.', '두 단계 중 다음에 쓸 단계를 찾아요.'));
   });
 
-  function distances(a, n) {
-    const d = Array(n * n).fill(-1), queue = [0]; d[0] = 0;
+  function distances(a, n, start = 0) {
+    const d = Array(n * n).fill(-1), queue = [start]; d[start] = 0;
     for (let q = 0; q < queue.length; q++) { const i = queue[q], r = Math.floor(i / n), c = i % n; for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const rr = r + dr, cc = c + dc, j = rr * n + cc; if (rr >= 0 && rr < n && cc >= 0 && cc < n && !a[j] && d[j] < 0) { d[j] = d[i] + 1; queue.push(j); } } }
     return d;
   }
   register('zpath', '🗺️', 'Shortest Walk', '가장 짧은 길', t => {
     const n = Math.min(6, 3 + Math.floor(t / 2)); let a, ds;
     do { a = seq(n * n).map(i => i === 0 || i === n * n - 1 ? 0 : rnd(4) === 0 ? 1 : 0); ds = distances(a, n); } while (ds[a.length - 1] < 0);
+    if (lvl('zpath') === 2) {
+      const key = pick(seq(a.length).filter(i => i > 0 && i < a.length - 1 && ds[i] >= 0)), fromKey = distances(a, n, key);
+      return numberItem(B('Collect the key, then reach the flag. Move up/down/left/right. Fewest steps?', '먼저 열쇠를 얻은 뒤 깃발로 가요. 상하좌우로 가는 가장 적은 걸음 수는?'), grid(a.map((v, i) => i === 0 ? '🍑' : i === key ? '🔑' : i === a.length - 1 ? '🚩' : v ? '■' : '·'), n), ds[key] + fromKey[a.length - 1], B('Find the shortest walk to the key, then from the key to the flag.', '열쇠까지와 열쇠에서 깃발까지의 가장 짧은 길을 각각 찾아요.'));
+    }
     return numberItem(B('Walk from peach to flag, up/down/left/right. Fewest steps?', '복숭아에서 깃발까지 상하좌우로 가요. 가장 적은 걸음 수는?'), grid(a.map((v, i) => i === 0 ? '🍑' : i === a.length - 1 ? '🚩' : v ? '■' : '·'), n), ds[a.length - 1], B('Label nearby open cells 1, then their neighbors 2.', '옆의 빈칸에 1, 그다음 빈칸에 2를 붙여 생각해요.'));
   });
 
@@ -215,10 +224,10 @@
   });
 
   register('zmatrix', '🧩', 'Overlay Grid', '겹쳐 보는 격자', t => {
-    const n = t < 3 ? 2 : 3, combine = (a, b) => a.map((v, i) => t >= 4 ? v ^ b[i] : v | b[i]);
+    const n = t < 3 ? 2 : 3, combine = (a, b) => a.map((v, i) => t >= 2 ? v ^ b[i] : v | b[i]);
     const rows = seq(t < 2 ? 2 : 3).map(() => { const a = seq(n * n).map(() => rnd(2)), b = seq(n * n).map(() => rnd(2)); return [a, b, combine(a, b)]; });
     const ans = rows[rows.length - 1][2], candidates = [ans, ...shuffle(seq(ans.length)).slice(0, 3).map(i => ans.map((v, j) => i === j ? 1 - v : v))];
-    return item(B(t >= 4 ? 'In each row, overlap the first two. Dots in both disappear. Complete the last.' : 'In each row, overlap the first two. Keep all dots. Complete the last.', t >= 4 ? '각 줄의 앞 두 그림을 겹쳐요. 겹친 점은 없어져요. 마지막 그림은?' : '각 줄의 앞 두 그림을 겹쳐 점을 모두 남겨요. 마지막 그림은?'), `<div class="z-matrix">${rows.flatMap((r, i) => r.map((v, j) => i === rows.length - 1 && j === 2 ? '<span class="z-cell">?</span>' : bits(v, n))).join('')}</div>`, candidates, v => eq(v, ans), B('Follow one cell through the first two pictures.', '한 칸을 골라 앞 두 그림에서 점이 있는지 보세요.'), v => bits(v, n));
+    return item(B(t >= 2 ? 'In each row, overlap the first two. Dots in both disappear. Complete the last.' : 'In each row, overlap the first two. Keep all dots. Complete the last.', t >= 2 ? '각 줄의 앞 두 그림을 겹쳐요. 겹친 점은 없어져요. 마지막 그림은?' : '각 줄의 앞 두 그림을 겹쳐 점을 모두 남겨요. 마지막 그림은?'), `<div class="z-matrix">${rows.flatMap((r, i) => r.map((v, j) => i === rows.length - 1 && j === 2 ? '<span class="z-cell">?</span>' : bits(v, n))).join('')}</div>`, candidates, v => eq(v, ans), B('Follow one cell through the first two pictures.', '한 칸을 골라 앞 두 그림에서 점이 있는지 보세요.'), v => bits(v, n));
   });
 
   const turn = (a, n) => seq(a.length).map(i => a[(n - 1 - i % n) * n + Math.floor(i / n)]);
@@ -226,11 +235,11 @@
   function spatial(t, folded = false, reflected = false) {
     const n = t < 2 ? 3 : t < 5 ? 4 : 5, base = seq(n * n).map(() => rnd(2));
     const steps = t < 2 ? 1 + t : t < 5 ? 2 : 3; let ans = base;
-    if (folded) { ans = base.map((v, i) => v | mirror(base, n)[i]); if (t >= 3) ans = ans.map((v, i) => v | ans[(n - 1 - Math.floor(i / n)) * n + i % n]); }
-    else if (reflected) { ans = mirror(base, n); if (t >= 3) for (let k = 0; k < steps; k++) ans = turn(ans, n); }
+    if (folded) { ans = base.map((v, i) => v | mirror(base, n)[i]); if ((t >= 3 || (t >= 2 && (folded || reflected)))) ans = ans.map((v, i) => v | ans[(n - 1 - Math.floor(i / n)) * n + i % n]); }
+    else if (reflected) { ans = mirror(base, n); if ((t >= 3 || (t >= 2 && (folded || reflected)))) for (let k = 0; k < steps; k++) ans = turn(ans, n); }
     else for (let k = 0; k < steps; k++) ans = turn(ans, n);
     const candidates = [ans, ...shuffle(seq(ans.length)).slice(0, 3).map(i => ans.map((v, j) => i === j ? 1 - v : v))];
-    const ask = folded ? B(t >= 3 ? 'Mirror the punch dots left/right, then top/bottom. What appears?' : 'Mirror the punch dots left/right. What appears?', t >= 3 ? '구멍 표시를 좌우로, 이어 위아래로 펼쳐요. 어떤 모양일까요?' : '구멍 표시를 좌우로 펼쳐요. 어떤 모양일까요?') : reflected ? B(`Mirror left/right${t >= 3 ? `, then turn clockwise ${steps} quarter-turns` : ''}. Which matches?`, `좌우를 뒤집어요${t >= 3 ? `. 이어 시계 방향으로 90도를 ${steps}번 돌아요` : ''}. 맞는 것은?`) : B(`Turn clockwise ${steps} quarter-turns. Which matches?`, `시계 방향으로 90도를 ${steps}번 돌아요. 맞는 것은?`);
+    const ask = folded ? B((t >= 3 || (t >= 2 && (folded || reflected))) ? 'Mirror the punch dots left/right, then top/bottom. What appears?' : 'Mirror the punch dots left/right. What appears?', (t >= 3 || (t >= 2 && (folded || reflected))) ? '구멍 표시를 좌우로, 이어 위아래로 펼쳐요. 어떤 모양일까요?' : '구멍 표시를 좌우로 펼쳐요. 어떤 모양일까요?') : reflected ? B(`Mirror left/right${(t >= 3 || (t >= 2 && (folded || reflected))) ? `, then turn clockwise ${steps} quarter-turns` : ''}. Which matches?`, `좌우를 뒤집어요${(t >= 3 || (t >= 2 && (folded || reflected))) ? `. 이어 시계 방향으로 90도를 ${steps}번 돌아요` : ''}. 맞는 것은?`) : B(`Turn clockwise ${steps} quarter-turns. Which matches?`, `시계 방향으로 90도를 ${steps}번 돌아요. 맞는 것은?`);
     return item(ask, bits(base, n), candidates, v => eq(v, ans), B('Track a dot near a corner before checking the middle.', '모서리 가까운 점 하나가 어디로 가는지 먼저 봐요.'), v => bits(v, n));
   }
   register('zturn', '🔄', 'Turned Tiles', '칸 모양 돌리기', t => spatial(t));
@@ -238,7 +247,8 @@
   register('zfold', '📄', 'Unfold the Dots', '구멍 펼치기', t => spatial(t, true));
 
   register('zcubes', '🧱', 'Hidden Cube Stacks', '쌓인 큐브 세기', t => {
-    const n = t < 2 ? 2 : t < 5 ? 3 : 4, heights = seq(n * n).map(() => 1 + rnd(2 + Math.floor(t / 2))), ans = heights.reduce((a, b) => a + b, 0);
+    const n = t < 2 ? 2 : t < 5 ? 3 : 4, heights = seq(n * n).map(() => 1 + rnd(2 + Math.floor(t / 2))), hidden = lvl('zcubes') === 2, ans = heights.reduce((a, b) => a + b, 0) - (hidden ? n * n : 0);
+    if (hidden) return numberItem(B('Each number is a stack height with no gaps. One top cube per stack is visible. How many cubes are hidden underneath?', '숫자는 빈틈 없이 쌓은 높이예요. 각 더미의 맨 위 큐브 하나만 보여요. 그 아래에 가려진 큐브는 모두 몇 개?'), grid(heights, n), ans, B('Subtract the visible top cube from each stack, then add the hidden cubes.', '각 더미의 높이에서 맨 위 한 개를 빼고, 가려진 큐브를 모두 더해요.'));
     return numberItem(B('Top view: each number is a stack height, with no gaps. How many cubes?', '위에서 본 모습이에요. 숫자는 빈틈 없이 쌓은 높이예요. 큐브는 모두 몇 개?'), grid(heights, n), ans, B('Count one row of stacks first, including cubes underneath.', '한 줄씩, 아래에 가려진 큐브도 함께 세어요.'));
   });
 })();

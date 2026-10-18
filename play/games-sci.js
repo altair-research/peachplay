@@ -77,3 +77,20 @@ registerGame({
     });
   }
 });
+
+// 63a: neutral descriptions do not name the force before the child chooses it.
+(() => {
+ const descriptions=[
+ ['⚽',B('A foot sends a ball away.','발로 공을 멀리 보내요.'),'push'],
+ ['🛒',B('Hands move a cart away from the body.','손으로 카트를 몸에서 멀리 보내요.'),'push'],
+ ['🚪',B('A door moves away from your hand.','문이 손에서 멀어지게 해요.'),'push'],
+ ['🛷',B('A rope brings a sled toward you.','줄로 썰매를 내 쪽으로 오게 해요.'),'pull'],
+ ['🗄️',B('A handle brings a drawer toward you.','손잡이로 서랍을 내 쪽으로 오게 해요.'),'pull'],
+ ['🧲',B('A paperclip moves toward a magnet.','클립이 자석 쪽으로 움직여요.'),'pull']];
+ MOTION.splice(0,MOTION.length,...descriptions);
+ const sky=GAMES.find(g=>g.id==='sky'),old=sky.play;
+ sky.play=function(){if(lvl(this.id)===1)return old.call(this);
+ const day=!!rnd(2),light=['☀️','🌞','🌅'],dark=['⭐','🌌','🌠'],yes=day?light:dark,no=day?dark:light,items=shuffle([{e:pick(yes),ok:true},{e:pick(yes),ok:true},{e:pick(no),ok:false}]),pairs=[[0,1],[0,2],[1,2]];
+ quiz(this,{ask:day?B('Which TWO show daytime skies?','낮 하늘을 보여 주는 두 그림은?'):B('Which TWO show dark night skies?','어두운 밤하늘을 보여 주는 두 그림은?'),show:`<div style="font-size:clamp(24px,5dvh,36px)">${items.map((x,i)=>`${'ABC'[i]}: ${x.e}`).join('　')}</div>`,opts:pairs.map(([a,b])=>({html:`<span class="word">${'ABC'[a]} + ${'ABC'[b]}</span>`,ok:items[a].ok&&items[b].ok})),cls:'words'});
+ };
+})();

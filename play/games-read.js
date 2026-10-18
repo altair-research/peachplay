@@ -57,6 +57,11 @@ registerGame({
   id: 'rhyme', subject: 'read', icon: '🎵', title: B('Rhyme Time', '운율 맞추기'), sub: B('cat, hat, bat', 'cat, hat, bat'),
   area: AREA_READ('Rhyming'),
   play() {
+    if(lvl('rhyme')===2){
+      const gi=rnd(RHYMES.length),good=shuffle(RHYMES[gi]).slice(0,2),other=pick(RHYMES.filter((_,i)=>i!==gi)),wrong=pick(RHYMES.filter((_,i)=>i!==gi));
+      const pairs=[good,[good[0],other[0]],[good[1],wrong[1]]];
+      quiz(this,{ask:B('Which pair has the same ending sound?','끝소리가 같은 낱말 짝은?'),askExtra:{t:pairs.map(p=>p.map(x=>x[1]).join(', ')).join('. '),lang:'en-US'},opts:pairs.map((p,i)=>({html:`<span class="word">${p.map(x=>x[1]).join(' + ')}</span>`,ok:i===0})),cls:'words'});return;
+    }
     const gi = rnd(RHYMES.length), g = shuffle(RHYMES[gi]), t = g[0], r = g[1];
     const pool = RHYMES.flatMap((x, i) => i === gi ? [] : x);
     const ds = shuffle(pool).slice(0, lvl('rhyme') === 2 ? 3 : 2);

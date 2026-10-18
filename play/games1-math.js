@@ -274,3 +274,12 @@ G1({
     quiz(this, { ask: B('Solve it. Use tens and ones.', '10개씩 묶음과 낱개로 나눠서 풀어요.'), show: bigEq(`${eq} = ?`), opts: numO(ans, [ans + 10, ans - 10, ans + 1, ans - 1, ans + 9].filter(v => v >= 0 && v <= 100), 0, 100), after: tip });
   }
 });
+
+// 63a: two changes in tens, rather than the same operation with larger numbers.
+(() => {
+ for(const id of ['tenmoreless','addtens']){const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){
+  if(lvl(id)===1)return old.call(this);
+  const n=id==='addtens'?10*(3+rnd(4)):31+rnd(39),a=20,b=10,ans=n+a-b;
+  quiz(this,{ask:B('How many blocks are left?','블록이 몇 개 남을까요?'),askSay:B(`${n} blocks. Add ${a}, then take away ${b}. How many left?`,`${n}개에서 ${a}개를 더하고 ${b}개를 빼면 몇 개 남을까요?`),show:`<div class="bigword">${n} + ${a} − ${b} = ?</div>`,opts:numO(ans,[n+a,n-b,ans+1],1,100)});
+ };}
+})();

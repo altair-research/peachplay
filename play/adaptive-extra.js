@@ -18,6 +18,7 @@
     ['plane', 'p', 'lane', ['plan', 'plate']], ['train', 't', 'rain', ['trail', 'tin']]
   ];
   for (const grade of ['2', '3']) add('adremove' + grade, grade, B('Take Away a Sound', '소리 하나 빼요'), soundArea, lv => {
+    if(grade==='3' && lv===2){const r=pick([['clap','k','lap','p','b','lab'],['plane','p','lane','n','t','late'],['train','t','rain','n','k','rake'],['glow','g','low','l','s','so'],['smile','s','mile','l','t','mite'],['spin','s','pin','n','g','pig']]);return {ask:B(`Say "${r[0]}" without its first /${r[1]}/. Then change /${r[3]}/ to /${r[4]}/.`,`"${r[0]}"의 첫 /${r[1]}/ 소리를 빼요. 그다음 /${r[3]}/ 소리를 /${r[4]}/로 바꿔요.`),opts:choices(r[5],[r[2],r[0]]),cls:'words',after:B(`${r[0]} → ${r[2]} → ${r[5]}`,`${r[0]} → ${r[2]} → ${r[5]}`)};}
     const t = pick(lv === 1 ? deletions.slice(0, 6) : deletions.slice(6));
     return { ask: B(`Say "${t[0]}" without the first /${t[1]}/ sound.`, `"${t[0]}"에서 첫 /${t[1]}/ 소리를 빼고 말해요.`),
       askExtra: { t: t[0], lang: 'en-US' }, opts: choices(t[2], t[3]), cls: 'words', after: B(`${t[0]} → ${t[2]}`, `${t[0]} → ${t[2]}`) };
@@ -30,7 +31,8 @@
     ['tent', 't', 's', 'tense', ['ten', 'test']], ['brim', 'm', 'k', 'brick', ['rim', 'brisk']]
   ];
   add('adchange3', '3', B('Change the Last Sound', '끝소리를 바꿔요'), soundArea, lv => {
-    const t = pick(lv === 1 ? changes.slice(0, 5) : changes.slice(5));
+    if(lv===2){const r=pick([['slip','p','t','slit','s','lit'],['crab','b','k','crack','k','rack'],['grin','n','p','grip','g','rip'],['flat','t','p','flap','f','lap'],['trip','p','m','trim','t','rim'],['flag','g','p','flap','f','lap']]);return {ask:B(`In "${r[0]}", change the last /${r[1]}/ to /${r[2]}/. Then remove the first /${r[4]}/.`,`"${r[0]}"의 끝 /${r[1]}/를 /${r[2]}/로 바꿔요. 그다음 첫 /${r[4]}/를 빼요.`),opts:choices(r[5],[r[3],r[0]]),cls:'words',after:B(`${r[0]} → ${r[3]} → ${r[5]}`,`${r[0]} → ${r[3]} → ${r[5]}`)};}
+    const t = pick(changes.slice(0, 5));
     return { ask: B(`In "${t[0]}", change the last /${t[1]}/ to /${t[2]}/.`, `"${t[0]}"의 끝 /${t[1]}/ 소리를 /${t[2]}/로 바꿔요.`),
       askExtra: { t: t[0], lang: 'en-US' }, opts: choices(t[3], t[4]), cls: 'words',
       after: B(`${t[0]} → ${t[3]}`, `${t[0]} → ${t[3]}`) };
@@ -52,9 +54,12 @@
   sentences.K.push('Come ___ to me.', 'I see a ___ cat.');
   for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
     const t = pick(grade === 'K' ? words.K : lv === 1 ? words[grade].slice(0, 5) : words[grade].slice(5));
-    const sentence = sentences[grade][words[grade].indexOf(t)];
-    return { ask: B('Which word fits? Choose the correct spelling.', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
-      askExtra: { t: sentence.replace('___', t[0]), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], t.slice(1)), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
+    const index=words[grade].indexOf(t), sentence = sentences[grade][index];
+    if((grade==='K'||grade==='3') && lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
+    const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:['never','between','these','Many','during','between','until','difference','Despite','nobody']};
+    const alternatives=(grade==='K'||grade==='3') && lv===2?[t[1],contextWrong[grade][index]]:t.slice(1);
+    return { ask: B('Read. Choose a spelling.', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
+      askExtra: { t: sentence.replace('___', 'blank'), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], alternatives), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
   });
   const contexts = [
@@ -72,7 +77,8 @@
   const oppositePairs = [['hot', 'cold'], ['up', 'down'], ['big', 'small'], ['open', 'closed'], ['day', 'night'], ['full', 'empty'], ['wet', 'dry'], ['near', 'far'], ['fast', 'slow'], ['soft', 'hard'], ['in', 'out'], ['on', 'off']];
   for (const grade of ['K', '1']) add('admeaning' + grade, grade, B('Opposite Word Partners', '반대 뜻 짝꿍'), B('Vocabulary', '어휘'), lv => {
     const index = grade === 'K' ? rnd(oppositePairs.length) : (lv === 1 ? 0 : 5) + rnd(5), source = oppositePairs[index], pair = grade === 'K' && lv === 2 ? [...source].reverse() : source;
-    const ds = shuffle(oppositePairs.slice(0, grade === 'K' ? oppositePairs.length : 10).filter((_, i) => i !== index).map(p => p[grade === 'K' && lv === 2 ? 0 : 1])).slice(0, 2);
+    const nearby = {hot:['warm','cool'],cold:['cool','warm'],up:['across','along'],down:['across','along'],big:['medium','huge'],small:['medium','tiny'],open:['ajar','wide'],closed:['ajar','narrow'],day:['dawn','noon'],night:['dawn','dusk'],full:['half-full','almost full'],empty:['half-full','almost empty'],wet:['damp','soaked'],dry:['damp','slightly wet'],near:['nearby','next to'],far:['farther','distant'],fast:['quick','steady'],slow:['steady','slower'],soft:['smooth','fluffy'],hard:['firm','rough'],in:['beside','near'],out:['beside','near'],on:['dim','bright'],off:['dim','bright']};
+    const ds = nearby[pair[0]];
     return { ask: B(`Which word means the opposite of "${pair[0]}"?`, `"${pair[0]}"와 반대 뜻인 낱말을 골라요.`),
       askExtra: { t: pair[0], lang: 'en-US' }, opts: choices(pair[1], ds), cls: 'words', after: B(`${pair[0]} ↔ ${pair[1]}`, `${pair[0]} ↔ ${pair[1]}`) };
   });
@@ -112,9 +118,9 @@
   });
   add('adinfotopicK', 'K', B('What Do the Steps Make?', '무엇을 만드는 글일까요?'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
     const t = pick(kInstructions);
-    const text = `${t[0]}: ${t[1]}. ${t[2]}. ${t[3]}.`;
+    const text = lv === 1 ? `${t[1]}. ${t[2]}. ${t[3]}.` : `${t[1]}. ${t[2]}. What should you do next to finish?`;
     const ds = shuffle(kInstructions.filter(x => x !== t)).slice(0, 2).map(x => x[0]);
-    return textRound(text, B('Which title matches these steps?', '이 순서 글에 맞는 제목을 골라요.'), t[0], ds, B(t[0], t[0]));
+    return textRound(text, lv === 1 ? B('Which title matches these steps?', '이 순서 글에 맞는 제목을 골라요.') : B('Which step finishes this project?', '이 만들기를 마치려면 무엇을 해야 할까요?'), lv === 1 ? t[0] : t[3], lv === 1 ? ds : [t[1], t[2]], B(t[0], t[0]));
   });
 })();
 // K-only round selection. Identity ignores distractors/order; keep the last nine

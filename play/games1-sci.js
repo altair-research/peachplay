@@ -106,7 +106,7 @@ G1S({
       const f1 = rnd(2) === 1, f2 = rnd(2) === 1;                       // flip: false = red(N) on the left half, true = blue(S) on the left half
       const bar = (x, flip) => `<g transform="translate(${x} 0)"><rect width="38" height="22" fill="${flip ? '#118ab2' : '#ef476f'}"/><rect x="38" width="38" height="22" fill="${flip ? '#ef476f' : '#118ab2'}"/><rect width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/><text x="19" y="16" font-size="14" font-weight="900" text-anchor="middle" fill="#fff">${flip ? 'S' : 'N'}</text><text x="57" y="16" font-size="14" font-weight="900" text-anchor="middle" fill="#fff">${flip ? 'N' : 'S'}</text></g>`;
       const facing1 = f1 ? 'N' : 'S', facing2 = f2 ? 'S' : 'N', attract = facing1 !== facing2;   // right half of the left bar meets the left half of the right bar
-      quiz(this, { ask: B('Look at the two ends that face each other (N and S). Do the magnets pull together or push apart?', '마주 보는 두 끝(N극과 S극)을 봐요. 자석은 서로 끌어당길까요, 밀어낼까요?'), show: `<svg viewBox="0 0 220 40" class="magsvg"><g transform="translate(0 9)">${bar(4, f1)}${bar(140, f2)}</g></svg>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '끌어당겨요' : 'attract (pull together)'}</span>`, ok: attract }, { html: `<span class="word">${S.lang === 'ko' ? '밀어내요' : 'repel (push apart)'}</span>`, ok: !attract }], cls: 'words', after: attract ? B('Different ends (N and S) attract.', '다른 극(N극과 S극)은 서로 끌어당겨요.') : B('The same ends (N and N, or S and S) repel.', '같은 극(N-N 또는 S-S)은 서로 밀어내요.'), vocab: attract ? 'attract' : 'repel' });
+      quiz(this, { ask: B('Look at the two ends that face each other. Do the magnets pull together or push apart?', '마주 보는 두 끝을 봐요. 자석은 서로 끌어당길까요, 밀어낼까요?'), show: `<svg viewBox="0 0 220 40" class="magsvg"><g transform="translate(0 9)">${bar(4, f1)}${bar(140, f2)}</g></svg>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '끌어당겨요' : 'attract (pull together)'}</span>`, ok: attract }, { html: `<span class="word">${S.lang === 'ko' ? '밀어내요' : 'repel (push apart)'}</span>`, ok: !attract }], cls: 'words', after: attract ? B('Different ends (N and S) attract.', '다른 극(N극과 S극)은 서로 끌어당겨요.') : B('The same ends (N and N, or S and S) repel.', '같은 극(N-N 또는 S-S)은 서로 밀어내요.'), vocab: attract ? 'attract' : 'repel' });
     } else {
       const u = [[B('a refrigerator magnet', '냉장고 자석'), '🧲'], [B('a magnetic toy', '자석 장난감'), '🧩'], [B('a magnetic latch on a cabinet', '찬장의 자석 잠금장치'), '🚪'], [B('a magnetic name tag', '자석 이름표'), '🏷️']], t = pick(u);
       quiz(this, { ask: B('People use magnets every day. Which one uses a magnet to hold something?', '사람들은 매일 자석을 써요. 자석으로 무언가를 붙여 두는 것은?'), opts: [[B('a refrigerator magnet holding a note', '메모를 붙인 냉장고 자석'), true], [B('a spoon in a cup', '컵 속 숟가락'), false], [B('a book on a shelf', '선반 위의 책'), false]].map(x => ({ html: `<span class="word">${L(x[0])}</span>`, ok: x[1] })), cls: 'words sents', after: B('A magnet can hold a note on a refrigerator door.', '자석은 냉장고 문에 메모를 붙여 둘 수 있어요.') });
@@ -144,10 +144,10 @@ G1S({
     const lv = lvl('sound1'), kind = pick(lv === 1 ? ['vib', 'vib', 'source'] : ['vib', 'source', 'signal', 'signal', 'feel']);
     if (rnd(2) === 0) {
       const source = pick([B('a drum being hit', '두드리는 북'), B('a plucked guitar string', '튕긴 기타 줄'), B('a ringing bell', '울리는 종'), B('a plucked rubber band', '튕긴 고무줄')]);
-      quiz(this, { ask: B(`What makes the sound in ${source.en}?`, `${source.ko}: 무엇 때문에 소리가 날까요?`), opts: sOpts(B('Vibration', '진동(떨림)'), [B('Freezing', '얼어붙기'), B('Changing color', '색 바뀌기')]), cls: 'words', after: B('Vibrating objects can make sounds.', '물체가 떨리면 소리가 날 수 있어요.') }); return;
+      quiz(this, { ask: B(`What makes the sound in ${source.en}?`, `${source.ko}: 무엇 때문에 소리가 날까요?`), opts: sOpts(B('Vibration', '진동(떨림)'), [B('Air moving past it', '옆을 지나는 바람'), B('Hands warming it', '손으로 데우기')]), cls: 'words', after: B('Vibrating objects can make sounds.', '물체가 떨리면 소리가 날 수 있어요.') }); return;
     }
     if (kind === 'vib') {
-      quiz(this, { ask: B('Sound is made when something ___ back and forth very fast.', '무언가가 아주 빠르게 앞뒤로 ___ 소리가 만들어져요.'), show: '<span class="emo">🎸〰️</span>', opts: sOpts(tx('vibrates (shakes)', '떨리면 (진동하면)'), [tx('freezes', '얼면'), tx('melts', '녹으면')]), cls: 'words', after: B('A vibration makes sound.', '진동이 소리를 만들어요.'), vocab: 'vibrate' });
+      quiz(this, { ask: B('Sound is made when something ___ back and forth very fast.', '무언가가 아주 빠르게 앞뒤로 ___ 소리가 만들어져요.'), show: '<span class="emo">🎸〰️</span>', opts: sOpts(tx('vibrates (shakes)', '떨리면 (진동하면)'), [tx('stays still', '가만히 있으면'), tx('gets warmer', '따뜻해지면')]), cls: 'words', after: B('A vibration makes sound.', '진동이 소리를 만들어요.'), vocab: 'vibrate' });
     } else if (kind === 'source') {
       const yes = [['🥁', B('a drum being hit', '두드리는 북')], ['🎸', B('a guitar string being plucked', '튕기는 기타 줄')], ['🔔', B('a ringing bell', '울리는 종')]], no = [['🪨', B('a rock sitting still', '가만히 있는 돌')], ['📖', B('a closed book', '덮은 책')], ['🧸', B('a teddy bear on a bed', '침대 위의 곰 인형')]], y = pick(yes), ds = shuffle(no).slice(0, 2);
       quiz(this, { ask: B('Which one makes a sound?', '소리가 나는 것은?'), opts: [y, ...ds].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B('It vibrates, so it makes a sound.', '진동해서 소리가 나요.') });
@@ -174,12 +174,8 @@ G1S({
     } else if (kind === 'job') {
       const jobs = [[B('Which part takes in water from the soil?', '흙에서 물을 빨아들이는 부분은?'), 'roots'], [B('Which part holds the plant up?', '식물을 받쳐 주는 부분은?'), 'stem'], [B('Which part uses sunlight to make food?', '햇빛으로 양분을 만드는 부분은?'), 'leaf'], [B('Which part makes seeds and fruit?', '씨앗과 열매를 만드는 부분은?'), 'flower']], j = pick(jobs), names = { roots: B('roots', '뿌리'), stem: B('stem', '줄기'), leaf: B('leaf', '잎'), flower: B('flower', '꽃') };
       const ds = others(Object.keys(names), j[1], 2); quiz(this, { ask: j[0], opts: [j[1], ...ds].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === j[1] })), cls: 'words', after: B(`The ${names[j[1]].en} does this job.`, `${names[j[1]].ko}의 일이에요.`), vocab: names[j[1]].en });
-    } else if (kind === 'need') {
-      const needs = [['💧', B('water', '물')], ['☀️', B('light', '빛')], ['💨', B('air', '공기')], ['🌱', B('nutrients from the soil', '흙 속 양분')]], n = pick(needs), notNeeds = [['🍕', B('pizza', '피자')], ['🍬', B('candy', '사탕')], ['📺', B('television', '텔레비전')], ['🎮', B('video game', '게임')]], ds = shuffle(notNeeds).slice(0, 2);
-      quiz(this, { ask: B('Which one does a plant need to live?', '식물이 살아가는 데 필요한 것은?'), opts: [n, ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === n })), after: B('Plants need air, water, light, and nutrients.', '식물에게는 공기, 물, 빛, 양분이 필요해요.') });
     } else {
-      const bad = [['🍕', B('pizza', '피자')], ['🍬', B('candy', '사탕')], ['📺', B('television', '텔레비전')]], b = pick(bad), ds = shuffle([['💧', B('water', '물')], ['☀️', B('light', '빛')], ['💨', B('air', '공기')]]).slice(0, 2);
-      quiz(this, { ask: B('Which one does a plant NOT need?', '식물에게 필요 없는 것은?'), opts: [b, ...ds].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B('Plants make their own food. They do not need pizza or candy.', '식물은 스스로 양분을 만들어요. 피자나 사탕은 필요 없어요.') });
+      return this.careNeed();
     }
   }
 });
@@ -191,20 +187,31 @@ G1S({
   play() {
     const lv = lvl('animals1'), kind = pick(lv === 1 ? ['need', 'need', 'shelter', 'both'] : ['need', 'both', 'solve', 'young', 'young']);
     if (kind === 'need') {
-      const needs = [['💨', B('air', '공기')], ['💧', B('water', '물')], ['🍖', B('food', '먹이')], ['🏠', B('shelter (a safe home)', '집 (안전한 곳)')]], bad = [['📺', B('television', '텔레비전')], ['🎮', B('video game', '게임')], ['🪁', B('kite', '연')]], n = pick(needs), b = pick(bad);
-      quiz(this, { ask: B('Which one do animals need to live?', '동물이 살아가는 데 필요한 것은?'), opts: [n, ...shuffle(bad).slice(0, 2)].map((x, i) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: i === 0 })), after: B('Animals need air, water, food, and shelter.', '동물에게는 공기, 물, 먹이, 집이 필요해요.') });
+      return this.careNeed();
     } else if (kind === 'shelter') {
       const homes = [['🐦', B('A bird', '새'), B('a nest', '둥지')], ['🐝', B('Honey bees', '꿀벌'), B('a hive', '벌집')], ['🐻', B('A bear', '곰'), B('a cave', '동굴')], ['🐶', B('A dog', '개'), B('a doghouse', '개집')]], h = pick(homes), ds = shuffle(homes.filter(x => x !== h)).slice(0, 2);
       quiz(this, { ask: B(`Where ${h[0] === '🐝' ? 'do' : 'does'} ${L(h[1]).toLowerCase()} find shelter?`, `${h[1].ko}의 집은 어디일까요?`), show: `<span class="emo">${h[0]}</span>`, opts: [h, ...ds].map((x, i) => ({ html: `<span class="word">${L(x[2])}</span>`, ok: i === 0 })), cls: 'words', after: B(`${L(h[1])} ${h[0] === '🐝' ? 'live' : 'lives'} in ${L(h[2])}.`, `${h[2].ko}: ${h[1].ko}의 집이에요.`) });
-    } else if (kind === 'both') {
-      const qs = [[B('Both plants and animals need ___.', '식물과 동물이 모두 필요로 하는 것은? ___'), tx('water', '물'), [tx('shelter', '집'), tx('a leash', '목줄')]], [B('Animals need food, but plants make their own food using ___.', '동물에게는 먹이가 필요하지만 식물은 ___(으)로 스스로 양분을 만들어요.'), tx('sunlight', '햇빛'), [tx('shelter', '집'), tx('toys', '장난감')]], [B('Both plants and animals need ___.', '식물과 동물이 모두 필요로 하는 것은? ___'), tx('air', '공기'), [tx('a nest', '둥지'), tx('a pot', '화분')]]], q = pick(qs);
-      quiz(this, { ask: q[0], opts: sOpts(q[1], q[2]), cls: 'words', after: B('Plants and animals share some needs and have some different needs.', '식물과 동물은 같은 것도, 다른 것도 필요로 해요.') });
-    } else if (kind === 'solve') {
-      const ps = [[B('The fish tank water is dirty. What helps the fish?', '어항 물이 더러워요. 물고기에게 무엇이 도움이 될까요?'), tx('Clean the water', '물을 갈아 줘요'), [tx('Add more toys', '장난감을 더 넣어요'), tx('Turn off the light for a week', '일주일 동안 불을 꺼요')]], [B('A pet hamster has no food. What should you do?', '햄스터에게 먹이가 없어요. 어떻게 해야 할까요?'), tx('Give it food', '먹이를 줘요'), [tx('Give it a bath', '목욕을 시켜요'), tx('Let it sleep more', '더 재워요')]], [B('A bird has no safe place to rest. What can you build?', '새가 쉴 안전한 곳이 없어요. 무엇을 만들어 줄 수 있을까요?'), tx('A birdhouse', '새집'), [tx('A swing', '그네'), tx('A slide', '미끄럼틀')]]], p = pick(ps);
-      quiz(this, { ask: p[0], opts: sOpts(p[1], p[2]), cls: 'words sents', after: B('Meeting an animal\'s needs keeps it healthy.', '동물에게 필요한 것을 채워 주면 건강하게 자라요.') });
+    } else if (kind === 'both' || kind === 'solve') {
+      return this.careNeed();
     } else {
       const y = pick(YOUNG), ds = shuffle(YOUNG.filter(x => x !== y)).slice(0, 2);
       quiz(this, { ask: B(`What is a baby ${L(y[1])} called?`, `${y[1].ko}의 새끼는 무엇이라고 부를까요?`), show: `<span class="emo">${y[0]}</span>`, opts: [y, ...ds].map((x, i) => ({ html: `<span class="word">${L(x[2])}</span>`, ok: i === 0 })), cls: 'words', after: B(`A baby ${L(y[1])} is a ${L(y[2])}.`, `${y[1].ko}의 새끼는 ${y[2].ko}이에요.`), vocab: L(y[2]) });
     }
   }
 });
+
+// 63a: care choices address the observed condition, not toys versus essentials.
+(() => {
+ const bank=[
+  [B('The soil feels dry.','흙이 말랐어요.'),B('The soil is dry; the plant already gets light.','빛을 받는 식물의 흙이 말랐어요.'),[B('Water the soil','흙에 물을 줘요'),B('Move it to more light','더 밝은 곳으로 옮겨요'),B('Add more soil','흙을 더 넣어요')]],
+  [B('The plant is in a dark cupboard.','식물이 어두운 찬장 안에 있어요.'),B('The soil is damp; the plant is in a dark cupboard.','흙이 촉촉한 식물이 어두운 찬장 안에 있어요.'),[B('Move it into daylight','빛이 드는 곳으로 옮겨요'),B('Water the soil again','흙에 물을 더 줘요'),B('Add more soil','흙을 더 넣어요')]]
+ ];
+ const animals=[
+  [B('The drinking bowl is empty.','마실 그릇이 비었어요.'),B('The rabbit has hay to eat but an empty drinking bowl.','먹을 건초가 있는 토끼의 마실 그릇이 비었어요.'),[B('Fill its drinking bowl','마실 그릇을 채워요'),B('Add more hay','건초를 더 줘요'),B('Add bedding','깔짚을 더 넣어요')]],
+  [B('The food bowl is empty.','먹이 그릇이 비었어요.'),B('The dog has a bed and water but an empty food bowl.','집과 물이 있는 강아지의 먹이 그릇이 비었어요.'),[B('Fill its food bowl','먹이 그릇을 채워요'),B('Fill its drinking bowl','마실 그릇을 채워요'),B('Make its bed softer','잠자리를 푹신하게 해요')]]
+ ];
+ for(const [id,qs]of [['plants1',bank],['animals1',animals]]){
+  const g=GAMES.find(g=>g.id===id);
+  g.careNeed=function(){const q=pick(qs);quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`<div class="storytext">${L(q[lvl(id)-1])}</div>`,askExtra:{t:L(q[lvl(id)-1])},opts:q[2].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
+ }
+})();

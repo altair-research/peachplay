@@ -143,6 +143,7 @@ registerGame({
   id: 'shadow', subject: 'brain', icon: '🌑', title: B('Shadow Match', '그림자 맞추기'), sub: B('Whose shadow is it?', '누구의 그림자일까?'),
   area: AREA_BRAIN('Visual matching'),
   play() {
+    if(lvl('shadow')===2){const [a,b,c]=shuffle(SHADOW_ITEMS).slice(0,3);quiz(this,{ask:B('Match both shadows in the same order.','두 그림자를 같은 순서의 그림 짝과 맞춰요.'),show:`<span class="emo shadowed">${a[0]} ${b[0]}</span>`,opts:[[a,b],[b,a],[a,c]].map((pair,i)=>({html:`<span class="emo">${pair[0][0]} ${pair[1][0]}</span>`,ok:i===0})),cls:'shapes'});return;}
     const t = pick(SHADOW_ITEMS), ds = others(SHADOW_ITEMS, t, lvl('shadow') === 2 ? 3 : 2), o = (x) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === t });
     quiz(this, {
       ask: B('Which picture makes this shadow?', '이 그림자는 어느 그림일까요?'),

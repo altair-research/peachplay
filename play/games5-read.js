@@ -8,9 +8,22 @@ const support={"roots5":["Meaning choices; word building / parts of speech not p
 const scopeFor=id=>support[id];
 const reg=(id,en,ko,code,make,subject='read')=>registerGame({id,grade:'5',subject,icon:subject==='write'?'✏️':'📖',title:B(en,ko),sub:B('Short texts · partial practice; listening is help','짧은 글 · 부분 연습 · 듣기는 읽기 도움이에요'),practiceScope:scopeFor(id)?B(...scopeFor(id)):undefined,area:B(`Grade 5 ${subject==='write'?'Writing':'Reading'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[0]:""}`,`5학년 ${subject==='write'?'쓰기':'읽기'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[1]:""}`),play(){const lv=lvl(id)>1?2:1,i=take(id,lv),it=make(lv,i);const scope=scopeFor(id);if(scope){it.show+='<div class="g5-scope">'+L(B(scope[0],scope[1]))+'</div>';}if(S.lang==='ko'&&/[A-Za-z]/.test(it.ask.ko)){it.askSay=B(it.ask.en,'질문과 자료를 보고 답을 골라요. 영어 질문도 들어 보세요.');it.askExtra={t:it.ask.en,lang:'en-US'};}it.itemKey=`${id}:${lv}:${i}`;quiz(this,it);}});
 const rows=s=>{const out=[];let lines=[];for(const line of s.trim().split('\n')){if(!line.includes('|')){lines.push(line);continue;}const r=line.split('|');if(lines.length){r[0]=[...lines,r[0]].join('\n');lines=[];}out.push(r);}if(lines.length)throw new Error('Unfinished reading row');return out;};
-const bank=(id,en,ko,code,ask,sets,subject)=>reg(id,en,ko,code,(lv,i)=>{const r=sets[lv-1][i];let prompt=ask[lv-1];if(id==='context5'){const word=(lv===1?['fragile','narrow','abundant','vacant','transparent','damp','sturdy','rapid','enormous','optional']:['reluctant','depleted','diverged','somber','intermittently','ambiguous','improvised','conserved','muted','temporary'])[i];prompt=B(`What does ${word} mean here?`,`여기서 ${word}의 뜻을 골라요.`);}return item(prompt,r[0],r[1],r.slice(2,4));},subject);
+const bank=(id,en,ko,code,ask,sets,subject)=>reg(id,en,ko,code,(lv,i)=>{const r=sets[lv-1][i];let prompt=ask[lv-1];if(id==='context5'){const word=(lv===1?['fragile','narrow','abundant','vacant','transparent','damp','sturdy','rapid','enormous','optional']:['reluctant','depleted','diverged','somber','intermittently','ambiguous','improvised','conserved','muted','temporary'])[i];prompt=B(`What does ${word} mean here?`,`여기서 ${word}의 뜻을 골라요.`);}let wrong=r.slice(2,4);
+if(id==='opinion5'){
+ prompt=lv===1?B('Which reason explains how the proposal helps its intended task?','제안한 행동이 하려는 일에 어떻게 도움이 되는지 설명한 까닭을 골라요.'):ask[lv-1];
+ wrong=lv===1?[r[0]+' The announcement could use colorful letters.',r[0]+' The announcement could have a short heading.']:[r[0].split('.')[0]+'. The announcement used large print.',r[0].split('.')[0]+'. The poster had an attractive border.'];
+}
+if(id==='figurative5')wrong=(lv===1?[
+ ['Her smile hid disappointment.','Her smile showed uncertainty.'],['The books were neatly separated in small groups.','Only a few books were available.'],['He made the group more uncomfortable.','He changed the topic to winter.'],['The wait felt surprisingly short.','The bus ride felt long.'],['The wind made a harsh booming sound.','The grass made no movement or sound.'],['They looked thin and flat.','They looked sharp and jagged.'],['People worked slowly and quietly.','People had stopped working.'],['It felt difficult.','It felt unfinished.'],['It felt light to carry.','It felt empty.'],['It was easy to open.','It opened smoothly after a push.']
+ ]:[
+ ['It emphasizes rough choppy motion.','It emphasizes the pond’s depth.'],['It signals a successful ending.','It suggests a calm uneventful moment.'],['It makes the motion seem slow and stiff.','It stresses the weight of the leaves.'],['It highlights separation.','It highlights confusion.'],['It suggests conspicuous noisy movement.','It suggests hesitation before entering.'],['It stresses the difficulty of climbing.','It stresses a small tidy workload.'],['It suggests activity ending.','It suggests activity continuing unchanged.'],['It stresses a gentle uneventful response.','It stresses a physical trip to the coast.'],['It means speaking more angrily.','It means avoiding the disagreement.'],['It highlights a dark unlit space.','It highlights many equally bright lamps.']
+ ])[i];
+if(id==='source5'&&lv===1)wrong=[
+ ['Monday’s checkout log','Tuesday’s book-return log'],['a trail maintenance log without directions','an old trail map from before the entrance moved'],['a cup capacity table','a water-temperature table'],['last year’s club schedule','the dated club attendance list'],['the bench purchase log','the bench cleaning log'],['our tool checkout list','our model measurement table'],['last month’s gate log','the gate construction plan'],['the survey question sheet','the survey invitation list'],['a bridge map from before the closure','a road-distance table without closure details'],['the article publication date','the article publisher’s address']
+ ][i];
+return item(prompt,r[0],r[1],wrong);},subject);
 reg('decode5','Decode Word Parts','철자와 뜻을 가진 낱말 조각','5.F.P.4.a–c',(lv,i)=>{
-const r=(lv===1?rows('sun|set|sunset\nrab|bit|rabbit\npic|nic|picnic\nbas|ket|basket\nmag|net|magnet\nnap|kin|napkin\nvel|vet|velvet\nmuf|fin|muffin\nden|tist|dentist\nhel|met|helmet'):rows('re|paint|ing|repainting\nun|help|ful|unhelpful\ndis|agree|ment|disagreement\nhope|less|ness|hopelessness\nfear|less|ness|fearlessness\npre|heat|ing|preheating\nre|play|ing|replaying\nun|thank|ful|unthankful\nmis|place|ment|misplacement\ncare|less|ness|carelessness'))[i],word=r.pop();return item(B(lv===1?'Join the spelling chunks. Which word?':'Join the meaningful word parts. Which word?',lv===1?'철자 조각을 합쳐서 낱말을 만들어요.':'뜻을 가진 낱말 조각을 합쳐요.'),r.join(' + '),word,[r.slice().reverse().join(''),r[0]+r[0]+r.slice(1).join('')]);});
+const r=(lv===1?rows('sun|set|sunset\nrab|bit|rabbit\npic|nic|picnic\nbas|ket|basket\nmag|net|magnet\nnap|kin|napkin\nvel|vet|velvet\nmuf|fin|muffin\nden|tist|dentist\nhel|met|helmet'):rows('re|paint|ing|repainting\nun|help|ful|unhelpful\ndis|agree|ment|disagreement\nhope|less|ness|hopelessness\nfear|less|ness|fearlessness\npre|heat|ing|preheating\nre|play|ing|replaying\nun|thank|ful|unthankful\nmis|place|ment|misplacement\ncare|less|ness|carelessness'))[i],word=r.pop();return item(B(lv===1?'Join the spelling chunks. Which word?':'Join the meaningful word parts. Which word?',lv===1?'철자 조각을 합쳐서 낱말을 만들어요.':'뜻을 가진 낱말 조각을 합쳐요.'),r.join(' + '),word,[word.slice(0,1)+word.slice(2),word.slice(0,-1)+word.slice(-1).repeat(2)]);});
 reg('roots5','Roots in Context','어근으로 뜻 찾기','5.L.V.2.a–c',(lv,i)=>{
 const r=(lv===1?rows(`biography: bio = life; graph = write|a written account of a life|a study of rocks|a device measuring heat
 autograph: auto = self; graph = write|a person’s own signature|a picture of mountains|a listening device
@@ -104,9 +117,9 @@ Someone walks with difficulty because an ankle hurts.|limped|marched|wandered
 A boat moves gently without steering or power.|drifted|raced|sank
 A lamp emits strong steady light, not a faint flicker.|glowed|glimmered|vanished
 A student looks closely for details.|examined|glanced|ignored
-Quiet pleasure produces a small smile, not loud laughter.|smiled|roared|sobbed
+Quiet pleasure lifts the corners of her mouth without a sound.|smiled|roared|sobbed
 A speaker talks unclearly in a low voice.|mumbled|declared|screamed
-The room is slightly cool, not bitterly cold.|cool|freezing|scorching
+The room feels a little chilly; a light sweater is enough.|cool|freezing|scorching
 Someone moves quickly, but not necessarily at top speed.|hurried|sprinted|sauntered`)]);
 reg('reference5','Read Dictionary Entries','사전 자료 읽기','5.L.V.3.d',(lv,i)=>{const r=(lv===1?rows(`harbor: sheltered water for boats|a safe place for boats|a steep mountain|a racing track
 trail: a path for travel|a route people follow|a cutting tool|a room
@@ -117,16 +130,16 @@ compare: examine similarities and differences|find what is alike and different|g
 annual: happening once each year|once per year|every hour|only once ever
 fertile: able to support plant growth|good for growing plants|always frozen|without minerals
 predict: say what may happen|describe a possible future|report only the past|copy a result
-precise: exact and careful|exact|uncertain|very large`):rows(`bank: 1 money business; 2 land along water. We sat by the stream on the bank.|2|1|neither
-bat: 1 flying mammal; 2 sports club. The bat slept in the cave.|1|2|neither
-crane: 1 bird; 2 lifting machine. The crane moved the beam.|2|1|neither
-light: 1 illumination; 2 not heavy. The light bag was easy to lift.|2|1|neither
-scale: 1 weighing device; 2 fish covering. We weighed flour on the scale.|1|2|neither
-current: 1 water flow; 2 happening now. The raft followed the current.|1|2|neither
-seal: 1 marine mammal; 2 close tightly. Seal the jar.|2|1|neither
-spring: 1 season; 2 elastic coil. The spring in the chair broke.|2|1|neither
-rock: 1 stone; 2 move back and forth. The waves rock the boat.|2|1|neither
-charge: 1 ask a price; 2 rush forward. The shop will charge five dollars.|1|2|neither`))[i];return item(B(lv===1?'Use the original glossary. Choose the meaning.':'Which numbered definition fits?',lv===1?'이 용어 풀이에 맞는 뜻을 골라요.':'문장에 맞는 뜻의 번호를 골라요.'),r[0],r[1],r.slice(2));});
+precise: exact and careful|exact|uncertain|very large`):rows(`bank: 1 money business; 2 land along water; 3 tilt while turning. We sat by the stream on the bank.|2|1|3
+bat: 1 flying mammal; 2 sports club; 3 hit at something. The bat slept in the cave.|1|2|3
+crane: 1 bird; 2 lifting machine; 3 stretch the neck. The crane moved the beam.|2|1|3
+light: 1 illumination; 2 not heavy; 3 ignite. The light bag was easy to lift.|2|1|3
+scale: 1 weighing device; 2 fish covering; 3 climb. We weighed flour on the scale.|1|2|3
+current: 1 water flow; 2 happening now; 3 electric charge flow. The raft followed the current.|1|2|3
+seal: 1 marine mammal; 2 close tightly; 3 an official stamp. Seal the jar.|2|1|3
+spring: 1 season; 2 elastic coil; 3 leap. The spring in the chair broke.|2|1|3
+rock: 1 stone; 2 move back and forth; 3 a music style. The waves rock the boat.|2|1|3
+charge: 1 ask a price; 2 rush forward; 3 fill a battery. The shop will charge five dollars.|1|2|3`))[i];return item(B(lv===1?'Use the original glossary. Choose the meaning.':'Which numbered definition fits?',lv===1?'이 용어 풀이에 맞는 뜻을 골라요.':'문장에 맞는 뜻의 번호를 골라요.'),r[0],r[1],r.slice(2));});
 bank('sentence5','Connect Ideas','문장 뜻 잇기','5.L.GC.2 · 5.T.SS.1.c–d',[B('Keep the stated relation.','설명한 관계에 맞는 연결어를 골라요.'),B('Preserve both ideas.','두 생각을 모두 살린 문장을 골라요.')],[rows(`Cause: We stayed inside __ rain began.|because|although|unless
 Contrast: He was tired, __ he finished.|but|so|because
 Time: Wash your hands __ eating.|before|unless|because
@@ -156,7 +169,7 @@ Match the intensive pronoun to she.|She herself checked it.|She myself checked i
 Match the intensive pronoun to we.|We ourselves planned it.|We itself planned it.|We herself planned it.
 A short poem title uses paired quotation marks.|We read “Morning Path.”|We read “Morning Path.|We read Morning Path.”
 A full book title is italicized. Choose the instruction.|Italicize the book title.|Capitalize the entire paragraph.|Delete the title.`),rows(`Preserve singular agreement for each student.|Each student has a folder.|Each student have a folder.|Each student are a folder.
-Nobody was absent. Keep past tense.|Nobody was absent.|Nobody were absent.|Nobody are absent.
+Every person attended yesterday. Use nobody and keep past tense.|Nobody was absent.|Nobody were absent.|Nobody are absent.
 Set off the opening clause about rain.|When the rain stopped, we left.|When, the rain stopped we left.|When the rain stopped we, left.
 The team members checked their own work. Stress them.|They themselves checked it.|They himself checked it.|They myself checked it.
 We stay if lightning continues. Keep the condition.|Unless lightning stops, we will stay.|Unless lightning stops, we leave.|We cause lightning to stop.
@@ -174,16 +187,16 @@ The dragon hid a bell under its wing.|entertain with a story|report real measure
 Dear principal, may we use the courtyard?|request permission|explain word roots|describe a journey
 The bottle holds 500 milliliters.|report a measurement|ask for help|invite someone
 Trail closed for repairs. Do not enter.|warn and guide|advertise a toy|tell a poem
-Thank you for repairing our bench.|express appreciation|announce a price|give a recipe`),rows(`Invite young students clearly.|Come try our club Friday after school!|Attendance is mandatory forever.|This reports water temperatures.
-Explain a rule to new visitors.|Please sign in at the desk.|Do the usual.|The desk is a monster.
+Thank you for repairing our bench.|express appreciation|announce a price|give a recipe`),rows(`Invite young students clearly.|Come try our club Friday after school!|Older experts only: bring your advanced projects.|Members only: check last week’s attendance.
+Explain a rule to new visitors.|Please sign in at the desk.|Do the usual.|Visitors can sign in at any desk in any building.
 Ask a principal politely for a room.|May our club use room 4 Tuesday?|Give us the room now!|Room 4 is blue.
 Write a report without overclaiming.|In three trials, the covered cup lost less water.|Every lid always works perfectly.|The greatest discovery ever!
 Warn hikers clearly.|Trail closed; use the marked alternate route.|The forest is always dangerous.|Hurry through the closed trail.
-Persuade classmates with a relevant reason.|A book swap lets us share existing books.|Blue is my favorite color.|Bring all possessions.
+Persuade classmates with a relevant reason.|A book swap lets us share existing books.|Blue is my favorite color.|Buy a new book for every participant.
 Explain a new device.|Press green to start the timer.|Activate it as usual.|Green reminds me of grass.
 Thank a volunteer specifically.|Your repair made the bench usable.|You did some stuff.|No repair happened.
 Give a schedule to families.|Concert: 6 p.m. in the gym.|The concert is wonderful.|Attend whenever you like.
-Invite a garden expert politely.|Could you share how you plan gardens?|Tell all secrets now!|Gardens exist.`)]);
+Invite a garden expert politely.|Could you share how you plan gardens?|You must plant the whole garden for us.|Could we borrow your tools without a lesson?`)]);
 bank('viewpoint5','Compare Viewpoints','관점 비교','5.T.C.2.a,c',[B('Identify the narrator’s viewpoint.','서술자의 관점을 보여 주는 표현을 골라요.'),B('How do the accounts differ?','두 기록의 관점은 어떻게 다를까요?')],[rows(`I waited at the finish for my friend.|I and my show first person|he shows first person|they show first person
 Nora checked her bag.|Nora and her show third person|The narrator uses “I”|The narrator uses “we”
 We built our bridge together.|We and our show first person|she shows first person|Nora shows first person
@@ -248,11 +261,11 @@ The path flooded. Workers added drainage.|problem and solution|character descrip
 The tent is wide, blue, waterproof.|description|chronology|argument against tents
 Day 1: seeds. Day 4: sprouts.|chronology|opinion|contrast only
 Heading: Tools. Below: ruler, saw, clamp.|grouped information|plot climax|dialogue
-A chart compares two cups’ water loss.|comparison using a chart|rhyme pattern|story ending
+A chart places the water loss of cup A beside cup B for readers to examine.|comparison using a chart|rhyme pattern|story ending
 Paragraph 1: problem. Paragraph 2: repairs.|problem and solution|random list|description only
-Because winds increased, the race moved inside.|cause and effect|alphabetical order|poem structure`),rows(`Steps say paint, sand, measure. Correct process is measure, sand, paint.|Reorder steps.|Delete only measuring.|Sort by word length.
-A comparison describes only one cup.|Add matching features of the second cup.|Add a song.|Repeat the first color.
-An explanation gives an effect but omits its known cause.|Add the cause.|Replace it with a joke.|Move the title.
+Because winds increased, the race moved inside.|cause and effect|alphabetical order|poem structure`),rows(`Steps say paint, sand, measure. Correct process is measure, sand, paint.|Reorder steps.|Delete only measuring.|Keep the same steps and change only their headings.
+A comparison describes only one cup.|Add matching features of the second cup.|Add another description of the first cup.|Repeat the first color.
+An explanation gives an effect but omits its known cause.|Add the cause.|Describe the effect in more detail without its cause.|Move the title.
 A repair guide names a problem but no remedy.|Add a step addressing the problem.|Describe the cover.|Remove the problem.
 A boat-design paragraph shifts to lunch prices.|Move prices to a relevant separate section.|Join without transition.|Delete all main ideas.
 Results are listed without explaining the test.|Add the method needed to interpret results.|Hide the method.|Mix rows randomly.
@@ -339,7 +352,7 @@ The pond holds sky.\nThe wind arrives.\nThe image breaks.|The last event changes
 bank('source5','Sources and Evidence','자료와 근거','5.T.RA.1–2',[B('Which source directly addresses the question?','질문에 직접 관련 있는 자료를 골라요.'),B('Respect the evidence and its limits.','근거의 범위를 지킨 결론이나 출처 표기를 골라요.')],[rows(`Question: How many books borrowed Tuesday?|Tuesday’s checkout log|a poem about books|a lunch menu
 Question: Where is the trail entrance?|the current park map|a recipe|ticket prices
 Question: How much water did our cup lose?|our measurement table|a song about rain|a street map
-Question: When does the club meet?|the dated club schedule|a story about friends|a plant diagram
+Question: When does the club meet this year?|the dated club schedule|a story about friends|a plant diagram
 Question: What bench repairs were made?|the repair log|a sports score|a cloud photo
 Question: What materials did our model use?|our materials list|a fictional diary|an ocean map
 Question: What happened at the observed gate?|the observer’s dated notes|a door poem|a word list

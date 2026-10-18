@@ -12,7 +12,8 @@ const q=(ask,data,a,w,model='')=>{const en=ask.en+' '+data.en,ko=ask.ko+' '+data
 const scopes={"physicalmap4":["Text location clues; no terrain map search","글의 위치 단서 · 지형 지도 찾기 제외"],"historicmap4":["City points and records; no route tracing","도시점과 기록 · 실제 이동 경로 찾기 제외"],"expansion4":["Selected expansion records; some events omitted","서부 확장 일부 기록 · 일부 사건 제외"]};
 const scope=id=>{const [en,ko]=scopes[id]||["Selected records; no full history or map assessment","일부 기록 선택 · 역사와 지도 전체 평가 제외"];return B('Partial practice: '+en,'부분 연습: '+ko);};
 const reg=(id,en,ko,code,make,n=10)=>registerGame({id,grade:'4',subject:'ss',icon:'🌎',title:B(en,ko),sub:scope(id),area:B(`Grade 4 Social Studies · ${code} · ${scope(id).en}`,`4학년 사회 · ${code} · ${scope(id).ko}`),play(){const lv=lvl(id),i=take(id,lv,n),it=make(i,lv);it.itemKey=`${id}:${lv}:${i}`;it.standardCodes=code;quiz(this,it);}});
-const card=(rows,i,lv)=>{const r=rows[i].map(b);const a=lv===1?r[1]:r[2];let wrong=lv===1?[...new Map(rows.map(x=>b(x[1])).filter(x=>x.en!==a.en).map(x=>[x.en,x])).values()].slice(0,2):[r[3],b('This proves everyone had the same experience.|모든 사람이 똑같은 경험을 했다는 증거예요.')];if(wrong.length<2)throw Error('Insufficient distinct alternatives');return q(B(lv===1?'Which statement is supported by this record alone?':'Which explanation of this record is supported?',lv===1?'이 기록만으로 확인할 수 있는 말을 골라요.':'이 기록에 근거 있는 설명을 골라요.'),lv===1?r[0]:B(`Evidence card: ${r[0].en}`,`근거 카드: ${r[0].ko}`),a,wrong);};
+const evidenceAlternatives={'revolutioncause4':B('Colonists elected their representatives to Parliament.','식민지 주민이 영국 의회 대표를 선출했어요.'),'revolutionpeople4':B('All these leaders had the same military job.','이 지도자들은 모두 같은 군사 직책이었어요.'),'revolutionbattle4':B('Each battle ended British rule immediately.','각 전투가 영국 통치를 곧바로 끝냈어요.'),'declaration4':B('This document set out the three federal branches.','이 문서가 연방 정부의 세 부서를 정했어요.'),'convention4':B('The convention wrote the Declaration of Independence.','이 회의에서 독립선언서를 썼어요.'),'compromise4':B('Every state received equal House representation.','각 주가 하원에서 같은 수의 대표를 받았어요.'),'war18124':B('This war began the colonies’ independence from Britain.','이 전쟁이 식민지의 영국으로부터의 독립을 시작했어요.'),'expansion4':B('A land purchase required no change in government claims.','땅을 매입해도 정부의 지배권 주장에는 변화가 없었어요.'),'removal4':B('Removal was voluntary migration by every affected community.','이주는 관련 공동체 모두가 자발적으로 택한 이동이었어요.'),'reform4':B('Every reform group worked on the same issue.','개혁 단체는 모두 같은 문제를 다뤘어요.'),'civilcause4':B('Slavery was unrelated to the political conflict.','노예제는 이 정치적 갈등과 관련이 없었어요.'),'civilevents4':B('The war ended in 1861.','전쟁은 1861년에 끝났어요.'),'civilpeople4':B('All the named people served the Confederacy.','이름이 나온 사람은 모두 남부연합을 위해 일했어요.'),'reconstruction4':B('New laws immediately guaranteed equal access in practice.','새 법으로 실제로도 즉시 똑같은 권리 행사가 보장됐어요.'),'rightsbarrier4':B('Written rights alone prove equal access in practice.','권리가 글로 적혀 있으면 실제 접근성도 같다는 증거예요.'),'physicalmap4':B('A landform and a climate pattern are the same kind of feature.','지형과 기후 양상은 같은 종류의 특징이에요.'),'geography4':B('Waterways had no effect on movement or settlement.','물길은 이동과 정착에 영향을 주지 않았어요.'),'sovereignty4':B('A tribal government is the same as a state government.','원주민 부족 정부는 주 정부와 같은 정부예요.'),'federal4':B('A state law is the same as a federal statute.','주 법은 연방 법률과 같은 것이에요.'),'checks4':B('The president can enact federal laws alone.','대통령 혼자 연방 법률을 만들 수 있어요.'),'billrights4':B('These amendments limit only private people, not government.','이 수정조항은 정부가 아니라 개인만 제한해요.'),'productivity4':B('More total output always means more output per worker.','총생산량이 늘면 노동자 한 명당 생산량도 반드시 늘어요.')};
+const card=(rows,i,lv,id)=>{const r=rows[i].map(b);const a=lv===1?r[1]:r[2];let wrong=lv===1?[...new Map(rows.map(x=>b(x[1])).filter(x=>x.en!==a.en).map(x=>[x.en,x])).values()].slice(0,2):[r[3],evidenceAlternatives[id]];if(!wrong.length)throw Error('Insufficient distinct alternatives');return q(B(lv===1?'Which statement is supported by this record alone?':'Which explanation of this record is supported?',lv===1?'이 기록만으로 확인할 수 있는 말을 골라요.':'이 기록에 근거 있는 설명을 골라요.'),lv===1?r[0]:B(`Evidence card: ${r[0].en}`,`근거 카드: ${r[0].ko}`),a,wrong);};
 const causes=[
  ['Britain faced war debts after the French and Indian War and sought colonial revenue.|영국은 프렌치 인디언 전쟁 뒤 빚을 갚으려고 식민지 수입을 늘리려 했어요.','War costs influenced new taxes|전쟁 비용이 새 세금에 영향을 줬어요','Taxes were linked to the cost of war.|세금에는 전쟁 비용이라는 배경이 있었어요.','Taxes had no connection to war.|세금은 전쟁과 관련이 없었어요.'],
  ['The 1765 Stamp Act taxed many printed materials.|1765년 인지세법은 여러 인쇄물에 세금을 매겼어요.','Printed materials were taxed|인쇄물에 세금을 매겼어요','A tax on printed items affected colonial users.|인쇄물 세금은 식민지의 사용자에게 영향을 줬어요.','The Stamp Act was a tax only on tea.|인지세법은 차에만 매긴 세금이에요.'],
@@ -25,7 +26,7 @@ const causes=[
  ['Britain imposed the Coercive Acts after the Boston Tea Party.|영국은 보스턴 차 사건 뒤 강압법을 시행했어요.','Punitive laws followed the tea protest|차 항의 뒤에 처벌 법이 시행됐어요','British responses could deepen colonial opposition.|영국의 대응으로 식민지 반대가 더 커질 수 있었어요.','The Coercive Acts came before the Tea Party.|강압법은 차 사건보다 먼저 생겼어요.'],
  ['Colonial residents included Patriots, Loyalists, and people who avoided taking sides.|식민지에는 독립 지지자와 영국 지지자, 편을 들지 않으려는 사람이 있었어요.','Colonial opinions differed|식민지의 의견은 서로 달랐어요','The population cannot be described as one viewpoint.|주민 전체를 하나의 관점으로 설명할 수 없어요.','All residents supported independence.|주민 모두가 독립을 지지했어요.']
 ];
-reg('revolutioncause4','Toward the Revolution','독립혁명으로 가는 길','SS4H1.a',(i,lv)=>card(causes,i,lv));
+reg('revolutioncause4','Toward the Revolution','독립혁명으로 가는 길','SS4H1.a',(i,lv)=>card(causes,i,lv,'revolutioncause4'));
 const revolutionPeople=[
  ['George III was the British king during the Revolution.|조지 3세는 독립혁명 당시 영국 왕이었어요.','George III: British king|조지 3세: 영국 왕','His role differed from colonial military leadership.|식민지 군사 지도자와 역할이 달랐어요.','He commanded the Continental Army.|그는 대륙군을 지휘했어요.'],
  ['George Washington commanded the Continental Army.|조지 워싱턴은 대륙군 총사령관이었어요.','Washington: Continental commander|워싱턴: 대륙군 지휘관','Military leadership was one part of the Revolution.|군사 지휘는 혁명의 한 부분이었어요.','He was the British king.|그는 영국 왕이었어요.'],
@@ -38,7 +39,7 @@ const revolutionPeople=[
  ['The First Rhode Island Regiment included Black soldiers and served at Yorktown.|로드아일랜드 제1연대에는 흑인 병사가 있었고 요크타운에서 복무했어요.','Black soldiers served in the Revolution|흑인 병사도 혁명에 참여했어요','Military service included people facing unequal freedom.|자유가 불평등한 사람들도 군에 참여했어요.','All Black people immediately gained equal rights.|흑인 모두가 즉시 평등한 권리를 얻었어요.'],
  ['Black people served on both sides for varied reasons, including seeking freedom.|흑인은 자유를 구하는 등 여러 이유로 양쪽 군에 참여했어요.','Black experiences and choices varied|흑인의 경험과 선택은 다양했어요','One story cannot represent every Black participant.|한 이야기가 모든 흑인 참가자를 대표할 수 없어요.','Everyone on both sides had identical legal freedom.|양쪽 참가자는 모두 법적 자유가 같았어요.']
 ];
-reg('revolutionpeople4','People in the Revolution','혁명의 여러 사람','SS4H1.b',(i,lv)=>card(revolutionPeople,i,lv));
+reg('revolutionpeople4','People in the Revolution','혁명의 여러 사람','SS4H1.b',(i,lv)=>card(revolutionPeople,i,lv,'revolutionpeople4'));
 const battles=[
  ['Lexington and Concord: Massachusetts, April 1775.|렉싱턴과 콩코드: 매사추세츠, 1775년 4월.','Fighting began in Massachusetts|매사추세츠에서 전투가 시작됐어요','Location and date distinguish these early battles.|장소와 날짜로 초기 전투를 구별해요.','This was the 1781 Yorktown siege.|이것은 1781년 요크타운 포위전이에요.'],
  ['British troops traveled by road from Boston toward Concord to seek military supplies.|영국군은 군수품을 찾으려고 도로를 따라 보스턴에서 콩코드 쪽으로 이동했어요.','A road linked Boston and Concord|도로가 보스턴과 콩코드를 이었어요','A route shaped access to supplies and settlements.|길은 군수품과 마을에 접근하는 데 영향을 줬어요.','Troops moved across the Pacific Ocean.|군대는 태평양을 건넜어요.'],
@@ -51,7 +52,7 @@ const battles=[
  ['At Yorktown, French naval forces restricted British access by sea.|요크타운에서 프랑스 해군이 영국군의 바닷길 접근을 제한했어요.','Naval control restricted sea access|해군이 바닷길 접근을 제한했어요','Land and sea actions worked together.|육지와 바다의 작전이 함께 작용했어요.','Only land features mattered.|육지 지형만 중요했어요.'],
  ['Sequence: Lexington/Concord 1775 → Saratoga 1777 → Yorktown 1781.|순서: 렉싱턴·콩코드 1775 → 새러토가 1777 → 요크타운 1781.','Three battles occurred in different years|세 전투는 서로 다른 해에 일어났어요','Chronology prevents mixing separate events.|시간 순서로 서로 다른 사건을 섞지 않을 수 있어요.','All happened on one day.|모두 같은 날 일어났어요.']
 ];
-reg('revolutionbattle4','Battles and Terrain','전투와 지형','SS4H1.c · SS4G2.a',(i,lv)=>card(battles,i,lv));
+reg('revolutionbattle4','Battles and Terrain','전투와 지형','SS4H1.c · SS4G2.a',(i,lv)=>card(battles,i,lv,'revolutionbattle4'));
 const declaration=[
  ['The Declaration explained the colonies\' separation from Britain.|독립선언은 식민지가 영국에서 갈라서는 까닭을 설명했어요.','It explained independence|독립의 까닭을 설명했어요','The document gave reasons for political separation.|정치적으로 갈라서는 이유를 제시했어요.','It was a daily weather record.|매일의 날씨 기록이었어요.'],
  ['A five-member committee prepared a declaration draft.|다섯 명의 위원회가 선언 초안을 준비했어요.','A committee prepared a draft|위원회가 초안을 준비했어요','Drafting involved a group process.|작성은 함께 진행하는 과정이었어요.','One person alone adopted the declaration.|혼자 선언을 채택했어요.'],
@@ -64,7 +65,7 @@ const declaration=[
  ['Women and many other groups lacked political rights despite equality language.|평등을 말했어도 여성과 여러 집단의 정치적 권리는 제한됐어요.','Political participation remained unequal|정치 참여는 여전히 불평등했어요','The ideals must be compared with who could participate.|이상과 실제로 참여할 수 있던 사람을 비교해야 해요.','Every resident could vote equally in 1776.|1776년 모든 주민이 평등하게 투표했어요.'],
  ['Declaration 1776 states separation; Constitution 1787 structures government.|1776년 독립선언은 분리, 1787년 헌법은 정부 구조를 다뤄요.','The documents have different purposes|두 문서는 목적이 달라요','Date and purpose help distinguish the sources.|날짜와 목적으로 자료를 구별해요.','They are the same document.|둘은 같은 문서예요.']
 ];
-reg('declaration4','Purpose of the Declaration','독립선언의 목적','SS4H1.d · SS4CG1.a',(i,lv)=>card(declaration,i,lv));
+reg('declaration4','Purpose of the Declaration','독립선언의 목적','SS4H1.d · SS4CG1.a',(i,lv)=>card(declaration,i,lv,'declaration4'));
 const convention=[
  ['Under the Articles, Congress lacked a direct national taxing power.|연합규약에서 의회는 국가 차원으로 직접 세금을 매기는 권한이 없었어요.','National taxing power was limited|국가의 과세 권한이 제한됐어요','Raising national revenue was difficult.|국가 수입을 마련하기 어려웠어요.','The national government had unlimited taxing power.|국가의 과세 권한은 무제한이었어요.'],
  ['The Articles left much power with the states.|연합규약은 많은 권한을 주에 남겨 뒀어요.','States retained substantial power|주가 많은 권한을 가졌어요','Weak national authority created coordination problems.|약한 국가 권한으로 함께 조정하기 어려웠어요.','States had no powers.|주는 권한이 없었어요.'],
@@ -77,7 +78,7 @@ const convention=[
  ['The proposed Constitution required state ratification.|제안된 헌법은 주의 비준이 필요했어요.','States had to ratify the proposal|주가 제안을 비준해야 했어요','Writing a proposal did not itself complete adoption.|제안을 쓰는 것만으로 채택이 끝나지는 않았어요.','No further approval was needed.|추가 승인은 필요 없었어요.'],
  ['The Constitution replaced the Articles with a stronger national framework.|헌법은 연합규약을 대신해 더 강한 국가 구조를 마련했어요.','A new framework replaced the Articles|새 구조가 연합규약을 대신했어요','Reform changed governing structure while retaining states.|변화 뒤에도 주가 남아 있으면서 정부 구조가 달라졌어요.','All state governments disappeared.|모든 주 정부가 사라졌어요.']
 ];
-reg('convention4','Constitutional Convention','헌법 회의의 과제','SS4H2.a–b',(i,lv)=>card(convention,i,lv));
+reg('convention4','Constitutional Convention','헌법 회의의 과제','SS4H2.a–b',(i,lv)=>card(convention,i,lv,'convention4'));
 const compromise=[
  ['In the House, representation is based on population.|하원의 대표 의석은 인구를 기준으로 해요.','House: population-based seats|하원: 인구에 따른 의석','The plan gives population a role in representation.|인구가 대표 방식에 영향을 줘요.','Every state has identical House seats.|하원 의석은 모든 주가 같아요.'],
  ['In the Senate, each state has two senators.|상원에는 주마다 상원의원 두 명이 있어요.','Senate: equal state representation|상원: 주의 동등한 대표','Equal state seats differ from population-based seats.|동등한 주 의석은 인구에 따른 의석과 달라요.','Large states have more senators.|큰 주는 상원의원이 더 많아요.'],
@@ -90,7 +91,7 @@ const compromise=[
  ['House and Senate are both legislative bodies but use different representation rules.|하원과 상원은 모두 입법부이지만 대표 방식이 달라요.','Shared function, different seat rules|하는 일은 관련 있지만 의석 규칙은 달라요','Two systems can share lawmaking while differing in seats.|법을 만드는 역할과 의석 방식은 구별할 수 있어요.','One chamber is a court.|한 의회는 법원이에요.'],
  ['Some excluded people did not consent to the compromises that shaped their lives.|삶에 영향을 준 타협에 동의할 기회가 없던 사람들이 있었어요.','Agreement among delegates was not universal consent|대표 합의가 모든 사람의 동의는 아니에요','We must ask whose voices were excluded.|누구의 목소리가 빠졌는지 살펴야 해요.','All affected people voted on each rule.|영향받는 모든 사람이 규칙마다 투표했어요.']
 ];
-reg('compromise4','Compromise and Exclusion','타협과 제외된 권리','SS4H2.b',(i,lv)=>card(compromise,i,lv));
+reg('compromise4','Compromise and Exclusion','타협과 제외된 권리','SS4H2.b',(i,lv)=>card(compromise,i,lv,'compromise4'));
 const war1812=[
  ['Britain restricted American trade during conflicts in Europe.|영국은 유럽의 전쟁 중 미국의 무역을 제한했어요.','Trade restrictions created tension|무역 제한이 갈등을 만들었어요','Economic interests were among the causes.|경제적 이해관계도 원인에 있었어요.','Trade had no role in the conflict.|무역은 갈등과 관련이 없었어요.'],
  ['British forces impressed sailors from American ships into naval service.|영국군은 미국 배에서 선원을 강제로 해군에 데려가기도 했어요.','Impressment was forced naval service|강제 징집은 원치 않는 해군 복무였어요','The practice challenged American rights and sovereignty.|그 관행은 미국의 권리와 주권 문제와 이어졌어요.','All sailors volunteered freely.|선원 모두가 자유롭게 자원했어요.'],
@@ -103,7 +104,7 @@ const war1812=[
  ['Francis Scott Key saw the flag after the bombardment and wrote a poem.|프랜시스 스콧 키는 포격 뒤 깃발을 보고 시를 썼어요.','Key wrote a poem about the flag|키가 깃발에 관한 시를 썼어요','The poem\'s setting was an 1814 event.|시의 배경은 1814년 사건이었어요.','He wrote it during the 1775 battles.|1775년 전투 중 썼어요.'],
  ['Key\'s poem later became the words of the national anthem.|키의 시는 나중에 국가의 가사가 됐어요.','A poem became anthem lyrics|시가 국가 가사가 됐어요','An original event and later national use are distinct.|처음 사건과 나중의 국가적 사용은 구별해야 해요.','It was always a constitutional amendment.|처음부터 헌법 수정 조항이었어요.']
 ];
-reg('war18124','Records of the War of 1812','1812년 전쟁의 기록','SS4H3.a',(i,lv)=>card(war1812,i,lv));
+reg('war18124','Records of the War of 1812','1812년 전쟁의 기록','SS4H3.a',(i,lv)=>card(war1812,i,lv,'war18124'));
 const expansion=[
  ['In 1803 the United States bought Louisiana territory from France.|1803년 미국은 프랑스에서 루이지애나 영토를 샀어요.','Louisiana Purchase: 1803|루이지애나 매입: 1803년','The treaty changed claims over land already inhabited.|조약은 이미 사람이 살던 땅의 지배권 주장을 바꿨어요.','It was empty land without communities.|공동체가 없는 빈 땅이었어요.'],
  ['France was the other party in the Louisiana Purchase treaty.|루이지애나 매입 조약의 상대국은 프랑스였어요.','France was the treaty partner|프랑스가 조약 상대국이었어요','A government treaty did not represent every Native nation\'s consent.|정부 간 조약이 원주민 공동체 모두의 동의는 아니었어요.','Every Native nation signed the purchase.|모든 원주민 공동체가 매입에 서명했어요.'],
@@ -116,7 +117,7 @@ const expansion=[
  ['Mining disrupted Native land, water, and food resources.|채굴은 원주민의 땅과 물, 먹이 자원에 피해를 줬어요.','Mining affected Native resources|채굴이 원주민 자원에 영향을 줬어요','Expansion had costs for existing communities.|확장은 이미 살던 공동체에 피해를 주기도 했어요.','Expansion benefited everyone equally.|확장은 모두에게 똑같이 이로웠어요.'],
  ['Wagon routes included alternate trails and cutoffs.|마차 길에는 다른 길과 지름길도 있었어요.','Overland routes had alternatives|육로 경로에는 다른 길도 있었어요','A single line cannot represent every journey.|한 선으로 모든 여행을 나타낼 수 없어요.','Every traveler followed one exact line.|모든 여행자가 정확히 한 길로만 갔어요.']
 ];
-reg('expansion4','Territory and Movement','영토와 이동','SS4H3.c · SS4G2.b',(i,lv)=>card(expansion,i,lv));
+reg('expansion4','Territory and Movement','영토와 이동','SS4H3.c · SS4G2.b',(i,lv)=>lv===1&&i<2?q(B('In which year did this purchase occur?','이 영토 매입이 일어난 해를 골라요.'),B('The United States bought Louisiana territory from France.','미국이 프랑스에서 루이지애나 영토를 샀어요.'),'1803',['1812','1845']):card(expansion,i,lv,'expansion4'));
 const removal=[
  ['The 1830 Indian Removal Act supported federal removal policy.|1830년 원주민 이주법은 연방의 이주 정책을 뒷받침했어요.','A federal removal policy was enacted|연방 이주 정책이 법으로 시행됐어요','A law could be used to force communities from homes.|법이 공동체를 집에서 강제로 떠나게 하는 데 쓰일 수 있었어요.','All moves were freely chosen.|모든 이동은 자유롭게 선택했어요.'],
  ['In 1838–39 many Cherokee were forced from southeastern homes toward Indian Territory.|1838~39년 많은 체로키족이 남동부의 집에서 인디언 준주로 강제로 떠났어요.','Cherokee removal was forced|체로키 이주는 강제였어요','Forced relocation differs from choosing a trip.|강제 이주는 여행을 선택하는 일과 달라요.','The journey was voluntary tourism.|스스로 택한 관광 여행이었어요.'],
@@ -129,7 +130,7 @@ const removal=[
  ['Native nations and communities continue today.|원주민의 나라와 공동체는 오늘날에도 이어져요.','Native communities continue today|원주민 공동체는 지금도 있어요','Historical harm did not erase their continuing identities.|과거의 피해 뒤에도 정체성과 공동체가 이어져요.','Native peoples exist only in the past.|원주민은 과거에만 존재해요.'],
  ['Cherokee Nation remembrance connects history with present community life.|체로키 네이션의 추모는 역사와 현재 공동체의 삶을 이어 줘요.','Remembrance links past and present|추모는 과거와 현재를 이어요','Communities can preserve and explain their own histories.|공동체가 자기 역사를 기억하고 설명할 수 있어요.','Only outside observers can tell Native history.|외부 사람만 원주민 역사를 말할 수 있어요.']
 ];
-reg('removal4','Records of Forced Removal','원주민 강제 이주의 기록','SS4H3.b',(i,lv)=>card(removal,i,lv));
+reg('removal4','Records of Forced Removal','원주민 강제 이주의 기록','SS4H3.b',(i,lv)=>card(removal,i,lv,'removal4'));
 const reform=[
  ['Susan B. Anthony campaigned for women\'s voting rights.|수전 앤서니는 여성의 투표권을 위해 활동했어요.','Anthony: voting-rights campaign|앤서니: 투표권 운동','Organized action challenged political exclusion.|조직적인 활동으로 정치적 배제에 도전했어요.','Women already had equal national voting rights.|여성은 이미 전국에서 동등한 투표권이 있었어요.'],
  ['Frederick Douglass escaped slavery and argued for abolition and rights.|프레더릭 더글러스는 노예제에서 탈출해 폐지와 권리를 주장했어요.','Douglass: abolition and rights|더글러스: 노예제 폐지와 권리','Experience and public advocacy supported reform.|경험과 공개적인 주장은 개혁에 도움이 됐어요.','He defended slavery as freedom.|노예제를 자유라고 옹호했어요.'],
@@ -142,7 +143,7 @@ const reform=[
  ['Truth faced both racial and gender discrimination.|트루스는 인종과 성별 차별을 모두 겪었어요.','More than one barrier could affect a person|한 사람에게 여러 장벽이 영향을 줬어요','Interacting restrictions shaped different experiences.|여러 제한이 함께 작용해 경험이 달라졌어요.','Every woman faced identical conditions.|여성 모두의 조건은 같았어요.'],
  ['Campaigns for abolition and voting rights continued over many years.|노예제 폐지와 투표권을 위한 활동은 오랜 기간 이어졌어요.','Reform required sustained effort|개혁에는 지속적인 노력이 필요했어요','A speech alone did not remove every barrier.|연설 한 번으로 모든 장벽이 없어지지 않았어요.','Every campaign succeeded immediately.|모든 운동은 즉시 성공했어요.']
 ];
-reg('reform4','People Expanding Rights','권리를 넓히려 한 사람들','SS4H4.a',(i,lv)=>card(reform,i,lv));
+reg('reform4','People Expanding Rights','권리를 넓히려 한 사람들','SS4H4.a',(i,lv)=>card(reform,i,lv,'reform4'));
 const civilCauses=[
  ['Slavery was central to the conflicts leading to the Civil War.|노예제는 남북전쟁으로 이어진 갈등의 핵심이었어요.','Slavery was a central cause|노예제가 핵심 원인이었어요','Abstract states\' rights claims must be linked to slavery.|추상적인 주의 권리 주장은 노예제와 연결해 봐야 해요.','Slavery had no role in the war.|노예제는 전쟁과 관련이 없었어요.'],
  ['Disputes concerned whether slavery could expand into western territories.|노예제를 서부 영토로 넓힐 수 있는지가 쟁점이었어요.','Expansion of slavery was disputed|노예제 확대가 쟁점이었어요','Territorial growth and slavery were connected debates.|영토 성장과 노예제는 연결된 논쟁이었어요.','Only climate divided the states.|기후만 주 사이를 갈라놓았어요.'],
@@ -155,7 +156,7 @@ const civilCauses=[
  ['Abolitionists argued against slavery, while others defended it.|노예제에 반대하는 사람과 옹호하는 사람이 있었어요.','Views on slavery conflicted|노예제에 관한 생각이 충돌했어요','Political conflict included incompatible positions.|정치적 갈등에는 함께 성립하기 어려운 주장이 있었어요.','Everyone agreed slavery should continue.|모두 노예제가 계속돼야 한다고 동의했어요.'],
  ['Political, economic, and social tensions interacted around slavery.|정치와 경제, 사회의 갈등이 노예제를 중심으로 이어졌어요.','Several tensions interacted|여러 갈등이 함께 작용했어요','Multiple causes do not erase the central role of slavery.|여러 원인이 있어도 노예제의 핵심 역할을 지우면 안 돼요.','Naming several causes removes slavery from the explanation.|원인을 여러 개 말하면 노예제를 빼야 해요.']
 ];
-reg('civilcause4','Civil War Cause Records','남북전쟁의 원인 자료','SS4H5.a–b',(i,lv)=>card(civilCauses,i,lv));
+reg('civilcause4','Civil War Cause Records','남북전쟁의 원인 자료','SS4H5.a–b',(i,lv)=>card(civilCauses,i,lv,'civilcause4'));
 const civilEvents=[
  ['Confederate forces attacked Fort Sumter in South Carolina in April 1861.|남부연합군은 1861년 4월 사우스캐롤라이나의 섬터 요새를 공격했어요.','Fort Sumter marked the war\'s beginning|섬터 요새 공격이 전쟁 시작을 알렸어요','The event began fighting, not reconstruction.|전투가 시작된 사건이며 재건의 시작은 아니에요.','It ended all fighting.|모든 전투를 끝냈어요.'],
  ['Gettysburg was fought in Pennsylvania in July 1863.|게티즈버그 전투는 1863년 7월 펜실베이니아에서 일어났어요.','Gettysburg: Pennsylvania, 1863|게티즈버그: 펜실베이니아, 1863년','Date and location identify this battle.|날짜와 장소로 전투를 구별해요.','It took place in Georgia in 1864.|1864년 조지아에서 일어났어요.'],
@@ -168,7 +169,7 @@ const civilEvents=[
  ['Enslaved people sought freedom while armies moved through the South.|군대가 남부를 이동하는 동안 노예 신분 사람들은 자유를 찾으려 했어요.','People actively sought freedom|사람들이 적극적으로 자유를 찾았어요','People were agents in seeking freedom, not just passive objects.|사람은 가만히 기다리는 대상이 아니라 자유를 찾는 주체였어요.','Nobody seeking freedom took action.|자유를 찾는 사람은 아무 행동도 하지 않았어요.'],
  ['Timeline: Sumter 1861 → Gettysburg 1863 → Atlanta and march 1864 → Appomattox 1865.|순서: 섬터 1861 → 게티즈버그 1863 → 애틀랜타와 행진 1864 → 애퍼매턱스 1865.','Events unfolded over several years|사건이 여러 해 동안 이어졌어요','A timeline separates related but distinct events.|연표로 서로 관련되지만 다른 사건을 구별해요.','All events occurred in 1864.|모든 사건은 1864년에 일어났어요.']
 ];
-reg('civilevents4','Civil War Events and Effects','전쟁의 사건과 영향','SS4H5.c · SS4H5.e',(i,lv)=>card(civilEvents,i,lv));
+reg('civilevents4','Civil War Events and Effects','전쟁의 사건과 영향','SS4H5.c · SS4H5.e',(i,lv)=>card(civilEvents,i,lv,'civilevents4'));
 const civilPeople=[
  ['Abraham Lincoln was president of the United States during the Civil War.|에이브러햄 링컨은 남북전쟁 당시 미국 대통령이었어요.','Lincoln: Union president|링컨: 북부연방 대통령','A president and a military general have different roles.|대통령과 군사 지휘관은 역할이 달라요.','He was president of the Confederacy.|남부연합 대통령이었어요.'],
  ['Jefferson Davis was president of the Confederacy.|제퍼슨 데이비스는 남부연합 대통령이었어요.','Davis: Confederate president|데이비스: 남부연합 대통령','The opposing governments had different presidents.|맞서는 정부에는 다른 대통령이 있었어요.','He led the United States government.|미국 정부를 이끌었어요.'],
@@ -181,7 +182,7 @@ const civilPeople=[
  ['Davis defended a Confederacy formed to preserve slavery; Lincoln led the Union.|데이비스는 노예제를 지키려 세운 남부연합을, 링컨은 북부연방을 이끌었어요.','The presidents led opposing political causes|두 대통령의 정치적 목표는 달랐어요','Comparing roles does not erase slavery\'s central place.|역할을 비교해도 노예제의 핵심 역할을 빼면 안 돼요.','Their governments had identical purposes.|두 정부의 목적은 같았어요.'],
  ['Sherman and Jackson served on opposing sides with different wartime actions.|셔먼과 잭슨은 서로 다른 쪽에서 다른 군사 활동을 했어요.','Military titles do not imply identical allegiance|장군이라는 직책이 같아도 소속은 달라요','Names, side, and dated actions must be read together.|이름과 소속, 날짜 있는 행동을 함께 봐야 해요.','All generals belonged to the same side.|모든 장군의 소속은 같았어요.']
 ];
-reg('civilpeople4','Civil War Roles','남북전쟁의 역할','SS4H5.d',(i,lv)=>card(civilPeople,i,lv));
+reg('civilpeople4','Civil War Roles','남북전쟁의 역할','SS4H5.d',(i,lv)=>card(civilPeople,i,lv,'civilpeople4'));
 const reconstruction=[
  ['The Thirteenth Amendment abolished slavery, with a punishment-for-crime exception.|수정13조는 범죄 처벌의 예외를 두고 노예제를 폐지했어요.','Amendment 13: abolition|수정13조: 노예제 폐지','The text and its exception should both be read.|조항의 내용과 예외를 함께 읽어야 해요.','It was the amendment on voting alone.|투표만 다룬 조항이에요.'],
  ['The Fourteenth Amendment addressed citizenship and equal protection.|수정14조는 시민권과 법의 평등한 보호를 다뤘어요.','Amendment 14: citizenship and equal protection|수정14조: 시민권과 평등한 보호','Legal protection is a stated right, not proof of equal daily treatment.|법적 보호를 정했다고 실제 대우가 모두 평등해진 것은 아니에요.','It guaranteed immediate equality in every practice.|모든 실제 상황의 평등을 즉시 보장했어요.'],
@@ -194,7 +195,7 @@ const reconstruction=[
  ['Bureau hospitals and medical aid supported people after the war.|지원국의 병원과 의료 지원은 전쟁 뒤 사람을 도왔어요.','Health-related support was included|건강을 위한 지원도 있었어요','Postwar recovery involved more than political offices.|전쟁 뒤 회복에는 정치적 직책 말고도 할 일이 있었어요.','It only managed elections.|선거만 관리했어요.'],
  ['New amendments and Bureau aid did not end violence and discrimination.|새 수정 조항과 지원국의 도움으로 폭력과 차별이 모두 끝나지는 않았어요.','Rights still faced barriers|권리 행사에는 여전히 장벽이 있었어요','Legal change and lived conditions must be distinguished.|법의 변화와 실제 생활 조건은 구별해야 해요.','Every barrier disappeared immediately.|모든 장벽이 바로 사라졌어요.']
 ];
-reg('reconstruction4','Reconstruction and Rights','재건과 새 권리','SS4H6.a–b',(i,lv)=>card(reconstruction,i,lv));
+reg('reconstruction4','Reconstruction and Rights','재건과 새 권리','SS4H6.a–b',(i,lv)=>card(reconstruction,i,lv,'reconstruction4'));
 const barriers=[
  ['Sharecroppers worked land in return for a share of the harvest.|소작인은 수확물의 일부를 받는 조건으로 땅을 일구었어요.','Sharecropping used harvest shares|소작제는 수확물의 분배를 이용했어요','A work contract differed legally from enslavement.|노동 계약의 법적 지위는 노예 신분과 달랐어요.','All sharecroppers were legally enslaved.|모든 소작인은 법적으로 노예였어요.'],
  ['Debt to landowners could trap sharecroppers in dependence.|땅 주인에게 진 빚이 소작인을 계속 의존하게 만들 수 있었어요.','Debt limited independence|빚이 자립을 제한했어요','Legal freedom did not guarantee economic independence.|법적 자유가 경제적 자립을 보장하지는 않았어요.','Every contract guaranteed prosperity.|모든 계약이 부를 보장했어요.'],
@@ -207,7 +208,7 @@ const barriers=[
  ['Community members built schools and organizations despite barriers.|공동체는 장벽 속에서도 학교와 단체를 만들었어요.','People acted despite restrictions|사람들은 제한 속에서도 행동했어요','People were active in seeking rights and opportunities.|사람들은 권리와 기회를 적극적으로 찾았어요.','Everyone simply waited without action.|모두 아무 행동 없이 기다리기만 했어요.'],
  ['A constitution promises equal protection, but records show segregated services.|헌법은 평등한 보호를 말하지만 기록에는 분리된 서비스가 있어요.','Stated rights and practice differed|정해진 권리와 실제 대우는 달랐어요','We need both legal text and lived-experience evidence.|법 문서와 실제 경험의 근거를 모두 살펴야 해요.','A legal promise proves every experience was equal.|법적 약속만으로 모든 경험이 평등했음이 증명돼요.']
 ];
-reg('rightsbarrier4','Barriers to Rights','권리를 가로막은 제도','SS4H6.c–d',(i,lv)=>card(barriers,i,lv));
+reg('rightsbarrier4','Barriers to Rights','권리를 가로막은 제도','SS4H6.c–d',(i,lv)=>card(barriers,i,lv,'rightsbarrier4'));
 // Verified physical relationships; exact regional outlines are deferred.
 const physical=[
  ['The Atlantic Coastal Plain lies along the eastern and southeastern coast.|대서양 해안 평야는 미국 동쪽과 남동쪽 해안을 따라 있어요.','Atlantic Coastal Plain: coastal lowland|대서양 해안 평야: 해안의 낮은 땅','A coastal region differs from an inland mountain divide.|해안 지역과 내륙 산지의 분수계는 달라요.','It is the western mountain divide.|서쪽 산지의 분수계예요.'],
@@ -221,7 +222,7 @@ const physical=[
  ['A river is a flowing waterway; a coastal plain is a broad land region.|강은 흐르는 물길이고 해안 평야는 넓은 육지 지역이에요.','Feature types have different spatial forms|지형 종류에 따라 나타나는 형태가 달라요','A single city point cannot show a whole region or river.|도시 점 하나로 지역 전체나 강을 나타낼 수 없어요.','One point shows every feature\'s full extent.|점 하나로 모든 지형의 전체 범위를 보여 줘요.'],
  ['A map legend uses different symbols for lakes, rivers, and land regions.|지도 범례는 호수와 강, 육지 지역을 다른 기호로 나타내요.','Read the feature symbols in the legend|범례의 지형 기호를 읽어요','Symbol interpretation is needed before comparing locations.|위치를 비교하기 전에 기호를 알아야 해요.','Every symbol always means a city.|모든 기호는 언제나 도시를 뜻해요.']
 ];
-reg('physicalmap4','Physical Feature Evidence','미국 자연 지형','SS4G1.a (partial)',(i,lv)=>card(physical,i,lv));
+reg('physicalmap4','Physical Feature Evidence','미국 자연 지형','SS4G1.a (partial)',(i,lv)=>card(physical,i,lv,'physicalmap4'));
 // Approximate city reference points, rounded from NPS/USGS records. These
 // are not municipal boundaries or the Erie Canal's course.
 const cities=[['Boston|보스턴',42.4,-71.1],['New York City|뉴욕시',40.7,-74.0],['Philadelphia|필라델피아',40.0,-75.1],['Washington, D.C.|워싱턴 디시',38.9,-77.0],['Gettysburg|게티즈버그',39.8,-77.2],['Albany|올버니',42.7,-73.8],['Buffalo|버펄로',42.9,-78.9]];
@@ -230,7 +231,7 @@ const citySvg=(a,c)=>{
  const minx=180+Math.min(a[2],c[2])-1,miny=90-Math.max(a[1],c[1])-1,w=Math.abs(a[2]-c[2])+2,h=Math.abs(a[1]-c[1])+2,font=h*.18,arrowX=minx+h*.13;
  return `<svg class="g4-city-map" viewBox="${minx} ${miny} ${w} ${h}" role="img" aria-label="${L(B('North America excerpt, approximate city markers A and B; north up','북미 확대도, 대략 도시점 A와 B, 위쪽이 북쪽'))}"><path d="${WORLD_PATHS.na}" fill="#e1ecd4" stroke="#567" stroke-width="${h*.004}"/>${[a,c].map((p,i)=>`<circle cx="${180+p[2]}" cy="${90-p[1]}" r="${h*.035}" fill="#a23b22"/><text x="${180+p[2]+h*.06}" y="${90-p[1]-h*.06}" font-size="${font}">${i?'B':'A'}</text>`).join('')}<path d="M${arrowX} ${miny+h*.6} V${miny+h*.3} l${-h*.06} ${h*.08} m${h*.06} ${-h*.08} l${h*.06} ${h*.08}" fill="none" stroke="#17364a" stroke-width="${h*.01}"/><text x="${arrowX-h*.1}" y="${miny+h*.22}" font-size="${font}">N</text></svg>`;
 };
-reg('historicmap4','Cities and Canal Connections','역사 속 도시와 운하','SS4G1.b',(i,lv)=>{const [ai,ci]=cityPairs[i],a=cities[ai],c=cities[ci],an=b(a[0]),cn=b(c[0]),north=a[1]>c[1],east=a[2]>c[2],dir=B(`${north?'north':'south'} and ${east?'east':'west'}`,`${north?'북쪽':'남쪽'}이면서 ${east?'동쪽':'서쪽'}`),wrong=B(`${north?'south':'north'} and ${east?'west':'east'}`,`${north?'남쪽':'북쪽'}이면서 ${east?'서쪽':'동쪽'}`),canal=i===4;return q(B(lv===1?'Which marked city is farther north?':'Relative to B, where is A?',lv===1?'표시한 도시 중 더 북쪽을 골라요.':'B를 기준으로 A는 어디에 있을까요?'),B(`A: ${an.en}; B: ${cn.en}. Approximate city points.${canal?' The Erie Canal links these cities; its course is not shown.':''}`,`A: ${an.ko}; B: ${cn.ko}. 도시의 대략적인 위치를 표시한 점이에요.${canal?' 이리 운하로 연결된 도시예요. 운하 경로선은 표시하지 않았어요.':''}`),lv===1?(north?an:cn):dir,lv===1?[north?cn:an,b('Same latitude|같은 위도')]:[wrong,b('Exactly the same point|정확히 같은 지점')],citySvg(a,c));});
+reg('historicmap4','Cities and Canal Connections','역사 속 도시와 운하','SS4G1.b',(i,lv)=>{const [ai,ci]=cityPairs[i],a=cities[ai],c=cities[ci],an=b(a[0]),cn=b(c[0]),north=a[1]>c[1],east=a[2]>c[2],dir=B(`${north?'north':'south'} and ${east?'east':'west'}`,`${north?'북쪽':'남쪽'}이면서 ${east?'동쪽':'서쪽'}`),wrong=B(`${north?'south':'north'} and ${east?'west':'east'}`,`${north?'남쪽':'북쪽'}이면서 ${east?'서쪽':'동쪽'}`),canal=i===4;return q(B(lv===1?'Which marked city is farther north?':'Relative to B, where is A?',lv===1?'표시한 도시 중 더 북쪽을 골라요.':'B를 기준으로 A는 어디에 있을까요?'),B(`A: ${an.en}; B: ${cn.en}. Approximate city points.${canal?' The Erie Canal links these cities; its course is not shown.':''}`,`A: ${an.ko}; B: ${cn.ko}. 도시의 대략적인 위치를 표시한 점이에요.${canal?' 이리 운하로 연결된 도시예요. 운하 경로선은 표시하지 않았어요.':''}`),lv===1?(north?an:cn):dir,lv===1?[north?cn:an,b('Same latitude|같은 위도')]:[wrong,B(`${north?'north':'south'} and ${east?'west':'east'}`,`${north?'북쪽':'남쪽'}이면서 ${east?'서쪽':'동쪽'}`)],citySvg(a,c));});
 const geography=[
  ['A river blocks an overland path unless a ford, bridge, or ferry is available.|강을 건너려면 여울과 다리, 나룻배 같은 방법이 필요해요.','River crossing can be a barrier|강을 건너는 일이 장벽이 될 수 있어요','Available crossings shape travel choices.|건널 곳에 따라 이동 선택이 달라져요.','Every river can be crossed anywhere equally.|강은 어디서나 똑같이 건널 수 있어요.'],
  ['A mountain pass offers a lower crossing through high terrain.|산의 고개는 높은 지형 사이의 더 낮은 통로예요.','A pass can provide a corridor|고개가 통로가 될 수 있어요','Terrain affects where routes can go.|지형이 길을 낼 수 있는 곳에 영향을 줘요.','Mountains never affect routes.|산은 길에 영향이 없어요.'],
@@ -243,7 +244,7 @@ const geography=[
  ['Winter conditions could make an overland route harder to use.|겨울 조건으로 육로 이용이 더 어려워질 수 있었어요.','Conditions change route difficulty|조건에 따라 길의 어려움이 달라져요','A route line does not show every travel condition.|경로선만으로 모든 이동 조건을 알 수 없어요.','Every season has identical travel conditions.|계절마다 이동 조건이 같아요.'],
  ['An 1801–1861 migration map shows routes, while written accounts describe difficulties.|1801~1861년 이주 지도는 길을, 기록은 어려움을 보여 줘요.','Maps and accounts provide different evidence|지도와 기록은 다른 근거를 줘요','Combine location evidence with accounts before explaining causes.|원인을 설명하기 전에 위치와 기록을 함께 봐요.','A map alone proves every person\'s motive.|지도만으로 모든 사람의 목적을 증명해요.']
 ];
-reg('geography4','Barriers and Corridors','장벽과 통로','SS4G2.a–b (partial)',(i,lv)=>card(geography,i,lv));
+reg('geography4','Barriers and Corridors','장벽과 통로','SS4G2.a–b (partial)',(i,lv)=>card(geography,i,lv,'geography4'));
 const sovereignty=[
  ['The Constitution begins with We the People.|헌법은 우리 국민이라는 말로 시작해요.','The opening names the people|첫머리는 국민을 말해요','The stated authority comes from the people.|문서가 말하는 권력의 근거는 국민이에요.','The opening names a hereditary king.|첫머리는 세습 왕을 말해요.'],
  ['Popular sovereignty means political authority rests with the people.|국민 주권은 정치 권력의 근거가 국민이라는 뜻이에요.','People are the source of authority|국민이 권력의 근거예요','Authority is not solely a ruler\'s inheritance.|권력은 통치자의 상속만으로 생기는 것이 아니에요.','Only birth gives governing power.|태어날 때의 신분만 권력을 줘요.'],
@@ -256,7 +257,7 @@ const sovereignty=[
  ['Elections allow voters to choose among candidates.|선거에서 유권자가 후보 중 대표를 선택해요.','Elections provide a selection process|선거는 선택의 과정이에요','A choice process needs actual access to participation.|선택 과정에는 실제 참여할 기회가 필요해요.','A candidate automatically inherits office.|후보가 자동으로 직책을 상속해요.'],
  ['People and representatives may disagree about a policy.|국민과 대표는 정책에 의견이 다를 수 있어요.','Representation can include disagreement|대표 정치에도 의견 차이가 있어요','One election does not prove identical views forever.|선거 한 번으로 생각이 영원히 같다는 것을 증명하지는 못해요.','Voting makes all opinions identical.|투표하면 모든 생각이 같아져요.']
 ];
-reg('sovereignty4','People and Representatives','국민과 대표','SS4CG1.b · SS4CG1.d',(i,lv)=>card(sovereignty,i,lv));
+reg('sovereignty4','People and Representatives','국민과 대표','SS4CG1.b · SS4CG1.d',(i,lv)=>card(sovereignty,i,lv,'sovereignty4'));
 const powers=[
  ['The Constitution grants Congress power to coin money.|헌법은 의회에 화폐를 만드는 권한을 줘요.','Coining money is a federal power|화폐를 만드는 일은 연방 권한이에요','An enumerated power is named in the Constitution.|헌법에 정한 권한은 문서에서 확인할 수 있어요.','Every city coins national money.|모든 도시가 국가 화폐를 만들어요.'],
  ['Congress has power to declare war.|의회에는 전쟁을 선포할 권한이 있어요.','Declaring war is a congressional power|전쟁 선포는 의회의 권한이에요','The Constitution separates this from presidential command.|헌법은 전쟁 선포와 대통령의 군 지휘를 구별해요.','Every state declares national war alone.|각 주가 국가의 전쟁을 혼자 선포해요.'],
@@ -269,7 +270,7 @@ const powers=[
  ['Federal and state governments may borrow money under their governing rules.|연방과 주는 정해진 규칙에 따라 돈을 빌릴 수 있어요.','Borrowing is not limited to one level|돈 빌리기는 한 수준에만 한정되지 않아요','Similar powers can be exercised under different rules.|비슷한 권한에도 수준별 규칙이 다를 수 있어요.','Every level borrows under identical rules.|모든 수준의 차입 규칙이 같아요.'],
  ['A road project can involve federal funding and state administration.|도로 사업에 연방 지원금과 주 운영이 함께 쓰일 수 있어요.','A project can involve shared roles|사업에서 역할을 나눠 맡을 수 있어요','Funding and administration are distinct contributions.|지원금과 운영은 서로 다른 역할이에요.','Receiving federal money removes the state role.|연방 돈을 받으면 주의 역할이 없어져요.']
 ];
-reg('federal4','Powers Across Governments','나누어 맡는 권한','SS4CG1.c',(i,lv)=>card(powers,i,lv));
+reg('federal4','Powers Across Governments','나누어 맡는 권한','SS4CG1.c',(i,lv)=>card(powers,i,lv,'federal4'));
 const checks=[
  ['Congress makes federal laws.|의회가 연방 법을 만들어요.','Congress: legislative branch|의회: 입법부','Lawmaking differs from carrying out a law.|법 만들기와 법 집행은 달라요.','Congress alone performs every government role.|의회 혼자 모든 정부 역할을 해요.'],
  ['The President heads the executive branch.|대통령은 행정부를 이끌어요.','President: executive branch|대통령: 행정부','Executing laws differs from judging cases.|법 집행과 사건 판단은 달라요.','The President is the entire judicial branch.|대통령이 사법부 전체예요.'],
@@ -282,7 +283,7 @@ const checks=[
  ['Separate branches have different jobs and checks on one another.|세 부는 다른 일을 맡고 서로 견제해요.','Separation and checks work together|권력 분립과 견제가 함께 작동해요','Different roles do not mean no interaction.|역할이 다르다고 서로 관련이 없는 것은 아니에요.','Each branch is completely isolated.|각 부는 완전히 고립돼 있어요.'],
  ['Federal and state governments have legislative, executive, and judicial roles; local structures vary.|연방과 주에는 입법과 행정, 사법 역할이 있어요. 지역 정부 구조는 달라요.','Government level matters|정부 수준을 구별해야 해요','Do not assume every local government has the identical structure.|모든 지역 정부 구조가 같다고 가정하면 안 돼요.','Every local government is an exact copy of Congress.|모든 지역 정부는 의회와 정확히 같아요.']
 ];
-reg('checks4','Checks and Balances','서로 견제하는 정부','SS4CG3.a',(i,lv)=>card(checks,i,lv));
+reg('checks4','Checks and Balances','서로 견제하는 정부','SS4CG3.a',(i,lv)=>card(checks,i,lv,'checks4'));
 const rights=[
  ['The First Amendment protects freedom of religion.|수정1조는 종교의 자유를 보호해요.','Religion is a First Amendment freedom|종교는 수정1조의 자유예요','Government power is limited regarding religion.|정부의 종교 관련 권한에는 한계가 있어요.','The amendment establishes one compulsory religion.|조항은 의무 종교 하나를 정해요.'],
  ['The First Amendment protects freedom of speech.|수정1조는 말할 자유를 보호해요.','Speech is protected|표현의 자유를 보호해요','The protection limits government restriction.|보호는 정부의 제한에 한계를 둬요.','Speech has no constitutional protection.|표현에는 헌법의 보호가 없어요.'],
@@ -295,7 +296,7 @@ const rights=[
  ['The Fifth Amendment includes due process protections.|수정5조에는 적법한 절차의 보호가 있어요.','Due process is in the Bill|적법한 절차는 권리장전에 있어요','The Bill includes protections beyond speech and religion.|권리장전은 표현과 종교 말고도 보호를 담고 있어요.','It concerns only ocean routes.|바닷길만 다뤄요.'],
  ['The Tenth Amendment addresses powers reserved to states or the people.|수정10조는 주나 국민에게 남겨 둔 권한을 다뤄요.','Reserved powers appear in the Bill|남겨 둔 권한이 권리장전에 있어요','The federal government is not granted every power.|연방 정부에 모든 권한을 주지는 않았어요.','No powers remain outside the federal government.|연방 밖에는 남는 권한이 없어요.']
 ];
-reg('billrights4','Rights and Government Limits','자유와 정부의 한계','SS4CG2 · SS4CG3.b',(i,lv)=>card(rights,i,lv));
+reg('billrights4','Rights and Government Limits','자유와 정부의 한계','SS4CG2 · SS4CG3.b',(i,lv)=>card(rights,i,lv,'billrights4'));
 reg('historicaleconomy4','Exchange and Choice','역사 속 교환과 선택','SS4E1.a–e',(i,lv)=>{
  const common=B('Fictional historical practice model; no actual prices or personal data.','가상의 역사 경제 연습 모형이에요. 실제 가격이나 개인정보가 아니에요.');
  if(i<2){const options=i===0?['repairing a cart|수레 고치기','making a pot|그릇 만들기']:['weaving cloth|천 짜기','growing vegetables|채소 기르기'],first=b(options[0]),second=b(options[1]);return q(B(lv===1?'Only time for one task. The first is chosen. What is the opportunity cost?':'The second is the next-best alternative. What does choosing the first mean?',lv===1?'한 가지 일만 할 시간이 있어요. 첫째를 택할 때 기회비용을 골라요.':'둘째가 다음으로 좋은 선택이에요. 첫째를 택하면 무엇을 포기할까요?'),B(`${common.en} Choices: ${first.en}, ${second.en}.`,`${common.ko} 선택: ${first.ko}, ${second.ko}.`),second,[first,b('Nothing is given up|아무것도 포기하지 않아요')]);}
@@ -316,8 +317,8 @@ const technology=[
  ['Cotton-processing gains were connected to expanded cotton production and slavery.|목화 처리 기술의 발전은 목화 생산과 노예제의 확대에도 연결됐어요.','Technology gains could accompany harm|기술 발전과 피해가 함께 나타날 수 있어요','More output does not prove fair labor conditions.|처리량이 늘어도 노동 조건이 공정하다는 증거는 아니에요.','Higher output guarantees everyone\'s freedom.|처리량 증가가 모두의 자유를 보장해요.'],
  ['A table measures output but gives no worker-rights information.|표에는 처리량만 있고 노동자 권리 정보는 없어요.','Output data omits rights evidence|처리량 자료에는 권리 근거가 빠져 있어요','Different questions require different evidence.|질문에 따라 다른 근거가 필요해요.','Output alone proves equal treatment.|처리량만으로 평등한 대우를 증명해요.']
 ];
-reg('productivity4','Technology and Production','기술과 생산','SS4E1.f',(i,lv)=>card(technology,i,lv));
-reg('budget4','Income, Spending and Saving','수입 지출 저축','SS4E2',(i,lv)=>{const income=20+i*3,spend=12+i,save=income-spend,extra=lv===2?3+i%4:0,m=lv===1?i%3:(i+1)%3;const asks=[B('How much can be saved after this spending?','이만큼 쓰고 얼마를 저축할 수 있을까요?'),B('What income supports the shown spending and saving?','표시한 지출과 저축을 합친 수입을 골라요.'),B('How much spending fits this income and savings goal?','수입과 저축 목표에 맞는 지출을 골라요.')];const a=[save-extra,income,spend+extra][m];return q(asks[m],B(`Fictional budget: ${m===1?'income ?':`income ${income}`}; ${m===2?'spending ?':`spending ${spend+extra}`}; ${m===0?'saving ?':`saving ${save-extra}`}. No borrowing.`,`가상 예산: ${m===1?'수입 ?':`수입 ${income}`}; ${m===2?'지출 ?':`지출 ${spend+extra}`}; ${m===0?'저축 ?':`저축 ${save-extra}`}. 돈을 빌리지 않아요.`),String(a),[String(a+1),String(a+5)]);});
+reg('productivity4','Technology and Production','기술과 생산','SS4E1.f',(i,lv)=>card(technology,i,lv,'productivity4'));
+reg('budget4','Income, Spending and Saving','수입 지출 저축','SS4E2',(i,lv)=>{if(lv===2){const income=30+3*i,spend=12+i,goal=10+i,extra=4+i%3,a=income-spend-extra-goal;return q(B('After regular spending and a new purchase, how much MORE than the savings goal remains?','원래 지출과 새 물건 값을 내고 남은 돈은 저축 목표보다 얼마 더 많을까요?'),B(`Fictional budget: income ${income}, regular spending ${spend}, new purchase ${extra}, savings goal ${goal}.`,`가상 예산: 수입 ${income}, 원래 지출 ${spend}, 새 물건 ${extra}, 저축 목표 ${goal}.`),String(a),[String(a+extra),String(a+goal)]);}const income=20+i*3,spend=12+i,save=income-spend,extra=lv===2?3+i%4:0,m=lv===1?i%3:(i+1)%3;const asks=[B('How much can be saved after this spending?','이만큼 쓰고 얼마를 저축할 수 있을까요?'),B('What income supports the shown spending and saving?','표시한 지출과 저축을 합친 수입을 골라요.'),B('How much spending fits this income and savings goal?','수입과 저축 목표에 맞는 지출을 골라요.')];const a=[save-extra,income,spend+extra][m];return q(asks[m],B(`Fictional budget: ${m===1?'income ?':`income ${income}`}; ${m===2?'spending ?':`spending ${spend+extra}`}; ${m===0?'saving ?':`saving ${save-extra}`}. No borrowing.`,`가상 예산: ${m===1?'수입 ?':`수입 ${income}`}; ${m===2?'지출 ?':`지출 ${spend+extra}`}; ${m===0?'저축 ?':`저축 ${save-extra}`}. 돈을 빌리지 않아요.`),String(a),[String(a+1),String(a+5)]);});
 })();
 
 

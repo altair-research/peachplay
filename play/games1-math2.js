@@ -45,7 +45,7 @@ G1({
       const [k, n] = pick(polys), corner = rnd(2) === 0;
       quiz(this, { ask: corner ? B('How many corners does it have?', '꼭짓점(뾰족한 곳)이 몇 개일까요?') : B('How many sides does it have?', '변이 몇 개일까요?'), show: sh1(k, rnd(4) * 45, 1), opts: numO(n, [n - 1, n + 1, n + 2], 3, 8), after: B(`A ${SH1[k].n.en} has ${n} sides and ${n} corners.`, `${SH1[k].n.ko} 모양은 변 ${n}개, 꼭짓점 ${n}개예요.`) });
     } else if (kind === 'define') {
-      const facts = { triangle: [B('3 sides and 3 corners', '변 3개, 꼭짓점 3개'), 'triangle'], square: [B('4 equal sides', '길이가 같은 변 4개'), 'square'], rectangle: [B('4 sides and 4 square corners', '변 4개와 직각 꼭짓점 4개'), 'rectangle'], hexagon: [B('6 sides', '변 6개'), 'hexagon'] }, k = pick(Object.keys(facts)), nondef = [B('It is red.', '빨간색이에요.'), B('It is big.', '커요.'), B('It is turned sideways.', '옆으로 돌렸어요.'), B('It is blue.', '파란색이에요.')], ds = shuffle(nondef).slice(0, 2);
+      const facts = { triangle: [B('3 sides and 3 corners', '변 3개, 꼭짓점 3개'), 'triangle'], square: [B('4 equal sides and 4 square corners', '같은 변 4개와 직각 4개'), 'square'], rectangle: [B('4 sides and 4 square corners', '변 4개와 직각 꼭짓점 4개'), 'rectangle'], hexagon: [B('6 sides', '변 6개'), 'hexagon'] }, k = pick(Object.keys(facts)), nondef = k === 'square' || k === 'rectangle' ? [B('3 sides and 3 corners','변 3개, 꼭짓점 3개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')] : [B('4 sides and 4 corners','변 4개, 꼭짓점 4개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')], ds = shuffle(nondef).slice(0, 2);
       quiz(this, { ask: B(`What makes a shape a ${SH1[k].n.en}?`, `무엇이 ${SH1[k].n.ko} 모양을 만들까요?`), show: sh1(k, 0, 1), opts: [facts[k][0], ...ds].map((v, i) => ({ html: `<span class="word">${L(v)}</span>`, ok: i === 0 })), cls: 'words', after: B('Sides and corners make the shape. Color and size do not.', '변과 꼭짓점이 모양을 정해요. 색과 크기는 상관없어요.') });
     } else if (kind === 'turn') {
       const k = pick(['triangle', 'rectangle', 'hexagon']);
@@ -253,8 +253,8 @@ G1({
       const idx = cats.map((_, i) => i).sort((a, b) => counts[a] - counts[b]), right = idx.map(i => cats[i][0]).join(' '), cand = [right, [...idx].reverse().map(i => cats[i][0]).join(' '), [idx[1], idx[0], idx[2], idx[3]].map(i => cats[i][0]).join(' ')];
       quiz(this, { ask: B('Which list goes from FEWEST to MOST?', '가장 적은 것부터 많은 순서로 놓은 것은?'), show, opts: [...new Set(cand)].map(v => ({ html: `<span class="word">${v}</span>`, ok: v === right })), cls: 'words', after: B(`${idx.map(i => counts[i]).join(' < ')}`, `${idx.map(i => counts[i]).join(' < ')}`) });
     } else {
-      const c = pick(cats), good = B(`How many ${c[1]} are there?`, `${c[2]}는 몇 개 있을까요?`), bad = [B('What color is the sky?', '하늘은 무슨 색일까요?'), B('Who is the tallest?', '누가 가장 키가 클까요?'), B('What time is it?', '지금 몇 시일까요?')];
-      quiz(this, { ask: B('Which question can this graph answer?', '이 그래프로 답할 수 있는 질문은?'), show, opts: [good, ...shuffle(bad).slice(0, 2)].map((q, i) => ({ html: `<span class="word">${L(q)}</span>`, ok: i === 0 })), cls: 'words', after: B('A graph answers questions about the things it shows.', '그래프로 답을 알 수 있는 질문은 그래프에 나온 것에 대한 질문이에요.') });
+      const c = pick(cats), good = B(`How many ${c[1]} are there?`, `${c[2]}는 몇 개 있을까요?`), bad = [B('How many fruits yesterday?', '어제 먹은 과일 수는?'), B('How many fruits tomorrow?', '내일 올 과일 수는?'), B('How much does a fruit cost?', '과일 한 개의 값은?')];
+      quiz(this, { ask: B('Which question can this graph answer?', '이 그래프로 답할 수 있는 질문은?'), show, opts: [good, ...shuffle(bad).slice(0, 2)].map((q, i) => ({ html: `<span class="word" style="font-size:clamp(15px,2.7dvh,20px);line-height:1.15">${L(q)}</span>`, ok: i === 0 })), cls: 'words', after: B('Use only the data shown.', '그림에 나온 자료로 답해요.') });
     }
   }
 });

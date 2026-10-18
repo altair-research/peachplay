@@ -25,6 +25,10 @@ registerGame({
   id: 'analogy', subject: 'gifted', icon: '🔗', title: B('Picture Analogies', '그림 짝 찾기'), sub: B('Same relationship', '같은 관계 찾기'),
   area: AREA_CH('Verbal reasoning'),
   play() {
+    if (lvl('analogy') === 2) {
+      const sh=shuffle(SHP4), co=shuffle(FIGC), a={shape:sh[0],color:co[0],size:1}, b={shape:sh[0],color:co[1],size:.6}, c={shape:sh[1],color:co[0],size:1}, answer={shape:sh[1],color:co[1],size:.6};
+      quiz(this,{ask:B('Apply BOTH changes from the first pair to the third picture.','첫 짝에서 달라진 두 속성을 셋째 그림에도 적용해요.'),show:figSvg(a)+' → '+figSvg(b)+'<br>'+figSvg(c)+' → ?',opts:[answer,{...answer,size:1},{...answer,color:co[0]}].map(f=>({html:figSvg(f,58),ok:f===answer})),cls:'shapes'});return;
+    }
     const g = pick(ANALOGY), [a, b] = shuffle(g.p).slice(0, 2), others2 = ANALOGY.filter(x => x !== g).flatMap(x => x.p.map(q => q[1])), ds = shuffle([...new Set([a[1], ...others2])]).filter(e => e !== b[1]).slice(0, lvl('analogy') === 2 ? 3 : 2);
     const cell = (e) => `<span class="ac">${e}</span>`;
     quiz(this, {
@@ -59,6 +63,11 @@ registerGame({
   id: 'classify', subject: 'gifted', icon: '🧩', title: B('Which One Belongs?', '어느 것이 어울릴까?'), sub: B('Same group', '같은 무리 찾기'),
   area: AREA_CH('Nonverbal reasoning'),
   play() {
+    if (lvl('classify') === 2) {
+      const shape=pick(SHP4), color=pick(FIGC), otherShape=pick(SHP4.filter(x=>x!==shape)), otherColor=pick(FIGC.filter(x=>x!==color));
+      const ans={shape,color,size:1}, candidates=[ans,{shape,color:otherColor,size:1},{shape:otherShape,color,size:1}];
+      quiz(this,{ask:B('Match BOTH the shape of the first and the color of the second.','첫 그림의 모양과 둘째 그림의 색을 모두 맞춰요.'),show:figSvg({shape,color:otherColor,size:1})+' + '+figSvg({shape:otherShape,color,size:1}),opts:candidates.map(f=>({html:figSvg(f,58),ok:f===ans})),cls:'shapes'});return;
+    }
     const rule = pick(lvl('classify') === 1 ? ['shape', 'color'] : ['shape', 'color', 'size']), sizes = [0.6, 1], rv = { shape: pick(SHP4), color: pick(FIGC), size: pick(sizes) };
     const mk = (keep) => { const f = { shape: pick(SHP4), color: pick(FIGC), size: pick(sizes) }; if (keep) f[rule] = rv[rule]; else { const o = rule === 'shape' ? SHP4.filter(s => s !== rv.shape) : rule === 'color' ? FIGC.filter(c => c !== rv.color) : sizes.filter(s => s !== rv.size); f[rule] = pick(o); } return f; };
     const fk = (f) => `${f.shape}${f.color}${f.size}`; let ex, ans, ds, guard = 0;
@@ -114,9 +123,9 @@ registerGame({
   area: AREA_CH('Quantitative reasoning'),
   play() {
     const lv = lvl('numanalogy'), rule = pick(lv === 1 ? [['+1', x => x + 1], ['+2', x => x + 2], ['double', x => x * 2]] : [['+3', x => x + 3], ['-2', x => x - 2], ['double', x => x * 2], ['+5', x => x + 5], ['-1', x => x - 1]]), f = rule[1];
-    const a = 2 + rnd(5); let b = 2 + rnd(6); if (b === a) b++; const ans = f(b); if (ans < 0) return this.play();
+    const a = 2 + rnd(5), c = a + 8; let b = 2 + rnd(6); if (b === a) b++; const ans = f(b); if (ans < 0) return this.play();
     quiz(this, {
-      ask: B('Find the rule. What number goes in the box?', '규칙을 찾아요. 빈칸에 들어갈 숫자는?'), show: `<div class="bigword eqline"><span>${a}</span> → <span>${f(a)}</span>,&nbsp; <span>${b}</span> → <span class="qbox">?</span></div>`,
+      ask: B('Find the rule. What number goes in the box?', '규칙을 찾아요. 빈칸에 들어갈 숫자는?'), show: `<div class="bigword eqline"><span>${a}</span> → <span>${f(a)}</span>, <span>${c}</span> → <span>${f(c)}</span>,<br><span>${b}</span> → <span class="qbox">?</span></div>`,
       opts: numOpts(ans, 0, 40), after: B(`${a} → ${f(a)} and ${b} → ${ans}.`, `${a} → ${f(a)}, ${b} → ${ans}.`)
     });
   }

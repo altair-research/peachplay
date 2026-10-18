@@ -25,6 +25,7 @@ reg('decimalcompare5','Compare Decimals','소수 비교','5.NR.4.2',(lv,i)=>{
 });
 reg('decimalround5','Round to Hundredths','소수 둘째 자리까지 반올림','5.NR.4.3',(lv,i)=>{
  const n=(lv===1?[123,246,371,482,514,638,752,869,903,107]:[995,1005,2345,2099,3004,8765,4505,9995,5000,7051])[i],lo=Math.floor(n/10)*10,hi=lo+10,ans=(Math.floor((n+5)/10)/100).toFixed(2);
+ if(lv===2){const rounded=Math.floor((n+5)/10);return q(B('Round the amount to hundredths, then add 0.05. Find the total.','소수 둘째 자리까지 반올림한 뒤 0.05를 더해요. 합을 구해요.'),eq((n/1000).toFixed(3)),((rounded+5)/100).toFixed(2),[(rounded/100).toFixed(2),((rounded+1)/100).toFixed(2)]);}
  return q(B('Round to the nearest hundredth. At halfway, choose the larger value.','소수 셋째 자리에서 반올림해 소수 둘째 자리까지 나타내요. 딱 중간이면 더 큰 수를 골라요.'),panel(`<div>${(n/1000).toFixed(3)}</div><svg viewBox="0 0 300 80" role="img" aria-label="${lo/1000} to ${hi/1000}"><path d="M30 35H270" stroke="currentColor"/><circle cx="${30+(n-lo)*24}" cy="35" r="6" fill="#bd5025"/><text x="30" y="65">${(lo/1000).toFixed(2)}</text><text x="240" y="65">${(hi/1000).toFixed(2)}</text></svg>`),ans,[(Math.floor((n+5)/10)/100+0.01).toFixed(2),(Math.floor((n+5)/10)/100-0.01).toFixed(2)],B(`${(n/1000).toFixed(3)} → ${ans}`,`${(n/1000).toFixed(3)} → ${ans}`));
 });
 reg('decimaladd5','Decimal Money Stories','소수 더하고 빼기','5.NR.4.4',(lv,i)=>{

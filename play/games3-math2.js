@@ -19,6 +19,7 @@ const strip=(d,n,y=15)=>Array.from({length:d},(_,i)=>`<rect x="${10+i*300/d}" y=
 const q=(ask,show,a,w,after)=>({ask,show,opts:opts(a,w),cls:'g3-geometry-options',after:after||B(String(a),String(a))});
 const fraction=n=>n%1===0?String(n):n%1===0.5?`${Math.floor(n)?Math.floor(n)+' ':''}1/2`:`${Math.floor(n)?Math.floor(n)+' ':''}${Math.round((n%1)*4)}/4`;
 reg('unitfraction3','Unit Fractions','단위분수 만들기','3.NR.4.1',lv=>{
+ if(lv===2){const d=pick([3,4,6,8]),used=1+rnd(d-1),left=d-used;return q(B(`One whole has ${d} equal pieces. ${used} are used. How many pieces of 1/${d} remain?`,`전체를 ${d}등분해서 ${used}조각을 썼어요. 1/${d}인 조각이 몇 개 남나요?`),svg(strip(d,used),65),left,[d,used+1].filter(x=>x!==left).concat([left+2,left+3]).slice(0,2));}
  const d=pick([2,3,4,6,8]),mode=rnd(3),circle=lv>1&&rnd(2);
  const model=circle?svg(Array.from({length:d},(_,i)=>{const a=i*2*Math.PI/d,b=(i+1)*2*Math.PI/d;return `<path d="M160 70 L${160+55*Math.sin(a)} ${70-55*Math.cos(a)} A55 55 0 ${d===2?0:0} 1 ${160+55*Math.sin(b)} ${70-55*Math.cos(b)} Z" fill="${i===0?'#236d98':'#fff'}" stroke="#17364a"/>`;}).join(''),140):svg(strip(d,1),65);
  if(mode===1)return q(B('How many equal parts make this whole?','전체를 똑같은 몇 조각으로 나누었나요?'),model,d,[d+1,d-1]);
@@ -30,12 +31,14 @@ reg('fractionline3','Fractions on a Line','수직선 위의 분수','3.NR.4.1 ·
  return q(B('What fraction marks the dot?','점이 나타내는 분수를 골라요.'),svg(`<path d="M20 55 H300" stroke="currentColor"/>${Array.from({length:d*whole+1},(_,i)=>`<path d="M${20+i*step} 47 V63" stroke="currentColor"/>${i%d===0?text(20+i*step,88,i/d):''}`).join('')}<circle cx="${20+n*step}" cy="55" r="7" fill="#b84120"/>`,100),`${n}/${d}`,[`${n+1}/${d}`,`${n-1}/${d}`],B(`${n} steps of 1/${d}`,`1/${d}씩 ${n}칸 이동해요.`));
 });
 reg('equivalent3','Equal Fractions','크기가 같은 분수','3.NR.4.4',lv=>{
+ if(lv===2){const d=pick([2,3,4]),n=1+rnd(d-1),factor=pick([2,3]),D=d*factor,N=n*factor;return q(B(`Each of ${d} equal parts is split into ${factor}. Which fraction still equals ${n}/${d}?`,`${d}등분한 각 조각을 다시 ${factor}등분해요. ${n}/${d}와 같은 크기는?`),svg(strip(d,n),65),`${N}/${D}`,[`${n}/${D}`,`${N-1}/${D}`].filter((x,i,a)=>a.indexOf(x)===i).concat([`${N+1}/${D}`]).slice(0,2));}
  const pairs=lv===1?[[2,4],[3,6],[2,6],[2,8],[4,8]]:[[2,4],[2,6],[2,8],[3,6],[4,8]];
  let [d,D]=pick(pairs),n=1+rnd(d-1),N=n*D/d;
  if(rnd(2)){[d,D]=[D,d];[n,N]=[N,n];}
  return q(B(`Same-size wholes. Which fraction equals ${n}/${d}?`,`전체 크기가 같아요. 크기가 같은 분수를 골라요: ${n}/${d} = ?`),svg(strip(d,n,12)+strip(D,N,65),110),`${N}/${D}`,[`${N+1}/${D}`,`${N-1}/${D}`],B(`${n}/${d} = ${N}/${D}`,`${n}/${d} = ${N}/${D}`));
 });
 reg('fractioncompare3','Compare Unit Fractions','단위분수 비교','3.NR.4.2',lv=>{
+ if(lv===2){const ds=shuffle([2,3,4,6,8]).slice(0,3),sorted=ds.slice().sort((a,b)=>b-a),right=sorted.map(d=>`1/${d}`).join(' < ');return q(B('Same-size wholes. Order these pieces from smallest to largest.','전체 크기가 같아요. 조각을 작은 것부터 차례로 놓아요.'),panel(ds.map(d=>`1/${d}`).join(' · ')),right,[sorted.slice().reverse().map(d=>`1/${d}`).join(' < '),[sorted[1],sorted[0],sorted[2]].map(d=>`1/${d}`).join(' < ')]);}
  const ds=shuffle([2,3,4,6,8]),a=ds[0],b=ds[1],large=rnd(2)===0,right=large?Math.min(a,b):Math.max(a,b);
  return q(large?B('Same-size wholes. Which fraction is greater?','전체 크기가 같아요. 더 큰 분수는?'):B('Same-size wholes. Which fraction is smaller?','전체 크기가 같아요. 더 작은 분수는?'),svg(strip(a,1,12)+text(290,60,`1/${a}`)+strip(b,1,70)+text(290,119,`1/${b}`),125),`1/${right}`,[`1/${right===a?b:a}`],B('With the same whole, more equal parts make each part smaller.','같은 전체를 더 많이 등분하면 한 조각은 더 작아져요.'));
 });
@@ -50,10 +53,12 @@ reg('clock3','Minute Clock','몇 시 몇 분 읽기','3.MDR.5.2',lv=>{
  return q(round?B('About what time, to the nearest 15 minutes?','가장 가까운 15분 단위(정각, 15분, 30분, 45분)로 어림하면 몇 시 몇 분일까요?'):B('Read the clock to the minute.','시계를 보고 몇 시 몇 분인지 읽어요.'),clock(h,m),time(answer),[time(answer+(round?15:1)),time(answer-(round?15:1))],B(time(answer),time(answer)));
 });
 reg('elapsed3','Time Passed','걸린 시간 구하기','3.MDR.5.3',lv=>{
+ if(lv===2){const start=480+rnd(8)*15,ride=15*(1+rnd(4)),wait=5+rnd(5),end=start+ride+wait;return q(B(`Both times are in the morning. The trip includes ${wait} minutes waiting. How many minutes were spent riding?`,`둘 다 오전이에요. 그중 ${wait}분은 기다렸어요. 타고 간 시간은 몇 분인가요?`),panel(`${time(start)} → ${time(end)}`),ride,[ride+wait,ride+2*wait]);}
  const step=lv===1?30:15,start=8*60+rnd(4)*step,duration=(1+rnd(4))*step,end=start+duration;
  return q(B('Both times are in the morning. How many minutes passed?','둘 다 오전이에요. 몇 분이 지났을까요?'),panel(`<div class="g3-time">${time(start)} → ${time(end)}</div>`),duration,[duration+step,Math.max(0,duration-step)],B(`${duration} minutes`,`${duration}분`));
 });
 reg('ruler3','Inch Ruler','인치 눈금자','3.MDR.5.4',lv=>{
+ if(lv===2){const len=3+rnd(6),start=pick([1,2,3,4,5].filter(x=>x!==len-1)),end=start+len,cut=1;return q(B(`A ribbon runs from ${start}/4 to ${end}/4 inch. Cut off 1/4 inch. How long remains?`,`리본이 자의 ${start}/4인치 눈금부터 ${end}/4인치 눈금까지 놓여 있어요. 1/4인치를 자르면 얼마가 남나요?`),panel(`${start}/4 → ${end}/4` ),fraction((end-start-cut)/4),[fraction((end-start)/4),fraction(end/4)]);}
  const unit=lv===1?2:4,start=rnd(lv===1?3:5),max=lv===1?10:16,len=1+rnd(8),end=start+len,scale=280/max;
  return q(B('How long is the orange bar in inches? Drawing is not actual size.','주황 막대는 몇 인치일까요? 그림은 실제 크기가 아니에요.'),svg(`<rect x="${20+start*scale}" y="14" width="${len*scale}" height="14" fill="#ba4a22"/><path d="M20 50 H300" stroke="currentColor"/>${Array.from({length:max+1},(_,i)=>`<path d="M${20+i*scale} 50 V${i%unit===0?72:(unit===4&&i%2===0?67:62)}" stroke="currentColor"/>${i%unit===0?text(20+i*scale,94,i/unit):''}`).join('')}`,105),fraction((end-start)/unit),[fraction((len+1)/unit),fraction((len-1)/unit)],B(`${fraction(len/unit)} inches`,`${fraction(len/unit)}인치`));
 });
@@ -83,7 +88,7 @@ reg('polygon3','Shape Properties','도형의 성질 탐정','3.GSR.6.1–6.3',lv
  if(mode===1)return q(B('How many PAIRS of parallel sides?','평행한 변은 몇 쌍인가요?'),show,s.parallel,[s.parallel===0?1:0,s.parallel===2?1:2]);
  if(mode===3)return q(B('How many pairs of neighboring sides meet at a right angle?','이웃한 두 변이 수직으로 만나는 곳은 몇 군데인가요?'),show,s.angles,[s.angles===0?1:0,s.angles===4?2:4]);
  if(mode===2)return q(lv===1?B('How many sides are in this polygon?','이 다각형의 변은 몇 개인가요?'):B('How many lines of symmetry does this shape have?','이 도형의 대칭축은 몇 개인가요?'),show,lv===1?s.sides:s.symmetry,lv===1?[s.sides+1,s.sides-1]:[s.symmetry+1,s.symmetry===0?2:0]);
- return {ask:B('Choose the true description.','맞는 설명을 골라요.'),show,opts:opts(s.symmetry===4?B('A square AND a rectangle','정사각형이면서 직사각형'):s.name,[B('A circle','원'),B('A pentagon','오각형')]),cls:'words g3-geometry-options',after:s.name};
+ return {ask:B('Choose the true description.','맞는 설명을 골라요.'),show,opts:opts(s.symmetry===4?B('A square AND a rectangle','정사각형이면서 직사각형'):s.name,shapes.filter(x=>x!==s).slice(0,2).map(x=>x.symmetry===4?B('A square AND a rectangle','정사각형이면서 직사각형'):x.name)),cls:'words g3-geometry-options',after:s.name};
 });
 const tiles=(w,h,cut=0)=>svg(Array.from({length:w*h},(_,i)=>{const x=i%w,y=Math.floor(i/w);return cut&&x===w-1&&y<h-1?'':`<rect x="${20+x*28}" y="${10+y*28}" width="28" height="28" fill="#d4eafa" stroke="#234"/>`;}).join(''),h*28+20);
 reg('area3','Area Tiles','넓이 타일','3.GSR.7.1–7.3 · 3.GSR.8.2',lv=>{
