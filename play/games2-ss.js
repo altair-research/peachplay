@@ -199,7 +199,7 @@ G2SS({
       return;
     }
     const a = pick(EVENTS), b = pick(EVENTS.filter(x => x !== a)), early = a.y < b.y ? a : b, late = early === a ? b : a, askFirst = kind !== 'last';
-    quiz(this, { ask: askFirst ? B('Which event happened FIRST (earlier)?', '어느 일이 먼저(더 일찍) 일어났을까요?') : B('Which event happened LAST (later)?', '어느 일이 나중에(더 늦게) 일어났을까요?'), opts: [a, b].map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === (askFirst ? early : late) })), cls: 'words sents', after: B(`${early.y}: ${early.n.en}, then ${late.y}: ${late.n.en}.`, `${early.y}년: ${early.n.ko} → ${late.y}년: ${late.n.ko}`) });
+    quiz(this, { ask: askFirst ? B('Which event happened FIRST (earlier)?', '어느 일이 먼저(더 일찍) 일어났을까요?') : B('Which event happened LAST (later)?', '어느 일이 나중에(더 늦게) 일어났을까요?'), show:`<div class="storytext">${L(a.n)}<br>${L(b.n)}</div>`, opts: [a, b].map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === (askFirst ? early : late) })), cls: 'words sents', after: B(`${early.y}: ${early.n.en}, then ${late.y}: ${late.n.en}.`, `${early.y}년: ${early.n.ko} → ${late.y}년: ${late.n.ko}`) });
   }
 });
 (() => {
@@ -270,4 +270,19 @@ for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.p
  const local=i%2===0;
  quiz(this,make('region-compare',B('Compare the historical place with the practice community.','역사 속 장소와 가상 공동체를 비교해요.'),B(`${r[0].en} Practice community today: ${local?'a garden uses soil and water.':'trucks use roads for trade.'} Families live in many different ways.`,`${r[0].ko} 오늘날 가상 공동체: ${local?'텃밭에서 흙과 물을 이용해요.':'트럭이 도로로 물건을 운반해요.'} 가족마다 생활 모습은 다양해요.`),local?B('Both can use natural resources','두 곳 모두 자연 자원을 이용할 수 있어요'):B('People use different routes and tools','서로 다른 길과 도구를 이용해요'),[B('Every family must live the same way','모든 가족은 똑같이 살아야 해요'),B('Native peoples exist only in the past','원주민은 과거에만 있었어요')]));
  };}
+})();
+
+// 65: existing government roles and symbols, reversed or compared.
+(() => {
+ const scopes=[B('A city or town','도시나 마을'),B('A state','주'),B('The United States','미국 전체')];
+ const leaders=GOV.slice(0,3).map(x=>x.r),gov=GAMES.find(g=>g.id==='gov2'),old=gov.play;
+ gov.play=function(){if(rnd(2))return old.call(this);const i=rnd(4),two=lvl(this.id)===2;
+ if(two){const a=rnd(3),b=(a+1+rnd(2))%3,c=3-a-b,pair=(x,y)=>B(`${leaders[x].en} → ${leaders[y].en}`,`${leaders[x].ko} → ${leaders[y].ko}`);
+ quiz(this,{ask:B('Which pair names the leaders in order?','차례로 맞는 지도자 짝은?'),show:`<div class="storytext">1: ${L(scopes[a])}<br>2: ${L(scopes[b])}</div>`,opts:sw(pair(a,b),[pair(b,a),pair(a,c)]),cls:'words'});return;}
+ const ask=i<3?B(`Which area does this leader lead? ${leaders[i].en}`,`${leaders[i].ko}: 어느 곳을 이끄나요?`):B('Why do adults vote in a leadership election?','어른들이 지도자 선거에서 투표하는 까닭은?');
+ quiz(this,{ask,opts:i<3?sw(scopes[i],scopes.filter((_,j)=>j!==i)):sw(B('To choose a leader','지도자를 고르려고'),[B('To pay a tax','세금을 내려고'),B('To borrow a book','책을 빌리려고')]),cls:'words'});};
+ const symbols=GAMES.find(g=>g.id==='symbols2'),original=symbols.play;
+ symbols.play=function(){if(lvl(this.id)===1){if(rnd(2))return original.call(this);const s=pick(SYMS.slice(0,8));quiz(this,{ask:B(`Which role belongs to ${s.n.en}?`,`${s.n.ko}: 어떤 상징일까요?`),opts:sw(s.s,others(SYMS,s,2).map(x=>x.s)),cls:'words sents'});return;}
+ const [a,b,c]=shuffle(SYMS),pair=(x,y)=>B(`${x.n.en} → ${y.n.en}`,`${x.n.ko} → ${y.n.ko}`);
+ quiz(this,{ask:B('Which pair matches these roles in order?','차례로 역할에 맞는 상징의 짝은?'),show:`<div class="storytext" style="font-size:clamp(16px,2.8dvh,21px)">1: ${L(a.s)}<br>2: ${L(b.s)}</div>`,opts:sw(pair(a,b),[pair(b,a),pair(a,c)]),cls:'words sents'});};
 })();

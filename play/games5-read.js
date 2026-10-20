@@ -11,7 +11,29 @@ const rows=s=>{const out=[];let lines=[];for(const line of s.trim().split('\n'))
 const bank=(id,en,ko,code,ask,sets,subject)=>reg(id,en,ko,code,(lv,i)=>{const r=sets[lv-1][i];let prompt=ask[lv-1];if(id==='context5'){const word=(lv===1?['fragile','narrow','abundant','vacant','transparent','damp','sturdy','rapid','enormous','optional']:['reluctant','depleted','diverged','somber','intermittently','ambiguous','improvised','conserved','muted','temporary'])[i];prompt=B(`What does ${word} mean here?`,`여기서 ${word}의 뜻을 골라요.`);}let wrong=r.slice(2,4);
 if(id==='opinion5'){
  prompt=lv===1?B('Which reason explains how the proposal helps its intended task?','제안한 행동이 하려는 일에 어떻게 도움이 되는지 설명한 까닭을 골라요.'):ask[lv-1];
- wrong=lv===1?[r[0]+' The announcement could use colorful letters.',r[0]+' The announcement could have a short heading.']:[r[0].split('.')[0]+'. The announcement used large print.',r[0].split('.')[0]+'. The poster had an attractive border.'];
+ wrong=(lv===1?[
+ ['Swapping books creates new copies.','Swapping books pays their authors.'],
+ ['Shade makes daylight last longer.','Shade keeps rain off the entire yard.'],
+ ['Labels increase the bins’ capacity.','Labels reduce the number of supplies needed.'],
+ ['Repairing seating makes the path wider.','Repairing seating adds a new meeting room.'],
+ ['Quiet time changes the book’s vocabulary.','Quiet time replaces help with unfamiliar words.'],
+ ['A garden makes plants grow without care.','A garden shows growth without measurements.'],
+ ['Sharing jobs reduces the size of each room.','Sharing jobs removes the need to coordinate.'],
+ ['A loan log shows which tools are broken.','A loan log shows which tools are best made.'],
+ ['A walking break finishes the lesson sooner.','A walking break replaces the need for sleep.'],
+ ['A schedule shows who actually attended.','A schedule shows what members learned.']
+ ]:[
+ ['Use the label color as evidence.','Use the number of bins as evidence.'],
+ ['The exchange shows higher reading scores.','The exchange shows lower book prices.'],
+ ['The numbers show six spare seats.','The numbers show eighteen spare seats.'],
+ ['Cite the price of the replacement tools.','Cite the color of the repaired tools.'],
+ ['The queue shows that the event was unpopular.','The queue shows that the room was too cold.'],
+ ['The missed turn supports longer opening hours.','The missed turn supports cheaper tickets.'],
+ ['Shared jobs mean less space needs cleaning.','Shared jobs mean less cleaning equipment exists.'],
+ ['Quiet time replaces reading practice.','Quiet time is a form of physical exercise.'],
+ ['A log shows that borrowed tools were repaired.','A log shows how well the tools perform.'],
+ ['Visitors wore hats on cloudy days.','Visitors used a sunny bench on cool days.']
+ ])[i];
 }
 if(id==='figurative5')wrong=(lv===1?[
  ['Her smile hid disappointment.','Her smile showed uncertainty.'],['The books were neatly separated in small groups.','Only a few books were available.'],['He made the group more uncomfortable.','He changed the topic to winter.'],['The wait felt surprisingly short.','The bus ride felt long.'],['The wind made a harsh booming sound.','The grass made no movement or sound.'],['They looked thin and flat.','They looked sharp and jagged.'],['People worked slowly and quietly.','People had stopped working.'],['It felt difficult.','It felt unfinished.'],['It felt light to carry.','It felt empty.'],['It was easy to open.','It opened smoothly after a push.']
@@ -19,7 +41,7 @@ if(id==='figurative5')wrong=(lv===1?[
  ['It emphasizes rough choppy motion.','It emphasizes the pond’s depth.'],['It signals a successful ending.','It suggests a calm uneventful moment.'],['It makes the motion seem slow and stiff.','It stresses the weight of the leaves.'],['It highlights separation.','It highlights confusion.'],['It suggests conspicuous noisy movement.','It suggests hesitation before entering.'],['It stresses the difficulty of climbing.','It stresses a small tidy workload.'],['It suggests activity ending.','It suggests activity continuing unchanged.'],['It stresses a gentle uneventful response.','It stresses a physical trip to the coast.'],['It means speaking more angrily.','It means avoiding the disagreement.'],['It highlights a dark unlit space.','It highlights many equally bright lamps.']
  ])[i];
 if(id==='source5'&&lv===1)wrong=[
- ['Monday’s checkout log','Tuesday’s book-return log'],['a trail maintenance log without directions','an old trail map from before the entrance moved'],['a cup capacity table','a water-temperature table'],['last year’s club schedule','the dated club attendance list'],['the bench purchase log','the bench cleaning log'],['our tool checkout list','our model measurement table'],['last month’s gate log','the gate construction plan'],['the survey question sheet','the survey invitation list'],['a bridge map from before the closure','a road-distance table without closure details'],['the article publication date','the article publisher’s address']
+ ['Monday’s checkout log','Tuesday’s book-return log'],['the trail maintenance log','the outdated trail map'],['a cup capacity table','a water-temperature table'],['last year’s club schedule','the dated club attendance list'],['the bench purchase log','the bench cleaning log'],['our tool checkout list','our model measurement table'],['last month’s gate log','the gate construction plan'],['the survey question sheet','the survey invitation list'],['a bridge map from before the closure','a road-distance table without closure details'],['the article publication date','the article publisher’s address']
  ][i];
 return item(prompt,r[0],r[1],wrong);},subject);
 reg('decode5','Decode Word Parts','철자와 뜻을 가진 낱말 조각','5.F.P.4.a–c',(lv,i)=>{
@@ -29,15 +51,15 @@ const r=(lv===1?rows(`biography: bio = life; graph = write|a written account of 
 autograph: auto = self; graph = write|a person’s own signature|a picture of mountains|a listening device
 photograph: photo = light; graph = record|an image recorded using light|a sound carried by a wire|a report about water
 telephone: tele = far; phon = sound|a device carrying sound over distance|a tool measuring weight|a book about plants
-television: tele = far; vis = see|a system sending moving pictures over distance|a paper map|a tool carrying water
+television: tele = far; vis = see|a system sending distant images|a paper map|a tool carrying water
 portable: port = carry; able = can be|able to be carried|unable to move|having many pages
 transport: trans = across; port = carry|carry between places|look very closely|write about a life
 inspect: spect = look|look at closely|carry far away|make a loud sound
 spectator: spect = look|someone watching an event|someone making a map|someone measuring heat
-biology: bio = life; logy = study|the study of living things|the study of numbers|a written signature`):rows(`I wrote an autobiography about my childhood.|a book about the writer’s own life|a book about someone else only|a weather report
-In geography, we studied rivers and land.|the study of places and Earth’s features|the study of sounds|the study of spelling only
+biology: bio = life; logy = study|the study of living things|the study of numbers|a written signature`):rows(`I wrote an autobiography about my childhood.|a book about the writer’s own life|a book about another person|a weather report
+In geography, we studied rivers and land.|the study of places and Earth’s features|the study of sounds|the study of spelling
 The telegraph sent a message to a far town.|a system sending messages over distance|a plant-growing device|a water-freezing device
-Hydropower uses moving water. Hydro means water.|power from water|power from sunlight only|power from wind only
+Hydropower uses moving water. Hydro means water.|power from water|power from sunlight|power from wind
 Hydration replaced the plant’s lost water.|supplying water|removing water|adding light
 The machine can dehydrate fruit.|remove water|supply water|make sound louder
 The microphone changed voices into electrical signals.|a device that picks up sound|a land-measuring tool|a carrying device
@@ -58,29 +80,29 @@ Without a sound, the cat slipped away.|Without a sound / the cat slipped away.|W
 Stop! The bridge is unsafe.|Stress the urgent warning.|Use a sleepy tone.|Read Stop as a question.
 I wanted to go, but stayed to help.|Pause at the contrast after go.|Stop between wanted and to.|Leave out but.
 We need paper, glue, and string.|Pause between list items.|Join paperglue as one word.|Skip the last item.
-The blue boat—not the red one—won.|Treat the middle phrase as an aside.|Say both boats won.|Omit not.
+The blue boat—not the red one—won.|Treat the middle phrase as an aside.|Read the aside as saying both boats won.|Read the main statement without the word not.
 If it snows, the trip will change.|Keep condition and result together.|Treat change as a question.|Read only the condition.
 “Come inside,” he said softly.|Use a gentle voice.|Shout throughout.|Read comma as a word.
-I read desert as dessert, then noticed “dry sand.”|Reread using the dry-land meaning.|Keep dessert.|Skip the sentence.
+I read desert as dessert, then noticed “dry sand.”|Reread using the dry-land meaning.|Keep reading it as a sweet course.|Skip the sentence containing the difficult word.
 The box was heavy; nevertheless, she lifted it.|Mark the contrast.|Read she could not lift it.|Ignore the second clause.
 First check the latch; next, open the gate.|Read in the given order.|Reverse the actions.|Read next before first.`)]);
 bank('context5','Context Clues','문맥 속 뜻','5.L.V.3.a',[B('Which meaning fits the key word?','문맥 속 낱말의 뜻을 골라요.'),B('Infer the meaning from cause or contrast.','원인이나 서로 다른 점을 보여 주는 단서로 뜻을 짐작해요.')],[rows(`The fragile glass broke with a small tap.|easily broken|very flexible|extremely loud
-The narrow path fit only one walker.|not wide|not safe to touch|covered with ice
+The narrow path fit only one walker.|not wide|unsafe|icy
 The abundant crop filled many baskets.|more than enough|almost absent|fully rotten
 The room was vacant; nobody occupied it.|empty|noisy|crowded
 The transparent lid let us see inside.|see-through|heavy|unbreakable
-The damp cloth still held a little water.|slightly wet|completely dry|very smooth
+The damp cloth still held a little water.|slightly wet|slightly damp|very smooth
 The sturdy shelf held heavy books.|strong and solid|easily bent|brightly colored
 The rapid stream moved very quickly.|fast|shallow|silent
 The enormous tent covered the yard.|very large|nearly invisible|rather tiny
 The task was optional; students could choose it.|not required|forbidden|already finished`),rows(`Maya was reluctant to perform. She lingered while others volunteered.|not eager|unable to hear|ready to rush
 The battery was depleted, so the lamp went dark.|used up|made larger|connected safely
-The trail diverged: one path went up, one down.|split in different directions|ended at once|became one path
+The trail diverged: one path went up, one down.|split into separate paths|ended at once|became one path
 Unlike the cheerful note, the reply was somber.|serious and sad|bright and playful|quickly written
 The radio crackled intermittently, with silent gaps.|from time to time|without stopping|at maximum volume
 The instructions were ambiguous: each reader built a different shape.|open to more than one meaning|very brief only|written in red
-Ari improvised a paddle from a board when his broke.|made a solution from available materials|copied a complete plan|refused to act
-The town conserved water by reducing waste.|used carefully to avoid waste|gave away all|turned into ice
+Ari improvised a paddle from a board when his broke.|made a makeshift solution|copied a complete plan|refused to act
+The town conserved water by reducing waste.|used without waste|gave away freely|froze solid
 The bird’s muted colors blended into gray branches.|soft and not bright|extremely shiny|changing constantly
 The repair was temporary; a permanent bridge would follow.|lasting a limited time|lasting forever|finished too late`)]);
 bank('analogy5','Word Relationships','낱말 관계','5.L.V.3.b',[B('Complete the same relationship.','같은 낱말 관계가 되도록 채워요.'),B('Use the relationship or context.','낱말 관계나 문맥으로 골라요.')],[rows(`page : book :: petal : __|flower|leaf|seed
@@ -122,7 +144,7 @@ A speaker talks unclearly in a low voice.|mumbled|declared|screamed
 The room feels a little chilly; a light sweater is enough.|cool|freezing|scorching
 Someone moves quickly, but not necessarily at top speed.|hurried|sprinted|sauntered`)]);
 reg('reference5','Read Dictionary Entries','사전 자료 읽기','5.L.V.3.d',(lv,i)=>{const r=(lv===1?rows(`harbor: sheltered water for boats|a safe place for boats|a steep mountain|a racing track
-trail: a path for travel|a route people follow|a cutting tool|a room
+trail: a path for travel|a travel route|a cutting tool|a room
 canopy: an overhead covering|a covering above|a tunnel below|a shelf below
 observe: watch carefully|watch with attention|forget a detail|give an order
 repair: fix damage|make something work again|break it deliberately|carry it away
@@ -180,7 +202,7 @@ Match an intensive pronoun to he.|He himself built it.|He themselves built it.|H
 A short story title needs paired quotation marks.|We read “The Quiet Gate.”|We read “The Quiet Gate.|We read The Quiet Gate.”`)],'write');
 bank('purpose5','Audience and Purpose','독자와 목적','5.T.C.1',[B('What is the main purpose?','주된 목적을 골라요.'),B('Match the audience and purpose.','독자와 목적에 맞는 표현을 골라요.')],[rows(`Join our garden club on Friday!|invite participation|explain a machine|tell an adventure
 Turn the handle, then lift the lid.|give instructions|describe a character|argue about taxes
-The library closes Saturday at noon.|announce useful information|tell a joke|sell a bicycle
+The library closes Saturday at noon.|announce news|tell a joke|sell a bicycle
 Add a reading corner; quiet seats help us focus.|persuade with a reason|describe a storm|list bus stops
 Roots absorb water; leaves use light.|explain a process|invite a guest|tell a mystery
 The dragon hid a bell under its wing.|entertain with a story|report real measurements|give safety rules
@@ -202,19 +224,19 @@ Nora checked her bag.|Nora and her show third person|The narrator uses “I”|T
 We built our bridge together.|We and our show first person|she shows first person|Nora shows first person
 He noticed the missing key.|He shows third person|I shows third person|our shows third person
 My hands shook as I stepped onstage.|My and I show first person|they show first person|he shows first person
-The children watched their teacher draw.|The narrator describes others in third person.|The narrator uses “I”.|The narrator uses “we”.
+The children watched their teacher draw.|The narrator describes others in third person.|The narrator describes personal experiences using I.|The narrator describes shared experiences using we.
 I knew why I hid the note.|The narrator reports their own thoughts.|An outside observer reports no thoughts.|The author must be this character.
-Sam wondered if he could fix it.|An outside narrator tells Sam’s thought.|Sam uses I to narrate.|No thought is shown.
+Sam wondered if he could fix it.|An outside narrator tells Sam’s thought.|Sam tells his own thoughts using I.|An outside narrator reports actions without thoughts.
 We could not see around the bend.|The narrators’ knowledge is limited.|They know every future event.|No narrator speaks.
-Rina smiled, but Lee did not know why.|Lee’s knowledge is limited.|Lee knows Rina’s reason.|Everyone knows everything.`),rows(`A: I loved the crowd. B: The crowd was too loud; I wanted a quiet room.|They react differently to the crowd.|Both dislike it.|Neither mentions it.
+Rina smiled, but Lee did not know why.|Lee’s knowledge is limited.|Lee knows Rina’s reason.|Everyone knows everything.`),rows(`A: I loved the crowd. B: The crowd was too loud; I wanted a quiet room.|They react differently to the crowd.|Both react with dislike toward the crowd.|Neither expresses feelings about the crowd.
 A: The path saved my walk. B: It removed part of our garden.|One values convenience; one notes a loss.|Both describe only benefits.|Both oppose walking.
 A: It felt easy after practice. B: I was new and felt lost.|Experience affects their reactions.|Both have equal practice.|Rules must differ.
 A: I heard music backstage. B: From my seat I watched lights.|Different locations reveal different details.|Both stand backstage.|Neither observes anything.
 A: I planted seeds. B: I later saw sprouts.|One plants; one observes a later result.|Both planted together.|Both saw no plants.
 A: I liked leading. B: I wanted a turn too.|Their roles and wishes differ.|Both already led.|Neither wants to lead.
-A: Noise kept me awake. B: I liked the celebration.|The same event affects them differently.|Both slept happily.|The event was silent.
+A: Noise kept me awake. B: I liked the celebration.|The same event affects them differently.|Both slept peacefully during the event.|Neither was disturbed by noise during the event.
 A: I thought it was stuck. B: I knew the latch location.|They have different information.|Both know the latch.|Neither sees a door.
-A: I feared the storm. B: I studied it from shelter.|One focuses on fear; one on observation.|Shelter guarantees no risk.|Both caused the storm.
+A: I feared the storm. B: I studied it from shelter.|One focuses on fear; one on observation.|Both describe studying weather.|Both caused the storm.
 A: I lost a sketch. B: I found one with no owner’s name.|Each knows part of the situation.|Both know everything.|Neither has a sketch.`)]);
 bank('character5','Character and Conflict','인물과 갈등','5.T.T.1.a–b',[B('Which action addresses the problem?','문제를 해결하려는 행동을 골라요.'),B('What role does this event or setting play?','사건이나 배경이 하는 역할을 골라요.')],[rows(`Nora lost a sketch. She retraced her steps.|retracing her steps|losing the sketch|forgetting its color
 Lee’s bridge fell. He strengthened its supports.|strengthening supports|watching it fall|painting the floor
@@ -236,24 +258,24 @@ A broken tool made Kai improvise a safe replacement.|The break tests resourceful
 A visitor taught Rina a new seed-sorting method.|The encounter adds knowledge.|Rina already knew it.|The visitor takes every seed.
 Dee returned a notebook and gained its owner’s trust.|Her action builds a relationship.|Trust predates their meeting.|Returning destroys the friendship.`)]);
 bank('theme5','Change and Theme','성장과 주제','5.T.T.1.c–d',[B('Choose a theme supported by the story.','이야기가 뒷받침하는 주제를 골라요.'),B('What do both stories support?','두 이야기가 함께 뒷받침하는 생각을 골라요.')],[rows(`Kai’s kite failed twice. He adjusted it until it flew.|Persistence can support learning.|Success needs no effort.|Mistakes must be hidden.
-Maya and Jo could not lift a box alone. Together they moved it.|Cooperation can solve a problem.|Help is always useless.|Only one deserves credit.
-Lee forgot a job, admitted it, then repaired the damage.|Responsibility can rebuild trust.|Promises never matter.|Blame fixes everything.
-Rina returned found money when nobody was watching.|Honesty matters without an audience.|Secrecy always earns rewards.|Finding changes ownership.
+Maya and Jo could not lift a box alone. Together they moved it.|Cooperation can solve a problem.|Working independently deserves more credit than helping.|The person who started should get the credit.
+Lee forgot a job, admitted it, then repaired the damage.|Responsibility can rebuild trust.|An apology is a substitute for keeping a commitment.|Finding someone to blame is better than accepting responsibility.
+Rina returned found money when nobody was watching.|Honesty matters without an audience.|Keeping a found item is acceptable when no one sees.|Finding changes ownership.
 Sam invited an isolated newcomer to join.|Small acts can create belonging.|New people should be ignored.|Friends need identical backgrounds.
 Nora prepared a speech and spoke while still nervous.|Courage can include fear.|Courage means no fear ever.|Preparation cannot help.
-Ari asked why his model failed, then improved it.|Questions can support learning.|You must know everything first.|Models never need changes.
+Ari asked why his model failed, then improved it.|Questions can support learning.|Knowing the answer matters more than asking a question.|Keeping a neat model matters more than testing it.
 Jo taught a younger reader. Both enjoyed the last page.|Sharing knowledge can help others grow.|Teaching prevents enjoyment.|Age alone decides skill.
 Dee listened before replying. A compromise followed.|Listening can resolve disagreement.|Loudness proves correctness.|Compromise needs permanent silence.
-Tao watered the garden daily, even when bored.|Care includes steady effort.|Only exciting tasks matter.|Wishes alone grow gardens.`),rows(`A retested a failed recipe. B redesigned a broken base.|Mistakes can guide improvement.|Failure is always permanent.|Neither changed anything.
+Tao watered the garden daily, even when bored.|Care includes steady effort.|Exciting work matters more than routine care.|Wishes alone grow gardens.`),rows(`A retested a failed recipe. B redesigned a broken base.|Mistakes can guide improvement.|An unsuccessful attempt is a reason to abandon the task.|Neither changed anything.
 A: Neighbors shared tools. B: Classmates divided a task.|Cooperation can make work possible.|Teamwork prevents success.|Only tools matter.
 A admitted a foul. B corrected an unsupported claim.|Honesty can require admitting errors.|Winning justifies any claim.|Errors should stay secret.
 A welcomed a newcomer. B made space for a new member.|Inclusion supports belonging.|Belonging requires exclusion.|Isolation is the shared goal.
-A shy singer rehearsed. B a worried cyclist practiced safely.|Preparation can support courage.|Fear always vanishes instantly.|Practice guarantees all outcomes.
+A shy singer rehearsed. B a worried cyclist practiced safely.|Preparation can support courage.|Feeling fear means preparation has failed.|Both chose to avoid their activity.
 A asked for help. B learned from a neighbor.|Seeking knowledge can improve work.|Help proves permanent inability.|Learning ends in childhood.
-A returned a tool. B completed an agreed task.|Keeping commitments supports trust.|Promises do not matter.|Trust depends only on looks.
-A club revised plans after listening. Friends heard both sides.|Listening can change decisions.|Only the first idea matters.|Disagreement cannot change.
-A watered daily. B read a little each evening.|Steady effort supports growth.|Only one big effort counts.|Routines always fail.
-A builder used feedback. An artist tried a suggestion.|Useful feedback can encourage growth.|All feedback must be rejected.|All suggestions are automatically right.`)]);
+A returned a tool. B completed an agreed task.|Keeping commitments supports trust.|Promises do not matter.|A confident appearance matters more than reliability.
+A club revised plans after listening. Friends heard both sides.|Listening can change decisions.|The first suggestion deserves preference over later ones.|Disagreement cannot change.
+A watered daily. B read a little each evening.|Steady effort supports growth.|A big single effort is better than a daily routine.|Waiting for inspiration is better than regular work.
+A builder used feedback. An artist tried a suggestion.|Useful feedback can encourage growth.|Following a first plan is better than considering feedback.|Following advice matters more than testing its effect.`)]);
 bank('structure5','Text Structure','글의 짜임','5.T.SS.1.a–d',[B('How is this text organized?','글의 짜임을 골라요.'),B('Which revision improves organization?','짜임을 살리는 수정 방법을 골라요.')],[rows(`First mark, next cut, finally join.|sequence|comparison|description only
 Both cups hold water, but one has a lid.|comparison|sequence|problem and solution
 A pipe leaked, so the floor got wet.|cause and effect|comparison|steps
@@ -263,16 +285,16 @@ Day 1: seeds. Day 4: sprouts.|chronology|opinion|contrast only
 Heading: Tools. Below: ruler, saw, clamp.|grouped information|plot climax|dialogue
 A chart places the water loss of cup A beside cup B for readers to examine.|comparison using a chart|rhyme pattern|story ending
 Paragraph 1: problem. Paragraph 2: repairs.|problem and solution|random list|description only
-Because winds increased, the race moved inside.|cause and effect|alphabetical order|poem structure`),rows(`Steps say paint, sand, measure. Correct process is measure, sand, paint.|Reorder steps.|Delete only measuring.|Keep the same steps and change only their headings.
+Because winds increased, the race moved inside.|cause and effect|alphabetical order|poem structure`),rows(`Steps say paint, sand, measure. Correct process is measure, sand, paint.|Put the steps in order.|Delete the measuring step.|Change headings, not order.
 A comparison describes only one cup.|Add matching features of the second cup.|Add another description of the first cup.|Repeat the first color.
-An explanation gives an effect but omits its known cause.|Add the cause.|Describe the effect in more detail without its cause.|Move the title.
+An explanation gives an effect but omits its known cause.|Add the missing cause.|Expand the effect instead.|Move the section’s title.
 A repair guide names a problem but no remedy.|Add a step addressing the problem.|Describe the cover.|Remove the problem.
 A boat-design paragraph shifts to lunch prices.|Move prices to a relevant separate section.|Join without transition.|Delete all main ideas.
-Results are listed without explaining the test.|Add the method needed to interpret results.|Hide the method.|Mix rows randomly.
+Results are listed without explaining the test.|Add the missing method.|Remove the method section.|Rearrange results without grouping.
 A data table has numbers without units.|Label the units.|Only brighten numbers.|Remove numbers.
 Different stages have identical headings.|Use distinct stage headings.|Remove all headings.|Repeat the same heading.
 A conclusion introduces an unrelated topic.|Return to the supported main idea.|Add more unrelated topics.|Remove evidence.
-A timeline puts June before April in the same year.|Order the dated events chronologically.|Sort by title length.|Omit dates.`)]);
+A timeline puts June before April in the same year.|Put events in date order.|Sort by title length.|Order events without dates.`)]);
 bank('figurative5','Figurative Language','비유의 뜻과 효과','5.T.SS.2.a–b',[B('What does the phrase mean here?','문맥 속 비유의 뜻을 골라요.'),B('What effect does the phrase create?','비유가 만드는 느낌을 골라요.')],[rows(`Her grin was like sunshine after gloomy news.|Her smile brought cheer.|Her face emitted solar energy.|It caused daybreak.
 The library was a sea of books.|There were many books.|Water flooded all shelves.|Books became fish.
 He broke the ice with a friendly question.|He eased awkwardness.|He shattered frozen water.|He ended the meeting.
@@ -292,24 +314,24 @@ The city woke as shutters opened.|Personification suggests activity starting.|A 
 News hit him like a wave.|The simile stresses emotional impact.|Seawater entered the room.|He felt only mild boredom.
 She kept her cool in the argument.|The idiom means staying calm.|It measures body temperature.|She stopped listening.
 The tiny lamp was a star in the shed.|The metaphor highlights a bright point.|The lamp uses nuclear fusion.|There is no light.`)]);
-bank('explain5','Explain with Evidence','설명의 근거','5.T.T.2.a–d',[B('Which detail supports the explanation?','설명을 뒷받침하는 근거를 골라요.'),B('Connect the records within their evidence.','자료에서 확인할 수 있는 내용에 맞게 두 기록을 연결해요.')],[rows(`Covered cup lost 2 mL; open cup lost 8 mL in our test.|Covered lost less.|Both lost zero.|Lids always stop all loss.
+bank('explain5','Explain with Evidence','설명의 근거','5.T.T.2.a–d',[B('Which detail supports the explanation?','설명을 뒷받침하는 근거를 골라요.'),B('Connect the records within their evidence.','자료에서 확인할 수 있는 내용에 맞게 두 기록을 연결해요.')],[rows(`Covered cup lost 2 mL; open cup lost 8 mL in our test.|Covered lost less.|Both lost zero.|The open cup lost less.
 Old route: 900 m. New: 600 m.|New was 300 m shorter.|Old was shorter.|Nobody walked.
-A tree’s shadow covered our bench at noon.|The bench was shaded then.|Every bench was shaded.|The tree needs no water.
+A tree’s shadow covered our bench at noon.|The bench was shaded then.|The bench was shaded at sunset.|The tree needs no water.
 Chairs before: 12. After: 18.|Six chairs were added.|Book count fell.|Every visitor got a seat.
-Visible grit remained on filter paper.|The filter caught visible grit.|All germs vanished.|Water became safe to drink.
-A cart rolled up a ramp instead of steps.|A ramp provides a rolling route.|The cart flew.|All buildings have ramps.
-After a pipe repair, our next check found no drops.|No drops appeared in that check.|The pipe will never fail.|All water vanished.
+Visible grit remained on filter paper.|The filter caught visible grit.|Dissolved salt was removed.|Invisible particles were counted.
+A cart rolled up a ramp instead of steps.|A ramp provides a rolling route.|The ramp provides a stepped route.|The ramp requires the cart to be carried.
+After a pipe repair, our next check found no drops.|No drops appeared in that check.|The check found a slow leak.|The pipe had not been repaired.
 Sorting errors: unlabelled bins 3, labelled bins 0.|Labels reduced errors in this trial.|No future errors are possible.|Bins cannot hold things without labels.
-The new bus schedule lists a school stop.|The schedule includes that stop.|Every student uses it.|Every journey is faster.
-A leaf sketch shows edges and veins.|The sketch records visible shape details.|It proves the plant’s age.|It measures roots.`),rows(`A: I measured 4 cm growth. B: A summary reports my measurement.|A is firsthand; B is secondhand.|Both are B’s firsthand observations.|Neither is a measurement.
-A: Three benches repaired. B: Lumber invoice for three benches.|The records are consistent.|All benches stay safe forever.|No repair occurred.
+The new bus schedule lists a school stop.|The schedule includes that stop.|The schedule omits the school stop.|The schedule proves that trips are shorter.
+A leaf sketch shows edges and veins.|It records leaf features.|It proves the plant’s age.|It measures root length.`),rows(`A: I measured 4 cm growth. B: A summary reports my measurement.|A is firsthand; B is secondhand.|Both are B’s firsthand observations.|Neither is a measurement.
+A: Three benches repaired. B: Lumber invoice for three benches.|The records are consistent.|The invoice shows three benches were purchased.|No repair occurred.
 A: Bridge closed Monday. B: Tuesday notice gives an alternate route.|The notice responds to closure.|The bridge certainly reopened.|Tuesday caused Monday.
-A: Planted tray had 8 sprouts. B: Unplanted tray had none.|The records compare trays.|Every seed sprouts.|All gardens are measured.
-A: Poll had 20 replies. B: 12 favored a swap.|Most respondents favored it.|Every student agreed.|No one disagreed.
+A: Planted tray had 8 sprouts. B: Unplanted tray had none.|The records compare trays.|The records compare eight trays.|The records measure plant height.
+A: Poll had 20 replies. B: 12 favored a swap.|Most respondents favored it.|Twelve replies opposed the swap.|Eight replies favored the swap.
 A: Added lid. B: Loss fell from 8 to 3 mL in the next trial.|The lid trial had lower loss.|Evaporation ended everywhere.|Water changed into soil.
-A: Map marks two entrances. B: My walk used the eastern one.|The walk used a marked entrance.|The western entrance is nonexistent.|The map lists every visitor.
+A: Map marks two entrances. B: My walk used the eastern one.|The walk used a marked entrance.|The western entrance is nonexistent.|The walk used an unmarked entrance.
 A: Observer heard a noon bell. B: A later report quotes them.|The report uses an observation secondhand.|The reporter heard it personally for certain.|It rang at midnight.
-A: Log identifies loose hinge. B: Photo shows repaired door.|Log explains repair; photo records result.|Photo proves every cause.|Neither concerns the door.
+A: Log identifies loose hinge. B: Photo shows repaired door.|Log explains repair; photo records result.|The photo identifies the loose hinge’s cause.|Neither concerns the door.
 A: Chart lists daily rain. B: Paragraph gives the week’s sum.|The paragraph summarizes chart data.|The paragraph measures another week.|Charts supply no evidence.`)]);
 bank('opinion5','Support an Opinion','의견 뒷받침하기','5.T.T.3.a,c',[B('Choose a relevant reason for the claim.','주장에 관련 있는 이유를 골라요.'),B('Choose supported evidence or a conclusion.','주장을 뒷받침하는 근거나 마무리를 골라요.')],[rows(`Claim: Hold a book swap.|We can share books we have finished.|Blue is nice.|Clocks have hands.
 Claim: Add a shaded rest area.|Visitors can rest out of direct sun.|Pencils are short.|Rain falls.
@@ -321,14 +343,14 @@ Claim: Share cleanup jobs.|Dividing tasks balances participation.|My shoes are r
 Claim: Keep a tool-loan log.|It shows which tools need returning.|Clouds move.|Weeks have seven days.
 Claim: Include a walking break.|A break lets us move and change position.|Notebooks have lines.|Windows have glass.
 Claim: Post a meeting schedule.|Members can see when to attend.|The room has a floor.|Birds sing.`),rows(`Claim: Labels reduce errors. Trial errors fell from 5 to 1.|Use the trial as evidence.|Claim nobody will ever err.|Use wall color.
-Claim: Book swaps avoid purchases. Twelve families exchanged owned books.|The exchange shows reuse.|All books are now free.|Reading scores must have risen.
+Claim: Book swaps avoid purchases. Twelve families exchanged owned books.|The exchange shows reuse.|The exchange shows lower cover prices.|Reading scores must have risen.
 Claim: We need a larger room. Eighteen members; twelve seats.|The numbers show a shortage.|The room name proves size.|Six must never attend.
 Claim: Repairs reduce waste. Four tools returned to use.|Cite the four repaired tools.|All repairs are free.|Cite lunch prices.
-Claim: Add an entrance. Long queues formed at the single gate.|Queues are relevant to access.|Every visitor hated the event.|Roof color proves access.
-Claim: Publish directions. Three visitors missed an unmarked turn.|The missed turn supports directions.|All maps are useless.|Everyone should know all routes.
+Claim: Add an entrance. Long queues formed at the single gate.|Queues are relevant to access.|The queue shows that visitors left early.|Roof color proves access.
+Claim: Publish directions. Three visitors missed an unmarked turn.|The missed turn supports directions.|The missed turn supports a shorter event.|Everyone should know all routes.
 Claim: Share cleanup. Choose a closing sentence.|Shared jobs can balance our work.|Now discuss the moon.|Nobody needs to clean.
-Claim: Keep reading time. End with a supported idea.|Quiet reading time can support focus.|Quiet guarantees perfect grades.|Stop every other hobby.
-Claim: Use a sign-out log. Avoid overclaiming.|A log may help track borrowed tools.|A log guarantees no breakage.|A log measures quality automatically.
+Claim: Keep reading time. End with a supported idea.|Quiet reading time can support focus.|Reading time replaces reading practice.|Quiet reading is a physical exercise.
+Claim: Use a sign-out log. Avoid overclaiming.|A log may help track borrowed tools.|A log repairs the borrowed tools.|A log measures quality automatically.
 Claim: Provide shade. Choose a relevant example.|Visitors rested on a shaded bench on sunny days.|Visitors wore blue.|A nearby clock was repaired.`)],'write');
 bank('poetry5','Poem Structure','시의 짜임','5.T.T.4.a–b (partial)',[B('Choose a supported observation.','시에서 확인할 수 있는 짜임을 골라요.'),B('What effect comes from the structure?','이 짜임이 만드는 효과를 골라요.')],[rows(`Soft drops of rain,\nTap on the pane.|rain and pane rhyme|both lines begin Rain|there are four lines
 A seed below,\nBegins to grow.|below and grow rhyme|there is one line|every word rhymes
@@ -336,10 +358,10 @@ A winding way,\nAt break of day.|way and day rhyme|day and break rhyme|three sta
 The lamp is bright,\nAgainst the night.|bright and night rhyme|lamp and night rhyme|identical lines
 The falling snow,\nMoves soft and slow.|snow and slow rhyme|falling and soft rhyme|five lines
 Wind,\nA leaf turns,\nThe path changes.|No regular end-rhyme pattern.|Every line ends wind.|One line only.
-One branch bends.\nAnother holds.|Two lines.|Two four-line stanzas.|Both lines rhyme.
+One branch bends.\nAnother holds.|One stanza of two lines.|Two stanzas of four lines.|One pair of rhyming lines.
 The ball rolls.\nThe child follows.\nThe game begins.|Three lines.|One word only.|All lines repeated.
-Stars above.\n\nFootsteps below.|A blank line separates stanzas.|One unbroken line.|No spaces.
-Wait,\nWait,\nThe gate opens.|Wait is repeated.|The last line repeats Wait.|Every line has three words.`),rows(`The river hurries,\nHurries,\nHurries to the sea.|Repetition stresses ongoing movement.|The river stops.|Exact speed is measured.
+Stars above.\n\nFootsteps below.|Two stanzas, with a blank line.|One stanza, with one long line.|Two stanzas, with no gap.
+Wait,\nWait,\nThe gate opens.|Wait is repeated.|The last line repeats Wait.|Every line has three words.`),rows(`The river hurries,\nHurries,\nHurries to the sea.|Repeating words stress motion.|Repeating words suggest rest.|Repeating words measure speed.
 A small seed waits.\n\nA green shoot rises.|The stanza break marks a change.|The shoot is removed.|An exact date is proved.
 I listen—\nthen\na bell.|Short lines slow the reveal.|A new speaker is added.|Every word rhymes.
 The path is long, the morning clear,\nI walk with hope instead of fear.|Rhyming endings link the lines.|No sound relationship exists.|The event is proved true.
@@ -358,7 +380,7 @@ Question: What materials did our model use?|our materials list|a fictional diary
 Question: What happened at the observed gate?|the observer’s dated notes|a door poem|a word list
 Question: How many picked option A?|the survey tally|a cover design|a bus photo
 Question: Which route avoids the closed bridge?|closure notice and alternate-route map|old weather forecast|a recipe
-Question: Who wrote this article?|the author line|a nearby advertisement|browser wallpaper`),rows(`A dated log counts 12 repairs this month. A rumor says hundreds.|Use the log’s count within its scope.|Treat the rumor as certain.|The log covers all years.
+Question: Who wrote this article?|the named author line|a nearby advertisement|browser wallpaper`),rows(`A dated log counts 12 repairs this month. A rumor says hundreds.|Use the log’s count within its scope.|Treat the rumor as certain.|The log covers all years.
 A study lists methods and measurements. An ad gives praise only.|Data better support measurement claims.|Praise is measurement.|Every ad is always false.
 This year’s schedule differs from last year’s.|Use the current dated schedule.|Ignore dates.|Last year must be right.
 Two of three trials lost 4 mL. Paraphrase fairly.|In two trials, measured loss was 4 mL.|Every trial everywhere loses 4 mL.|No loss occurred.
@@ -504,7 +526,7 @@ const bankGrowthRows={
 "theme5": {
 "1": [
 {"ask":{"en":"Choose a theme supported by the story.","ko":"이야기가 뒷받침하는 주제를 골라요."},"show":{"en":"A child could keep a shiny new box or a worn note from a grandparent. The child kept the note because it recalled a shared adventure.","ko":"A child could keep a shiny new box or a worn note from a grandparent. The child kept the note because it recalled a shared adventure."},"right":{"en":"An object’s personal meaning can matter more than its appearance.","ko":"An object’s personal meaning can matter more than its appearance."},"wrong":[{"en":"A beautiful outside is the best measure of personal value.","ko":"A beautiful outside is the best measure of personal value."},{"en":"Objects are worth keeping only when they have never been used.","ko":"Objects are worth keeping only when they have never been used."}]},
-{"ask":{"en":"Choose a theme supported by the story.","ko":"이야기가 뒷받침하는 주제를 골라요."},"show":{"en":"A team listened to a quiet member’s idea and found the missing trail marker.","ko":"A team listened to a quiet member’s idea and found the missing trail marker."},"right":{"en":"Useful ideas can come from any member.","ko":"Useful ideas can come from any member."},"wrong":[{"en":"Only the loudest member has useful ideas.","ko":"Only the loudest member has useful ideas."},{"en":"Good teams avoid changing their plans.","ko":"Good teams avoid changing their plans."}]}
+{"ask":{"en":"Choose a theme supported by the story.","ko":"이야기가 뒷받침하는 주제를 골라요."},"show":{"en":"A team listened to a quiet member’s idea and found the missing trail marker.","ko":"A team listened to a quiet member’s idea and found the missing trail marker."},"right":{"en":"Useful ideas can come from any member.","ko":"Useful ideas can come from any member."},"wrong":[{"en":"The most confident speaker deserves preference.","ko":"The most confident speaker deserves preference."},{"en":"Good teams avoid changing their plans.","ko":"Good teams avoid changing their plans."}]}
 ],
 "2": [
 {"ask":{"en":"What idea is supported by both stories?","ko":"두 이야기가 함께 뒷받침하는 생각은?"},"show":{"en":"A: Before a race, one runner helps an opponent fasten a loose shoe. B: During a contest, a painter lends a rival a spare brush.","ko":"A: Before a race, one runner helps an opponent fasten a loose shoe. B: During a contest, a painter lends a rival a spare brush."},"right":{"en":"Competition can coexist with kindness toward an opponent.","ko":"Competition can coexist with kindness toward an opponent."},"wrong":[{"en":"Helping an opponent means giving up one’s own place in a contest.","ko":"Helping an opponent means giving up one’s own place in a contest."},{"en":"Fair competition requires keeping every useful resource from opponents.","ko":"Fair competition requires keeping every useful resource from opponents."}]},

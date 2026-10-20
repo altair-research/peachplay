@@ -18,12 +18,12 @@ G2S({
   play() {
     const lv = lvl('moon2'), kind = pick(lv === 1 ? ['name', 'name', 'light'] : ['name', 'name', 'light', 'cycle']);
     if (rnd(3) === 0) {
-      const ph = pick([0,2,4]);
-      quiz(this, { ask: B(`Which picture shows a ${MOON_NAME[ph].en}?`, `${MOON_NAME[ph].ko}에 알맞은 그림은 무엇일까요?`), opts: [0,2,4].map(p => ({ html: moonSvg(p), ok: p === ph })), cls: 'shapes', after: B('We see different amounts of the sunlit part of the Moon.', '햇빛을 받는 달의 부분이 보이는 정도가 달라요.') }); return;
+      const ph = pick([0,1,2,3,4]);
+      quiz(this, { ask: B(`Which picture shows a ${MOON_NAME[ph].en}?`, `${MOON_NAME[ph].ko}에 알맞은 그림은 무엇일까요?`), opts: [ph,...others([0,1,2,3,4],ph,2)].map(p => ({ html: moonSvg(p), ok: p === ph })), cls: 'shapes', after: B('We see different amounts of the sunlit part of the Moon.', '햇빛을 받는 달의 부분이 보이는 정도가 달라요.') }); return;
     }
     if (kind === 'name') {
-      const ph = pick(lv === 1 ? [0, 2, 4] : [0, 1, 2, 3, 4]);
-      quiz(this, { ask: B('What shape of the Moon do you see?', '이 달은 어떤 모양일까요?'), show: moonSvg(ph), opts: wOpts(MOON_NAME[ph], others(MOON_NAME.filter((_, i) => lv === 2 || [0, 2, 4].includes(i)), MOON_NAME[ph], 2)), cls: 'words', after: B('The Sun always lights half of the Moon. From Earth we see more or less of that lit half.', '해는 늘 달의 반쪽을 비춰요. 지구에서는 그 밝은 쪽이 더 보이거나 덜 보여요.') });
+      const ph = pick([0, 1, 2, 3, 4]);
+      quiz(this, { ask: B('What shape of the Moon do you see?', '이 달은 어떤 모양일까요?'), show: moonSvg(ph), opts: wOpts(MOON_NAME[ph], others(MOON_NAME, MOON_NAME[ph], 2)), cls: 'words', after: B('The Sun always lights half of the Moon. From Earth we see more or less of that lit half.', '해는 늘 달의 반쪽을 비춰요. 지구에서는 그 밝은 쪽이 더 보이거나 덜 보여요.') });
     } else if (kind === 'light') {
       const q = pick([[B('Where does moonlight come from?', '달빛은 어디에서 올까요?'), B('The Moon reflects light from the Sun.', '달이 햇빛을 반사해요.'), [B('The Moon makes its own light.', '달이 스스로 빛을 내요.'), B('The Moon is a star.', '달은 별이에요.')]],
         [B('Why does the Moon look different shapes?', '달은 왜 모양이 달라 보일까요?'), B('We see more or less of its lit side.', '해가 비추는 쪽이 보이는 정도가 달라요.'), [B('The Moon gets bigger and smaller.', '달이 커졌다 작아졌다 해요.'), B('Clouds eat the Moon.', '구름이 달을 먹어요.')]]]);
@@ -102,7 +102,7 @@ G2S({
 
 // ---------- 4. Solids, liquids and gases ----------
 const MATTER = [
-  { e: '🪨', n: B('a rock', '돌'), s: 0 }, { e: '🧊', n: B('an ice cube', '얼음'), s: 0 }, { e: '📕', n: B('a book', '책'), s: 0 }, { e: '🧱', n: B('a brick', '벽돌'), s: 0 },
+  { e: '🪨', n: B('a rock', '돌'), s: 0 }, { e: '🧊', n: B('an ice cube', '얼음'), s: 0 }, { e: '📕', n: B('a book', '책'), s: 0 }, { e:'🪵',n:B('a wooden block','나무 블록'),s:0 }, { e: '🧱', n: B('a brick', '벽돌'), s: 0 },
   { e: '🥛', n: B('milk', '우유'), s: 1 }, { e: '💧', n: B('water', '물'), s: 1 }, { e: '🧃', n: B('juice', '주스'), s: 1 }, { e: '🍯', n: B('honey', '꿀'), s: 1 },
   { e: '🎈', n: B('the helium in a balloon', '풍선 속 헬륨'), s: 2 }, { e: '♨️', n: B('steam (water vapor)', '수증기'), s: 2 }, { e: '💨', n: B('the air you blow out', '내가 내쉬는 공기'), s: 2 }
 ];
@@ -112,7 +112,7 @@ G2S({
   play() {
     const lv = lvl('matter2'), kind = pick(lv === 1 ? ['sort'] : ['sort', 'sort', 'prop']);
     if (kind === 'sort') {
-      const m = pick(lv === 1 ? MATTER.filter(x => x.s < 2 || x.n.en.includes('steam')) : MATTER);
+      const m = pick(MATTER);
       quiz(this, { ask: B(`Is ${m.n.en} a solid, a liquid or a gas?`, `${m.n.ko}: 고체, 액체, 기체 중 무엇일까요?`), show: `<span class="emo">${m.e}</span>`, opts: STATE.map((s, i) => ({ html: `<span class="word">${L(s)}</span>`, ok: i === m.s })), cls: 'words', after: B('Solids keep their shape. Liquids flow and take the shape of the container. Gases spread out to fill the container.', '고체는 모양이 그대로예요. 액체는 흘러서 그릇 모양이 돼요. 기체는 퍼져서 그릇을 가득 채워요.') });
     } else {
       const q = pick([[B('Which kind of matter keeps its own shape?', '모양을 그대로 유지하는 물질은 무엇일까요?'), STATE[0], [STATE[1], STATE[2]]],
@@ -125,6 +125,10 @@ G2S({
 
 // ---------- 5. Heating, cooling and properties ----------
 const MPROP = [
+  { q:B('Warm solid butter becomes runny. What change happened?','단단한 버터를 데우니 흘러요. 어떤 변화일까요?'),r:[B('Melting','녹기')],w:[B('Freezing','얼기'),B('Staying solid','고체로 있기')] },
+  { q:B('Melted butter cools and becomes firm again. What changed?','녹은 버터가 식어서 다시 단단해져요. 어떤 변화일까요?'),r:[B('Liquid to solid','액체에서 고체로')],w:[B('Solid to liquid','고체에서 액체로'),B('Liquid to gas','액체에서 기체로')] },
+  { q:B('A sheet bends around a book without breaking. Which property is shown?','종이가 찢어지지 않고 책을 감싸며 휘어요. 어떤 성질일까요?'),r:[B('Flexible','잘 휘어요')],w:[B('Rigid','뻣뻣해요'),B('Magnetic','자석에 붙어요')] },
+  { q:B('Drops soak into a paper towel. Which property is shown?','물방울이 종이 수건에 스며들어요. 어떤 성질일까요?'),r:[B('Absorbent','물을 빨아들여요')],w:[B('Waterproof','물이 안 스며요'),B('Magnetic','자석에 붙어요')] },
   { q: B('Which one is flexible (it bends easily)?', '쉽게 휘어지는 것은?'), r: [B('a rubber band', '고무줄')], w: [B('a rock', '돌'), B('a glass cup', '유리컵'), B('a brick', '벽돌')] },
   { q: B('Which one is waterproof, so it is good for a raincoat?', '물이 스며들지 않아 비옷에 알맞은 것은?'), r: [B('plastic', '비닐(플라스틱)')], w: [B('paper', '종이'), B('a sponge', '스펀지'), B('a cotton ball', '솜')] },
   { q: B('Which one will a magnet pick up?', '자석에 붙는 것은?'), r: [B('an iron nail', '쇠못')], w: [B('a wooden spoon', '나무 숟가락'), B('a plastic cup', '플라스틱 컵'), B('a paper clip made of plastic', '플라스틱 클립')] },
@@ -212,10 +216,12 @@ const SEEDS = [
   { e: '🍓', n: B('a berry that birds eat', '새가 먹는 열매'), how: B('animals', '동물'), why: B('Birds eat the fruit and drop the seeds far away.', '새가 열매를 먹고 씨를 먼 곳에 떨어뜨려요.') }
 ];
 const HOWS = [B('wind', '바람'), B('water', '물'), B('animals', '동물')];
+const SEED_CLUES65=[B('Light fluffy hairs catch moving air.','가벼운 솜털이 움직이는 공기를 받아요.'),B('A wing spins through moving air.','날개가 움직이는 공기를 타며 돌아요.'),B('A thick husk keeps it floating across a river.','두꺼운 껍질 덕분에 강 위에 떠 있어요.'),B('A squirrel buries it away from its tree.','다람쥐가 나무에서 떨어진 곳에 묻어요.'),B('Tiny hooks catch on a dog’s fur.','작은 갈고리가 개의 털에 걸려요.'),B('A bird eats the fruit and carries its seeds away.','새가 열매를 먹고 씨를 멀리 옮겨요.')];
 G2S({
   id: 'pollen2', icon: '🐝', title: B('Bees and Seeds', '벌과 씨앗'), sub: B('Pollination and how seeds travel', '꽃가루받이와 씨앗이 퍼지는 방법'), u: 'Plants',
   play() {
-    const lv = lvl('pollen2'), kind = pick(lv === 1 ? ['seed', 'seed', 'bee'] : ['seed', 'seed', 'bee', 'why']);
+    const lv = lvl('pollen2'), kind = pick(lv === 1 ? ['seed', 'clue', 'bee'] : ['seed', 'seed', 'bee', 'why']);
+    if(kind==='clue'){const i=rnd(SEEDS.length);quiz(this,{ask:B('What carries this seed?','무엇이 이 씨앗을 옮길까요?'),show:`<div class="storytext">${L(SEED_CLUES65[i])}</div>`,opts:wOpts(SEEDS[i].how,HOWS.filter(x=>x.en!==SEEDS[i].how.en)),cls:'words'});return;}
     if (kind === 'seed') {
       const s = pick(SEEDS);
       quiz(this, { ask: B(`How does ${s.n.en} mostly travel to a new place?`, `${s.n.ko}: 주로 무엇의 도움으로 새로운 곳에 갈까요?`), show: `<span class="emo">${s.e}</span>`, opts: HOWS.map(h => ({ html: `<span class="word">${L(h)}</span>`, ok: h.en === s.how.en })), cls: 'words', after: s.why });
@@ -241,11 +247,12 @@ const modes = {
  sky2(lv,i) {
   if(i%2===0) {
    const summer=B('June 21 · summer','6월 21일 · 여름'), winter=B('December 21 · winter','12월 21일 · 겨울');
-   const caption=B('Atlanta, 2026 · hours, rounded model','애틀랜타, 2026년 · 시간, 반올림 모형');
+   const caption=B('Practice daylight table · hours','가상 낮 길이 표 · 시간');
    const missing=lv===2&&i%4===0, target=i%4===0?summer:winter;
-   const rows=[[summer,14,missing?'?':10],[winter,10,14]];
+   const day=13+Math.floor(i/4)%3;
+   const rows=[[summer,day,missing?'?':24-day],[winter,24-day,day]];
    const show=table(caption,[B('Date','날짜'),B('Day','낮'),B('Night','밤')],rows);
-   if(missing)return item('daynight',B('Complete the table: June night = ? hours.','표를 완성해요. 6월의 밤은 몇 시간일까요?'),show,B('10 hours','10시간'),[B('14 hours','14시간'),B('24 hours','24시간')],B('Day + night = 24 hours. The model rounds each length to whole hours.','낮과 밤을 합하면 24시간이에요. 이 모형은 시간을 정수로 반올림했어요.'));
+   if(missing)return item('daynight',B('Complete the table: June night = ? hours.','표를 완성해요. 6월의 밤은 몇 시간일까요?'),show,B(`${24-day} hours`,`${24-day}시간`),[B(`${day} hours`,`${day}시간`),B('24 hours','24시간')],B('Day + night = 24 hours. These are invented practice measurements.','낮과 밤을 합하면 24시간이에요. 만든 연습 측정값이에요.'));
    if(lv===2)return item('daynight',B('Which conclusion matches both rows?','두 줄의 자료에 맞는 결론은?'),show,B('Summer has more daylight here','이곳은 여름의 낮이 더 길어요'),[B('Winter has more daylight here','이곳은 겨울의 낮이 더 길어요'),B('Day length never changes','낮의 길이는 늘 같아요')]);
    return item('daynight',i%4===0?B('Which date has the longer day?','낮이 더 긴 날은?'):B('Which date has the longer night?','밤이 더 긴 날은?'),show,target,[i%4===0?winter:summer]);
   }
@@ -264,12 +271,13 @@ const modes = {
   const rows=[
    [B('Practice park: rain fell. Water ran down bare soil; soil collected below.','가상 공원: 비가 내리고 맨흙 위로 물이 흘러 아래에 흙이 쌓였어요.'),B('Flowing rainwater moved soil','빗물이 흙을 옮겼어요'),B('What changed after the rain?','비가 온 뒤 무엇이 변했나요?')],
    [B('Practice park: workers removed trees. Before: shade and nests. After: less shade and fewer nesting places.','가상 공원: 사람이 나무를 베었어요. 전에는 그늘과 새 둥지가 있었고 뒤에는 둘 다 줄었어요.'),B('Removing trees reduced shade and nesting places','나무를 베어 그늘과 둥지 자리가 줄었어요'),B('What changed after trees were removed?','나무를 벤 뒤 무엇이 변했나요?')],
-   [B('Practice stream: beavers built a dam. Before: flowing water. After: water pooled behind the dam.','가상 시냇물: 비버가 댐을 만들었어요. 전에는 물이 흘렀고 뒤에는 댐 뒤에 물이 고였어요.'),B('The dam held back water','댐이 물의 흐름을 막았어요'),B('Where did water collect after the dam?','댐을 만든 뒤 어디에 물이 고였나요?')]
+   [B('Practice stream: beavers built a dam. Before: flowing water. After: water pooled behind the dam.','가상 시냇물: 비버가 댐을 만들었어요. 전에는 물이 흘렀고 뒤에는 댐 뒤에 물이 고였어요.'),B('The dam held back water','댐이 물의 흐름을 막았어요'),B('Where did water collect after the dam?','댐을 만든 뒤 어디에 물이 고였나요?')],
+   [B('Practice stream: people removed a dam. Before: a pool. After: water flowed downstream.','가상 시냇물: 사람이 댐을 치웠어요. 전에는 물이 고였고 뒤에는 아래로 흘렀어요.'),B('Removing the dam let water flow','댐을 치워 물이 흘렀어요'),B('How did the flow change after removal?','댐을 치운 뒤 흐름이 어떻게 바뀌었나요?')]
   ],r=rows[i%rows.length];
-  return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What type of rock is deep under this park?','이 공원 땅속 깊은 곳에는 어떤 돌이 있나요?'),B('How high is the hill in another park?','다른 공원의 언덕은 얼마나 높나요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[[B('Wind carried the soil downhill','바람이 흙을 아래로 옮겼어요'),B('Tree roots pushed soil downhill','나무뿌리가 흙을 아래로 밀었어요')],[B('Extra rain reduced shade and nests','비가 더 내려 그늘과 둥지가 줄었어요'),B('Wind alone removed the nesting trees','바람만으로 둥지 나무가 없어졌어요')],[B('Rain alone made water pool','비만으로 물이 고였어요'),B('Removing the dam made water pool','댐을 없애서 물이 고였어요')]][i%rows.length]);
+  return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What type of rock is deep under this park?','이 공원 땅속 깊은 곳에는 어떤 돌이 있나요?'),B('How high is the hill in another park?','다른 공원의 언덕은 얼마나 높나요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[[B('Wind carried the soil downhill','바람이 흙을 아래로 옮겼어요'),B('Tree roots pushed soil downhill','나무뿌리가 흙을 아래로 밀었어요')],[B('Extra rain reduced shade and nests','비가 더 내려 그늘과 둥지가 줄었어요'),B('Wind alone removed the nesting trees','바람만으로 둥지 나무가 없어졌어요')],[B('Rain alone made water pool','비만으로 물이 고였어요'),B('Removing the dam made water pool','댐을 없애서 물이 고였어요')],[B('A new dam stopped the flow','새 댐이 흐름을 막았어요'),B('The flow stayed the same','흐름이 그대로였어요')]][i%rows.length]);
  },
  force2(lv,i) {
-  const a=2+i%3,b=a+2,seconds=2;
+  const a=2+i%8,b=a+2,seconds=2;
   const direction=lv===2&&i%2===1;
   const show=direction?table(B('Practice cart · same push, 3 trials','가상 수레 · 같은 밀기, 3회 실험'),[B('Guide','가이드'),B('Turned left','왼쪽 회전')],[[B('Without','없음'),'0 / 3'],[B('With','있음'),'3 / 3']]):table(B(`Practice cart · same push, ${seconds} seconds each`,`가상 수레 · 같은 밀기, 각 ${seconds}초`),[B('Trial','실험'),B('No ramp (cm)','경사로 없음(cm)'),B('Ramp (cm)','경사로 있음(cm)')],[[1,a,b],[2,a+1,b+1]]);
   return item('design-data',direction?B('Goal: turn left. Did the guide work in these trials?','목표는 왼쪽 회전이에요. 가이드가 효과가 있었나요?'):lv===1?B('Which setup went farther in both trials?','두 실험 모두에서 더 멀리 간 장치는?'):B('Goal: move faster. Which evidence supports using the ramp?','목표는 더 빠르게 이동하기예요. 경사로 사용을 뒷받침하는 근거는?'),show,direction?B('Yes: left turns increased from 0 to 3','네. 왼쪽 회전이 0회에서 3회가 됐어요'):lv===1?B('With the ramp','경사로가 있을 때'):B('It went farther in the same time in both trials','두 실험 모두 같은 시간에 더 멀리 갔어요'),direction?[B('No: it never turned left','아니요. 한 번도 왼쪽으로 안 돌았어요'),B('We measured the color only','색깔만 측정했어요')]:[B('Without the ramp it went farther','경사로가 없을 때 더 멀리 갔어요'),B('We need only the cart color','수레 색깔만 알면 돼요')],B('These are invented practice measurements, not a promise about every device.','만든 연습 측정값이에요. 모든 장치에서 같은 결과를 보장하지 않아요.'));

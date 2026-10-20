@@ -44,7 +44,7 @@ bank('erosion3','Moving Earth','흙의 이동','S3E1.c',[
  [B('What is the evidence of movement?','이동했다는 근거는?'),B('Before rain: soil on a slope. After rain: soil collected downhill.','비 오기 전에는 비탈에 흙이 있었어요. 비 온 뒤에는 아래쪽에 흙이 쌓였어요.'),B('Soil collected downhill','아래쪽에 흙이 쌓였어요'),B('A crack widened in place','제자리에서 틈이 넓어졌어요'),B('A rock stayed on the slope','돌이 비탈에 그대로 있어요')]]);
 bank('fossilclue3','Fossil Clues','화석 단서','S3E2.a',[
  [B('Which is a trace fossil?','흔적 화석(trace fossil)은 어느 것일까요? 옛 생물이 살면서 남긴 흔적이 굳은 화석이에요.'),null,B('An ancient footprint preserved in rock','암석에 남은 옛 발자국'),B('A footprint made today in mud','오늘 진흙에 찍은 발자국'),B('An ancient shell preserved in rock','암석에 보존된 옛 조개껍데기')],
- [B('What can a fossil give evidence about?','화석으로 무엇을 알아볼 수 있나요?'),null,B('Life long ago','아주 오래전 생물'),B('The rock’s exact age without other tests','다른 검사 없이 암석의 정확한 나이'),B('The animal’s exact body color','동물 몸의 정확한 색')],
+ [B('What can a fossil give evidence about?','화석으로 무엇을 알아볼 수 있나요?'),null,B('Life long ago','아주 오래전 생물'),B('The rock’s exact age','다른 검사 없이 암석의 정확한 나이'),B('The animal’s exact color','동물 몸의 정확한 색')],
  [B('What does this evidence support?','이 근거로 알 수 있는 것은?'),B('A marine shell fossil was found in a rock layer on land.','육지의 암석층에서 바다 조개 화석을 찾았어요.'),B('A marine animal lived long ago','오래전에 바다 생물이 살았어요'),B('This spot must be underwater today','이곳은 지금도 바닷속이 분명해요'),B('Every fossil is a dinosaur','모든 화석은 공룡이에요')]]);
 bank('fossilorder3','Fossil Model','화석 모형','S3E2.b',[
  [B('In this model, what comes next?','이 모형에서 다음 단계는?'),B('A shell rests on the bottom. Sediment begins to pile up.','조개껍데기가 바닥에 있어요. 퇴적물(흙, 모래 등)이 쌓이기 시작해요.'),B('Sediment covers the shell','퇴적물이 껍데기를 덮어요'),B('Waves wash the shell away','물결이 껍데기를 쓸어 가요'),B('The shell breaks on the surface','껍데기가 표면에서 부서져요')],
@@ -60,19 +60,19 @@ bank('adaptation3','Features for Living','살아가는 특징','S3L1.b',[
  [B('Which connects a feature with its function?','특징과 쓰임을 바르게 이은 것은?'),null,B('Webbed feet help beavers swim','물갈퀴가 비버의 헤엄을 도와요'),B('Sharp teeth keep a beaver warm','날카로운 이가 비버를 따뜻하게 해요'),B('Thick fur helps cut wood','두꺼운 털이 나무를 잘라요')]]);
 bank('survival3','A Place to Live','살 수 있는 곳','S3L1.c',[
  [B('Which site meets BOTH listed needs?','적힌 두 가지 조건을 모두 갖춘 곳은?'),B('For this beaver model: water and woody plants. Site A has both. Site B is dry.','이 비버 모형의 조건: 물과 나무. A에는 둘 다 있고 B는 말라 있어요.'),B('Site A','장소 A'),B('Site B','장소 B'),B('Neither site','둘 다 아니에요')],
- [B('What is missing at this model site?','이 모형 장소에서 부족한 것은?'),B('Needs: water and woody plants. The site has trees but no water.','필요 조건: 물과 나무. 이곳에는 나무만 있고 물은 없어요.'),B('Water','물'),B('Trees','나무'),B('Both are already there','이미 둘 다 있어요')],
- [B('What conclusion fits the evidence?','근거에 맞는 결론은?'),B('Two beaver sites both have water and woody plants. We have not checked other needs.','비버 모형의 두 장소 모두 물과 나무가 있어요. 다른 조건은 아직 살펴보지 않았어요.'),B('Both meet the two checked needs','둘 다 확인한 두 조건은 갖췄어요'),B('Survival is guaranteed at both','둘 다 생존이 보장돼요'),B('Neither has water','둘 다 물이 없어요')]]);
+ [B('What is missing at this model site?','이 모형 장소에서 부족한 것은?'),B('Needs: water and woody plants. The site has trees but no water.','필요 조건: 물과 나무. 이곳에는 나무만 있고 물은 없어요.'),B('Water','물'),B('Trees','나무'),B('Both present','둘 다 있음')],
+ [B('What conclusion fits the evidence?','근거에 맞는 결론은?'),B('Two beaver sites both have water and woody plants. We have not checked other needs.','비버 모형의 두 장소 모두 물과 나무가 있어요. 다른 조건은 아직 살펴보지 않았어요.'),B('Both meet the two checked needs','둘 다 확인한 두 조건은 갖췄어요'),B('Both meet the food need but lack water','둘 다 먹이는 있지만 물은 없어요'),B('Neither has water','둘 다 물이 없어요')]]);
 bank('pollution3','Pollution Records','오염 기록','S3L2.a',[
  [B('Which material received the pollution directly?','오염 물질이 직접 들어간 곳은?'),B('Practice record: oil spilled into a pond.','연습용 기록: 연못에 기름이 흘러들었어요.'),B('Water','물'),B('Air','공기'),B('Land','땅')],
  [B('Which record describes air pollution?','공기 오염을 나타내는 기록은?'),null,B('Dirty smoke entered the air','더러운 연기가 공기 중에 퍼졌어요'),B('Oil entered a stream','기름이 개울에 들어갔어요'),B('Trash was buried in soil','쓰레기가 흙에 묻혔어요')],
  [B('Which observation directly supports water pollution?','물 오염을 직접 뒷받침하는 관찰은?'),B('Practice notes: oil floats on pond water; a bench is brown; birds sing.','연습용 기록: 연못에 기름이 떠 있어요. 벤치는 갈색이에요. 새가 노래해요.'),B('Oil floats on the water','물에 기름이 떠 있어요'),B('Dust is beside the pond','연못 옆에 먼지가 있어요'),B('Smoke is above the pond','연못 위에 연기가 있어요')]]);
 bank('conserve3','Protect Resources','자원 지키기','S3L2.b',[
- [B('Which action reuses an item?','물건을 다시 사용하는 행동은?'),null,B('Use a clean jar to store pencils','깨끗한 통에 연필 보관하기'),B('Throw away the clean jar','깨끗한 통 버리기'),B('Buy a jar and never use it','통을 사서 전혀 안 쓰기')],
+ [B('Which action reuses an item?','물건을 다시 사용하는 행동은?'),null,B('Use a clean jar to store pencils','깨끗한 통에 연필 보관하기'),B('Throw away the clean jar','깨끗한 통 버리기'),B('Break the jar for recycling','통을 깨뜨려 재활용하기')],
  [B('Which action reduces paper use?','종이를 덜 쓰는 방법은?'),null,B('Use both sides when suitable','쓸 수 있을 때 종이 양면 쓰기'),B('Use a new page for each word','낱말 하나마다 새 종이 쓰기'),B('Throw away unused pages','안 쓴 종이 버리기')],
- [B('Before putting an item in a recycling bin, what should you check?','재활용 통에 넣기 전에 무엇을 확인하나요?'),null,B('Local rules for accepted materials','우리 지역에서 받는 재활용품'),B('Only whether it is clean','깨끗한지만'),B('Only the recycling symbol','재활용 표시만')]]);
+ [B('Before putting an item in a recycling bin, what should you check?','재활용 통에 넣기 전에 무엇을 확인하나요?'),null,B('Local rules for accepted materials','우리 지역에서 받는 재활용품'),B('The item’s cleanliness','물건이 깨끗한지'),B('The recycling symbol','물건의 재활용 표시')]]);
 bank('heatsource3','Sources of Heat','열은 어디에서 올까요?','S3P1.a',[
- [B('What supplies energy that warms a sunlit bench?','햇빛 받는 벤치를 데우는 에너지는 어디서 오나요?'),null,B('The Sun','태양'),B('The surrounding air','주변 공기'),B('The cool ground','차가운 땅')],
- [B('What warms your hands as you rub them?','손을 서로 비빌 때 따뜻해지는 까닭은?'),null,B('Friction from rubbing','비빌 때 생기는 마찰(friction)'),B('Heat from nearby air','주변 공기에서 온 열'),B('Heat from sunlight alone','햇빛에서만 온 열')],
+ [B('What supplies energy that warms a sunlit bench?','햇빛 받는 벤치를 데우는 에너지는 어디서 오나요?'),null,B('The Sun','태양'),B('Nearby air','주변 공기'),B('The cool ground','차가운 땅')],
+ [B('What warms your hands as you rub them?','손을 서로 비빌 때 따뜻해지는 까닭은?'),null,B('Friction from rubbing','손을 비빌 때 생긴 마찰'),B('Heat from nearby air','주변 공기에서 온 열'),B('Heat from sunlight alone','햇빛에서만 온 열')],
  [B('Which is producing heat in this scene?','이 장면에서 열을 내는 것은?'),B('An electric heater is on. An unplugged lamp stands nearby.','전기 난방기가 켜져 있어요. 옆의 전등은 플러그가 빠져 있어요.'),B('The working heater','켜진 난방기'),B('The unplugged lamp','플러그가 빠진 전등'),B('The switched-off toaster','꺼진 토스터')]]);
 reg('temperature3','Read a Thermometer','온도 읽기','S3P1.b',lv=>{
  if(lv===2){const a=10+rnd(40),b=a+1+rnd(12);return q(B('How many degrees did the temperature rise?','온도가 몇 도 올랐나요?'),table([made,B('Start °C','처음 °C'),B('End °C','끝 °C')],[[B('Water','물'),a,b]]),`${b-a}°C`,[`${b}°C`,`${b+a}°C`]);}
@@ -99,11 +99,11 @@ const moreScience={
 rocktest3:[
  sr('Which observation is about texture?','질감을 살펴본 관찰은?','','','The surface feels rough','표면이 거칠어요','The sample weighs 20 g','무게가 20g이에요','It reflects a bright shine','빛을 반사해 반짝여요'),
  sr('Which is a color observation?','색을 살펴본 관찰은?','','','The sample is gray','표본이 회색이에요','It resists scratching','긁힘에 잘 견뎌요','It feels smooth','표면이 매끈해요'),
- sr('Which sample is harder in this test?','이 실험에서 더 단단한 표본은?','Same tool: A scratched, B did not.','같은 도구로 긁었어요. A에는 흠집이 나고 B에는 안 났어요.','B','B','A','A','Both scratched','둘 다 흠집이 났어요'),
+ sr('Which sample is harder in this test?','이 실험에서 더 단단한 표본은?','Same tool: A scratched, B did not.','같은 도구로 긁었어요. A에는 흠집이 나고 B에는 안 났어요.','B','B','A','A','A and B','A와 B'),
  sr('Which test compares luster?','광택을 비교하는 방법은?','','','Use the same light to view reflections','같은 빛에서 반사 비교','Feel the surface texture','표면 질감 비교','Compare resistance to scratches','긁힘에 견디는 정도 비교'),
  sr('What did the test measure?','무엇을 살펴본 실험인가요?','An adult used the same tool to scratch A and B.','어른이 같은 도구로 A와 B를 긁었어요.','Hardness','단단함','Color','색','Weight of the tray','쟁반 무게'),
  sr('Can color alone identify this rock?','색만으로 이 암석 이름을 알 수 있나요?','We only know it is gray.','회색이라는 것만 알아요.','No; more evidence is needed','아니요, 근거가 더 필요해요','Yes, every gray rock is identical','네, 회색 암석은 모두 같아요','Its label decides its type','이름표가 종류를 정해요'),
- sr('An observation says “gray.” Which property was recorded?','관찰 기록에 ‘회색’이라고 썼어요. 어떤 성질을 기록했나요?','','','Color','색','The tray’s mass','쟁반의 질량','Scratch resistance','긁힘에 견디는 정도'),
+ sr('An observation says “gray.” Which property was recorded?','관찰 기록에 ‘회색’이라고 썼어요. 어떤 성질을 기록했나요?','','','Color','색','Tray mass','쟁반 질량','Scratch resistance','긁힘에 견디는 정도'),
  sr('Which change makes scratch tests unfair?','긁기 실험을 공정하지 않게 만드는 것은?','','','Different tools for A and B','A와 B에 다른 도구 사용','The same tool','같은 도구 사용','Recording both results','두 결과 기록')],
 erosion3:[
  ...[['A stream carried sand to a new place.','개울물이 모래를 다른 곳으로 옮겼어요.','Flowing water','흐르는 물'],['A gust blew dry soil off a field.','돌풍이 밭의 마른 흙을 날려 옮겼어요.','Wind','바람'],['Rainwater carried soil into a ditch.','빗물이 흙을 도랑으로 옮겼어요.','Moving water','움직이는 물'],['Waves carried grains along the shore.','파도가 모래 알갱이를 해안을 따라 옮겼어요.','Waves','파도']].map(r=>sr('What moved the material?','무엇이 흙이나 모래를 옮겼나요?',...r,'Moving ice','움직이는 얼음','Growing roots','자라는 뿌리')),
@@ -133,7 +133,7 @@ adaptation3:[
  sr('Which strategy matches the observation?','관찰에 맞는 적응은?','An Alaskan snowshoe hare’s winter fur blends with snow.','알래스카 눈덧신토끼의 겨울 털이 눈과 비슷하게 보여요.','Camouflage','위장','Migration','계절 이동','Keeping body heat in','몸의 열 지키기'),
  sr('Why can blending with snow help?','눈과 비슷하게 보이면 도움이 되는 까닭은?','A snowshoe hare has white winter fur.','눈덧신토끼는 겨울에 흰 털을 갖게 돼요.','It is harder to see against snow','눈 속에서 잘 눈에 띄지 않아요','It can run faster in deep snow','깊은 눈에서 더 빨리 달릴 수 있어요','It can find food under snow','눈 밑의 먹이를 찾을 수 있어요'),
  sr('Which strategy matches this winter state?','이 겨울 상태에 맞는 적응은?','A bat lowers its breathing and energy use during winter.','박쥐가 겨울에 호흡과 에너지 사용을 크게 줄여요.','Hibernation','겨울잠','Mimicry','흉내','Migration','계절 이동'),
- sr('How can hibernation help?','겨울잠이 도움이 되는 까닭은?','Some bats hibernate when winter food is scarce.','일부 박쥐는 겨울에 먹이가 적을 때 겨울잠을 자요.','It saves energy','에너지를 아껴요','It increases the need for food','먹이가 더 많이 필요해져요','It keeps activity at summer levels','여름만큼 활발히 움직여요'),
+ sr('How can hibernation help?','겨울잠이 도움이 되는 까닭은?','Some bats hibernate when winter food is scarce.','일부 박쥐는 겨울에 먹이가 적을 때 겨울잠을 자요.','It reduces winter energy needs','에너지를 아껴요','It raises winter energy needs','겨울 에너지 필요량을 늘려요','It maintains summer activity','여름 활동량을 유지해요'),
  sr('Which strategy matches seasonal travel?','계절에 따라 먼 곳으로 가는 적응은?','A bird flies to another region for the season.','새가 계절에 따라 다른 지역으로 날아가요.','Migration','계절 이동','Camouflage','위장','Hibernation','겨울잠'),
  sr('What may help a migrating animal?','계절 이동이 도움을 주는 경우는?','Some bats travel to warmer places with winter food.','일부 박쥐는 겨울 먹이가 있는 따뜻한 곳으로 가요.','Finding food in another region','다른 지역에서 먹이 찾기','Reducing the need to eat while staying','머무르며 먹이 필요량 줄이기','Blending into the local snow','그곳의 눈에 섞여 보이기'),
  sr('Which strategy is shown?','어떤 적응을 보여 주나요?','A harmless hoverfly resembles a wasp.','꽃등에가 말벌과 비슷하게 생겼어요.','Mimicry','흉내','Hibernation','겨울잠','Migration','계절 이동'),
@@ -149,19 +149,19 @@ pollution3:[
  sr('Which observation directly shows dirty air?','공기가 더러워졌다는 직접 관찰은?','','','Smoke is in the air','공기 중에 연기가 있어요','Oil floats on pond water','연못 물에 기름이 떠요','Litter lies on the soil','흙에 쓰레기가 놓여 있어요'),
  sr('What is a limit of this observation?','이 관찰의 한계는?','We saw oil on the water, but did not examine fish.','물에 기름이 있는 것을 보았지만 물고기는 살펴보지 않았어요.','It does not show every effect on fish','물고기에 미친 모든 영향을 알 수는 없어요','It proves all fish are safe','모든 물고기가 안전함을 증명해요','It proves there was no oil','기름이 없었음을 증명해요')],
 conserve3:[
- sr('Which reduces waste?','쓰레기를 줄이는 방법은?','','','Refill a reusable bottle','다시 쓰는 물병에 물 채우기','Throw it away after one use','한 번 쓰고 버리기','Buy it and never use it','사서 전혀 안 쓰기'),
+ sr('Which reduces waste?','쓰레기를 줄이는 방법은?','','','Refill a reusable bottle','다시 쓰는 물병에 물 채우기','Throw it away after one use','한 번 쓰고 버리기','Recycle the bottle after using it','물병을 쓰고 재활용하기'),
  sr('Which reuses paper?','종이를 다시 쓰는 방법은?','','','Draw on a clean unused side','아직 깨끗한 뒷면에 그리기','Discard an unused sheet','안 쓴 종이 버리기','Use ten sheets for one letter','글자 하나에 열 장 쓰기'),
  sr('Which reuses a box?','상자를 다시 쓰는 방법은?','','','Store game pieces in it','놀이 조각을 보관해요','Throw the usable box away','쓸 수 있는 상자를 버려요','Leave it in a stream','개울에 두어요'),
  sr('Which saves water?','물을 아끼는 방법은?','','','Close the tap when not needed','필요 없을 때 수도꼭지 잠그기','Let water run unused','쓰지 않는 물 계속 틀기','Ignore a leaking tap','새는 수도꼭지 무시하기'),
- sr('What should be checked before recycling a cup?','컵을 재활용하기 전에 확인할 것은?','','','Whether local collection accepts it','지역에서 그 컵을 받는지','Only whether the cup is clean','컵이 깨끗한지만','Only a recycling symbol','재활용 표시만'),
+ sr('What should be checked before recycling a cup?','컵을 재활용하기 전에 확인할 것은?','','','Whether local collection accepts it','지역에서 그 컵을 받는지','Only whether the cup is clean','컵이 물건이 깨끗한지','Only a recycling symbol','물건의 재활용 표시'),
  sr('What is reducing?','덜 쓰기에 해당하는 것은?','','','Use fewer disposable items','일회용품을 덜 사용하기','Buy extra items to discard','버릴 물건 더 사기','Throw away unused supplies','안 쓴 도구 버리기'),
  sr('Which protects a shared stream?','함께 쓰는 개울을 지키는 행동은?','','','Keep trash out of the water','쓰레기가 물에 들어가지 않게 하기','Dump litter into the stream','쓰레기를 개울에 버리기','Hide litter under water','쓰레기를 물속에 숨기기'),
  sr('Which is reuse rather than buying new?','새로 사는 대신 다시 쓰는 것은?','','','Use the same sturdy bag again','튼튼한 가방을 다시 사용하기','Buy a bag each time','매번 가방 새로 사기','Discard the bag before use','쓰기도 전에 가방 버리기')],
 heatsource3:[
- ...[['a stone','돌'],['a roof','지붕'],['a road','도로']].map(r=>sr('What supplies the warming energy?','데우는 에너지는 어디서 오나요?',`Sunlight warms ${r[0]}.`,`햇빛으로 ${r[1]}의 온도가 올라가요.`,'The Sun','태양','The surrounding air','주변 공기','The cool ground','차가운 땅')),
+ ...[['a stone','돌'],['a roof','지붕'],['a road','도로']].map(r=>sr('What supplies the warming energy?','데우는 에너지는 어디서 오나요?',`Sunlight warms ${r[0]}.`,`햇빛으로 ${r[1]}의 온도가 올라가요.`,'The Sun','태양','Nearby air','주변 공기','The cool ground','차가운 땅')),
  sr('Which device is producing heat?','열을 내는 기구는?','A toaster is on; a nearby heater is unplugged.','토스터는 켜져 있고 옆 난방기는 플러그가 빠져 있어요.','The working toaster','켜진 토스터','The unplugged heater','플러그가 빠진 난방기','The switched-off stove','꺼진 전기레인지'),
  sr('Why can rubbing produce warmth?','비비면 따뜻해질 수 있는 까닭은?','Two surfaces rub against each other.','두 표면을 서로 비벼요.','Friction','마찰','Sunlight alone','햇빛만','Warm air alone','따뜻한 공기만'),
- sr('Which is a heat source rather than its effect?','열의 결과 대신 열원인 것은?','Sunlight warms a bench.','햇빛이 벤치를 데워요.','The Sun','태양','The bench’s warmth','벤치의 따뜻함','The ground below','아래의 땅'),
+ sr('Which is a heat source rather than its effect?','열의 결과 대신 열원인 것은?','Sunlight warms a bench.','햇빛이 벤치를 데워요.','The Sun','태양','The bench','벤치의 따뜻함','The ground','아래의 땅'),
  sr('What heats water in this scene?','이 장면에서 물을 데우는 것은?','An electric kettle is switched on.','전기 주전자가 켜져 있어요.','The working heating element','켜진 가열 장치','The unplugged toaster','플러그가 빠진 토스터','The switched-off stove','꺼진 전기레인지'),
  sr('Does a mirror make sunlight itself?','거울이 햇빛을 스스로 만드나요?','A mirror reflects sunlight.','거울이 햇빛을 반사해요.','No, it reflects light from the Sun','아니요, 태양의 빛을 반사해요','Yes, it produces the reflected energy','네, 반사되는 에너지를 만들어 내요','Yes, the glass burns to make light','네, 유리가 타면서 빛을 내요')]
 };
@@ -181,7 +181,7 @@ const shadeQuestions=[
  [B('How should we compare the designs fairly?','공정하게 비교하는 방법은?'),B('Same blocks, starting temperature and time','같은 블록·처음 온도·시간'),B('Different blocks and times','다른 블록과 시간'),B('Measure only the prettier design','예쁜 설계만 측정')],
  [B('Which tool checks the warming effect?','따뜻해진 정도를 확인할 도구는?'),B('Thermometer','온도계'),B('Ruler','자'),B('Balance scale','양팔저울')],
  [B('What should we record for each design?','설계마다 기록할 것은?'),B('Start and end temperatures','처음과 끝 온도'),B('Only the roof color','가림막 색만'),B('Only the cover height','가림막 높이만')],
- [B('What is this model’s limit?','이 모형의 한계는?'),B('Real temperatures need testing','실제 온도는 실험해야 알아요'),B('It guarantees exact temperatures','정확한 온도를 보장해요'),B('It proves all roofs work equally','모든 가림막이 똑같이 작용해요')],
+ [B('What is this model’s limit?','이 모형의 한계는?'),B('Real temperatures need testing','실제 온도는 실험해야 알아요'),B('It measures temperature without a thermometer','온도계 없이 온도를 측정해요'),B('It tests roof color rather than shade','그늘 대신 가림막 색을 검사해요')],
  [B('What single feature are these designs comparing?','비교하는 설계의 차이는?'),B('The cover’s position','가림막 위치'),B('The block material','블록 재료'),B('The size of the blocks','블록 크기')],
  [B('What would make the comparison unfair?','공정하지 않은 비교는?'),B('Use different measurement times','다른 시간 동안 측정하기'),B('Use identical blocks','똑같은 블록 사용하기'),B('Record both temperatures','두 온도 기록하기')]
 ];
@@ -224,7 +224,7 @@ const bankGrowthRows={
 {"ask":{"en":"How many model specimens were NOT preserved?","ko":"모형에서 보존되지 않은 표본은 몇 개일까요?"},"show":{"en":"Practice model: six paper shells start. Four remain visible in the final layer; the rest are removed to represent loss.","ko":"연습 모형: 종이 껍데기 여섯 개로 시작해요. 마지막 층에 네 개가 남고 나머지는 사라짐을 나타내려고 빼요."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"4","ko":"4"},{"en":"6","ko":"6"}]}
 ],
 "2": [
-{"ask":{"en":"Which comparison supports a possible benefit of quick covering without guaranteeing it?","ko":"빨리 덮이면 도움 될 수 있음을 보이되 보장하지 않는 비교는?"},"show":{"en":"Practice model: covered group—8 of 10 shapes remain; exposed group—3 of 10 remain. These are made-up model results.","ko":"연습 모형: 덮은 무리 10개 중 8개가 남고 드러낸 무리 10개 중 3개가 남아요. 가상 모형 결과예요."},"right":{"en":"More covered shapes remained, but some were still lost","ko":"덮은 쪽이 더 남았지만 일부는 사라졌어요"},"wrong":[{"en":"All covered shapes remained, proving guaranteed preservation","ko":"덮은 것은 모두 남아 보존이 보장돼요"},{"en":"Fewer covered shapes remained than exposed shapes","ko":"덮은 쪽이 드러낸 쪽보다 적게 남았어요"}]},
+{"ask":{"en":"Which comparison supports a possible benefit of quick covering without guaranteeing it?","ko":"빨리 덮이면 도움 될 수 있음을 보이되 보장하지 않는 비교는?"},"show":{"en":"Practice model: covered group—8 of 10 shapes remain; exposed group—3 of 10 remain. These are made-up model results.","ko":"연습 모형: 덮은 무리 10개 중 8개가 남고 드러낸 무리 10개 중 3개가 남아요. 가상 모형 결과예요."},"right":{"en":"More covered shapes remained, but some were still lost","ko":"덮은 쪽이 더 남았지만 일부는 사라졌어요"},"wrong":[{"en":"Covered shapes lost more pieces than exposed ones","ko":"덮은 쪽이 드러낸 쪽보다 더 많이 사라졌어요"},{"en":"Fewer covered shapes remained than exposed shapes","ko":"덮은 쪽이 드러낸 쪽보다 적게 남았어요"}]},
 {"ask":{"en":"Which comparison best tests covering speed without changing the type of remains?","ko":"남은 부분의 종류는 같게 두고 덮이는 속도를 비교한 실험은?"},"show":{"en":"A class wants to compare quick and slow burial in a paper model.","ko":"학급이 종이 모형에서 빨리 묻히기와 천천히 묻히기를 비교하려 해요."},"right":{"en":"Identical paper shells, same layers, different covering speeds","ko":"같은 종이 껍데기와 층, 다른 덮기 속도"},"wrong":[{"en":"Hard shell shapes covered fast, soft leaf shapes covered slowly","ko":"단단한 껍데기는 빨리, 부드러운 잎은 천천히 덮기"},{"en":"Different shapes and different layers, both covered fast","ko":"다른 모양과 다른 층, 둘 다 빨리 덮기"}]}
 ]
 },
@@ -285,7 +285,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Which comparison would help test this explanation?","ko":"이 설명을 확인하는 데 도움이 되는 비교는?"},"show":{"en":"An adult slides two rough surfaces together repeatedly. The contact area gets warmer.","ko":"어른이 거친 두 면을 여러 번 비벼요. 맞닿은 부분이 따뜻해져요."},"right":{"en":"Compare rubbing with resting surfaces in the same place","ko":"같은 곳에서 비빈 면과 가만둔 면 비교"},"wrong":[{"en":"Compare a sunny place with a dark place only","ko":"햇빛 있는 곳과 어두운 곳만 비교"},{"en":"Compare different colors without any rubbing","ko":"비비지 않고 색만 비교"}]},
-{"ask":{"en":"Why compare matching tiles at the same starting temperature?","ko":"같은 타일의 처음 온도를 같게 하는 까닭은?"},"show":{"en":"Two matching tiles start equally warm. One sits in direct sunshine; one is shaded. The sunlit tile warms more.","ko":"같은 타일 두 개의 처음 온도는 같아요. 하나는 햇빛에, 하나는 그늘에 두었더니 햇빛 쪽이 더 따뜻해졌어요."},"right":{"en":"To compare the different light exposure fairly","ko":"받는 햇빛의 차이를 공정하게 비교하려고"},"wrong":[{"en":"To guarantee that both end equally warm","ko":"끝 온도가 같아지도록 보장하려고"},{"en":"To test only the tiles’ different sizes","ko":"타일 크기의 차이만 검사하려고"}]}
+{"ask":{"en":"Why compare matching tiles at the same starting temperature?","ko":"같은 타일의 처음 온도를 같게 하는 까닭은?"},"show":{"en":"Two matching tiles start equally warm. One sits in direct sunshine; one is shaded. The sunlit tile warms more.","ko":"같은 타일 두 개의 처음 온도는 같아요. 하나는 햇빛에, 하나는 그늘에 두었더니 햇빛 쪽이 더 따뜻해졌어요."},"right":{"en":"To compare the different light exposure fairly","ko":"받는 햇빛의 차이를 공정하게 비교하려고"},"wrong":[{"en":"To make the shaded tile receive more light","ko":"그늘 쪽 타일이 햇빛을 더 받게 하려고"},{"en":"To compare the effect of different tile sizes","ko":"서로 다른 타일 크기의 효과를 비교하려고"}]}
 ]
 },
 "sunshade3": {

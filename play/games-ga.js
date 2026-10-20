@@ -229,7 +229,9 @@ const CITIZEN = [
   [['👂', B('Listening to the teacher', '선생님 말씀을 들어요')], ['🗣️', B('Talking while the teacher talks', '선생님이 말할 때 떠들어요')]],
   [['🪑', B('Pushing in my chair', '의자를 넣어요')], ['🪑', B('Leaving my chair out', '의자를 그냥 둬요')]],
   [['🧍', B('Taking turns', '차례를 지켜요')], ['🚷', B('Cutting in line', '새치기해요')]],
-  [['🩹', B('Helping a friend who fell', '넘어진 친구를 도와줘요')], ['😆', B('Laughing at a friend who fell', '넘어진 친구를 비웃어요')]]
+  [['🩹', B('Helping a friend who fell', '넘어진 친구를 도와줘요')], ['😆', B('Laughing at a friend who fell', '넘어진 친구를 비웃어요')]],
+  [['📚', B('Returning a borrowed book', '빌린 책을 돌려줘요')], ['📚', B('Keeping a borrowed book', '빌린 책을 갖고 있어요')]],
+  [['🚰', B('Turning off a tap after use', '쓴 뒤 수도꼭지를 잠가요')], ['🚰', B('Leaving a tap running after use', '쓴 뒤에도 물을 틀어 둬요')]]
 ];
 registerGame({
   id: 'citizen', subject: 'ss', icon: '🌟', title: B('Good Citizens', '착한 시민'), sub: B('Kind and fair', '친절하고 공정하게'),

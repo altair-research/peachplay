@@ -79,7 +79,11 @@ COMPS[5].circle = true;
 COMPS.push(
   { shape: 'square rectangles', n: B('square', '정사각형'), parts: [{ pts: '10,10 90,10 90,50 10,50', c: [50,30] }, { pts: '10,50 90,50 90,90 10,90', c: [50,70] }], what: B('2 rectangles', '직사각형 2개') },
   { shape: 'triangle halves', n: B('triangle', '삼각형'), parts: [{ pts: '50,10 50,90 10,90', c: [37,63] }, { pts: '50,10 90,90 50,90', c: [63,63] }], what: B('2 triangles', '삼각형 2개') },
-  { shape: 'trapezoid halves', n: B('trapezoid', '사다리꼴'), parts: [{ pts: '30,20 50,20 50,80 10,80', c: [35,50] }, { pts: '50,20 70,20 90,80 50,80', c: [65,50] }], what: B('2 trapezoids', '사다리꼴 2개') }
+  { shape: 'trapezoid halves', n: B('trapezoid', '사다리꼴'), parts: [{ pts: '30,20 50,20 50,80 10,80', c: [35,50] }, { pts: '50,20 70,20 90,80 50,80', c: [65,50] }], what: B('2 trapezoids', '사다리꼴 2개') },
+  { shape: 'rectangle vertical', n: B('rectangle', '직사각형'), parts: [{pts:'10,25 50,25 50,75 10,75',c:[30,50]},{pts:'50,25 90,25 90,75 50,75',c:[70,50]}], what:B('2 rectangles','직사각형 2개') },
+  { shape: 'parallelogram diagonal', n:B('parallelogram','평행사변형'), parts:[{pts:'30,20 90,20 70,80',c:[63,40]},{pts:'30,20 70,80 10,80',c:[37,60]}],what:B('2 triangles','삼각형 2개') },
+  { shape: 'triangle basecut', n:B('triangle','삼각형'), parts:[{pts:'50,10 30,50 70,50',c:[50,37]},{pts:'30,50 70,50 90,90 10,90',c:[50,70]}],what:B('a triangle and a trapezoid','삼각형과 사다리꼴') },
+  { shape: 'pentagon roof', n:B('pentagon','오각형'), parts:[{pts:'50,10 90,45 10,45',c:[50,33]},{pts:'10,45 90,45 90,90 10,90',c:[50,68]}],what:B('a triangle and a rectangle','삼각형과 직사각형') }
 );
 const partEl = (p, fill, tf = '') => (p.pts ? `<polygon points="${p.pts}"` : `<path d="${p.d}"`) + ` fill="${fill}" stroke="#fff" stroke-width="2.5" stroke-linejoin="round" ${tf ? `transform="${tf}"` : ''}/>`;
 const compWhole = (cp) => `<svg viewBox="0 0 100 100" class="comp">${cp.parts.map((p, i) => partEl(p, COMP_COL[i % 6])).join('')}</svg>`;
@@ -206,7 +210,7 @@ const coinTotal = (list) => list.reduce((s, k) => s + COINS[k].v, 0);
 G1({
   id: 'coins1', icon: '🪙', title: B('Coins and Quarters', '동전과 쿼터'), sub: B('Which is worth more?', '어느 쪽 값이 더 클까?'), u: 'Money',
   play() {
-    const lv = lvl('coins1'), kind = pick(lv === 1 ? ['quarter', 'size', 'worth'] : ['compare', 'compare', 'size', 'worth', 'equal']);
+    const lv = lvl('coins1'), kind = pick(lv === 1 ? ['quarter', 'size', 'worth', 'compare'] : ['compare', 'compare', 'size', 'worth', 'equal']);
     if (rnd(3) === 0) {
       const k = pick(['penny','nickel','dime','quarter']);
       quiz(this, { ask: B(`Which coin is worth ${COINS[k].v} cents?`, `${COINS[k].v}센트인 동전은 무엇일까요?`), opts: ['penny','nickel','dime','quarter'].map(c => ({ html: coinSvg(c), label: COINS[c].n, ok: c === k })), cls: 'shapes', after: B(`A ${COINS[k].n.en} is worth ${COINS[k].v} cents.`, `${COINS[k].n.ko}의 값은 ${COINS[k].v}센트예요.`) }); return;

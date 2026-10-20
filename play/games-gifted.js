@@ -147,7 +147,7 @@ registerGame({
   id: 'skipcount', subject: 'gifted', icon: '🦘', title: B('Skip Counting', '건너뛰어 세기'), sub: B('Count by 2s, 5s, 10s', '2씩, 5씩, 10씩'),
   area: AREA_CH('Achievement: math'),
   play() {
-    const lv = lvl('skipcount'), step = pick(lv === 1 ? [2, 5, 10] : [2, 3, 4, 5, 10]), back = lv === 2 && rnd(3) === 0, start = (lv === 1 ? 0 : step * rnd(4)) + step;
+    const lv = lvl('skipcount'), step = pick(lv === 1 ? [2, 5, 10] : [2, 3, 4, 5, 10]), back = lv === 2 && rnd(3) === 0, start = step * rnd(5) + step;
     const seq = Array.from({ length: 5 }, (_, i) => back ? start + step * (5 - i) : start + step * i), ans = seq[4], shown = seq.slice(0, 4), set = new Set([ans]);
     while (set.size < 3) { const v = ans + pick([-step, step, -1, 1]); if (v > 0) set.add(v); }
     quiz(this, { ask: back ? B(`Count backward by ${step}s. What comes next?`, `${step}씩 거꾸로 세어요. 다음은?`) : B(`Count by ${step}s. What comes next?`, `${step}씩 세어요. 다음은?`), show: `<div class="train">${shown.map(n => `<div class="car"><div class="n">${n}</div></div>`).join('')}<div class="car gap"><div class="n">?</div></div></div>`,

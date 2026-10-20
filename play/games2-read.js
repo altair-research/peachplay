@@ -137,6 +137,10 @@ const PUNCT = [
   [1, 'Can we play outside?', 'Can we play outside.', 'Can we play outside!'], [1, 'Watch out for the car!', 'Watch out for the car?', 'Watch out for the car,'], [1, 'It is time for lunch.', 'It is time for lunch?', 'It is time for lunch,'],
   [1, 'I like apples, pears, and plums.', 'I like apples pears and plums.', 'I like, apples pears, and plums.'], [1, 'It is May 5, 2026.', 'It is May 5 2026.', 'It is, May 5 2026.'], [1, 'I can\'t go today.', 'I cant go today.', 'I can,t go today.'],
   [1, 'Ben\'s dog is brown.', 'Bens dog is brown.', 'Ben\'s\' dog is brown.'], [1, 'She isn\'t here.', 'She isnt here.', 'She is\'nt here.'],
+  [1, 'We don\'t have a map.', 'We dont have a map.', 'We do\'nt have a map.'],
+  [1, 'The cat\'s bed is soft.', 'The cats bed is soft.', 'The cat\'s\' bed is soft.'],
+  [1, 'I brought a cup, a plate, and a spoon.', 'I brought a cup a plate and a spoon.', 'I brought, a cup a plate and a spoon.'],
+  [1, 'It is June 8, 2026.', 'It is June 8 2026.', 'It is, June 8 2026.'],
   [2, '"Come here," said Mom.', 'Come here, said Mom.', '"Come here" said Mom.'], [2, 'Dear Grandma,', 'Dear Grandma.', 'Dear, Grandma'], [2, 'Love, Mia', 'Love Mia.', 'Love; Mia'], [2, 'We live at 12 Oak Street, Lawrenceville, Georgia.', 'We live at 12 Oak Street Lawrenceville Georgia.', 'We live at, 12 Oak Street Lawrenceville, Georgia.'],
   [2, 'The dog\'s bone is big.', 'The dogs bone is big.', 'The dog\'s\' bone is big.'], [2, '"I am happy!" said Lily.', '"I am happy" said Lily.', 'I am happy! said Lily.'], [2, 'We packed shoes, socks, and a hat.', 'We packed shoes socks, and a hat.', 'We packed, shoes, socks and a hat.']
 ];
@@ -224,6 +228,10 @@ G2R({
 
 // ---------- 13. Words with more than one meaning, homophones, nuance ----------
 const WN2 = [
+  [1,B('"The duck swam in the pond." What does duck mean?','"The duck swam in the pond."에서 duck의 뜻은?'),B('a water bird','물새'),[B('lower your head','고개를 숙이다')]],
+  [1,B('"Duck under the branch!" What does duck mean?','"Duck under the branch!"에서 duck의 뜻은?'),B('lower your head','고개를 숙이다'),[B('a water bird','물새')]],
+  [1,B('"Please park the car here." What does park mean?','"Please park the car here."에서 park의 뜻은?'),B('leave a vehicle in a space','차를 세워 두다'),[B('a place to play outside','밖에서 노는 공원')]],
+  [1,B('"We ran at the park." What does park mean?','"We ran at the park."에서 park의 뜻은?'),B('a place to play outside','밖에서 노는 공원'),[B('leave a vehicle in a space','차를 세워 두다')]],
   [1, B('"I wear a ring on my finger." What is a ring here?', '"I wear a ring on my finger."에서 ring은 무엇일까요?'), B('jewelry', '반지'), [B('a bell sound', '종소리')]],
   [1, B('"I heard the bell ring." What does ring mean here?', '"I heard the bell ring."에서 ring은 무슨 뜻일까요?'), B('make a sound', '소리를 내다'), [B('jewelry on a finger', '손가락에 끼는 반지')]],
   [1, B('"The bat flew out of the cave." What is a bat here?', '"The bat flew out of the cave."에서 bat은 무엇일까요?'), B('an animal', '동물'), [B('a baseball tool', '야구 방망이')]], [1, B('"I hit the ball with a bat." What is a bat here?', '"I hit the ball with a bat."에서 bat은 무엇일까요?'), B('a baseball tool', '야구 방망이'), [B('an animal', '동물')]],
@@ -247,7 +255,9 @@ const PARAS = [
   [B('I enjoy making art.', '나는 미술 활동을 좋아해요.'), [B('I draw boats with crayons.', '크레용으로 배를 그려요.'), B('I paint bright flowers.', '화사한 꽃을 색칠해요.')], B('That is why I enjoy making art.', '그래서 나는 미술 활동을 좋아해요.')],
   [B('Dogs make great pets.', '개는 훌륭한 반려동물이에요.'), [B('They are loyal and love to play.', '충직하고 노는 것을 좋아해요.'), B('They need food, water, and walks.', '먹이, 물, 산책이 필요해요.')], B('That is why many families love dogs.', '그래서 많은 가족이 개를 좋아해요.')],
   [B('Recess is my favorite part of school.', '학교에서 쉬는 시간이 가장 좋아요.'), [B('I play tag with my friends.', '친구들과 술래잡기를 해요.'), B('I swing as high as I can.', '그네를 힘껏 높이 타요.')], B('Recess makes my day fun.', '쉬는 시간 덕분에 하루가 즐거워요.')],
-  [B('Peaches are a special fruit in Georgia.', '복숭아는 조지아의 특별한 과일이에요.'), [B('Many peach trees grow on farms.', '많은 복숭아나무가 농장에서 자라요.'), B('People pick peaches in summer.', '사람들은 여름에 복숭아를 따요.')], B('Georgia is proud of its peaches.', '조지아는 복숭아를 자랑스러워해요.')]
+  [B('Peaches are a special fruit in Georgia.', '복숭아는 조지아의 특별한 과일이에요.'), [B('Many peach trees grow on farms.', '많은 복숭아나무가 농장에서 자라요.'), B('People pick peaches in summer.', '사람들은 여름에 복숭아를 따요.')], B('Georgia is proud of its peaches.', '조지아는 복숭아를 자랑스러워해요.')],
+  [B('I like making paper models.','나는 종이 모형 만들기를 좋아해요.'),[B('I fold paper into boats.','종이를 접어 배를 만들어요.'),B('I glue paper into little houses.','종이를 붙여 작은 집을 만들어요.')],B('That is why I like making paper models.','그래서 나는 종이 모형 만들기를 좋아해요.')],
+  [B('I enjoy music class.','나는 음악 수업을 좋아해요.'),[B('I tap a beat on a drum.','북을 두드려 박자를 쳐요.'),B('I sing with my friends.','친구들과 노래해요.')],B('That is why I enjoy music class.','그래서 나는 음악 수업을 좋아해요.')]
 ];
 G2W({
   id: 'paragraph2', icon: '📃', title: B('Paragraph Builder', '문단 만들기'), sub: B('Topic sentence, details, closing', '주제 문장, 뒷받침 문장, 마무리'), u: 'Writing',
@@ -260,7 +270,7 @@ G2W({
  [B('Which detail tells how dogs behave?','개가 어떻게 행동하는지 알려 주는 문장은?'),B('Their bowls are beside the door.','개 밥그릇은 문 옆에 있어요.'),B('Their leashes hang on a hook.','개 목줄은 고리에 걸려 있어요.')],
  [B('Which detail tells about a running game?','달리는 놀이를 알려 주는 문장은?'),B('I wait for my turn on the swing.','그네 탈 차례를 기다려요.'),B('I sit on a bench at recess.','쉬는 시간에 벤치에 앉아요.')],
  [B('Which detail tells where peaches grow?','복숭아가 자라는 곳을 알려 주는 문장은?'),B('Peaches are picked in summer.','여름에 복숭아를 따요.'),B('Peaches have a pit inside.','복숭아 속에는 씨가 있어요.')]
- ][PARAS.indexOf(p)]; quiz(this, { ask: details[0], show: `<div class="storytext">${L(p[0])}</div>`, opts: [p[1][0], details[1], details[2]].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Details tell more about the topic.', '뒷받침 문장은 주제를 더 자세히 말해 줘요.') }); }
+ ][PARAS.indexOf(p)] || [B('Which detail tells how the activity is done?','어떻게 활동하는지 알려 주는 문장은?'),B('I keep my supplies in a box.','도구를 상자에 보관해요.'),B('I put my bag by the door.','가방을 문 옆에 둬요.')]; quiz(this, { ask: details[0], show: `<div class="storytext">${L(p[0])}</div>`, opts: [p[1][0], details[1], details[2]].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Details tell more about the topic.', '뒷받침 문장은 주제를 더 자세히 말해 줘요.') }); }
     else { const right = '1 → 2 → 3 → 4', ord = [p[0], p[1][0], p[1][1], p[2]]; const order = shuffle([0, 1, 2, 3]); const lab = ['A', 'B', 'C', 'D']; const shown = order.map((o, i) => `${lab[i]}. ${L(ord[o])}`); const correct = order.map((o, i) => [o, lab[i]]).sort((a, b) => a[0] - b[0]).map(x => x[1]).join(' → '); const correct2 = order.map((o, i) => [o === 1 ? 2 : o === 2 ? 1 : o, lab[i]]).sort((a, b) => a[0] - b[0]).map(x => x[1]).join(' → '); const wrongs = [shuffle(['A', 'B', 'C', 'D']).join(' → '), shuffle(['A', 'B', 'C', 'D']).join(' → ')].filter(x => x !== correct && x !== correct2); const opts = [correct, ...wrongs].filter((v, i, ar) => ar.indexOf(v) === i); while (opts.length < 3) { const c = shuffle(['A', 'B', 'C', 'D']).join(' → '); if (!opts.includes(c) && c !== correct2) opts.push(c); } quiz(this, { ask: B('Put the sentences in order to make a good paragraph.', '문장을 알맞은 순서로 놓아 좋은 문단을 만들어요.'), show: `<div class="storytext">${shown.join('<br>')}</div>`, opts: opts.slice(0, 3).map(v => ({ html: `<span class="num eq">${v}</span>`, ok: v === correct })), cls: 'words', after: B('Topic first, details next, closing last.', '주제 문장, 뒷받침 문장, 마무리 문장 순서예요.') }); }
   }
 });
@@ -291,3 +301,17 @@ G2R({
     else { const w = shuffle(ABCW).slice(0, 3).sort(), guide = [w[0], w[2]], mid = w[1], outs = ABCW.filter(x => x < guide[0] || x > guide[1]); if (outs.length < 2) { this.play(); return; } const [out, out2] = shuffle(outs); quiz(this, { ask: B(`The guide words are "${guide[0]}" and "${guide[1]}". Which word is on this page?`, `이 페이지의 안내 낱말: "${guide[0]}", "${guide[1]}". 이 페이지에 있는 낱말은?`), show: '', opts: [mid, out, out2].map(x => ({ html: `<span class="word">${x}</span>`, ok: x === mid })), cls: 'words', after: B(`${guide[0]} < ${mid} < ${guide[1]}`, `${guide[0]} < ${mid} < ${guide[1]}`) }); }
   }
 });
+
+// 65: combine two different text-feature purposes, without changing the feature names.
+(() => {
+ const game=GAMES.find(g=>g.id==='info2'),old=game.play;
+ const parts=[
+  [B('Glossary','낱말 풀이'),B('find a word’s meaning','낱말 뜻을 찾기')],
+  [B('Index','찾아보기'),B('find a topic’s page number','주제의 쪽 번호 찾기')],
+  [B('Caption','그림 설명'),B('read an explanation of a picture','그림의 설명 읽기')],
+  [B('Subheading','소제목'),B('find the topic of one section','한 부분의 주제 찾기')],
+  [B('Title','제목'),B('find the name of the whole book','책 전체의 이름 찾기')]
+ ];
+ game.play=function(){if(lvl(this.id)===1)return old.call(this);const [a,b,c]=shuffle(parts),pair=(x,y)=>B(`${x[0].en} → ${y[0].en}`,`${x[0].ko} → ${y[0].ko}`);
+ quiz(this,{ask:B(`First ${a[1].en}, then ${b[1].en}. Which pair helps?`,`먼저 ${a[1].ko}, 다음 ${b[1].ko}. 알맞은 짝은?`),opts:[pair(a,b),pair(b,a),pair(a,c)].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words sents'});};
+})();

@@ -13,16 +13,16 @@
   }));
   register('moreP','math','Which has more?','어느 쪽이 많을까','CD-MA2',banks((lv,i)=>{
     const pairs=lv===1?[[1,3],[1,2],[2,3]]:[[2,3],[3,5],[2,5],[1,4]], [a,b]=pairs[i%pairs.length],k=objects[Math.floor(i/pairs.length)%4];
-    return task('Which group has more?','어느 쪽에 더 많이 있나요?','',group(b,k,i%2),group(a,k,i%2));
+    return task('Which group has more?','어느 쪽에 더 많이 있나요?',scene([group(a,k,0),group(b,k,0)]),group(b,k,i%2),group(a,k,i%2));
   }));
   register('sizeP','math','Big and small','큰 것 작은 것','CD-MA4',banks((lv,i)=>{
     const large=32+i%6,small=lv===1?13+i%5:23+i%5,big=i%2===0,k=Math.floor(i/2)%3;
     return task(big?'Find the bigger shape.':'Find the smaller shape.',big?'더 큰 모양을 찾아요.':'더 작은 모양을 찾아요.','',shape(k,big?large:small),shape(k,big?small:large));
   }));
   register('lengthP','math','Long and short','길이를 살펴요','CD-MA4',banks((lv,i)=>{
-    const long=70+i%12,short=25+i%10,wantLong=i%2===0;
+    const pairs=[[48,16],[64,16],[80,16],[64,32],[80,32],[80,48]], [long,short]=pairs[Math.floor(i/2)%pairs.length],wantLong=i%2===0;
     const bar=n=>svg(lv===1?`<rect x="12" y="40" width="${n}" height="18" fill="#436cb5"/>`:`<rect x="50" y="${92-n}" width="18" height="${n}" fill="#436cb5"/>`);
-    return task(lv===1?(wantLong?'Find the longer strip.':'Find the shorter strip.'):(wantLong?'Find the taller tower.':'Find the shorter tower.'),lv===1?(wantLong?'더 긴 띠를 찾아요.':'더 짧은 띠를 찾아요.'):(wantLong?'더 높은 탑을 찾아요.':'더 낮은 탑을 찾아요.'),'',bar(wantLong?long:short),bar(wantLong?short:long));
+    return task(lv===1?(wantLong?'Find the longer strip.':'Find the shorter strip.'):(wantLong?'Find the taller tower.':'Find the shorter tower.'),lv===1?(wantLong?'더 긴 띠를 찾아요.':'더 짧은 띠를 찾아요.'):(wantLong?'더 높은 탑을 찾아요.':'더 낮은 탑을 찾아요.'),scene([bar(long),bar(short)]),bar(wantLong?long:short),bar(wantLong?short:long));
   }));
   register('sortP','math','Find a matching friend','같은 친구 찾기','CD-MA6',banks((lv,i)=>{
     const k=i%3,foil=(k+1+Math.floor(i/3)%2)%3,size=18+Math.floor(i/6)*4,bySize=lv===2&&i%2===0;

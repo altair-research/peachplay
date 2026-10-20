@@ -58,6 +58,8 @@ G1S({
   id: 'precip', icon: '🌦️', title: B('Weather Pictures', '그림으로 보는 날씨'), sub: B('Rain, snow, clouds, wind, and sunshine', '비, 눈, 구름, 바람, 맑은 하늘'), u: 'Weather',
   play() {
     const w = pick(PRECIP_PICS), choices = [w, ...others(PRECIP_PICS, w, 2)];
+    if(rnd(3)===0){const a=pick(PRECIP_PICS.filter(x=>x!==w)),pair=(x,y)=>B(`${x.n.en} → ${y.n.en}`,`${x.n.ko} → ${y.n.ko}`),two=lvl(this.id)===2;
+      quiz(this,{ask:two?B('Which pair names the two observations in order?','두 관찰을 차례로 나타내는 짝은?'):B('What weather is shown in picture 2?','2번 그림에 나타난 날씨는?'),show:`<div class="story">1 ${precipPicture(a)} → 2 ${precipPicture(w)}</div>`,opts:sOpts(two?pair(a,w):w.n,two?[pair(w,a),pair(a,choices[1])]:[a.n,choices.find(x=>x!==a&&x!==w).n]),cls:'words'});return;}
     if (rnd(2) === 0) {
       quiz(this, { ask: B('What weather does this picture show?', '그림에 나타난 날씨는 무엇일까요?'), show: precipPicture(w), opts: choices.map(x => ({ html: `<span class="word">${L(x.n)}</span>`, ok: x === w })), cls: 'words', after: w.detail, vocab: w.n.en }); return;
     }
@@ -73,7 +75,8 @@ const SEAS = [['winter', '겨울', '⛄', B('It is cold. Some places get snow.',
 G1S({
   id: 'seasons1', icon: '🍂', title: B('Seasonal Patterns', '계절의 변화'), sub: B('What changes through the year?', '1년 동안 무엇이 바뀔까?'), u: 'Seasons',
   play() {
-    const lv = lvl('seasons1'), kind = pick(lv === 1 ? ['feature', 'after'] : ['feature', 'after', 'ga', 'month']);
+    const lv = lvl('seasons1'), kind = pick(lv === 1 ? ['feature', 'after', 'before'] : ['feature', 'after', 'ga', 'month']);
+    if(kind==='before'){const i=rnd(4),ans=SEAS[(i+3)%4];quiz(this,{ask:B(`Which season comes just before ${SEAS[i][0]}?`,`${SEAS[i][1]} 바로 전 계절은?`),opts:[ans,...others(SEAS,ans,2)].map(x=>({html:`<span class="emo">${x[2]}</span>`,label:B(x[0],x[1]),ok:x===ans})),cls:'shapes'});return;}
     if (kind === 'feature') { const t = pick(SEAS), ds = others(SEAS, t, 2); quiz(this, { ask: B(`Which season is this? ${L(t[3])}`, `어느 계절일까요? ${t[3].ko}`), opts: [t, ...ds].map(s => ({ html: `<span class="emo">${s[2]}</span>`, label: B(s[0], s[1]), ok: s === t })), cls: 'shapes', after: B(`It is ${t[0]}!`, `${t[1]}이에요!`), vocab: t[0] }); }
     else if (kind === 'after') { const i = rnd(4), ans = SEAS[(i + 1) % 4], pool = SEAS.filter(x => x !== ans && x !== SEAS[i]); quiz(this, { ask: B(`Which season comes after ${SEAS[i][0]}?`, `${SEAS[i][1]} 다음 계절은?`), opts: [ans, ...shuffle(pool).slice(0, 2)].map(x => ({ html: `<span class="emo">${x[2]}</span>`, label: B(x[0], x[1]), ok: x === ans })), cls: 'shapes', after: B(`${ans[0]} comes after ${SEAS[i][0]}.`, `${SEAS[i][1]} 다음은 ${ans[1]}이에요.`) }); }
     else if (kind === 'ga') {
@@ -87,7 +90,7 @@ G1S({
 });
 
 // ---------- 4. Magnet power ----------
-const MAG_YES = [['📎', B('paper clip', '클립')], ['🔩', B('nut and bolt', '볼트와 너트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('wrench', '렌치')]];
+const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron nut and bolt', '쇠 볼트와 너트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')]];
 const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🖍️', B('crayon', '크레용')]];
 const barMagnet = (dir, x) => `<g transform="translate(${x} 0)"><rect x="0" y="0" width="38" height="22" fill="${dir ? '#ef476f' : '#118ab2'}"/><rect x="38" y="0" width="38" height="22" fill="${dir ? '#118ab2' : '#ef476f'}"/><rect x="0" y="0" width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/></g>`;
 G1S({
@@ -109,7 +112,8 @@ G1S({
       quiz(this, { ask: B('Look at the two ends that face each other. Do the magnets pull together or push apart?', '마주 보는 두 끝을 봐요. 자석은 서로 끌어당길까요, 밀어낼까요?'), show: `<svg viewBox="0 0 220 40" class="magsvg"><g transform="translate(0 9)">${bar(4, f1)}${bar(140, f2)}</g></svg>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '끌어당겨요' : 'attract (pull together)'}</span>`, ok: attract }, { html: `<span class="word">${S.lang === 'ko' ? '밀어내요' : 'repel (push apart)'}</span>`, ok: !attract }], cls: 'words', after: attract ? B('Different ends (N and S) attract.', '다른 극(N극과 S극)은 서로 끌어당겨요.') : B('The same ends (N and N, or S and S) repel.', '같은 극(N-N 또는 S-S)은 서로 밀어내요.'), vocab: attract ? 'attract' : 'repel' });
     } else {
       const u = [[B('a refrigerator magnet', '냉장고 자석'), '🧲'], [B('a magnetic toy', '자석 장난감'), '🧩'], [B('a magnetic latch on a cabinet', '찬장의 자석 잠금장치'), '🚪'], [B('a magnetic name tag', '자석 이름표'), '🏷️']], t = pick(u);
-      quiz(this, { ask: B('People use magnets every day. Which one uses a magnet to hold something?', '사람들은 매일 자석을 써요. 자석으로 무언가를 붙여 두는 것은?'), opts: [[B('a refrigerator magnet holding a note', '메모를 붙인 냉장고 자석'), true], [B('a spoon in a cup', '컵 속 숟가락'), false], [B('a book on a shelf', '선반 위의 책'), false]].map(x => ({ html: `<span class="word">${L(x[0])}</span>`, ok: x[1] })), cls: 'words sents', after: B('A magnet can hold a note on a refrigerator door.', '자석은 냉장고 문에 메모를 붙여 둘 수 있어요.') });
+      const uses=[B('An iron paper clip moves toward a hidden tool before touching it. What could pull it?','쇠 클립이 닿기도 전에 숨긴 도구 쪽으로 움직여요. 어떤 도구일까요?'),B('An iron bolt moves toward a hidden tool before touching it. What could pull it?','쇠 볼트가 닿기도 전에 숨긴 도구 쪽으로 움직여요. 어떤 도구일까요?'),B('A steel can moves toward a hidden tool before touching it. What could pull it?','철제 캔이 닿기도 전에 숨긴 도구 쪽으로 움직여요. 어떤 도구일까요?'),B('A steel wrench moves toward a hidden tool before touching it. What could pull it?','철제 렌치가 닿기도 전에 숨긴 도구 쪽으로 움직여요. 어떤 도구일까요?')];
+      quiz(this,{ask:uses[u.indexOf(t)],opts:sOpts(B('A magnet','자석'),[B('A string','끈'),B('A clip','집게')]),cls:'words'});
     }
   }
 });
@@ -214,4 +218,30 @@ G1S({
   const g=GAMES.find(g=>g.id===id);
   g.careNeed=function(){const q=pick(qs);quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`<div class="storytext">${L(q[lvl(id)-1])}</div>`,askExtra:{t:L(q[lvl(id)-1])},opts:q[2].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
  }
+})();
+
+// 65: additional observations use the existing light, vibration and care concepts.
+(() => {
+ const round=(g,ask,text,right,wrong)=>quiz(g,{ask,askExtra:{t:L(text)},show:`<div class="storytext">${L(text)}</div>`,opts:sOpts(right,wrong),cls:'words'});
+ const light=GAMES.find(g=>g.id==='light1'),oldLight=light.play;
+ light.play=function(){if(rnd(2))return oldLight.call(this);const obj=pick([B('book','책'),B('ball','공'),B('chair','의자'),B('rock','돌')]),on=rnd(2)===0;
+ if(lvl(this.id)===2){const hidden=B('Hidden → visible → hidden','안 보임 → 보임 → 안 보임'),visible=B('Visible → hidden → visible','보임 → 안 보임 → 보임');round(this,B('Which sequence matches what you can see?','보이는 모습의 순서에 맞는 것은?'),B(`Only one lamp lights a ${obj.en}. It starts ${on?'off':'on'}. Switch it ${on?'on, then off':'off, then on'}.`,`${obj.ko} 옆에 전등 하나만 있어요. 처음에는 ${on?'꺼져':'켜져'} 있어요. ${on?'켠 다음 꺼요':'끈 다음 켜요'}.`),on?hidden:visible,[on?visible:hidden,on?B('Hidden → hidden → visible','안 보임 → 안 보임 → 보임'):B('Visible → visible → hidden','보임 → 보임 → 안 보임')]);return;}
+ round(this,B('What changes in what you can see?','보이는 모습은 어떻게 바뀔까요?'),B(`In a room with no other light, a lamp is turned ${on?'on':'off'} beside a ${obj.en}.`,`다른 빛이 없는 방에서 ${obj.ko} 옆 전등을 ${on?'켜요':'꺼요'}.`),on?B('It becomes visible','모습이 보여요'):B('It is no longer visible','모습이 안 보여요'),[on?B('It is no longer visible','모습이 안 보여요'):B('It becomes visible','모습이 보여요'),B('Its shape changes','모양이 바뀌어요')]);};
+ const sound=GAMES.find(g=>g.id==='sound1'),oldSound=sound.play;
+ sound.play=function(){if(rnd(2))return oldSound.call(this);const obj=pick([B('drum skin','북의 가죽'),B('guitar string','기타 줄'),B('bell','종'),B('rubber band','고무줄')]);
+ if(lvl(this.id)===2){round(this,B('Which sound sequence follows both actions?','두 행동에 맞는 소리의 순서는?'),B(`A ${obj.en} makes a sound. Stop its movement, then set it moving again.`,`${obj.ko}에서 소리가 나요. 움직임을 멈췄다가 다시 움직이게 해요.`),B('Sound → quiet → sound','소리 → 조용 → 소리'),[B('Sound → sound → quiet','소리 → 소리 → 조용'),B('Quiet → sound → quiet','조용 → 소리 → 조용')]);return;}
+ round(this,B('What happens to the sound?','소리는 어떻게 될까요?'),B(`A ${obj.en} makes a sound. Its movement is completely stopped.`,`${obj.ko}에서 소리가 나요. 움직임을 완전히 멈춰요.`),B('It stops','소리가 멈춰요'),[B('It gets louder','소리가 더 커져요'),B('It keeps sounding the same','같은 소리가 계속 나요')]);};
+ const plant=GAMES.find(g=>g.id==='plants1'),oldPlant=plant.play;
+ plant.play=function(){if(rnd(2))return oldPlant.call(this);const letter=pick(Object.keys(PLANT_PARTS)),names=Object.values(PLANT_PARTS);
+ quiz(this,{ask:B(`What part is marked ${letter}?`,`${letter}로 표시한 부분은?`),show:plantSvg(),opts:sOpts(PLANT_PARTS[letter],others(names,PLANT_PARTS[letter],2)),cls:'words'});};
+ // Independent conditions: identifying the missing provision is different from a toy foil.
+ const care=[
+ [B('A seedling has light and damp soil, but its roots have outgrown a tiny pot.','빛과 촉촉한 흙이 있지만 새싹 뿌리가 작은 화분을 꽉 채웠어요.'),B('Give the roots more room','뿌리 자리를 넓혀 줘요'),[B('Add more water','물을 더 줘요'),B('Move it into shade','그늘로 옮겨요')]],
+ [B('A plant has damp soil and room, but a cover blocks the daylight.','흙이 촉촉하고 자리도 있지만 덮개가 빛을 막아요.'),B('Remove the cover','덮개를 치워요'),[B('Add more water','물을 더 줘요'),B('Use a larger pot','큰 화분으로 옮겨요')]],
+ [B('A plant has daylight and room, but no water has reached its dry roots.','빛과 자리는 있지만 마른 뿌리에 물이 닿지 않았어요.'),B('Water the roots','뿌리에 물을 줘요'),[B('Use a larger pot','큰 화분으로 옮겨요'),B('Add a cover','덮개를 씌워요')]],
+
+ ];
+ const oldCare=plant.careNeed;plant.careNeed=function(){if(rnd(2))return oldCare.call(this);const q=pick(lvl(this.id)===1?care.slice(0,2):care);round(this,B('Which change meets the missing need?','부족한 것을 채우는 방법은?'),q[0],q[1],q[2]);};
+ const animal=GAMES.find(g=>g.id==='animals1'),oldAnimal=animal.play;
+ animal.play=function(){if(rnd(2))return oldAnimal.call(this);const y=pick(YOUNG);quiz(this,{ask:B(`What is a baby ${y[1].en} called?`,`${y[1].ko}의 새끼 이름은?`),show:`<span class="emo">${y[0]}</span>`,opts:sOpts(y[2],others(YOUNG,y,2).map(x=>x[2])),cls:'words'});};
 })();

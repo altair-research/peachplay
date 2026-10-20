@@ -149,7 +149,7 @@
   });
 
   register('zpyramid', '🔺', 'Number Pyramid', '숫자 피라미드', t => {
-    const n = t === 0 ? 2 : 3 + Math.floor(t / 2), rows = [seq(n).map(() => 1 + rnd(3 + t))];
+    const n = t === 0 ? 2 : 3 + Math.floor(t / 2), rows = [seq(n).map(() => t===0 ? rnd(4) : 1 + rnd(3 + t))];
     while (rows[rows.length - 1].length > 1) { const r = rows[rows.length - 1]; rows.push(r.slice(1).map((v, i) => v + r[i])); }
     const at = t <= 2 ? rows.length - 1 : rnd(rows.length - 1) + 1, col = rnd(rows[at].length), ans = rows[at][col];
     const visual = rows.slice().reverse().map((r, k) => `<div class="z-pyramid">${r.map((v, j) => `<b>${rows.length - 1 - k === at && j === col ? '?' : v}</b>`).join('')}</div>`).join('');
@@ -157,7 +157,8 @@
   });
 
   register('zbalance', '⚖️', 'Balance Clues', '저울 단서', t => {
-    const x = 1 + rnd(3 + t), y = 1 + rnd(3 + t), a = 2 + Math.floor(t / 2), b = t < 2 ? 0 : 1 + rnd(2), sum = a * x + b * y;
+    const small = t===0 ? pick([2,3,4,5,6].flatMap(a=>seq(Math.floor(6/a)+1).map(x=>[a,x]))) : null;
+    const x = small ? small[1] : 1 + rnd(3 + t), y = 1 + rnd(3 + t), a = small ? small[0] : 2 + Math.floor(t / 2), b = t < 2 ? 0 : 1 + rnd(2), sum = a * x + b * y;
     const valid = seq(50).filter(v => a * v + b * y === sum);
     if (valid.length !== 1) throw new Error('Balance is ambiguous');
     return numberItem(B('Both sides weigh the same. What is one star worth?', '양쪽 무게가 같아요. 별 하나의 무게는?'), line(`⭐${a > 1 ? ` × ${a}` : ''}${b ? ` + ● × ${b}` : ''} = ${sum}`) + (b ? line(`● + ● = ${y * 2}`) : ''), x, B(b ? 'First find one circle by sharing its total equally.' : 'Share the total equally among the stars.', b ? '동그라미 둘의 합을 똑같이 나누어 하나의 무게를 찾아요.' : '별끼리 전체 무게를 똑같이 나누어요.'));

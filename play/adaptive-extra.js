@@ -15,11 +15,15 @@
     ['stop', 's', 'top', ['step', 'shop']], ['spin', 's', 'pin', ['pan', 'spot']],
     ['spot', 's', 'pot', ['pet', 'spoon']], ['sled', 's', 'led', ['lid', 'slide']],
     ['clap', 'k', 'lap', ['cap', 'clip']], ['glow', 'g', 'low', ['go', 'slow']],
-    ['plane', 'p', 'lane', ['plan', 'plate']], ['train', 't', 'rain', ['trail', 'tin']]
+    ['plane', 'p', 'lane', ['plan', 'plate']], ['train', 't', 'rain', ['trail', 'tin']],
+    ['snap','s','nap',['snip','sap']], ['spill','s','pill',['spell','pal']],
+    ['skate','s','Kate',['kit','state']], ['seat','s','eat',['sat','set']],
+    ['sand','s','and',['sad','send']], ['sold','s','old',['sell','sod']],
+    ['scold','s','cold',['coal','code']], ['sweep','s','weep',['sweet','sip']]
   ];
   for (const grade of ['2', '3']) add('adremove' + grade, grade, B('Take Away a Sound', '소리 하나 빼요'), soundArea, lv => {
-    if(grade==='3' && lv===2){const r=pick([['clap','k','lap','p','b','lab'],['plane','p','lane','n','t','late'],['train','t','rain','n','k','rake'],['glow','g','low','l','s','so'],['smile','s','mile','l','t','mite'],['spin','s','pin','n','g','pig']]);return {ask:B(`Say "${r[0]}" without its first /${r[1]}/. Then change /${r[3]}/ to /${r[4]}/.`,`"${r[0]}"의 첫 /${r[1]}/ 소리를 빼요. 그다음 /${r[3]}/ 소리를 /${r[4]}/로 바꿔요.`),opts:choices(r[5],[r[2],r[0]]),cls:'words',after:B(`${r[0]} → ${r[2]} → ${r[5]}`,`${r[0]} → ${r[2]} → ${r[5]}`)};}
-    const t = pick(lv === 1 ? deletions.slice(0, 6) : deletions.slice(6));
+    if(lv===2){const r=pick([['clap','k','lap','p','b','lab'],['plane','p','lane','n','t','late'],['train','t','rain','n','k','rake'],['glow','g','low','l','s','so'],['smile','s','mile','l','t','mite'],['spin','s','pin','n','g','pig'],['stop','s','top','p','t','tot'],['spot','s','pot','t','p','pop'],['snap','s','nap','n','k','cap'],['spill','s','pill','l','t','pit'],['sand','s','and','d','t','ant'],['sweep','s','weep','p','k','week']]);return {ask:B(`Say "${r[0]}" without its first /${r[1]}/. Then change /${r[3]}/ to /${r[4]}/.`,`"${r[0]}"의 첫 /${r[1]}/ 소리를 빼요. 그다음 /${r[3]}/ 소리를 /${r[4]}/로 바꿔요.`),opts:choices(r[5],[r[2],r[0]]),cls:'words',after:B(`${r[0]} → ${r[2]} → ${r[5]}`,`${r[0]} → ${r[2]} → ${r[5]}`)};}
+    const t = pick(deletions);
     return { ask: B(`Say "${t[0]}" without the first /${t[1]}/ sound.`, `"${t[0]}"에서 첫 /${t[1]}/ 소리를 빼고 말해요.`),
       askExtra: { t: t[0], lang: 'en-US' }, opts: choices(t[2], t[3]), cls: 'words', after: B(`${t[0]} → ${t[2]}`, `${t[0]} → ${t[2]}`) };
   });
@@ -28,11 +32,13 @@
     ['grin', 'n', 'p', 'grip', ['green', 'gin']], ['flat', 't', 'p', 'flap', ['fat', 'flip']],
     ['trip', 'p', 'm', 'trim', ['tip', 'trap']], ['flag', 'g', 'p', 'flap', ['flat', 'lag']],
     ['swan', 'n', 'p', 'swap', ['swim', 'wan']], ['cup', 'p', 't', 'cut', ['cap', 'cub']],
-    ['tent', 't', 's', 'tense', ['ten', 'test']], ['brim', 'm', 'k', 'brick', ['rim', 'brisk']]
+    ['tent', 't', 's', 'tense', ['ten', 'test']], ['brim', 'm', 'k', 'brick', ['rim', 'brisk']],
+    ['cap','p','t','cat',['cup','cab']], ['map','p','t','mat',['mop','mad']],
+    ['pan','n','t','pat',['pen','pin']], ['pin','n','g','pig',['pan','pit']]
   ];
   add('adchange3', '3', B('Change the Last Sound', '끝소리를 바꿔요'), soundArea, lv => {
-    if(lv===2){const r=pick([['slip','p','t','slit','s','lit'],['crab','b','k','crack','k','rack'],['grin','n','p','grip','g','rip'],['flat','t','p','flap','f','lap'],['trip','p','m','trim','t','rim'],['flag','g','p','flap','f','lap']]);return {ask:B(`In "${r[0]}", change the last /${r[1]}/ to /${r[2]}/. Then remove the first /${r[4]}/.`,`"${r[0]}"의 끝 /${r[1]}/를 /${r[2]}/로 바꿔요. 그다음 첫 /${r[4]}/를 빼요.`),opts:choices(r[5],[r[3],r[0]]),cls:'words',after:B(`${r[0]} → ${r[3]} → ${r[5]}`,`${r[0]} → ${r[3]} → ${r[5]}`)};}
-    const t = pick(changes.slice(0, 5));
+    if(lv===2){const r=pick([['slip','p','t','slit','s','lit'],['crab','b','k','crack','k','rack'],['grin','n','p','grip','g','rip'],['flat','t','p','flap','f','lap'],['trip','p','m','trim','t','rim'],['flag','g','p','flap','f','lap'],['slip','p','k','slick','s','lick'],['flat','t','g','flag','f','lag'],['trip','p','k','trick','t','Rick'],['crab','b','m','cram','k','ram'],['grin','n','d','grid','g','rid'],['flag','g','k','flak','f','lack']]);return {ask:B(`In "${r[0]}", change the last /${r[1]}/ to /${r[2]}/. Then remove the first /${r[4]}/.`,`"${r[0]}"의 끝 /${r[1]}/를 /${r[2]}/로 바꿔요. 그다음 첫 /${r[4]}/를 빼요.`),opts:choices(r[5],[r[3],r[0]]),cls:'words',after:B(`${r[0]} → ${r[3]} → ${r[5]}`,`${r[0]} → ${r[3]} → ${r[5]}`)};}
+    const t = pick(changes);
     return { ask: B(`In "${t[0]}", change the last /${t[1]}/ to /${t[2]}/.`, `"${t[0]}"의 끝 /${t[1]}/ 소리를 /${t[2]}/로 바꿔요.`),
       askExtra: { t: t[0], lang: 'en-US' }, opts: choices(t[3], t[4]), cls: 'words',
       after: B(`${t[0]} → ${t[3]}`, `${t[0]} → ${t[3]}`) };
@@ -47,17 +53,24 @@
   const sentences = {
     K: ['I see ___ sun.', 'It ___ fun yesterday.', 'Thank ___ for helping.', 'Mom ___ hello.', 'We ___ happy.', 'I have ___ nose.', '___ play with us.', 'I ___ a red hat.', 'Please ___ here.', 'I want ___ water.'],
     1: ['We ___ at home yesterday.', 'Put it over ___.', '___ is your name?', '___ is my bag?', 'They packed ___ bags.', 'I wish I ___ fly.', 'I ___ like a snack.', 'We ___ be kind.', 'She ___ her work.', 'How ___ books do you have?'],
-    2: ['I smile ___ I am happy.', 'Three ___ are here.', 'My ___ plays with me.', 'We have ___ food for everyone.', 'Let us play ___.', 'I ___ about the story.', 'We walk ___ the gate.', 'I know the ___.', 'I ___ a bell ring.', 'We ___ read after lunch.'],
+    2: ['I smile ___ I am happy.', 'Three ___ are here.', 'My ___ plays with me.', 'We have ___ food for everyone.', 'Let us play ___.', 'Yesterday I ___ about the story.', 'We walk ___ the gate.', 'I know the ___.', 'Yesterday I ___ a bell ring.', 'We read after lunch most days, but not every day. We ___ read after lunch.'],
     3: ['I ___ brush my teeth at bedtime, every night.', 'The twins walk home ___.', 'I want ___ cup.', '___ child has a pencil.', 'This book is ___ trains.', 'We wash our hands ___ lunch.', 'We sit ___ the table.', 'Red and blue are ___ colors.', '___ it rained, we stayed dry.', 'I found ___ in the box: a key!']
   };
   words.K.push(['here', 'heer', 'herre'], ['little', 'litle', 'littel']);
   sentences.K.push('Come ___ to me.', 'I see a ___ cat.');
+  // 65: twelve distinct targets per grade; L2 adds sentence evidence.
+  words[1].push(['once','wunce','onse'],['two','twoo','twu']);
+  sentences[1].push('I went there ___, not twice.','One and one make ___.');
+  words[2].push(['only','onley','olny'],['other','uther','ohter']);
+  sentences[2].push('I have ___ one pencil, no more.','One shoe is here. Where is the ___ shoe?');
+  words[3].push(['until','untill','untl'],['between','betwen','beetween']);
+  sentences[3].push('We left as soon as the rain stopped. We waited ___ it stopped.','The small box is ___ the two big boxes.');
   for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
-    const t = pick(grade === 'K' ? words.K : lv === 1 ? words[grade].slice(0, 5) : words[grade].slice(5));
+    const t = pick(words[grade]);
     const index=words[grade].indexOf(t), sentence = sentences[grade][index];
-    if((grade==='K'||grade==='3') && lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
+    if(lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
     const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:['never','between','these','Many','during','between','until','difference','Despite','nobody']};
-    const alternatives=(grade==='K'||grade==='3') && lv===2?[t[1],contextWrong[grade][index]]:t.slice(1);
+    const alternatives=lv===2?[t[1],(contextWrong[grade]||[])[index]||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
     return { ask: B('Read. Choose a spelling.', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
       askExtra: { t: sentence.replace('___', 'blank'), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], alternatives), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
@@ -67,17 +80,21 @@
     ['I finished this book. I want ___ one.', 'another', ['these', 'those']], ['___ child has a pencil.', 'Every', ['Many', 'Both']],
     ['We sat ___ the round table.', 'around', ['during', 'until']], ['The red and blue hats are ___.', 'different', ['during', 'between']],
     ['I found ___ in the box: a key!', 'something', ['nothing', 'nobody']], ['This book is ___ trains.', 'about', ['between', 'under']],
-    ['___ it rained, we stayed dry inside.', 'Though', ['During', 'Despite']], ['I ___ brush my teeth at bedtime, every night.', 'always', ['never', 'rarely']]
+    ['___ it rained, we stayed dry inside.', 'Though', ['During', 'Despite']], ['I ___ brush my teeth at bedtime, every night.', 'always', ['never', 'rarely']],
+    ['We left as soon as the rain stopped. We waited ___ it stopped.', 'until', ['among','between']],
+    ['The small box is ___ the two big boxes.', 'between', ['during','until']]
   ];
   add('adwordcontext3', '3', B('Familiar Words in Sentences', '문장 속 익숙한 낱말'), wordArea, lv => {
-    const t = pick(lv === 1 ? contexts.slice(0, 5) : contexts.slice(5));
+    const t = pick(contexts);
+    if(lv===2){const u=pick(contexts.filter(x=>x!==t&&x[1]!==t[1]));return {ask:B('Which pair fills the two blanks in order?','두 빈칸에 차례로 들어갈 낱말의 짝은?'),askExtra:{t:t[0].replace('___','blank')+' '+u[0].replace('___','blank'),lang:'en-US'},show:passage(t[0]+'<br>'+u[0]),opts:choices(t[1]+' → '+u[1],[u[1]+' → '+t[1],t[2][0]+' → '+u[1]]),cls:'words'};}
     return { ask: B('Which word completes the sentence?', '문장을 완성하는 낱말을 골라요.'), askExtra: { t: t[0].replace('___', 'blank'), lang: 'en-US' },
       show: passage(t[0]), opts: choices(t[1], t[2]), cls: 'words', after: B(t[0].replace('___', t[1]), t[0].replace('___', t[1])) };
   });
   const oppositePairs = [['hot', 'cold'], ['up', 'down'], ['big', 'small'], ['open', 'closed'], ['day', 'night'], ['full', 'empty'], ['wet', 'dry'], ['near', 'far'], ['fast', 'slow'], ['soft', 'hard'], ['in', 'out'], ['on', 'off']];
   for (const grade of ['K', '1']) add('admeaning' + grade, grade, B('Opposite Word Partners', '반대 뜻 짝꿍'), B('Vocabulary', '어휘'), lv => {
-    const index = grade === 'K' ? rnd(oppositePairs.length) : (lv === 1 ? 0 : 5) + rnd(5), source = oppositePairs[index], pair = grade === 'K' && lv === 2 ? [...source].reverse() : source;
+    const index = rnd(oppositePairs.length), source = oppositePairs[index], pair = lv === 2 ? [...source].reverse() : source;
     const nearby = {hot:['warm','cool'],cold:['cool','warm'],up:['across','along'],down:['across','along'],big:['medium','huge'],small:['medium','tiny'],open:['ajar','wide'],closed:['ajar','narrow'],day:['dawn','noon'],night:['dawn','dusk'],full:['half-full','almost full'],empty:['half-full','almost empty'],wet:['damp','soaked'],dry:['damp','slightly wet'],near:['nearby','next to'],far:['farther','distant'],fast:['quick','steady'],slow:['steady','slower'],soft:['smooth','fluffy'],hard:['firm','rough'],in:['beside','near'],out:['beside','near'],on:['dim','bright'],off:['dim','bright']};
+    if(grade==='1'&&lv===2){const other=pick(oppositePairs.filter(x=>x!==source)),right=pair[1]+' → '+other[1];return {ask:B('Which pair gives the opposites in order?','차례로 반대 뜻인 낱말의 짝은?'),show:passage(pair[0]+' → '+other[0]),askExtra:{t:pair[0]+', '+other[0],lang:'en-US'},opts:choices(right,[other[1]+' → '+pair[1],pair[1]+' → '+other[0]]),cls:'words'};}
     const ds = nearby[pair[0]];
     return { ask: B(`Which word means the opposite of "${pair[0]}"?`, `"${pair[0]}"와 반대 뜻인 낱말을 골라요.`),
       askExtra: { t: pair[0], lang: 'en-US' }, opts: choices(pair[1], ds), cls: 'words', after: B(`${pair[0]} ↔ ${pair[1]}`, `${pair[0]} ↔ ${pair[1]}`) };
@@ -111,8 +128,9 @@
     ['Draw a fish', 'Get paper', 'Draw an oval', 'Add a tail'],
     ['Make a paper chain', 'Get paper strips', 'Make a loop', 'Add another loop']];
   for (const grade of ['K', '1']) add('adinfo' + grade, grade, B('Read the Steps', '순서 글을 읽어요'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const t = pick(grade === 'K' ? kInstructions : lv === 1 ? instructions.slice(0, 5) : instructions.slice(5));
+    const t = pick(kInstructions);
     const text = `${t[0]}: First, ${t[1].toLowerCase()}. Next, ${t[2].toLowerCase()}. Last, ${t[3].toLowerCase()}.`;
+    if(grade==='1'&&lv===2){const q=textRound(text,B('Which pair is step 2 → step 3?','2번 → 3번의 짝은?'),t[2]+' → '+t[3],[t[3]+' → '+t[2],t[1]+' → '+t[3]],B('Steps 2, then 3.','2번 다음 3번이에요.'));return {...q,show:passage(`${t[0]}<br>1. ${t[1]}<br>2. ${t[2]}<br>3. ${t[3]}`),cls:'words sents'};}
     const step = lv === 1 ? 1 : 3;
     return textRound(text, lv === 1 ? B('What is the first step?', '첫 번째 할 일을 골라요.') : B('What is the last step?', '마지막 할 일을 골라요.'), t[step], t.slice(1).filter((_, i) => i + 1 !== step), B(text, text));
   });

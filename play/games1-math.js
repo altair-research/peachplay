@@ -279,7 +279,8 @@ G1({
 (() => {
  for(const id of ['tenmoreless','addtens']){const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){
   if(lvl(id)===1)return old.call(this);
-  const n=id==='addtens'?10*(3+rnd(4)):31+rnd(39),a=20,b=10,ans=n+a-b;
+  const cases=[];if(id==='addtens')for(let n=20;n<=60;n+=10)for(let a=10;a<=30;a+=10)for(let b=10;b<=20;b+=10)if(![n,a,b].includes(n+a-b))cases.push([n,a,b]);
+  const [n,a,b]=id==='addtens'?pick(cases):[31+rnd(39),20,10],ans=n+a-b;
   quiz(this,{ask:B('How many blocks are left?','블록이 몇 개 남을까요?'),askSay:B(`${n} blocks. Add ${a}, then take away ${b}. How many left?`,`${n}개에서 ${a}개를 더하고 ${b}개를 빼면 몇 개 남을까요?`),show:`<div class="bigword">${n} + ${a} − ${b} = ?</div>`,opts:numO(ans,[n+a,n-b,ans+1],1,100)});
  };}
 })();

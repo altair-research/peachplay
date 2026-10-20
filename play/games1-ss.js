@@ -77,7 +77,7 @@ const TRAITS = { fairness: B('fairness', '공정함'), respect: B('respect', '�
 const SCEN = [
   [B('Ana makes sure every friend gets the same number of turns.', '아나는 모든 친구가 같은 횟수로 차례를 갖게 해요.'), 'fairness'], [B('Ben listens when a new friend talks.', '벤은 새 친구가 말할 때 귀 기울여 들어요.'), 'respect'], [B('Mia is scared, but she tells the truth anyway.', '미아는 무섭지만 그래도 사실대로 말해요.'), 'courage'],
   [B('Sam falls off his bike, gets up, and tries again.', '샘은 자전거에서 넘어졌지만 일어나 다시 해 봐요.'), 'perseverance'], [B('Lily helps a classmate who dropped his books.', '릴리는 책을 떨어뜨린 반 친구를 도와줘요.'), 'kindness'], [B('Leo plays with a classmate who speaks a different language.', '레오는 다른 언어를 쓰는 반 친구와 함께 놀아요.'), 'tolerance'],
-  [B('Zoe keeps practicing piano every day until the song is perfect.', '조이는 곡이 완벽해질 때까지 매일 피아노를 연습해요.'), 'perseverance'], [B('Max feels nervous, but he stands up for a friend who is being teased.', '맥스는 떨리지만 놀림받는 친구의 편을 들어 줘요.'), 'courage'], [B('Ava splits the snacks equally for everyone.', '에이바는 간식을 모두에게 똑같이 나눠요.'), 'fairness'], [B('Noah leaves flowers growing and stays on the park path.', '노아는 꽃을 꺾지 않고 공원의 길로 다녀요.'), 'respect']
+  [B('Zoe keeps practicing piano every day until the song is perfect.', '조이는 곡이 완벽해질 때까지 매일 피아노를 연습해요.'), 'perseverance'], [B('Max feels nervous, but he stands up for a friend who is being teased.', '맥스는 떨리지만 놀림받는 친구의 편을 들어 줘요.'), 'courage'], [B('Ava splits the snacks equally for everyone.', '에이바는 간식을 모두에게 똑같이 나눠요.'), 'fairness'], [B('Noah leaves flowers growing and stays on the park path.', '노아는 꽃을 꺾지 않고 공원의 길로 다녀요.'), 'respect'], [B('Ana tries several ways to solve a tricky puzzle.', '아나는 어려운 퍼즐을 여러 방법으로 계속 풀어 봐요.'),'perseverance'], [B('Leo waits until his partner has finished speaking.', '레오는 짝이 말을 마칠 때까지 기다려요.'),'respect']
 ];
 G1T({
   id: 'character1', icon: '💛', title: B('Character Counts', '좋은 품성'), sub: B('Fairness, respect, courage, perseverance', '공정, 존중, 용기, 인내'), u: 'Character',
@@ -93,7 +93,7 @@ const roseSvg = (deg) => `<svg viewBox="0 0 120 120" class="rose8"><circle cx="6
 G1T({
   id: 'mapdir', icon: '🧭', title: B('Compass Rose Plus', '나침반 중간 방향'), sub: B('NE, NW, SE, SW', '북동, 북서, 남동, 남서'), u: 'Map skills',
   play() {
-    const lv = lvl('mapdir'), kind = pick(lv === 1 ? ['arrow', 'arrow', 'between'] : ['arrow', 'between', 'grid', 'grid']), diag = DIR8.filter(d => d[0].length === 2);
+    const lv = lvl('mapdir'), kind = pick(lv === 1 ? ['arrow', 'between', 'grid'] : ['arrow', 'between', 'grid', 'grid']), diag = DIR8.filter(d => d[0].length === 2);
     if (kind === 'between') {
       const t = pick(diag), a = t[0][0], b = t[0][1], full = (c) => DIR8.find(d => d[0] === c)[1];
       quiz(this, { ask: B(`Which direction is between ${full(a).en} and ${full(b).en}?`, `${full(a).ko}과 ${full(b).ko} 사이의 방향은?`), show: roseSvg(0), opts: [t, ...others(DIR8, t, 2)].map(d => ({ html: `<span class="num">${d[0]}</span>`, label: d[1], ok: d === t })), cls: 'shapes', after: B(`${t[1].en} (${t[0]}) is between ${full(a).en} and ${full(b).en}.`, `${t[1].ko}(${t[0]})은 ${full(a).ko}과 ${full(b).ko} 사이예요.`), vocab: t[1].en });
@@ -102,7 +102,7 @@ G1T({
       quiz(this, { ask: B('Which direction does the arrow point?', '화살표는 어느 방향을 가리킬까요?'), show: roseSvg(t[2]), opts: [t, ...others(pool, t, 2)].map(d => ({ html: `<span class="num">${d[0]}</span>`, label: d[1], ok: d === t })), cls: 'shapes', after: B(`It points ${t[1].en}.`, `${t[1].ko}을 가리켜요.`), vocab: t[1].en });
     } else {
       const N = 4, items = [['🏠', B('house', '집')], ['🏫', B('school', '학교')], ['🌳', B('tree', '나무')], ['🏪', B('store', '가게')], ['⛲', B('fountain', '분수')], ['🏥', B('hospital', '병원')]], [a, b] = shuffle(items).slice(0, 2); let ax, ay, d, k;
-      for (let tries = 0; tries < 60; tries++) { ax = rnd(N); ay = rnd(N); d = pick(diag); k = 1 + rnd(2); const rad = (d[2] - 90) * Math.PI / 180, dx = Math.round(Math.cos(rad)), dy = Math.round(Math.sin(rad)), bx = ax + dx * k, by = ay + dy * k; if (bx >= 0 && bx < N && by >= 0 && by < N) break; }
+      for (let tries = 0; tries < 60; tries++) { ax = rnd(N); ay = rnd(N); d = pick(lv===1?DIR8.filter(d=>d[0].length===1):diag); k = 1 + rnd(2); const rad = (d[2] - 90) * Math.PI / 180, dx = Math.round(Math.cos(rad)), dy = Math.round(Math.sin(rad)), bx = ax + dx * k, by = ay + dy * k; if (bx >= 0 && bx < N && by >= 0 && by < N) break; }
       const rad = (d[2] - 90) * Math.PI / 180, bx = ax + Math.round(Math.cos(rad)) * k, by = ay + Math.round(Math.sin(rad)) * k, cells = []; for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) cells.push(`<div class="mc">${x === ax && y === ay ? a[0] : x === bx && y === by ? b[0] : ''}</div>`);
       quiz(this, { ask: B(`Which way is the ${b[1].en} from the ${a[1].en}?`, `${a[1].ko}에서 볼 때 ${b[1].ko}의 위치는 어느 쪽일까요?`), show: `<div class="mapwrap"><div class="map n4">${cells.join('')}</div><div class="rose"><span class="rn">N</span><span class="rw">W</span><span class="re">E</span><span class="rs">S</span></div></div>`, opts: [d, ...others(DIR8, d, 2)].map(x => ({ html: `<span class="num">${x[0]}</span>`, label: x[1], ok: x === d })), cls: 'shapes', after: B(`It is to the ${d[1].en}.`, `${d[1].ko}에 있어요.`), vocab: d[1].en });
     }
@@ -142,7 +142,7 @@ const LAND = [['🏔️', B('mountain', '산'), B('a very high, rocky area', '�
 G1T({
   id: 'worldmap', icon: '🌍', title: B('Continents and Oceans', '대륙과 대양'), sub: B('7 continents, 5 oceans, landforms', '7대륙, 5대양, 지형'), u: 'Earth',
   play() {
-    const lv = lvl('worldmap'), kind = pick(lv === 1 ? ['cont', 'cont', 'land'] : ['cont', 'ocean', 'ocean', 'land', 'ga']);
+    const lv = lvl('worldmap'), kind = pick(lv === 1 ? ['cont', 'ocean', 'land'] : ['cont', 'ocean', 'ocean', 'land', 'ga']);
     if (kind === 'cont') { const ks = Object.keys(WORLD), k = pick(ks), ds = others(ks, k, 2); quiz(this, { ask: B('Which continent is colored red?', '빨갛게 칠해진 대륙은 어디일까요?'), show: worldSvg(k), opts: [k, ...ds].map(c => ({ html: `<span class="word">${L(WORLD[c].n)}</span>`, ok: c === k })), cls: 'words', after: B(`That is ${WORLD[k].n.en}.`, `${WORLD[k].n.ko}이에요.`), vocab: WORLD[k].n.en }); }
     else if (kind === 'ocean') { const ks = Object.keys(OCEANS), k = pick(ks), ds = others(ks, k, 2); quiz(this, { ask: B('Which ocean is the yellow dot in?', '노란 점이 있는 대양은?'), show: worldSvg('', OCEANS[k].at[0]), opts: [k, ...ds].map(o => ({ html: `<span class="word">${L(OCEANS[o].n)}</span>`, ok: o === k })), cls: 'words', after: B(`That is the ${OCEANS[k].n.en}.`, `${OCEANS[k].n.ko}이에요.`), vocab: OCEANS[k].n.en }); }
     else if (kind === 'land') { const t = pick(LAND), ds = others(LAND, t, 2); quiz(this, { ask: B(`Which landform is ${L(t[2])}?`, `${t[2].ko}은 어떤 지형일까요?`), opts: [t, ...ds].map(x => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok: x === t })), after: B(`A ${t[1].en} is ${t[2].en}.`, `${t[1].ko}은 ${t[2].ko}이에요.`), vocab: t[1].en }); }
@@ -259,4 +259,49 @@ G1T({
  patriot.play=function(){if(lvl(this.id)===1)return pold.call(this);const qs=[
  [B('A child may choose a game; every child gets a turn.','아이가 놀이를 고르고 모두 차례를 가져요.'),[B('Freedom + fairness','자유 + 공정'),B('Freedom + pride','자유 + 자랑스러움'),B('Pride + duty','자랑스러움 + 의무')]],
  [B('A child helps a neighbor, then smiles at the flag of home.','아이가 이웃을 돕고 자기 나라 국기를 보며 뿌듯해해요.'),[B('Care + pride','배려 + 자랑스러움'),B('Freedom + duty','자유 + 의무'),B('Fairness + freedom','공정 + 자유')]]];const q=pick(qs);quiz(this,{ask:B('Which pair of ideas fits in order?','차례로 맞는 마음의 짝은?'),show:`<div class="storytext">${L(q[0])}</div>`,askExtra:{t:L(q[0])},opts:choices(q[1]),cls:'words'});};
+})();
+
+// 65: reason about the functions of the existing artifacts, without claiming everyone used them.
+(() => {
+ const game=GAMES.find(g=>g.id==='thennow');
+ const purposes=[B('light','불빛'),B('travel','이동'),B('writing','글쓰기'),B('messages','소식 전하기'),B('cooking','요리'),B('food storage','음식 보관'),B('washing','빨래')];
+ const tools=[[B('candle','촛불'),B('electric lamp','전등')],[B('horse and wagon','말과 마차'),B('motor car','자동차')],[B('feather pen','깃털 펜'),B('computer','컴퓨터')],[B('carried letter','배달 편지'),B('mobile phone','휴대전화')],[B('hearth fire','벽난로 불'),B('cooking stove','조리용 스토브')],[B('cool cellar','찬 지하 저장실'),B('refrigerator','냉장고')],[B('wash tub','빨래통'),B('washing machine','세탁기')]];
+ game.play=function(){const t=pick(THEN),side=1+rnd(2),other=side===1?2:1,two=lvl(this.id)===2,index=THEN.indexOf(t);
+ const purposeWrong=[[1,6],[2,6],[5,6],[5,6],[1,2],[1,2],[1,2]][index],toolWrong=[[5,6],[5,6],[5,6],[5,6],[2,5],[1,2],[2,5]][index];
+ const right=two?tools[index][other-1]:purposes[index],wrong=(two?toolWrong:purposeWrong).map(i=>two?tools[i][other-1]:purposes[i]);
+ quiz(this,{ask:two?B('Which tool can do the same job?','같은 일을 할 수 있는 도구는?'):B('Which job can this tool do?','이 도구로 어떤 일을 할까요?'),show:`<div class="storytext">${t[side][0]} ${L(tools[index][side-1])}</div>`,askExtra:{t:L(tools[index][side-1])},opts:tOpts(right,wrong),cls:'words'});};
+ const place=GAMES.find(g=>g.id==='placetime'),prior=place.play;
+ // New dates checked against National Archives and NPS; see banks2.md.
+ const dates=[
+ [1752,B('Franklin carries out the kite experiment','프랭클린이 연 실험을 함')],
+ [1776,B('Jefferson drafts the Declaration','제퍼슨이 독립선언서 초안을 씀')],
+ [1805,B('The expedition reaches the Pacific','탐험대가 태평양에 도착함')],
+ [1896,B('Carver arrives at Tuskegee','카버가 터스키기에 옴')],
+ [1901,B('Roosevelt becomes President','루스벨트가 대통령이 됨')],
+ [1960,B('Bridges enters William Frantz School','브리지스가 윌리엄 프랜츠 학교에 입학함')]
+ ];
+ place.play=function(){if(lvl(this.id)===1&&rnd(2))return prior.call(this);const two=lvl(this.id)===2,chosen=shuffle(dates).slice(0,3),sorted=[...chosen].sort((a,b)=>a[0]-b[0]),last=rnd(2)===0,right=two?sorted[1]:sorted[last?2:0];
+ quiz(this,{ask:two?B('Which event is between the other two in time?','시간 순서에서 다른 두 일 사이에 일어난 일은?'):last?B('Which event came later?','더 나중에 일어난 일은?'):B('Which event came earlier?','더 먼저 일어난 일은?'),show:`<div class="storytext" style="font-size:clamp(16px,2.8dvh,21px)">${chosen.map(x=>`${x[0]}: ${L(x[1])}`).join('<br>')}</div>`,opts:tOpts(right[1],chosen.filter(x=>x!==right).map(x=>x[1])),cls:'words sents'});};
+})();
+
+// 65: explicit fictional budgets; no personal financial data.
+(() => {
+ const g=GAMES.find(g=>g.id==='savespend'),old=g.play;
+ const easy=[
+ [B('You buy a bus ticket with your money. What are you doing?','내 돈으로 버스표를 사요. 무엇을 하나요?'),B('Spending','쓰기')],
+ [B('You keep birthday money for a future book. What are you doing?','나중에 책을 사려고 생일에 받은 돈을 보관해요. 무엇을 하나요?'),B('Saving','모으기')],
+ [B('You pay for bread at a store. What are you doing?','가게에서 빵 값을 내요. 무엇을 하나요?'),B('Spending','쓰기')],
+ [B('You put weekly earnings aside for a bicycle. What are you doing?','자전거를 사려고 매주 번 돈을 따로 둬요. 무엇을 하나요?'),B('Saving','모으기')]
+ ];
+ g.play=function(){if(lvl(this.id)===1){if(rnd(2))return old.call(this);const q=pick(easy);quiz(this,{ask:q[0],opts:tOpts(q[1],[q[1].en==='Saving'?B('Spending','쓰기'):B('Saving','모으기'),B('Giving it away','남에게 주기')]),cls:'words'});return;}
+ const price=5+rnd(6),saved=1+rnd(price-1),earned=1+rnd(3),spent=1+rnd(Math.min(saved+earned,3)),left=saved+earned-spent,need=Math.max(0,price-left);
+ const text=B(`Book goal: $${price}. Saved: $${saved}. Earn $${earned}, then spend $${spent}.`,`책 목표: ${price}달러. 모은 돈: ${saved}달러. ${earned}달러를 번 뒤 ${spent}달러를 써요.`);
+ quiz(this,{ask:B('How many more dollars must be saved for the goal?','목표를 위해 몇 달러를 더 모아야 할까요?'),askExtra:{t:L(text)},show:`<div class="storytext">${L(text)}</div>`,opts:numO(need,[need+1,price,Math.max(0,price-saved)],0,12),after:B(`$${left} left; $${need} more needed.`,`${left}달러가 남아서 ${need}달러가 더 필요해요.`)});};
+})();
+
+// 65: one link in the displayed containment model; no saved home address.
+(() => {
+ const g=GAMES.find(g=>g.id==='whereilive'),old=g.play;
+ g.play=function(){if(lvl(this.id)===2||rnd(2))return old.call(this);const i=rnd(4),right=NEST[i+1][0];
+ quiz(this,{ask:B(`In this chart, which type of place directly contains the ${NEST[i][0].en}?`,`이 그림에서 ${NEST[i][0].ko} 바로 바깥의 장소 종류는?`),show:`<div class="storytext">${NEST.map(x=>L(x[0])).join(' → ')}</div>`,opts:tOpts(right,NEST.filter((_,j)=>j!==i+1&&j!==i).slice(0,2).map(x=>x[0])),cls:'words'});};
 })();

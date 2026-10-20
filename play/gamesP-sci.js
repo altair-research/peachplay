@@ -15,9 +15,9 @@
     const kinds=lv===1?['sun','rain']:['cloud','rain','sun'],k=kinds[i%kinds.length],other=kinds[(i+1)%kinds.length];
     return task(k==='cloud'?'Find the cloudy sky without rain.':`Find the ${PK.names[k].en} in the sky picture.`,k==='cloud'?'비가 내리지 않는 구름 낀 하늘을 찾아요.':`하늘 그림에서 ${PK.names[k].ko} 그림을 찾아요.`,sky(k,i),sky(k,23-i),sky(other,23-i));
   }));
-  const plants=['tree','flower','leaf'],animals=['cat','fish','dog','bird','frog','duck'];
+  const plants=['tree','flower','leaf'],animals=['cat','fish','dog','bee','frog','duck','goat','mouse','bear'];
   register('plantanimalP','sci','Plants and animals','식물과 동물','CD-SC3',banks((lv,i)=>{
-    const p=plants[Math.floor(i/6)%3],a=animals[i%6]==='bird'?'bee':animals[i%6],plant=i%2===0;
+    const j=Math.floor(i/2),p=plants[j%3],a=animals[j%9],plant=i%2===0;
     return task(plant?'A tree and a flower are plants. Find a plant or a plant part.':'A cat and a fish are animals. Find an animal.',plant?'나무와 꽃은 식물이에요. 식물이나 식물의 일부를 찾아요.':'고양이와 물고기는 동물이에요. 동물을 찾아요.',scene([art(lv===1?'tree':'flower'),art(lv===1?'cat':'fish')]),art(plant?p:a),art(plant?a:p));
   }));
   function plantScene(kind,i,dark=false) {

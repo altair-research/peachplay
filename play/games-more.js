@@ -294,3 +294,26 @@ registerGame({
  const feelings=GAMES.find(g=>g.id==='feelings'),original=feelings.play;
  feelings.play=function(){if(lvl(this.id)===1)return original.call(this);const keys=shuffle(Object.keys(FEEL)),a=keys[0],b=keys[1],c=keys[2];quiz(this,{ask:B('Follow the two feelings in order. Which pair of faces fits?','말한 두 기분의 순서에 맞는 얼굴 짝을 골라요.'),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(FEEL[a][1])} → ${L(FEEL[b][1])}</div>`,opts:[[a,b],[b,a],[a,c]].map((ks,i)=>({html:ks.map(k=>`<span class="emo">${FEEL[k][0]}</span>`).join(' → '),ok:i===0})),cls:'shapes'});};
 })();
+
+// 65: use two existing recipes as joint evidence; no new paint formula.
+(() => {
+ const game=GAMES.find(g=>g.id==='colors'),old=game.play;
+ game.play=function(){if(lvl(this.id)===1)return old.call(this);const [a,b]=shuffle(MIX),ia=rnd(2),ib=rnd(2),other=pick(MIX.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.en} → ${y.en}`,`${x.ko} → ${y.ko}`);
+ const row=(t,i)=>`${CDOT(t[1-i])} + ? = ${CDOT(t[2])}`;
+ quiz(this,{ask:B('Which pair fills the two paint blanks in order?','두 물감 빈칸에 차례로 들어갈 짝은?'),show:`<div class="mixrow">1: ${row(a,ia)}</div><div class="mixrow">2: ${row(b,ib)}</div>`,opts:[pair(a[ia+3],b[ib+3]),pair(a[ia+3],other[5]),pair(other[5],b[ib+3])].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
+ const cause=GAMES.find(g=>g.id==='cause'),prior=cause.play;
+ const rows=[
+  [B('An uninflated balloon gets air from a pump.','부풀지 않은 풍선에 펌프로 공기를 넣어요.'),B('The air is let out again.','공기를 다시 빼요.'),B('Flat','납작함'),B('Inflated','부풀음'),B('Flat again','다시 납작함')],
+  [B('A dry sponge is dipped into water.','마른 스펀지를 물에 담가요.'),B('It is squeezed to remove some water.','짜서 물을 조금 빼요.'),B('Dry','마름'),B('Wet','젖음'),B('Less water','물이 줄어듦')],
+  [B('A working fan is switched on.','잘 작동하는 선풍기를 켜요.'),B('The fan is switched off and allowed to stop.','선풍기를 끄고 멈출 때까지 기다려요.'),B('Stopped','멈춤'),B('Turning','돌아감'),B('Stopped again','다시 멈춤')],
+  [B('A small spring is pulled gently at both ends.','작은 용수철 양끝을 살살 당겨요.'),B('It is released without damage.','망가지지 않게 놓아요.'),B('Short','짧음'),B('Stretched','늘어남'),B('Short again','다시 짧음')]
+ ];
+ cause.play=function(){if(rnd(2))return prior.call(this);const r=pick(rows),two=lvl(this.id)===2,pair=(a,b,c)=>B(`${a.en} → ${b.en} → ${c.en}`,`${a.ko} → ${b.ko} → ${c.ko}`),right=two?pair(r[2],r[3],r[4]):r[3];
+ quiz(this,{ask:two?B('Which sequence follows both actions?','두 행동에 맞는 변화 순서는?'):B('What happens after this action?','이 행동 뒤 어떻게 될까요?'),show:`<div class="storytext" style="font-size:clamp(17px,3dvh,22px)">${L(r[0])}${two?' '+L(r[1]):''}</div>`,askExtra:{t:L(r[0])+(two?' '+L(r[1]):'')},opts:(two?[right,pair(r[3],r[2],r[4]),pair(r[2],r[4],r[3])]:[right,r[2]]).map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
+})();
+
+// Keep all cause-and-effect sequences readable within the short K viewport.
+(() => {
+ const game=GAMES.find(g=>g.id==='cause'),old=game.play;
+ game.play=function(){const render=window.quiz;try{window.quiz=(g,q)=>{const before=q.onRender;q={...q,cls:(q.cls||'')+' sents',onRender(){if(before)before();for(const el of document.querySelectorAll('.show>div')){el.style.fontSize='clamp(16px,2.65dvh,20px)';el.style.lineHeight='1.15';}}};render(g,q);};return old.call(this);}finally{window.quiz=render;}};
+})();
