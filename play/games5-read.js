@@ -1,12 +1,12 @@
 (() => {
 'use strict';
 const decks=new Map();
-const take=(id,lv)=>{const k=`${id}:${lv}:${S.lang}`;let d=decks.get(k);if(!d){d=shuffle(Array.from({length:10},(_,i)=>i));decks.set(k,d);}const i=d.shift();d.push(i);return i;};
+const take=(id,lv,count=10)=>{const k=`${id}:${lv}:${S.lang}`;let d=decks.get(k);if(!d){d=shuffle(Array.from({length:count},(_,i)=>i));decks.set(k,d);}const i=d.shift();d.push(i);return i;};
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const item=(ask,text,right,wrong)=>({ask,askSay:B(ask.en,/[A-Za-z]/.test(ask.ko)?'영어 질문을 들어 보세요.':ask.ko),askExtra:S.lang==='ko'&&/[A-Za-z]/.test(ask.ko)?{t:ask.en,lang:'en-US'}:undefined,show:`<div class="g5-reading" lang="en">${esc(text).replaceAll('\n','<br>')}<button class="g5-read-listen" type="button" aria-label="${L(B('Listen to English text; reading help','영어 본문 듣기 · 읽기 도움'))}">🔊 ${L(B('Listen (help)','듣기 도움'))}</button></div>`,opts:[right,...wrong].map((x,i)=>({html:`<span class="word" lang="en">${esc(x)}</span>`,ok:i===0})),cls:'words g5-read-options',after:B(`Answer: ${right}. Check the clues and question conditions.`,`정답: ${right} · 본문의 단서와 질문 조건을 확인해요.`),vocab:right,onRender(){const b=document.querySelector('.g5-read-listen');if(b)b.onclick=()=>say(text,'en-US');const c=document.querySelector('#spo');if(c)c.onclick=()=>[...document.querySelectorAll('.opt .word')].forEach((x,i)=>say(x.textContent,'en-US',i>0));}});
 const support={"roots5":["Meaning choices; word building / parts of speech not practiced","뜻 고르기 · 낱말 만들기·품사 관계 미지원"],"viewpoint5":["Pronouns and short-text clues; limited writing-context practice","인칭·짧은 글 단서 · 작성 맥락은 일부만 연습"],"poetry5":["Poem analysis choices; poem writing not practiced","시 분석 보기 고르기 · 시 창작 미지원"]};
 const scopeFor=id=>support[id];
-const reg=(id,en,ko,code,make,subject='read')=>registerGame({id,grade:'5',subject,icon:subject==='write'?'✏️':'📖',title:B(en,ko),sub:B('Short texts · partial practice; listening is help','짧은 글 · 부분 연습 · 듣기는 읽기 도움이에요'),practiceScope:scopeFor(id)?B(...scopeFor(id)):undefined,area:B(`Grade 5 ${subject==='write'?'Writing':'Reading'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[0]:""}`,`5학년 ${subject==='write'?'쓰기':'읽기'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[1]:""}`),play(){const lv=lvl(id)>1?2:1,i=take(id,lv),it=make(lv,i);const scope=scopeFor(id);if(scope){it.show+='<div class="g5-scope">'+L(B(scope[0],scope[1]))+'</div>';}if(S.lang==='ko'&&/[A-Za-z]/.test(it.ask.ko)){it.askSay=B(it.ask.en,'질문과 자료를 보고 답을 골라요. 영어 질문도 들어 보세요.');it.askExtra={t:it.ask.en,lang:'en-US'};}it.itemKey=`${id}:${lv}:${i}`;quiz(this,it);}});
+const reg=(id,en,ko,code,make,subject='read')=>registerGame({id,grade:'5',subject,icon:subject==='write'?'✏️':'📖',title:B(en,ko),sub:B('Short texts · partial practice; listening is help','짧은 글 · 부분 연습 · 듣기는 읽기 도움이에요'),practiceScope:scopeFor(id)?B(...scopeFor(id)):undefined,area:B(`Grade 5 ${subject==='write'?'Writing':'Reading'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[0]:""}`,`5학년 ${subject==='write'?'쓰기':'읽기'} · ${code}${scopeFor(id)?" · "+scopeFor(id)[1]:""}`),play(){const lv=lvl(id)>1?2:1,extra=bankGrowthRows[id]?.[lv]?.length||0,i=take(id,lv,10+extra),it=i<10?make(lv,i):bankGrowthItem(id,lv,i-10);const scope=scopeFor(id);if(scope){it.show+='<div class="g5-scope">'+L(B(scope[0],scope[1]))+'</div>';}if(S.lang==='ko'&&/[A-Za-z]/.test(it.ask.ko)){it.askSay=B(it.ask.en,'질문과 자료를 보고 답을 골라요. 영어 질문도 들어 보세요.');it.askExtra={t:it.ask.en,lang:'en-US'};}it.itemKey=`${id}:${lv}:${i}`;quiz(this,it);}});
 const rows=s=>{const out=[];let lines=[];for(const line of s.trim().split('\n')){if(!line.includes('|')){lines.push(line);continue;}const r=line.split('|');if(lines.length){r[0]=[...lines,r[0]].join('\n');lines=[];}out.push(r);}if(lines.length)throw new Error('Unfinished reading row');return out;};
 const bank=(id,en,ko,code,ask,sets,subject)=>reg(id,en,ko,code,(lv,i)=>{const r=sets[lv-1][i];let prompt=ask[lv-1];if(id==='context5'){const word=(lv===1?['fragile','narrow','abundant','vacant','transparent','damp','sturdy','rapid','enormous','optional']:['reluctant','depleted','diverged','somber','intermittently','ambiguous','improvised','conserved','muted','temporary'])[i];prompt=B(`What does ${word} mean here?`,`여기서 ${word}의 뜻을 골라요.`);}let wrong=r.slice(2,4);
 if(id==='opinion5'){
@@ -368,6 +368,211 @@ Jo’s report, page 2, gives class results.|Name Jo’s report and page 2.|Cite 
 Two records count different time periods.|Check periods before comparison.|One must be dishonest.|Add counts without checking overlap.
 An official page describes one study.|Use evidence within the study’s scope.|Every official claim is automatically true.|Official pages never change.
 A summary omits that only six objects were tested.|Include the sample size.|Treat six as the whole world.|Delete the date too.`)]);
+
+// P-banks: new level-specific cases; see banks-grade5-candidates.md.
+const bankGrowthRows={
+"decode5": {
+"1": [
+{"ask":{"en":"Join the chunks. Which spelling fits?","ko":"철자 조각을 합친 낱말을 골라요."},"show":{"en":"cab + in","ko":"cab + in"},"right":{"en":"cabin","ko":"cabin"},"wrong":[{"en":"caben","ko":"caben"},{"en":"cabbin","ko":"cabbin"}]},
+{"ask":{"en":"Join the chunks. Which spelling fits?","ko":"철자 조각을 합친 낱말을 골라요."},"show":{"en":"fab + ric","ko":"fab + ric"},"right":{"en":"fabric","ko":"fabric"},"wrong":[{"en":"fabrec","ko":"fabrec"},{"en":"fabrick","ko":"fabrick"}]}
+],
+"2": [
+{"ask":{"en":"Combine the parts and use their meanings.","ko":"조각을 합치고 뜻도 생각해 골라요."},"show":{"en":"mis = wrongly; read = interpret written words. Which word means interpret wrongly?","ko":"mis = wrongly; read = interpret written words. Which word means interpret wrongly?"},"right":{"en":"misread","ko":"misread"},"wrong":[{"en":"reread","ko":"reread"},{"en":"unread","ko":"unread"}]},
+{"ask":{"en":"Combine the parts and use their meanings.","ko":"조각을 합치고 뜻도 생각해 골라요."},"show":{"en":"re = again; build = construct. Which word means construct again?","ko":"re = again; build = construct. Which word means construct again?"},"right":{"en":"rebuild","ko":"rebuild"},"wrong":[{"en":"unbuilt","ko":"unbuilt"},{"en":"builder","ko":"builder"}]}
+]
+},
+"roots5": {
+"1": [
+{"ask":{"en":"Use the root clue. Which meaning fits?","ko":"어근 단서에 맞는 뜻을 골라요."},"show":{"en":"audible: aud = hear; ible = able to be","ko":"audible: aud = hear; ible = able to be"},"right":{"en":"able to be heard","ko":"able to be heard"},"wrong":[{"en":"able to be carried","ko":"able to be carried"},{"en":"able to be seen","ko":"able to be seen"}]},
+{"ask":{"en":"Use the root clue. Which meaning fits?","ko":"어근 단서에 맞는 뜻을 골라요."},"show":{"en":"aquatic: aqua = water","ko":"aquatic: aqua = water"},"right":{"en":"related to water","ko":"related to water"},"wrong":[{"en":"related to heat","ko":"related to heat"},{"en":"related to sound","ko":"related to sound"}]}
+],
+"2": [
+{"ask":{"en":"Compare the context with the root meaning.","ko":"문맥과 어근의 뜻을 함께 비교해요."},"show":{"en":"A thermometer records temperature; a barometer records air pressure. Meter means measure. What do both tools do?","ko":"A thermometer records temperature; a barometer records air pressure. Meter means measure. What do both tools do?"},"right":{"en":"measure a property","ko":"measure a property"},"wrong":[{"en":"produce a property","ko":"produce a property"},{"en":"remove a property","ko":"remove a property"}]},
+{"ask":{"en":"Compare the context with the root meaning.","ko":"문맥과 어근의 뜻을 함께 비교해요."},"show":{"en":"An export leaves a country; an import enters it. Port means carry. What changes between the words?","ko":"An export leaves a country; an import enters it. Port means carry. What changes between the words?"},"right":{"en":"the direction of carrying","ko":"the direction of carrying"},"wrong":[{"en":"the material being carried","ko":"the material being carried"},{"en":"the speed of carrying","ko":"the speed of carrying"}]}
+]
+},
+"spell5": {
+"1": [
+{"ask":{"en":"Join the parts. Choose the correct spelling.","ko":"조각을 합친 올바른 철자를 골라요."},"show":{"en":"bright + ness","ko":"bright + ness"},"right":{"en":"brightness","ko":"brightness"},"wrong":[{"en":"brightnes","ko":"brightnes"},{"en":"brighness","ko":"brighness"}]},
+{"ask":{"en":"Join the parts. Choose the correct spelling.","ko":"조각을 합친 올바른 철자를 골라요."},"show":{"en":"sudden + ly","ko":"sudden + ly"},"right":{"en":"suddenly","ko":"suddenly"},"wrong":[{"en":"suddenley","ko":"suddenley"},{"en":"sudenly","ko":"sudenly"}]}
+],
+"2": [
+{"ask":{"en":"Apply the spelling change and sentence clue.","ko":"철자 변화와 문장 단서를 함께 살펴요."},"show":{"en":"The puppies are __. (play + ing)","ko":"The puppies are __. (play + ing)"},"right":{"en":"playing","ko":"playing"},"wrong":[{"en":"plaing","ko":"plaing"},{"en":"playying","ko":"playying"}]},
+{"ask":{"en":"Apply the spelling change and sentence clue.","ko":"철자 변화와 문장 단서를 함께 살펴요."},"show":{"en":"Yesterday she __ the heavy bag. (carry + ed)","ko":"Yesterday she __ the heavy bag. (carry + ed)"},"right":{"en":"carried","ko":"carried"},"wrong":[{"en":"carryed","ko":"carryed"},{"en":"caried","ko":"caried"}]}
+]
+},
+"fluency5": {
+"1": [
+{"ask":{"en":"Replace the comma with /. Keep every word in order.","ko":"쉼표를 /로 바꾸고 낱말 순서를 지켜요."},"show":{"en":"Beyond the fence, the horses grazed.","ko":"Beyond the fence, the horses grazed."},"right":{"en":"Beyond the fence / the horses grazed.","ko":"Beyond the fence / the horses grazed."},"wrong":[{"en":"Beyond / the fence the horses grazed.","ko":"Beyond / the fence the horses grazed."},{"en":"Beyond the fence the / horses grazed.","ko":"Beyond the fence the / horses grazed."}]},
+{"ask":{"en":"Replace the comma with /. Keep every word in order.","ko":"쉼표를 /로 바꾸고 낱말 순서를 지켜요."},"show":{"en":"During the concert, the audience listened.","ko":"During the concert, the audience listened."},"right":{"en":"During the concert / the audience listened.","ko":"During the concert / the audience listened."},"wrong":[{"en":"During / the concert the audience listened.","ko":"During / the concert the audience listened."},{"en":"During the concert the / audience listened.","ko":"During the concert the / audience listened."}]}
+],
+"2": [
+{"ask":{"en":"Use the punctuation and the meaning together.","ko":"문장 부호와 뜻을 함께 살펴요."},"show":{"en":"“You finished already?” Jo asked in surprise.","ko":"“You finished already?” Jo asked in surprise."},"right":{"en":"Use a surprised question voice.","ko":"Use a surprised question voice."},"wrong":[{"en":"Use a calm command voice.","ko":"Use a calm command voice."},{"en":"Use a flat statement voice.","ko":"Use a flat statement voice."}]},
+{"ask":{"en":"Use the punctuation and the meaning together.","ko":"문장 부호와 뜻을 함께 살펴요."},"show":{"en":"The package was marked fragile, so I reread the word before setting it down gently.","ko":"The package was marked fragile, so I reread the word before setting it down gently."},"right":{"en":"Link the warning to the careful action.","ko":"Link the warning to the careful action."},"wrong":[{"en":"Link the warning to a forceful toss.","ko":"Link the warning to a forceful toss."},{"en":"Read so as if it signals contrast.","ko":"Read so as if it signals contrast."}]}
+]
+},
+"context5": {
+"1": [
+{"ask":{"en":"Which meaning fits the marked word?","ko":"표시한 낱말의 뜻을 골라요."},"show":{"en":"The steep hill rose sharply above the road. What does steep mean?","ko":"The steep hill rose sharply above the road. What does steep mean?"},"right":{"en":"sloping sharply","ko":"sloping sharply"},"wrong":[{"en":"nearly level","ko":"nearly level"},{"en":"gently curving","ko":"gently curving"}]},
+{"ask":{"en":"Which meaning fits the marked word?","ko":"표시한 낱말의 뜻을 골라요."},"show":{"en":"The aroma of fresh bread filled the bakery. What does aroma mean?","ko":"The aroma of fresh bread filled the bakery. What does aroma mean?"},"right":{"en":"a noticeable smell","ko":"a noticeable smell"},"wrong":[{"en":"a crackling sound","ko":"a crackling sound"},{"en":"a rough texture","ko":"a rough texture"}]}
+],
+"2": [
+{"ask":{"en":"Use two clues to infer the meaning.","ko":"두 단서로 낱말의 뜻을 짐작해요."},"show":{"en":"The trail was arduous: even rested hikers moved slowly and needed many breaks. What does arduous mean?","ko":"The trail was arduous: even rested hikers moved slowly and needed many breaks. What does arduous mean?"},"right":{"en":"requiring much effort","ko":"requiring much effort"},"wrong":[{"en":"requiring little time","ko":"requiring little time"},{"en":"offering many choices","ko":"offering many choices"}]},
+{"ask":{"en":"Use two clues to infer the meaning.","ko":"두 단서로 낱말의 뜻을 짐작해요."},"show":{"en":"His response was concise: it used just a few words yet included every needed fact. What does concise mean?","ko":"His response was concise: it used just a few words yet included every needed fact. What does concise mean?"},"right":{"en":"brief but complete","ko":"brief but complete"},"wrong":[{"en":"long and detailed","ko":"long and detailed"},{"en":"brief but unrelated","ko":"brief but unrelated"}]}
+]
+},
+"analogy5": {
+"1": [
+{"ask":{"en":"Complete the same relationship.","ko":"같은 관계가 되도록 골라요."},"show":{"en":"author : novel :: composer : __","ko":"author : novel :: composer : __"},"right":{"en":"symphony","ko":"symphony"},"wrong":[{"en":"instrument","ko":"instrument"},{"en":"audience","ko":"audience"}]},
+{"ask":{"en":"Complete the same relationship.","ko":"같은 관계가 되도록 골라요."},"show":{"en":"ounce : weight :: minute : __","ko":"ounce : weight :: minute : __"},"right":{"en":"time","ko":"time"},"wrong":[{"en":"length","ko":"length"},{"en":"volume","ko":"volume"}]}
+],
+"2": [
+{"ask":{"en":"Compare the relationship or the context.","ko":"관계나 문맥을 비교해 골라요."},"show":{"en":"A branch of the library opened beside the park. Which meaning fits branch?","ko":"A branch of the library opened beside the park. Which meaning fits branch?"},"right":{"en":"a local part of an organization","ko":"a local part of an organization"},"wrong":[{"en":"a woody part of a tree","ko":"a woody part of a tree"},{"en":"a narrow part of a stream","ko":"a narrow part of a stream"}]},
+{"ask":{"en":"Compare the relationship or the context.","ko":"관계나 문맥을 비교해 골라요."},"show":{"en":"A player serves a ball; a waiter serves a meal. What changes in the meaning of serves?","ko":"A player serves a ball; a waiter serves a meal. What changes in the meaning of serves?"},"right":{"en":"starts play versus provides food","ko":"starts play versus provides food"},"wrong":[{"en":"wins play versus prepares food","ko":"wins play versus prepares food"},{"en":"ends play versus buys food","ko":"ends play versus buys food"}]}
+]
+},
+"wordshade5": {
+"1": [
+{"ask":{"en":"Choose the precise action word.","ko":"행동에 정확히 맞는 낱말을 골라요."},"show":{"en":"Move along the ground on hands and knees.","ko":"Move along the ground on hands and knees."},"right":{"en":"crawl","ko":"crawl"},"wrong":[{"en":"stride","ko":"stride"},{"en":"skip","ko":"skip"}]},
+{"ask":{"en":"Choose the precise action word.","ko":"행동에 정확히 맞는 낱말을 골라요."},"show":{"en":"Pull something along the ground with effort.","ko":"Pull something along the ground with effort."},"right":{"en":"drag","ko":"drag"},"wrong":[{"en":"toss","ko":"toss"},{"en":"raise","ko":"raise"}]}
+],
+"2": [
+{"ask":{"en":"Match both conditions in the description.","ko":"설명의 두 조건에 모두 맞게 골라요."},"show":{"en":"The speaker disagrees politely and gives a reason.","ko":"The speaker disagrees politely and gives a reason."},"right":{"en":"objects","ko":"objects"},"wrong":[{"en":"insults","ko":"insults"},{"en":"applauds","ko":"applauds"}]},
+{"ask":{"en":"Match both conditions in the description.","ko":"설명의 두 조건에 모두 맞게 골라요."},"show":{"en":"The learner checks a draft and changes it to improve clarity.","ko":"The learner checks a draft and changes it to improve clarity."},"right":{"en":"revises","ko":"revises"},"wrong":[{"en":"copies","ko":"copies"},{"en":"discards","ko":"discards"}]}
+]
+},
+"reference5": {
+"1": [
+{"ask":{"en":"Use the glossary entry. Which meaning fits?","ko":"용어 풀이에 맞는 뜻을 골라요."},"show":{"en":"durable: able to last despite use","ko":"durable: able to last despite use"},"right":{"en":"long-lasting","ko":"long-lasting"},"wrong":[{"en":"quickly broken","ko":"quickly broken"},{"en":"rarely used","ko":"rarely used"}]},
+{"ask":{"en":"Use the glossary entry. Which meaning fits?","ko":"용어 풀이에 맞는 뜻을 골라요."},"show":{"en":"remote: far from other places","ko":"remote: far from other places"},"right":{"en":"far away","ko":"far away"},"wrong":[{"en":"close by","ko":"close by"},{"en":"newly built","ko":"newly built"}]}
+],
+"2": [
+{"ask":{"en":"Use the entry and context to choose the definition number.","ko":"풀이와 문맥을 함께 보고 뜻의 번호를 골라요."},"show":{"en":"draft: 1 a rough written version; 2 a flow of air; 3 select for a team. A cold draft slipped under the door.","ko":"draft: 1 a rough written version; 2 a flow of air; 3 select for a team. A cold draft slipped under the door."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"1","ko":"1"},{"en":"3","ko":"3"}]},
+{"ask":{"en":"Use the entry and context to choose the definition number.","ko":"풀이와 문맥을 함께 보고 뜻의 번호를 골라요."},"show":{"en":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. The flute produced a high pitch.","ko":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. The flute produced a high pitch."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"1","ko":"1"},{"en":"3","ko":"3"}]}
+]
+},
+"sentence5": {
+"1": [
+{"ask":{"en":"Choose the connector that fits the relation.","ko":"관계에 맞는 연결어를 골라요."},"show":{"en":"Condition: You may borrow the camera __ you return it today.","ko":"Condition: You may borrow the camera __ you return it today."},"right":{"en":"if","ko":"if"},"wrong":[{"en":"although","ko":"although"},{"en":"because","ko":"because"}]},
+{"ask":{"en":"Choose the connector that fits the relation.","ko":"관계에 맞는 연결어를 골라요."},"show":{"en":"Contrast: The box looked small, __ it held many tools.","ko":"Contrast: The box looked small, __ it held many tools."},"right":{"en":"yet","ko":"yet"},"wrong":[{"en":"so","ko":"so"},{"en":"because","ko":"because"}]}
+],
+"2": [
+{"ask":{"en":"Keep both the relation and the order of events.","ko":"관계와 사건의 순서를 모두 지켜요."},"show":{"en":"The team checked the ropes before climbing because safety mattered.","ko":"The team checked the ropes before climbing because safety mattered."},"right":{"en":"Safety mattered, so the team checked ropes before climbing.","ko":"Safety mattered, so the team checked ropes before climbing."},"wrong":[{"en":"The team climbed before checking ropes for safety.","ko":"The team climbed before checking ropes for safety."},{"en":"The ropes were checked because climbing had ended.","ko":"The ropes were checked because climbing had ended."}]},
+{"ask":{"en":"Keep both the relation and the order of events.","ko":"관계와 사건의 순서를 모두 지켜요."},"show":{"en":"The first route was shorter, but the longer route had a safer bridge.","ko":"The first route was shorter, but the longer route had a safer bridge."},"right":{"en":"The team could trade a longer trip for a safer crossing.","ko":"The team could trade a longer trip for a safer crossing."},"wrong":[{"en":"The shorter route also had the safer bridge.","ko":"The shorter route also had the safer bridge."},{"en":"Both routes had the same length and bridge.","ko":"Both routes had the same length and bridge."}]}
+]
+},
+"edit5": {
+"1": [
+{"ask":{"en":"Follow the stated editing rule.","ko":"제시한 문장 규칙에 맞게 골라요."},"show":{"en":"Use a possessive for the one artist who owns the brush.","ko":"Use a possessive for the one artist who owns the brush."},"right":{"en":"the artist’s brush","ko":"the artist’s brush"},"wrong":[{"en":"the artists brush","ko":"the artists brush"},{"en":"the artists’ brush","ko":"the artists’ brush"}]},
+{"ask":{"en":"Follow the stated editing rule.","ko":"제시한 문장 규칙에 맞게 골라요."},"show":{"en":"Use the past tense of choose.","ko":"Use the past tense of choose."},"right":{"en":"She chose the blue cloth.","ko":"She chose the blue cloth."},"wrong":[{"en":"She choosed the blue cloth.","ko":"She choosed the blue cloth."},{"en":"She choose the blue cloth.","ko":"She choose the blue cloth."}]}
+],
+"2": [
+{"ask":{"en":"Correct the sentence while preserving its meaning.","ko":"뜻을 유지하며 문장을 바르게 고쳐요."},"show":{"en":"Keep two completed actions in the past: He opened the box and finds a note.","ko":"Keep two completed actions in the past: He opened the box and finds a note."},"right":{"en":"He opened the box and found a note.","ko":"He opened the box and found a note."},"wrong":[{"en":"He opens the box and found a note.","ko":"He opens the box and found a note."},{"en":"He opened the box and will find a note.","ko":"He opened the box and will find a note."}]},
+{"ask":{"en":"Correct the sentence while preserving its meaning.","ko":"뜻을 유지하며 문장을 바르게 고쳐요."},"show":{"en":"Use commas and retain the direct address: Please help us Lena.","ko":"Use commas and retain the direct address: Please help us Lena."},"right":{"en":"Please help us, Lena.","ko":"Please help us, Lena."},"wrong":[{"en":"Please, help, us Lena.","ko":"Please, help, us Lena."},{"en":"Please help, us Lena.","ko":"Please help, us Lena."}]}
+]
+},
+"purpose5": {
+"1": [
+{"ask":{"en":"Identify the main purpose.","ko":"주된 목적을 골라요."},"show":{"en":"Step 1: Wet the brush. Step 2: Add a small amount of paint.","ko":"Step 1: Wet the brush. Step 2: Add a small amount of paint."},"right":{"en":"explain a procedure","ko":"explain a procedure"},"wrong":[{"en":"recommend a purchase","ko":"recommend a purchase"},{"en":"recount a memory","ko":"recount a memory"}]},
+{"ask":{"en":"Identify the main purpose.","ko":"주된 목적을 골라요."},"show":{"en":"The lost scarf has green stripes. Please return it to Room 4.","ko":"The lost scarf has green stripes. Please return it to Room 4."},"right":{"en":"recover a missing item","ko":"recover a missing item"},"wrong":[{"en":"compare clothing materials","ko":"compare clothing materials"},{"en":"explain how scarves are made","ko":"explain how scarves are made"}]}
+],
+"2": [
+{"ask":{"en":"Choose wording that fits both audience and purpose.","ko":"독자와 목적에 모두 맞는 표현을 골라요."},"show":{"en":"A park sign for first-time visitors must explain how to reach the pond.","ko":"A park sign for first-time visitors must explain how to reach the pond."},"right":{"en":"Follow the marked path past the gate to the pond.","ko":"Follow the marked path past the gate to the pond."},"wrong":[{"en":"Our pond is the loveliest spot in the whole park.","ko":"Our pond is the loveliest spot in the whole park."},{"en":"Last summer I visited the pond with my cousin.","ko":"Last summer I visited the pond with my cousin."}]},
+{"ask":{"en":"Choose wording that fits both audience and purpose.","ko":"독자와 목적에 모두 맞는 표현을 골라요."},"show":{"en":"A class report for families must summarize the cleanup results.","ko":"A class report for families must summarize the cleanup results."},"right":{"en":"We filled six bags and cleared both marked paths.","ko":"We filled six bags and cleared both marked paths."},"wrong":[{"en":"Please bring gloves for a cleanup next month.","ko":"Please bring gloves for a cleanup next month."},{"en":"Imagine a path where squirrels plan a cleanup.","ko":"Imagine a path where squirrels plan a cleanup."}]}
+]
+},
+"viewpoint5": {
+"1": [
+{"ask":{"en":"Which expression identifies the narrator’s viewpoint?","ko":"서술자의 관점을 보여 주는 표현은?"},"show":{"en":"We packed our instruments before the bus arrived.","ko":"We packed our instruments before the bus arrived."},"right":{"en":"we and our: first person","ko":"we and our: first person"},"wrong":[{"en":"bus and instruments: second person","ko":"bus and instruments: second person"},{"en":"arrived and packed: third person","ko":"arrived and packed: third person"}]},
+{"ask":{"en":"Which expression identifies the narrator’s viewpoint?","ko":"서술자의 관점을 보여 주는 표현은?"},"show":{"en":"She watched the kite while her brother held the string.","ko":"She watched the kite while her brother held the string."},"right":{"en":"she and her: third person","ko":"she and her: third person"},"wrong":[{"en":"kite and string: first person","ko":"kite and string: first person"},{"en":"brother and held: second person","ko":"brother and held: second person"}]}
+],
+"2": [
+{"ask":{"en":"Compare what each narrator can know or notices.","ko":"서술자가 아는 것과 주목한 점을 비교해요."},"show":{"en":"Builder: “I worried whether the bridge would hold.” Visitor: “I noticed its bright paint.”","ko":"Builder: “I worried whether the bridge would hold.” Visitor: “I noticed its bright paint.”"},"right":{"en":"One focuses on safety; the other on appearance.","ko":"One focuses on safety; the other on appearance."},"wrong":[{"en":"Both focus only on the bridge’s bright paint.","ko":"Both focus only on the bridge’s bright paint."},{"en":"Both describe the builder’s private thoughts.","ko":"Both describe the builder’s private thoughts."}]},
+{"ask":{"en":"Compare what each narrator can know or notices.","ko":"서술자가 아는 것과 주목한 점을 비교해요."},"show":{"en":"A: “I could not see inside the locked shed.” B: “Inside, I searched every shelf.”","ko":"A: “I could not see inside the locked shed.” B: “Inside, I searched every shelf.”"},"right":{"en":"The narrators have different access to the setting.","ko":"The narrators have different access to the setting."},"wrong":[{"en":"Both narrators observe the same interior details.","ko":"Both narrators observe the same interior details."},{"en":"Neither narrator enters any part of the setting.","ko":"Neither narrator enters any part of the setting."}]}
+]
+},
+"character5": {
+"1": [
+{"ask":{"en":"Which action tries to solve the problem?","ko":"문제를 해결하려는 행동은?"},"show":{"en":"The costume tore before the show. Pat sewed a patch over the tear.","ko":"The costume tore before the show. Pat sewed a patch over the tear."},"right":{"en":"sewing on a patch","ko":"sewing on a patch"},"wrong":[{"en":"noticing the tear","ko":"noticing the tear"},{"en":"waiting for the show","ko":"waiting for the show"}]},
+{"ask":{"en":"Which action tries to solve the problem?","ko":"문제를 해결하려는 행동은?"},"show":{"en":"The group could not agree on a route. Uma compared both maps.","ko":"The group could not agree on a route. Uma compared both maps."},"right":{"en":"comparing the maps","ko":"comparing the maps"},"wrong":[{"en":"wanting different routes","ko":"wanting different routes"},{"en":"folding away both maps","ko":"folding away both maps"}]}
+],
+"2": [
+{"ask":{"en":"Explain how the event affects the conflict.","ko":"사건이 갈등에 미치는 영향을 골라요."},"show":{"en":"Two partners blame each other for missing notes. They find the notes in a shared folder.","ko":"Two partners blame each other for missing notes. They find the notes in a shared folder."},"right":{"en":"The discovery removes the cause of their disagreement.","ko":"The discovery removes the cause of their disagreement."},"wrong":[{"en":"The discovery proves one partner hid the notes.","ko":"The discovery proves one partner hid the notes."},{"en":"The discovery makes the missing notes harder to find.","ko":"The discovery makes the missing notes harder to find."}]},
+{"ask":{"en":"Explain how the event affects the conflict.","ko":"사건이 갈등에 미치는 영향을 골라요."},"show":{"en":"A player wants to win alone. After an injury, teammates help finish the relay.","ko":"A player wants to win alone. After an injury, teammates help finish the relay."},"right":{"en":"Needing help challenges the player’s belief about teamwork.","ko":"Needing help challenges the player’s belief about teamwork."},"wrong":[{"en":"The injury proves teammates cannot affect the outcome.","ko":"The injury proves teammates cannot affect the outcome."},{"en":"The relay removes every chance to learn from others.","ko":"The relay removes every chance to learn from others."}]}
+]
+},
+"theme5": {
+"1": [
+{"ask":{"en":"Choose a theme supported by the story.","ko":"이야기가 뒷받침하는 주제를 골라요."},"show":{"en":"A child could keep a shiny new box or a worn note from a grandparent. The child kept the note because it recalled a shared adventure.","ko":"A child could keep a shiny new box or a worn note from a grandparent. The child kept the note because it recalled a shared adventure."},"right":{"en":"An object’s personal meaning can matter more than its appearance.","ko":"An object’s personal meaning can matter more than its appearance."},"wrong":[{"en":"A beautiful outside is the best measure of personal value.","ko":"A beautiful outside is the best measure of personal value."},{"en":"Objects are worth keeping only when they have never been used.","ko":"Objects are worth keeping only when they have never been used."}]},
+{"ask":{"en":"Choose a theme supported by the story.","ko":"이야기가 뒷받침하는 주제를 골라요."},"show":{"en":"A team listened to a quiet member’s idea and found the missing trail marker.","ko":"A team listened to a quiet member’s idea and found the missing trail marker."},"right":{"en":"Useful ideas can come from any member.","ko":"Useful ideas can come from any member."},"wrong":[{"en":"Only the loudest member has useful ideas.","ko":"Only the loudest member has useful ideas."},{"en":"Good teams avoid changing their plans.","ko":"Good teams avoid changing their plans."}]}
+],
+"2": [
+{"ask":{"en":"What idea is supported by both stories?","ko":"두 이야기가 함께 뒷받침하는 생각은?"},"show":{"en":"A: Before a race, one runner helps an opponent fasten a loose shoe. B: During a contest, a painter lends a rival a spare brush.","ko":"A: Before a race, one runner helps an opponent fasten a loose shoe. B: During a contest, a painter lends a rival a spare brush."},"right":{"en":"Competition can coexist with kindness toward an opponent.","ko":"Competition can coexist with kindness toward an opponent."},"wrong":[{"en":"Helping an opponent means giving up one’s own place in a contest.","ko":"Helping an opponent means giving up one’s own place in a contest."},{"en":"Fair competition requires keeping every useful resource from opponents.","ko":"Fair competition requires keeping every useful resource from opponents."}]},
+{"ask":{"en":"Find the idea supported by both stories.","ko":"두 이야기가 함께 뒷받침하는 생각은?"},"show":{"en":"A: A guide slows down for a tired walker. B: A reader waits while a partner sounds out a word.","ko":"A: A guide slows down for a tired walker. B: A reader waits while a partner sounds out a word."},"right":{"en":"Patience can help others take part.","ko":"Patience can help others take part."},"wrong":[{"en":"Finishing fastest matters more than including others.","ko":"Finishing fastest matters more than including others."},{"en":"Helping others requires doing every task for them.","ko":"Helping others requires doing every task for them."}]}
+]
+},
+"structure5": {
+"1": [
+{"ask":{"en":"Identify how the text is organized.","ko":"글의 짜임을 골라요."},"show":{"en":"One lamp uses a battery; the other plugs into a wall. Both give light.","ko":"One lamp uses a battery; the other plugs into a wall. Both give light."},"right":{"en":"comparison","ko":"comparison"},"wrong":[{"en":"chronological history","ko":"chronological history"},{"en":"problem and solution","ko":"problem and solution"}]},
+{"ask":{"en":"Identify how the text is organized.","ko":"글의 짜임을 골라요."},"show":{"en":"The tap leaked. A new washer stopped the drip.","ko":"The tap leaked. A new washer stopped the drip."},"right":{"en":"problem and solution","ko":"problem and solution"},"wrong":[{"en":"comparison","ko":"comparison"},{"en":"spatial description","ko":"spatial description"}]}
+],
+"2": [
+{"ask":{"en":"Choose a revision that clarifies the stated organization.","ko":"제시한 짜임을 분명하게 하는 수정은?"},"show":{"en":"A report explains three effects of a storm, but jumps between them in every paragraph.","ko":"A report explains three effects of a storm, but jumps between them in every paragraph."},"right":{"en":"Group the details into one paragraph for each effect.","ko":"Group the details into one paragraph for each effect."},"wrong":[{"en":"Put every detail into one paragraph with no grouping.","ko":"Put every detail into one paragraph with no grouping."},{"en":"Move the conclusion between each pair of details.","ko":"Move the conclusion between each pair of details."}]},
+{"ask":{"en":"Choose a revision that clarifies the stated organization.","ko":"제시한 짜임을 분명하게 하는 수정은?"},"show":{"en":"Directions list joining the boards before cutting them to size. Cutting must happen first.","ko":"Directions list joining the boards before cutting them to size. Cutting must happen first."},"right":{"en":"Move the cutting step before the joining step.","ko":"Move the cutting step before the joining step."},"wrong":[{"en":"Repeat the joining step before every other step.","ko":"Repeat the joining step before every other step."},{"en":"Remove both steps from the instructions.","ko":"Remove both steps from the instructions."}]}
+]
+},
+"figurative5": {
+"1": [
+{"ask":{"en":"What does the expression mean here?","ko":"문맥에서 표현의 뜻은?"},"show":{"en":"The classroom was a freezer until the heat came on.","ko":"The classroom was a freezer until the heat came on."},"right":{"en":"The room felt extremely cold.","ko":"The room felt extremely cold."},"wrong":[{"en":"The room stored frozen food.","ko":"The room stored frozen food."},{"en":"The room had no furniture.","ko":"The room had no furniture."}]},
+{"ask":{"en":"What does the expression mean here?","ko":"문맥에서 표현의 뜻은?"},"show":{"en":"He finally spilled the beans about the surprise trip.","ko":"He finally spilled the beans about the surprise trip."},"right":{"en":"He revealed the secret plan.","ko":"He revealed the secret plan."},"wrong":[{"en":"He dropped the packed lunch.","ko":"He dropped the packed lunch."},{"en":"He forgot the travel date.","ko":"He forgot the travel date."}]}
+],
+"2": [
+{"ask":{"en":"Explain the effect using the surrounding clues.","ko":"주변 단서와 함께 표현의 효과를 골라요."},"show":{"en":"“The deadline chased me,” she wrote as the final hour ticked away.","ko":"“The deadline chased me,” she wrote as the final hour ticked away."},"right":{"en":"It makes time pressure feel active and threatening.","ko":"It makes time pressure feel active and threatening."},"wrong":[{"en":"It makes the work feel finished and relaxing.","ko":"It makes the work feel finished and relaxing."},{"en":"It makes the clock seem broken and motionless.","ko":"It makes the clock seem broken and motionless."}]},
+{"ask":{"en":"Explain the effect using the surrounding clues.","ko":"주변 단서와 함께 표현의 효과를 골라요."},"show":{"en":"“Ideas sprouted” after the group heard a new question.","ko":"“Ideas sprouted” after the group heard a new question."},"right":{"en":"It compares new thoughts to fresh growth.","ko":"It compares new thoughts to fresh growth."},"wrong":[{"en":"It compares old thoughts to fading light.","ko":"It compares old thoughts to fading light."},{"en":"It compares a silent room to empty soil.","ko":"It compares a silent room to empty soil."}]}
+]
+},
+"explain5": {
+"1": [
+{"ask":{"en":"Which detail supports the explanation?","ko":"설명을 뒷받침하는 세부 근거는?"},"show":{"en":"In a fictional test, a lined box kept ice for 40 minutes; an unlined box kept it for 25.","ko":"In a fictional test, a lined box kept ice for 40 minutes; an unlined box kept it for 25."},"right":{"en":"The lined box kept ice longer in this test.","ko":"The lined box kept ice longer in this test."},"wrong":[{"en":"Both boxes kept ice for the same time.","ko":"Both boxes kept ice for the same time."},{"en":"The unlined box kept ice longer in this test.","ko":"The unlined box kept ice longer in this test."}]},
+{"ask":{"en":"Which detail supports the explanation?","ko":"설명을 뒷받침하는 세부 근거는?"},"show":{"en":"A fictional reading log lists 6 morning pages and 4 evening pages.","ko":"A fictional reading log lists 6 morning pages and 4 evening pages."},"right":{"en":"More pages were read in the morning.","ko":"More pages were read in the morning."},"wrong":[{"en":"More pages were read in the evening.","ko":"More pages were read in the evening."},{"en":"Both sessions had equal page counts.","ko":"Both sessions had equal page counts."}]}
+],
+"2": [
+{"ask":{"en":"Connect both records without going beyond them.","ko":"두 기록의 범위 안에서 근거를 연결해요."},"show":{"en":"Trial A: a padded case had one cracked tile out of ten. Trial B: an unpadded case had four out of ten.","ko":"Trial A: a padded case had one cracked tile out of ten. Trial B: an unpadded case had four out of ten."},"right":{"en":"These trials support comparing padding as a possible protection.","ko":"These trials support comparing padding as a possible protection."},"wrong":[{"en":"These trials prove padded cases can never allow damage.","ko":"These trials prove padded cases can never allow damage."},{"en":"These trials show the unpadded case protected more tiles.","ko":"These trials show the unpadded case protected more tiles."}]},
+{"ask":{"en":"Connect both records without going beyond them.","ko":"두 기록의 범위 안에서 근거를 연결해요."},"show":{"en":"Bus log: 12 minutes on Monday, 18 on Tuesday. Traffic notes: roadwork Tuesday only.","ko":"Bus log: 12 minutes on Monday, 18 on Tuesday. Traffic notes: roadwork Tuesday only."},"right":{"en":"Roadwork may help explain Tuesday’s longer trip.","ko":"Roadwork may help explain Tuesday’s longer trip."},"wrong":[{"en":"Roadwork certainly explains every minute of both trips.","ko":"Roadwork certainly explains every minute of both trips."},{"en":"Monday’s trip took longer because roadwork was absent.","ko":"Monday’s trip took longer because roadwork was absent."}]}
+]
+},
+"opinion5": {
+"1": [
+{"ask":{"en":"Which reason directly supports the stated goal?","ko":"제시한 목표를 직접 뒷받침하는 이유는?"},"show":{"en":"Goal: Help users find supplies and return them to the right drawer. Proposal: Label the shared supply drawers.","ko":"Goal: Help users find supplies and return them to the right drawer. Proposal: Label the shared supply drawers."},"right":{"en":"Labels would help users locate and return supplies.","ko":"Labels would help users locate and return supplies."},"wrong":[{"en":"Labels would remind users which drawers need to be closed.","ko":"Labels would remind users which drawers need to be closed."},{"en":"Labels would show which person last borrowed each item.","ko":"Labels would show which person last borrowed each item."}]},
+{"ask":{"en":"Which reason directly supports the proposal?","ko":"제안을 직접 뒷받침하는 이유는?"},"show":{"en":"Proposal: Add a short rehearsal before the presentation.","ko":"Proposal: Add a short rehearsal before the presentation."},"right":{"en":"Practice could reveal unclear sections before the audience arrives.","ko":"Practice could reveal unclear sections before the audience arrives."},"wrong":[{"en":"Practice could predict exactly how long every audience question takes.","ko":"Practice could predict exactly how long every audience question takes."},{"en":"Practice could replace listening to audience feedback afterward.","ko":"Practice could replace listening to audience feedback afterward."}]}
+],
+"2": [
+{"ask":{"en":"Choose a conclusion supported by the given evidence.","ko":"제시한 근거가 뒷받침하는 결론은?"},"show":{"en":"Proposal: Move a checkout desk. Trial: 8 of 10 users found it faster; 2 took longer.","ko":"Proposal: Move a checkout desk. Trial: 8 of 10 users found it faster; 2 took longer."},"right":{"en":"The move helped most trial users, though not all.","ko":"The move helped most trial users, though not all."},"wrong":[{"en":"The move helped every user by the same amount.","ko":"The move helped every user by the same amount."},{"en":"The move made most trial users take longer.","ko":"The move made most trial users take longer."}]},
+{"ask":{"en":"Choose a conclusion supported by the given evidence.","ko":"제시한 근거가 뒷받침하는 결론은?"},"show":{"en":"Proposal: Keep two quiet study tables. Survey: 14 want quiet space, 6 want group talk; 20 answered.","ko":"Proposal: Keep two quiet study tables. Survey: 14 want quiet space, 6 want group talk; 20 answered."},"right":{"en":"Keep some quiet space while considering group needs.","ko":"Keep some quiet space while considering group needs."},"wrong":[{"en":"Use every table for quiet work because all prefer it.","ko":"Use every table for quiet work because all prefer it."},{"en":"Remove quiet space because most prefer group talk.","ko":"Remove quiet space because most prefer group talk."}]}
+]
+},
+"poetry5": {
+"1": [
+{"ask":{"en":"Choose a supported observation about the poem.","ko":"시의 짜임에서 확인할 수 있는 것은?"},"show":{"en":"One red leaf,\nOne bare tree,\nOne still path.","ko":"One red leaf,\nOne bare tree,\nOne still path."},"right":{"en":"All three lines begin with One.","ko":"All three lines begin with One."},"wrong":[{"en":"All three lines end in rhyme.","ko":"All three lines end in rhyme."},{"en":"Each line has only one word.","ko":"Each line has only one word."}]},
+{"ask":{"en":"Choose a supported observation about the poem.","ko":"시의 짜임에서 확인할 수 있는 것은?"},"show":{"en":"The lantern’s glow,\nAcross the snow.","ko":"The lantern’s glow,\nAcross the snow."},"right":{"en":"The final words rhyme.","ko":"The final words rhyme."},"wrong":[{"en":"Both lines begin with the same word.","ko":"Both lines begin with the same word."},{"en":"The poem has three stanzas.","ko":"The poem has three stanzas."}]}
+],
+"2": [
+{"ask":{"en":"Connect the poem’s structure to its effect.","ko":"시의 짜임과 효과를 연결해요."},"show":{"en":"Run, run, run—\nThe station bell!\nRest.\nWe made it.","ko":"Run, run, run—\nThe station bell!\nRest.\nWe made it."},"right":{"en":"Repeated running gives way to relief after the speakers arrive.","ko":"Repeated running gives way to relief after the speakers arrive."},"wrong":[{"en":"Repeated running gives way to regret about missing the train.","ko":"Repeated running gives way to regret about missing the train."},{"en":"Repeated running continues after the speakers have reached their goal.","ko":"Repeated running continues after the speakers have reached their goal."}]},
+{"ask":{"en":"Connect the poem’s structure to its effect.","ko":"시의 짜임과 효과를 연결해요."},"show":{"en":"At dawn, I wait.\nAt noon, I wait.\nAt dusk—your footsteps!","ko":"At dawn, I wait.\nAt noon, I wait.\nAt dusk—your footsteps!"},"right":{"en":"Repeated waiting highlights the change at the end.","ko":"Repeated waiting highlights the change at the end."},"wrong":[{"en":"Repeated waiting makes the ending another quiet wait.","ko":"Repeated waiting makes the ending another quiet wait."},{"en":"The three lines describe events in reverse order.","ko":"The three lines describe events in reverse order."}]}
+]
+},
+"source5": {
+"1": [
+{"ask":{"en":"Choose the source that directly answers the question.","ko":"질문에 직접 답하는 자료는?"},"show":{"en":"Question: What time did the school bus reach the stop today?","ko":"Question: What time did the school bus reach the stop today?"},"right":{"en":"today’s arrival-time log","ko":"today’s arrival-time log"},"wrong":[{"en":"today’s seating list","ko":"today’s seating list"},{"en":"last term’s route proposal","ko":"last term’s route proposal"}]},
+{"ask":{"en":"Choose the source that directly answers the question.","ko":"질문에 직접 답하는 자료는?"},"show":{"en":"Question: How deep was the pond at the marked pole this morning?","ko":"Question: How deep was the pond at the marked pole this morning?"},"right":{"en":"this morning’s depth measurement","ko":"this morning’s depth measurement"},"wrong":[{"en":"this morning’s bird count","ko":"this morning’s bird count"},{"en":"last year’s depth measurement","ko":"last year’s depth measurement"}]}
+],
+"2": [
+{"ask":{"en":"Compare the evidence and respect its limits.","ko":"근거를 비교하고 그 범위를 지켜요."},"show":{"en":"One visitor reports a busy park. A counter records 80 entries on Saturday and 25 on Sunday.","ko":"One visitor reports a busy park. A counter records 80 entries on Saturday and 25 on Sunday."},"right":{"en":"Use the dated counts to compare those two days.","ko":"Use the dated counts to compare those two days."},"wrong":[{"en":"Use one visitor’s impression to prove every day is busy.","ko":"Use one visitor’s impression to prove every day is busy."},{"en":"Use Saturday’s count as the count for both days.","ko":"Use Saturday’s count as the count for both days."}]},
+{"ask":{"en":"Compare the evidence and respect its limits.","ko":"근거를 비교하고 그 범위를 지켜요."},"show":{"en":"A chart reports 15 votes but gives no survey date. A second gives 20 votes on May 3.","ko":"A chart reports 15 votes but gives no survey date. A second gives 20 votes on May 3."},"right":{"en":"The missing date limits a comparison over time.","ko":"The missing date limits a comparison over time."},"wrong":[{"en":"The larger count proves the first survey happened earlier.","ko":"The larger count proves the first survey happened earlier."},{"en":"The missing date proves the first count is false.","ko":"The missing date proves the first count is false."}]}
+]
+}
+};
+const bankGrowthItem=(id,lv,i)=>{const r=bankGrowthRows[id][lv][i];const it=item(r.ask,r.show.en,r.right.en,r.wrong.map(x=>x.en));it.bankGrowth=true;it.cls+=' bank-growth-options';return it;};
 })();
 
 

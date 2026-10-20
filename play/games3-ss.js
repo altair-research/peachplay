@@ -11,7 +11,7 @@ const fresh = (id, level, make) => {
  throw new Error(`Insufficient distinct questions: ${id}/${level}`);
 };
 // Public-domain geographic base; teaching annotations are not survey boundaries.
-const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'ss',icon:'🌎',title:B(en,ko),sub:B('Read evidence and compare ideas','자료를 읽고 생각을 비교해요'),area:B(`Grade 3 Social Studies · ${code}`,`3학년 사회 · ${code}`),play(){quiz(this,fresh(id,lvl(id),make));}});
+const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'ss',icon:'🌎',title:B(en,ko),sub:B('Read evidence and compare ideas','자료를 읽고 생각을 비교해요'),area:B(`Grade 3 Social Studies · ${code}`,`3학년 사회 · ${code}`),play(){quiz(this,fresh(id,lvl(id),lv=>bankGrowthMake(id,lv,make)));}});
 const panel=s=>`<div class="g3-social">${s}</div>`;
 const q=(ask,show,r,w,after)=>({ask,show,opts:[r,...w].map((s,i)=>({html:`<span class="word">${typeof s==='object'?L(s):s}</span>`,ok:i===0})),cls:'words g3-social-options',after:after||(typeof r==='object'?r:B(String(r),String(r)))});
 const bank=(id,en,ko,code,rows)=>reg(id,en,ko,code,lv=>{const r=pick([...(lv===1?rows.slice(0,2):rows),...moreSocial[id]]);return q(r[0],r[1]?panel(L(r[1])):'',r[2],r.slice(3));});
@@ -243,6 +243,114 @@ mapBank49('rivers3','Rivers of America','미국의 강','SS3G1.a',rivers49);
 mapBank49('mountains3','Two Mountain Ranges','두 산맥','SS3G1.b',mountains49);
 mapBank49('nativeregions3','Native Homelands','원주민의 지역','SS3H1.a (location practice)',regions49,B('Broad regions, not borders. Native nations live today.','넓은 문화 지역이며 경계가 아니에요. 원주민 공동체는 오늘도 이어져요.'));
 mapBank49('explorerroute3','Voyage Records Map','탐험 기록 지도','SS3H2.b (route practice)',voyages49);
+
+// P-banks: original additional observations; source ledger in banks-grade3-facts-candidates.md.
+const bankGrowthRows={
+"globe3":{
+"1":[
+{"ask":{"en":"Which entry uses the wrong direction letters?","ko":"방향 글자가 틀린 기록은?"},"show":{"en":"Practice map entries: A—latitude 20°N; B—longitude 40°W; C—latitude 30°E.","ko":"연습 지도 기록: A—위도 20°N, B—경도 40°W, C—위도 30°E."},"right":{"en":"Entry C","ko":"기록 C"},"wrong":[{"en":"Entry A","ko":"기록 A"},{"en":"Entry B","ko":"기록 B"}]},
+{"ask":{"en":"Which entry confuses the two reference lines?","ko":"두 기준선을 혼동한 기록은?"},"show":{"en":"Practice key: A—0° latitude, Equator; B—0° longitude, Equator; C—0° longitude, prime meridian.","ko":"연습 범례: A—위도 0°, 적도. B—경도 0°, 적도. C—경도 0°, 본초자오선."},"right":{"en":"Entry B","ko":"기록 B"},"wrong":[{"en":"Entry A","ko":"기록 A"},{"en":"Entry C","ko":"기록 C"}]}
+]
+},
+"nativehomes3":{
+"1":[
+{"ask":{"en":"Which part of the chart needs correction?","ko":"표의 어느 부분을 고쳐야 하나요?"},"show":{"en":"Source: a traditional wetu has young-tree frames and bark or mat coverings. Student chart: frame—bark; covering—bark or mats.","ko":"자료: 전통 웨투는 어린 나무 틀과 껍질이나 돗자리 덮개예요. 학생 표: 틀—껍질, 덮개—껍질이나 돗자리."},"right":{"en":"The frame column","ko":"틀 항목"},"wrong":[{"en":"The covering column","ko":"덮개 항목"},{"en":"Both columns","ko":"두 항목 모두"}]},
+{"ask":{"en":"Which classification fits the frame materials?","ko":"틀 재료를 바르게 분류한 것은?"},"show":{"en":"Key: wood comes from plants; bone comes from animals. A Birnirk house record names driftwood and whale-bone frames.","ko":"범례: 나무는 식물, 뼈는 동물에서 와요. 번니르크 집 기록은 유목과 고래뼈 틀을 말해요."},"right":{"en":"Plant and animal materials","ko":"식물과 동물 재료"},"wrong":[{"en":"Plant materials only","ko":"식물 재료만"},{"en":"Animal materials only","ko":"동물 재료만"}]}
+],
+"2":[
+{"ask":{"en":"Which correction makes both chart entries fit the source?","ko":"두 표 항목이 자료에 맞게 고치는 방법은?"},"show":{"en":"Source: Chinook plankhouses used cedar boards; Taos adobe used sun-dried mud bricks. Chart: Chinook—mud bricks; Taos—cedar boards.","ko":"자료: 치누크 집은 시더 널빤지, 타오스 어도비는 햇볕 말린 진흙 벽돌이에요. 표: 치누크—진흙 벽돌, 타오스—시더 널빤지."},"right":{"en":"Exchange the materials assigned to the two homes.","ko":"두 집에 배정한 재료를 서로 바꿔요."},"wrong":[{"en":"Replace both entries with sun-dried mud bricks.","ko":"둘 다 햇볕 말린 진흙 벽돌로 바꿔요."},{"en":"Replace both entries with cedar boards.","ko":"둘 다 시더 널빤지로 바꿔요."}]},
+{"ask":{"en":"Which model meets the stated design conditions?","ko":"주어진 설계 조건에 맞는 모형은?"},"show":{"en":"Model goal: show a roofed space with no walls. A follows a traditional Seminole chickee record: frame and roof, no walls. B follows a Taos adobe record: mud-brick walls.","ko":"모형 목표: 지붕이 있고 벽은 없는 공간. A는 전통 세미놀 치키 기록에 따라 틀과 지붕, 벽 없음. B는 타오스 어도비 기록에 따라 진흙 벽돌 벽."},"right":{"en":"A meets both conditions; B does not meet the no-wall condition.","ko":"A는 두 조건을 갖추고 B는 벽 없음 조건에 안 맞아요."},"wrong":[{"en":"B meets both conditions; A does not meet the roof condition.","ko":"B는 두 조건을 갖추고 A는 지붕 조건에 안 맞아요."},{"en":"Both meet the conditions because both use traditional designs.","ko":"둘 다 전통 설계이므로 두 조건에 맞아요."}]}
+]
+},
+"nativetoday3":{
+"1":[
+{"ask":{"en":"Which label conflicts with the dated program?","ko":"날짜가 있는 행사표와 어긋나는 이름표는?"},"show":{"en":"Practice exhibit: today’s program lists Native staff teaching traditional building. A—current demonstration; B—traditional skill; C—an activity that no one does today.","ko":"연습 전시: 오늘 행사표에 원주민 직원의 전통 건축 시범이 있어요. A—현재 시범, B—전통 기술, C—오늘날 아무도 하지 않는 활동."},"right":{"en":"Label C","ko":"이름표 C"},"wrong":[{"en":"Label A","ko":"이름표 A"},{"en":"Label B","ko":"이름표 B"}]},
+{"ask":{"en":"Which question cannot be answered from this art label?","ko":"이 작품 이름표로 답할 수 없는 질문은?"},"show":{"en":"Practice label: DY Begay, Diné artist; wool tapestry; colors inspired by her homeland. No creation date is given.","ko":"연습 이름표: DY 베게이, 디네 예술가, 양털 태피스트리, 고향 색에서 영감. 제작 날짜는 없어요."},"right":{"en":"In which year was this piece made?","ko":"이 작품을 어느 해에 만들었나?"},"wrong":[{"en":"Which material was used in this piece?","ko":"이 작품에 어떤 재료를 썼나?"},{"en":"What inspired the colors in this piece?","ko":"이 작품 색의 영감은 무엇인가?"}]}
+],
+"2":[
+{"ask":{"en":"Which revision respects the scope of both exhibit records?","ko":"두 전시 기록의 범위를 지킨 수정은?"},"show":{"en":"A names DY Begay’s woven art. B names Jeffrey Gibson’s contemporary art. Draft caption: These two examples show what every Native artist makes.","ko":"A는 DY 베게이의 직물 예술을, B는 제프리 깁슨의 현대 예술을 소개해요. 설명 초안: 두 사례는 모든 원주민 예술가가 만드는 것을 보여준다."},"right":{"en":"Limit the caption to the two artists described.","ko":"설명을 소개된 두 예술가의 사례로 한정해요."},"wrong":[{"en":"Keep the caption because two artists represent every community.","ko":"두 예술가가 모든 공동체를 대표하므로 그대로 둬요."},{"en":"Change the caption to say both artists use only wool.","ko":"두 예술가 모두 양털만 쓴다는 설명으로 바꿔요."}]},
+{"ask":{"en":"Which details distinguish a current lesson about the past from a past event?","ko":"과거에 관한 현재 수업과 과거 사건을 구별할 근거는?"},"show":{"en":"Practice archive: A is today’s visitor schedule for a traditional-building lesson. B describes building methods used in the 1600s.","ko":"연습 자료실: A는 전통 건축 수업을 적은 오늘 방문객 일정, B는 1600년대에 쓰이던 건축 방법을 설명한 자료예요."},"right":{"en":"A dates the teaching; B dates the methods being taught.","ko":"A는 가르치는 때, B는 배우는 방법을 쓰던 때예요."},"wrong":[{"en":"A and B both date the teaching to the 1600s.","ko":"A와 B 모두 가르치는 때를 1600년대로 정해요."},{"en":"A dates the old methods; B dates today’s visitor lesson.","ko":"A는 옛 방법의 때, B는 오늘 방문객 수업 때예요."}]}
+]
+},
+"explorerwhy3":{
+"1":[
+{"ask":{"en":"Which chart column should contain the phrase about Asian markets?","ko":"아시아 시장에 관한 말을 넣을 표 항목은?"},"show":{"en":"Practice chart columns: Goal / Sponsor / Obstacle. Source: Cabot sought a route for Asian trade.","ko":"연습 표 항목: 목표 / 지원자 / 장애물. 자료: 캐벗은 아시아 교역 항로를 찾았어요."},"right":{"en":"Goal","ko":"목표"},"wrong":[{"en":"Sponsor","ko":"지원자"},{"en":"Obstacle","ko":"장애물"}]},
+{"ask":{"en":"Which entry disagrees with the source?","ko":"자료와 맞지 않는 기록은?"},"show":{"en":"Source: Hudson’s 1609 voyage had Dutch support and sought an Asian passage. Notes: A—support, Netherlands; B—goal, Asian passage; C—support, France.","ko":"자료: 허드슨의 1609년 항해는 네덜란드 지원으로 아시아 항로를 찾았어요. 메모: A—지원 네덜란드, B—목표 아시아 항로, C—지원 프랑스."},"right":{"en":"Entry C","ko":"기록 C"},"wrong":[{"en":"Entry A","ko":"기록 A"},{"en":"Entry B","ko":"기록 B"}]}
+],
+"2":[
+{"ask":{"en":"Which revision keeps a goal separate from an observed outcome?","ko":"목표와 관찰된 결과를 구별하는 수정은?"},"show":{"en":"Practice notes: Columbus sought an Asian route. Native communities already lived where he arrived. Draft heading: Planned Asian route proves an empty landing place.","ko":"연습 메모: 콜럼버스는 아시아 항로를 찾으려 했고 도착지에는 원주민 공동체가 있었어요. 초안 제목: 계획한 아시아 항로는 도착지가 빈 땅임을 증명한다."},"right":{"en":"Replace the heading with separate goal and inhabited-arrival entries.","ko":"목표와 주민이 있던 도착지를 다른 항목으로 적어요."},"wrong":[{"en":"Keep the heading and omit the record about communities.","ko":"제목을 두고 공동체 기록을 빼요."},{"en":"Keep the heading and treat the planned route as the arrival record.","ko":"제목을 두고 계획 경로를 도착 기록으로 취급해요."}]},
+{"ask":{"en":"Which comparison correctly pairs each journey’s obstacle?","ko":"여행별 장애물을 바르게 연결한 비교는?"},"show":{"en":"Record A: ice blocked Hudson’s northern search. Record B: Cartier’s crew faced cold and illness in winter.","ko":"A: 얼음이 허드슨의 북쪽 탐색을 막음. B: 카르티에 선원들이 겨울 추위와 병을 겪음."},"right":{"en":"A concerns a blocked route; B includes crew health.","ko":"A는 막힌 경로, B는 선원의 건강 문제도 있어요."},"wrong":[{"en":"A concerns crew illness; B describes only a blocked route.","ko":"A는 선원의 병, B는 막힌 경로만 설명해요."},{"en":"Both describe only illness, not an obstacle to movement.","ko":"둘 다 병만 설명하고 이동 장애물은 없어요."}]}
+]
+},
+"encounter3":{
+"1":[
+{"ask":{"en":"Which source belongs under the heading Community Experience?","ko":"공동체의 경험 항목에 맞는 자료는?"},"show":{"en":"Practice archive: A—leader’s list of goods sought; B—account of families affected by the arrival; C—crew’s planned sailing route.","ko":"연습 자료실: A—지도자가 찾던 물건 목록, B—도착의 영향을 받은 가족 기록, C—선원의 계획 항로."},"right":{"en":"Source B","ko":"자료 B"},"wrong":[{"en":"Source A","ko":"자료 A"},{"en":"Source C","ko":"자료 C"}]},
+{"ask":{"en":"Which practice record lacks a free choice?","ko":"자유롭게 선택하지 못한 연습 기록은?"},"show":{"en":"Fictional records: A offers food as a gift. B hands over food after a threat. C freely agrees to trade food for tools.","ko":"가상 기록: A는 음식을 선물해요. B는 위협을 받고 음식을 내줘요. C는 음식과 도구를 바꾸기로 자유롭게 동의해요."},"right":{"en":"Record B","ko":"기록 B"},"wrong":[{"en":"Record A","ko":"기록 A"},{"en":"Record C","ko":"기록 C"}]}
+],
+"2":[
+{"ask":{"en":"Which sentence misuses evidence about a welcome?","ko":"환대 근거를 잘못 이용한 문장은?"},"show":{"en":"Record A: the Cofitachequi leader offered food and gifts. Record B: de Soto later took valuables and held the leader captive.","ko":"A: 코피타체키 지도자가 음식과 선물을 줌. B: 데소토가 이후 귀중품을 빼앗고 지도자를 붙잡음."},"right":{"en":"The earlier welcome proves the later taking was agreed to.","ko":"앞선 환대는 나중의 빼앗기에 동의했다는 증거예요."},"wrong":[{"en":"The earlier welcome and later taking describe different actions.","ko":"앞선 환대와 나중 빼앗기는 서로 다른 행동이에요."},{"en":"The later record describes harm despite the earlier welcome.","ko":"나중 기록은 앞선 환대에도 피해가 있었음을 보여줘요."}]},
+{"ask":{"en":"Which question remains unanswered after reading both records?","ko":"두 기록을 읽어도 답하지 못하는 질문은?"},"show":{"en":"Record A lists furs and metal tools exchanged in the Hudson Valley. Record B describes captives taken by Cartier in 1536. Neither names each affected person.","ko":"A는 허드슨 계곡의 모피·금속 도구 교환, B는 1536년 카르티에가 사람을 붙잡아 간 일을 설명해요. 어느 쪽에도 관련자 전원의 이름은 없어요."},"right":{"en":"What were the names of all affected people?","ko":"관련된 모든 사람의 이름은 무엇인가?"},"wrong":[{"en":"Which listed event involved an exchange of goods?","ko":"제시된 사건 중 물건 교환은 어느 것인가?"},{"en":"Which listed event involved people being taken captive?","ko":"제시된 사건 중 사람을 붙잡아 간 일은 어느 것인가?"}]}
+]
+},
+"colonylife3":{
+"1":[
+{"ask":{"en":"Which entry is missing from the student’s chart?","ko":"학생 표에 빠진 항목은?"},"show":{"en":"Source: Mid-Atlantic farms grew grain and vegetables and raised livestock. Chart: grain—crops; vegetables—crops. The animal row is blank.","ko":"자료: 중부 대서양 농장은 곡물·채소와 가축을 길렀어요. 표: 곡물—작물, 채소—작물. 동물 행은 비었어요."},"right":{"en":"Livestock in the animal row","ko":"동물 행의 가축"},"wrong":[{"en":"Grain in the animal row","ko":"동물 행의 곡물"},{"en":"Vegetables in the animal row","ko":"동물 행의 채소"}]},
+{"ask":{"en":"Which museum caption disagrees with the operating dates?","ko":"운영 기간과 맞지 않는 전시 설명은?"},"show":{"en":"Source: Bray School operated 1760–1774. Practice captions: A—open in 1765; B—open in 1770; C—open in 1750.","ko":"자료: 브레이 학교 운영 1760~1774년. 연습 설명: A—1765년 운영, B—1770년 운영, C—1750년 운영."},"right":{"en":"Caption C","ko":"설명 C"},"wrong":[{"en":"Caption A","ko":"설명 A"},{"en":"Caption B","ko":"설명 B"}]}
+],
+"2":[
+{"ask":{"en":"Which revision makes both categories accurate?","ko":"두 범주를 바르게 고치는 방법은?"},"show":{"en":"Source A describes grain and vegetables grown on farms. Source B describes children taught at Bray School. Chart: A—education; B—agriculture.","ko":"자료 A는 농장의 곡물·채소, B는 브레이 학교의 수업을 설명해요. 표: A—교육, B—농업."},"right":{"en":"Exchange the two category labels.","ko":"두 범주 이름을 서로 바꿔요."},"wrong":[{"en":"Change both category labels to agriculture.","ko":"두 범주를 모두 농업으로 바꿔요."},{"en":"Change both category labels to education.","ko":"두 범주를 모두 교육으로 바꿔요."}]},
+{"ask":{"en":"Which claim is not supported when the records are combined?","ko":"기록을 함께 봐도 뒷받침되지 않는 주장은?"},"show":{"en":"A: some free and enslaved Black children attended Bray School. B: the children had different legal statuses. Neither describes a change of status on enrollment.","ko":"A: 일부 자유인·노예 신분 흑인 아이가 브레이 학교에 다님. B: 아이들의 법적 신분은 달랐음. 입학 때 신분이 바뀌었다는 기록은 없어요."},"right":{"en":"Attending the school made every pupil legally free.","ko":"학교에 다니면 모든 학생이 법적으로 자유로워졌어요."},"wrong":[{"en":"Some pupils received lessons despite different legal statuses.","ko":"신분이 다른 일부 학생이 수업을 받았어요."},{"en":"Attendance records do not by themselves show emancipation.","ko":"출석 기록만으로 해방됐다고 할 수 없어요."}]}
+]
+},
+"colonyperspective3":{
+"1":[
+{"ask":{"en":"Which document is still needed to know the court’s decision?","ko":"법원의 결정을 알려면 더 필요한 문서는?"},"show":{"en":"A Maryland service term has ended. A petition asks for release. The folder contains the agreement and petition, but no ruling.","ko":"메릴랜드 노동 기간이 끝났고 풀려나게 해 달라는 청원이 있어요. 자료철에는 계약서·청원서가 있지만 판결은 없어요."},"right":{"en":"The court’s ruling on the petition","ko":"청원에 대한 법원 판결"},"wrong":[{"en":"Another copy of the petition","ko":"청원서를 복사한 문서"},{"en":"Another copy of the agreement","ko":"계약서를 복사한 문서"}]},
+{"ask":{"en":"Which practice record is dated after the law?","ko":"이 법이 나온 뒤의 연습 기록은?"},"show":{"en":"Virginia law: 1662. Fictional Virginia records: A—1661; B—1663; C—1659.","ko":"버지니아 법: 1662년. 가상 버지니아 기록: A—1661년, B—1663년, C—1659년."},"right":{"en":"Record B","ko":"기록 B"},"wrong":[{"en":"Record A","ko":"기록 A"},{"en":"Record C","ko":"기록 C"}]}
+],
+"2":[
+{"ask":{"en":"Which revision avoids confusing a request with a result?","ko":"요청과 결과를 혼동하지 않게 고친 것은?"},"show":{"en":"Record: a worker petitioned after the service term ended. Draft: The petition proves the court granted release. No ruling is included.","ko":"기록: 노동자가 기간 뒤 청원함. 초안: 청원은 법원이 풀어줬다는 증거다. 판결 기록은 없어요."},"right":{"en":"Say release was requested; seek the ruling before stating the outcome.","ko":"풀려나길 요청했다고 쓰고 결과에는 판결을 찾아요."},"wrong":[{"en":"Say release was granted because the worker submitted a request.","ko":"노동자가 요청했으므로 허가받았다고 써요."},{"en":"Say release was refused because the ruling is absent.","ko":"판결이 없으므로 거절됐다고 써요."}]},
+{"ask":{"en":"Which chart best separates the two kinds of legal limit?","ko":"두 종류의 법적 제한을 바르게 나눈 표는?"},"show":{"en":"A: a service agreement names a set term. B: a 1662 law ties a child’s status to the mother. The chart headings are Term limit and Inherited status.","ko":"A: 노동 계약에 기간이 있음. B: 1662년 법이 아이 신분을 어머니에게 따르게 함. 표 제목은 기간 제한과 부모에게서 이어진 신분이에요."},"right":{"en":"A under Term limit; B under Inherited status","ko":"A는 기간 제한, B는 이어진 신분"},"wrong":[{"en":"A under Inherited status; B under Term limit","ko":"A는 이어진 신분, B는 기간 제한"},{"en":"Both under Term limit; neither under Inherited status","ko":"둘 다 기간 제한, 이어진 신분은 없음"}]}
+]
+},
+"civic3":{
+"1":[
+{"ask":{"en":"Which request follows the notice’s procedure?","ko":"안내 절차에 맞는 요청은?"},"show":{"en":"Practice meeting notice: send a written concern before Friday this week.","ko":"연습 모임 안내: 이번 주 금요일 전에 의견을 글로 보내요."},"right":{"en":"A message sent this Thursday","ko":"이번 주 목요일에 보낸 의견"},"wrong":[{"en":"A message sent this Saturday","ko":"이번 주 토요일에 보낸 의견"},{"en":"A message sent next Monday","ko":"다음 주 월요일에 보낸 의견"}]},
+{"ask":{"en":"Which plan keeps the required route clear?","ko":"필수 통로를 비워 두는 계획은?"},"show":{"en":"Practice event map: a clear doorway-to-seating path is required. A puts tables beside it; B puts tables across it; C stores boxes in it.","ko":"연습 행사 지도: 문에서 좌석까지 통로를 비워야 해요. A는 탁자를 옆에, B는 가로질러, C는 상자를 통로에 둬요."},"right":{"en":"Plan A","ko":"계획 A"},"wrong":[{"en":"Plan B","ko":"계획 B"},{"en":"Plan C","ko":"계획 C"}]}
+],
+"2":[
+{"ask":{"en":"Which conclusion follows from the speaking log?","ko":"발언 기록에서 확인되는 결론은?"},"show":{"en":"Rule: each proposal gets one turn before discussion. Log: A speaks, A speaks again, then discussion begins; B has not spoken.","ko":"규칙: 토론 전 제안마다 한 차례 말함. 기록: A 발언, A 다시 발언, 토론 시작. B는 아직 말하지 않았어요."},"right":{"en":"B needs its first turn before discussion starts.","ko":"토론 전에 B의 첫 발언이 필요해요."},"wrong":[{"en":"A needs a third turn before B can begin.","ko":"B 전에 A의 세 번째 발언이 필요해요."},{"en":"The two turns already satisfy one turn for each.","ko":"이미 두 차례로 각자 한 차례를 충족했어요."}]},
+{"ask":{"en":"Which notice resolves both the place and date mismatch?","ko":"장소와 날짜 불일치를 모두 해결할 안내는?"},"show":{"en":"Question: North Park hours this Saturday. A—North Park, this Saturday; B—North Park, last year; C—South Park, this Saturday.","ko":"질문: 이번 토요일 북쪽 공원 시간. A—북쪽 공원 이번 토요일, B—북쪽 공원 작년, C—남쪽 공원 이번 토요일."},"right":{"en":"A matches both the park and date.","ko":"A는 공원과 날짜가 모두 맞아요."},"wrong":[{"en":"B matches both because the park name is enough.","ko":"B는 공원 이름만 같으면 둘 다 맞아요."},{"en":"C matches both because the date is enough.","ko":"C는 날짜만 같으면 둘 다 맞아요."}]}
+]
+},
+"publicservice3":{
+"1":[
+{"ask":{"en":"How much remains for other public services?","ko":"다른 공공서비스에 쓸 돈은 얼마 남나요?"},"show":{"en":"Practice town budget: 20 coins collected in taxes. Listed public services cost 17 coins altogether. There are no other payments.","ko":"연습 마을 예산: 세금 20동전을 걷었어요. 적힌 공공서비스 비용의 합은 17동전이에요. 다른 지출은 없어요."},"right":{"en":"3 coins","ko":"3동전"},"wrong":[{"en":"17 coins","ko":"17동전"},{"en":"20 coins","ko":"20동전"}]},
+{"ask":{"en":"Which receipt is missing from the shared-service total?","ko":"공동 서비스 합계에 빠진 영수증은?"},"show":{"en":"Practice town ledger lists school and road costs. Receipts show school, road, and fire-service costs; all three use town funds.","ko":"연습 마을 장부는 학교·도로 비용을 적었어요. 영수증에는 학교·도로·소방 비용이 있고 모두 마을 재원을 써요."},"right":{"en":"The fire-service receipt","ko":"소방 서비스 영수증"},"wrong":[{"en":"The school receipt","ko":"학교 영수증"},{"en":"The road receipt","ko":"도로 영수증"}]}
+],
+"2":[
+{"ask":{"en":"Which correction fits the funding evidence?","ko":"재원 근거에 맞는 고침은?"},"show":{"en":"Practice ledger: collected taxes pay 60 coins for a road repair. Caption: Only the nearest household paid the bill.","ko":"연습 장부: 걷은 세금으로 도로 수리 60동전을 냄. 설명: 가장 가까운 가정만 비용을 냈다."},"right":{"en":"Replace the caption with payment from collected public funds.","ko":"걷은 공공 재원에서 냈다는 설명으로 바꿔요."},"wrong":[{"en":"Keep the caption because nearby homes use roads.","ko":"가까운 가정이 길을 쓰므로 설명을 유지해요."},{"en":"Replace the caption with no payment was needed.","ko":"비용을 낼 필요가 없었다는 설명으로 바꿔요."}]},
+{"ask":{"en":"Which ledger places both payments in the right columns?","ko":"두 지출을 알맞은 항목에 넣은 장부는?"},"show":{"en":"Practice payments: town taxes support a public library; a household’s savings buy its sofa. Columns: public funds / household funds.","ko":"연습 지출: 마을 세금이 공공도서관 지원, 가정 저축이 소파 구입. 항목: 공공 재원 / 가정 재원."},"right":{"en":"Library under public; sofa under household","ko":"도서관은 공공, 소파는 가정"},"wrong":[{"en":"Library under household; sofa under public","ko":"도서관은 가정, 소파는 공공"},{"en":"Both under public; nothing under household","ko":"둘 다 공공, 가정은 없음"}]}
+]
+},
+"trade3":{
+"1":[
+{"ask":{"en":"Which item has conflicting origin labels?","ko":"생산지 이름표가 서로 맞지 않는 물건은?"},"show":{"en":"Practice labels: A—made in our town/local; B—made in another country/foreign; C—made in our town/foreign.","ko":"연습 이름표: A—우리 마을 제작/지역, B—다른 나라 제작/외국, C—우리 마을 제작/외국."},"right":{"en":"Item C","ko":"물건 C"},"wrong":[{"en":"Item A","ko":"물건 A"},{"en":"Item B","ko":"물건 B"}]},
+{"ask":{"en":"Which entry belongs in a service purchase list?","ko":"서비스 구입 목록에 넣을 기록은?"},"show":{"en":"Practice receipts list a haircut, a loaf of bread, and a wooden chair. The list separates work provided from physical goods.","ko":"연습 영수증은 이발, 빵, 나무 의자예요. 제공한 일과 물건을 따로 적어요."},"right":{"en":"The haircut receipt","ko":"이발 영수증"},"wrong":[{"en":"The bread receipt","ko":"빵 영수증"},{"en":"The chair receipt","ko":"의자 영수증"}]}
+],
+"2":[
+{"ask":{"en":"Which correction fits the two purchases?","ko":"두 구입에 맞는 고침은?"},"show":{"en":"Practice records: Jo sells a handmade basket, then pays a barber for a haircut. Chart labels Jo only as a producer in both exchanges.","ko":"연습 기록: Jo가 손수 만든 바구니를 팔고 이발사에게 이발비를 내요. 표는 두 거래 모두 Jo를 생산자로만 적었어요."},"right":{"en":"Keep producer for the basket; use consumer for the haircut.","ko":"바구니는 생산자, 이발은 소비자로 고쳐요."},"wrong":[{"en":"Use consumer for the basket; keep producer for the haircut.","ko":"바구니는 소비자, 이발은 생산자로 고쳐요."},{"en":"Use consumer for both because money changes hands.","ko":"돈이 오가므로 둘 다 소비자로 고쳐요."}]},
+{"ask":{"en":"Which route delivers both towns the goods they request?","ko":"두 마을이 원하는 물건을 모두 보내는 경로는?"},"show":{"en":"Practice requests: Hill Town needs baskets; River Town needs peaches. Hill grows peaches; River makes baskets.","ko":"연습 요청: 언덕 마을은 바구니, 강 마을은 복숭아가 필요해요. 언덕은 복숭아 재배, 강은 바구니 제작."},"right":{"en":"Baskets go to Hill; peaches go to River.","ko":"바구니는 언덕으로, 복숭아는 강으로 가요."},"wrong":[{"en":"Baskets go to River; peaches go to Hill.","ko":"바구니는 강으로, 복숭아는 언덕으로 가요."},{"en":"Both baskets and peaches go only to Hill.","ko":"바구니와 복숭아 모두 언덕으로만 가요."}]}
+]
+},
+"market3":{
+"2":[
+{"ask":{"en":"Which status should the two offers have?","ko":"두 제안에 알맞은 상태는?"},"show":{"en":"Practice log: A—both accept, items exchanged; B—one offers, the other has not replied. Status labels: complete / awaiting agreement.","ko":"연습 기록: A—둘 다 동의해 물건 교환, B—한쪽 제안 후 다른 쪽 답 없음. 상태: 완료 / 동의 대기."},"right":{"en":"A complete; B awaiting agreement","ko":"A 완료, B 동의 대기"},"wrong":[{"en":"A awaiting agreement; B complete","ko":"A 동의 대기, B 완료"},{"en":"Both complete because both contain offers","ko":"둘 다 제안이 있으므로 완료"}]},
+{"ask":{"en":"Which revision keeps price separate from willingness to trade?","ko":"가격과 교환 의사를 구별한 수정은?"},"show":{"en":"Practice offer: a 5-coin book for a 5-coin puzzle. The puzzle’s owner declines. Draft: Equal prices mean the owner has agreed.","ko":"연습 제안: 5동전짜리 책과 5동전짜리 퍼즐. 퍼즐 소유자는 거절해요. 초안: 값이 같으니 소유자가 동의했다."},"right":{"en":"Equal prices do not replace the owner’s agreement.","ko":"같은 가격이 소유자 동의를 대신하지 않아요."},"wrong":[{"en":"Equal prices make the offer a completed exchange.","ko":"같은 가격이면 제안이 완료된 교환이에요."},{"en":"Equal prices mean only the first owner must agree.","ko":"같은 가격이면 첫 소유자만 동의하면 돼요."}]}
+]
+}
+};
+const bankGrowthEscape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+const bankGrowthMake=(id,lv,make)=>{const rows=bankGrowthRows[id]?.[lv];if(rows&&rnd(6)===0){const r=pick(rows);const it=q(r.ask,panel(bankGrowthEscape(L(r.show))),r.right,r.wrong);it.bankGrowth=true;it.cls+=' bank-growth-options';return it;}return make(lv);};
 })();
 
 // Request 58: founding motives, alongside the existing economy modes.

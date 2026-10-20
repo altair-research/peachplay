@@ -11,7 +11,7 @@ const fresh = (id, level, make) => {
  throw new Error(`Insufficient distinct questions: ${id}/${level}`);
 };
 // Fact sources and limits are documented in docs/review/codex-done-10.md.
-const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'sci',icon:'🔬',title:B(en,ko),sub:B('Observe, compare and use evidence','관찰하고 비교하며 근거를 찾아요'),area:B(`Grade 3 Science · ${code}`,`3학년 과학 · ${code}`),play(){quiz(this,fresh(id,lvl(id),make));}});
+const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'sci',icon:'🔬',title:B(en,ko),sub:B('Observe, compare and use evidence','관찰하고 비교하며 근거를 찾아요'),area:B(`Grade 3 Science · ${code}`,`3학년 과학 · ${code}`),play(){quiz(this,fresh(id,lvl(id),lv=>bankGrowthMake(id,lv,make)));}});
 const panel=s=>`<div class="g3-science">${s}</div>`;
 const opts=(r,w)=>[r,...w].map((s,i)=>({html:`<span class="word">${typeof s==='object'?L(s):s}</span>`,ok:i===0}));
 const q=(ask,show,r,w,after)=>({ask,show,opts:opts(r,w),cls:'words g3-science-options',after:after|| (typeof r==='object'?r:B(String(r),String(r)))});
@@ -185,4 +185,116 @@ const shadeQuestions=[
  [B('What single feature are these designs comparing?','비교하는 설계의 차이는?'),B('The cover’s position','가림막 위치'),B('The block material','블록 재료'),B('The size of the blocks','블록 크기')],
  [B('What would make the comparison unfair?','공정하지 않은 비교는?'),B('Use different measurement times','다른 시간 동안 측정하기'),B('Use identical blocks','똑같은 블록 사용하기'),B('Record both temperatures','두 온도 기록하기')]
 ];
+
+// P-banks: original additional observations; source ledger in banks-grade3-facts-candidates.md.
+const bankGrowthRows={
+"rocktest3": {
+"1": [
+{"ask":{"en":"Which missing entry is needed to compare hardness?","ko":"단단함을 비교하려면 빠진 어떤 기록이 필요한가요?"},"show":{"en":"A record lists each sample’s color and surface feel, but no scratch-test results.","ko":"기록에 표본마다 색과 표면 느낌은 있지만 긁기 검사 결과는 없어요."},"right":{"en":"Scratch resistance","ko":"긁힘에 견디는 정도"},"wrong":[{"en":"Tray position","ko":"쟁반의 위치"},{"en":"Sample label color","ko":"표본 이름표 색"}]},
+{"ask":{"en":"Which part of the summary needs correction?","ko":"요약의 어느 항목을 고쳐야 하나요?"},"show":{"en":"Records: P—gray, rough, 20 g; Q—gray, smooth, 20 g. Summary: both are gray, both are smooth, both weigh 20 g.","ko":"기록: P—회색, 거침, 20g. Q—회색, 매끈함, 20g. 요약: 둘 다 회색, 둘 다 매끈함, 둘 다 20g."},"right":{"en":"The texture summary","ko":"질감 요약"},"wrong":[{"en":"The color summary","ko":"색 요약"},{"en":"The mass summary","ko":"질량 요약"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison separates color from scratch resistance?","ko":"색과 긁힘에 견디는 정도를 구별한 비교는?"},"show":{"en":"Practice records: P is red and scratches easily. Q is red and does not scratch with the same tool. R is gray and scratches easily.","ko":"연습 기록: P는 빨강이고 쉽게 긁혀요. Q는 빨강이고 같은 도구로 긁히지 않아요. R은 회색이고 쉽게 긁혀요."},"right":{"en":"P and Q share color but differ in resistance","ko":"P와 Q는 색은 같고 긁힘 저항은 달라요"},"wrong":[{"en":"P and Q differ in color but share resistance","ko":"P와 Q는 색이 다르고 긁힘 저항은 같아요"},{"en":"Q and R share both recorded properties","ko":"Q와 R은 적힌 두 성질이 모두 같아요"}]},
+{"ask":{"en":"Which student used evidence to revise a claim?","ko":"근거를 보고 주장을 고친 학생은?"},"show":{"en":"Claim: all shiny samples resist scratches. Test: one shiny sample scratches easily with the tool.","ko":"주장: 반짝이는 표본은 모두 긁힘에 잘 견뎌요. 검사: 반짝이는 표본 하나가 도구에 쉽게 긁혀요."},"right":{"en":"One exception means the claim is too broad","ko":"예외가 있으니 주장이 너무 넓다고 해요"},"wrong":[{"en":"Keep the claim because the sample is shiny","ko":"표본이 반짝이니 주장을 그대로 둬요"},{"en":"Conclude no sample can ever resist scratching","ko":"어떤 표본도 긁힘에 못 견딘다고 해요"}]}
+]
+},
+"erosion3": {
+"1": [
+{"ask":{"en":"Which route matches the two observations?","ko":"두 관찰에 맞는 이동 경로는?"},"show":{"en":"Before rain: marked grains are at the top of a tray. After rain: those grains are in the lower catch cup.","ko":"비 오기 전 표시한 알갱이는 쟁반 위쪽에 있어요. 비 온 뒤 같은 알갱이가 아래 수거 컵에 있어요."},"right":{"en":"Top → catch cup","ko":"위쪽 → 수거 컵"},"wrong":[{"en":"Catch cup → top","ko":"수거 컵 → 위쪽"},{"en":"Top → top","ko":"위쪽 → 위쪽"}]},
+{"ask":{"en":"Which measurement would show how much material left the slope?","ko":"비탈에서 빠져나간 물질의 양을 보여 줄 측정은?"},"show":{"en":"Practice rain model: a cup catches everything carried from the slope. The cup starts empty.","ko":"연습 비 모형: 비탈에서 옮겨진 것을 컵이 모두 받아요. 처음 컵은 비어 있어요."},"right":{"en":"Mass of soil collected in the cup","ko":"컵에 모인 흙의 질량"},"wrong":[{"en":"Mass of soil still on the slope","ko":"비탈에 남아 있는 흙의 질량"},{"en":"Mass of the empty catch cup","ko":"빈 수거 컵의 질량"}]}
+],
+"2": [
+{"ask":{"en":"Which pair of notes is best evidence of erosion?","ko":"침식의 근거로 가장 좋은 기록의 짝은?"},"show":{"en":"A class wants to find out whether rain moved soil from a garden bed.","ko":"학급이 비로 화단의 흙이 옮겨졌는지 알아보려 해요."},"right":{"en":"Before/after soil positions and collected material downhill","ko":"흙의 전후 위치와 아래쪽에 쌓인 물질"},"wrong":[{"en":"Before/after rock color and midday air temperature","ko":"돌의 전후 색과 한낮 공기 온도"},{"en":"Before/after crack width and unchanged soil position","ko":"돌 틈의 전후 너비와 그대로인 흙 위치"}]},
+{"ask":{"en":"Which summary accounts for the material that left the slope?","ko":"비탈을 떠난 물질의 양을 맞게 설명한 요약은?"},"show":{"en":"Closed practice tray, no material added: 100 grains start on the slope. Later 70 remain there and 30 are in the catch cup.","ko":"새 물질을 더하지 않은 닫힌 연습 쟁반이에요. 처음 비탈에 알갱이 100개가 있어요. 뒤에 70개는 비탈, 30개는 수거 컵에 있어요."},"right":{"en":"30 moved off the slope and were collected","ko":"30개가 비탈을 떠나 수거됐어요"},"wrong":[{"en":"70 moved off the slope and were collected","ko":"70개가 비탈을 떠나 수거됐어요"},{"en":"100 moved off the slope and were collected","ko":"100개가 비탈을 떠나 수거됐어요"}]}
+]
+},
+"fossilclue3": {
+"1": [
+{"ask":{"en":"Which folder title covers BOTH specimens?","ko":"두 표본을 모두 포함하는 자료철 제목은?"},"show":{"en":"Specimens: an ancient tooth preserved in rock; an ancient trackway preserved in rock.","ko":"표본: 암석에 보존된 옛 이빨, 암석에 보존된 옛 발자국 길."},"right":{"en":"Body remains and activity traces","ko":"몸의 일부와 활동 흔적"},"wrong":[{"en":"Body remains only","ko":"몸의 일부만"},{"en":"Activity traces only","ko":"활동 흔적만"}]},
+{"ask":{"en":"Which detail belongs in a specimen-count record?","ko":"표본 개수를 적는 기록에 알맞은 내용은?"},"show":{"en":"A tray holds three ancient shell fossils with the same visible shape. The collector has not identified species.","ko":"쟁반에 겉모양이 같은 옛 조개 화석 세 개가 있어요. 종류는 아직 확인하지 않았어요."},"right":{"en":"Three specimens were collected","ko":"표본 세 개를 모았어요"},"wrong":[{"en":"Three species were confirmed","ko":"세 종임을 확인했어요"},{"en":"Exactly three animals ever lived there","ko":"그곳에 동물은 정확히 세 마리만 살았어요"}]}
+],
+"2": [
+{"ask":{"en":"Which site has evidence of activity but no collected body parts?","ko":"활동 근거는 있지만 모은 몸의 일부는 없는 곳은?"},"show":{"en":"Practice survey: P—2 fossil teeth, 1 trackway; Q—0 fossil teeth, 4 trackways; R—3 fossil teeth, 0 trackways.","ko":"연습 조사: P—이빨 화석 2개, 발자국 길 1개. Q—이빨 화석 0개, 발자국 길 4개. R—이빨 화석 3개, 발자국 길 0개."},"right":{"en":"Site Q","ko":"장소 Q"},"wrong":[{"en":"Site P","ko":"장소 P"},{"en":"Site R","ko":"장소 R"}]},
+{"ask":{"en":"Which summary distinguishes a finding from a conclusion not yet tested?","ko":"발견한 것과 아직 확인하지 않은 결론을 구별한 요약은?"},"show":{"en":"Two trays each contain five shell fossils. Only tray A’s specimens have been identified by a specialist.","ko":"두 쟁반에 조개 화석이 다섯 개씩 있어요. 전문가가 종류를 확인한 것은 A의 표본뿐이에요."},"right":{"en":"The specimen counts match; species counts need more evidence","ko":"표본 수는 같지만 종 수는 근거가 더 필요해요"},"wrong":[{"en":"Matching specimen counts prove matching species","ko":"표본 수가 같으니 종도 같음이 증명돼요"},{"en":"Tray B must contain more species than A","ko":"B에 A보다 더 많은 종이 있어야 해요"}]}
+]
+},
+"fossilorder3": {
+"1": [
+{"ask":{"en":"Which arrow points backward in the model?","ko":"모형에서 순서를 거꾸로 가리킨 화살표는?"},"show":{"en":"Model cards: A—remains on the bottom; B—sediment covers remains; C—preserved remains in hardened layers.","ko":"모형 카드: A—바닥에 남은 몸. B—퇴적물이 덮음. C—굳은 층 안에 보존됨."},"right":{"en":"C → B","ko":"C → B"},"wrong":[{"en":"A → B","ko":"A → B"},{"en":"B → C","ko":"B → C"}]},
+{"ask":{"en":"How many model specimens were NOT preserved?","ko":"모형에서 보존되지 않은 표본은 몇 개일까요?"},"show":{"en":"Practice model: six paper shells start. Four remain visible in the final layer; the rest are removed to represent loss.","ko":"연습 모형: 종이 껍데기 여섯 개로 시작해요. 마지막 층에 네 개가 남고 나머지는 사라짐을 나타내려고 빼요."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"4","ko":"4"},{"en":"6","ko":"6"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison supports a possible benefit of quick covering without guaranteeing it?","ko":"빨리 덮이면 도움 될 수 있음을 보이되 보장하지 않는 비교는?"},"show":{"en":"Practice model: covered group—8 of 10 shapes remain; exposed group—3 of 10 remain. These are made-up model results.","ko":"연습 모형: 덮은 무리 10개 중 8개가 남고 드러낸 무리 10개 중 3개가 남아요. 가상 모형 결과예요."},"right":{"en":"More covered shapes remained, but some were still lost","ko":"덮은 쪽이 더 남았지만 일부는 사라졌어요"},"wrong":[{"en":"All covered shapes remained, proving guaranteed preservation","ko":"덮은 것은 모두 남아 보존이 보장돼요"},{"en":"Fewer covered shapes remained than exposed shapes","ko":"덮은 쪽이 드러낸 쪽보다 적게 남았어요"}]},
+{"ask":{"en":"Which comparison best tests covering speed without changing the type of remains?","ko":"남은 부분의 종류는 같게 두고 덮이는 속도를 비교한 실험은?"},"show":{"en":"A class wants to compare quick and slow burial in a paper model.","ko":"학급이 종이 모형에서 빨리 묻히기와 천천히 묻히기를 비교하려 해요."},"right":{"en":"Identical paper shells, same layers, different covering speeds","ko":"같은 종이 껍데기와 층, 다른 덮기 속도"},"wrong":[{"en":"Hard shell shapes covered fast, soft leaf shapes covered slowly","ko":"단단한 껍데기는 빨리, 부드러운 잎은 천천히 덮기"},{"en":"Different shapes and different layers, both covered fast","ko":"다른 모양과 다른 층, 둘 다 빨리 덮기"}]}
+]
+},
+"habitat3": {
+"1": [
+{"ask":{"en":"Which site best fits a walk without climbing a slope?","ko":"비탈을 오르지 않는 산책에 맞는 곳은?"},"show":{"en":"Practice Georgia field notes: site K has a steep rocky trail. Site L has a flat sandy trail.","ko":"조지아 연습 현장 기록: K는 가파른 돌길, L은 평평한 모랫길이에요."},"right":{"en":"Site L","ko":"장소 L"},"wrong":[{"en":"Site K","ko":"장소 K"},{"en":"Both sites","ko":"두 장소 모두"}]},
+{"ask":{"en":"Which site would involve repeated gentle climbs and descents?","ko":"완만한 오르막과 내리막을 여러 번 걷게 될 곳은?"},"show":{"en":"Practice Georgia field notes: site M has low rolling hills. Site N has broad level ground.","ko":"조지아 연습 현장 기록: M은 낮고 완만한 언덕, N은 넓고 평평한 땅이에요."},"right":{"en":"Site M","ko":"장소 M"},"wrong":[{"en":"Site N","ko":"장소 N"},{"en":"Both sites","ko":"두 장소 모두"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison uses both notes?","ko":"두 기록을 모두 이용한 비교는?"},"show":{"en":"Practice Georgia field notes: site K has a steep rocky trail. Site L has a flat sandy trail.","ko":"조지아 연습 현장 기록: K는 가파른 돌길, L은 평평한 모랫길이에요."},"right":{"en":"K is steeper; L has a sandier trail","ko":"K가 더 가파르고 L의 길에 모래가 더 많아요"},"wrong":[{"en":"L is steeper; K has a sandier trail","ko":"L이 더 가파르고 K의 길에 모래가 더 많아요"},{"en":"Both have steep rocky trails","ko":"둘 다 가파른 돌길이에요"}]},
+{"ask":{"en":"Which claim goes beyond these notes?","ko":"이 기록만으로 알 수 없는 주장은?"},"show":{"en":"Practice Georgia field notes: site M has low rolling hills. Site N has broad level ground.","ko":"조지아 연습 현장 기록: M은 낮고 완만한 언덕, N은 넓고 평평한 땅이에요."},"right":{"en":"The same animals live at both sites","ko":"두 곳에 같은 동물이 살아요"},"wrong":[{"en":"M has more changes in ground height","ko":"M은 땅의 높낮이 변화가 더 있어요"},{"en":"N has a more level surface","ko":"N의 표면이 더 평평해요"}]}
+]
+},
+"adaptation3": {
+"1": [
+{"ask":{"en":"Which change would most reduce the push in this model?","ko":"이 모형에서 물을 미는 힘을 가장 줄일 변화는?"},"show":{"en":"An adult pulls a model foot through water. A broad sheet connects its toes.","ko":"어른이 모형 발을 물속에서 당겨요. 넓은 막이 발가락 사이를 이어요."},"right":{"en":"Remove the sheet between the toes","ko":"발가락 사이의 막을 없애요"},"wrong":[{"en":"Make the sheet between the toes wider","ko":"발가락 사이의 막을 더 넓혀요"},{"en":"Keep the sheet’s width unchanged","ko":"발가락 사이 막의 너비를 그대로 둬요"}]},
+{"ask":{"en":"Which model retained more warmth in this test?","ko":"이 실험에서 따뜻함을 더 잘 유지한 모형은?"},"show":{"en":"Practice fur-cover model, same start: P has thick covering, 30°C → 26°C; Q has thin covering, 30°C → 20°C.","ko":"털 덮개 연습 모형의 처음 온도는 같아요. P는 두꺼운 덮개로 30°C → 26°C, Q는 얇은 덮개로 30°C → 20°C."},"right":{"en":"Model P","ko":"모형 P"},"wrong":[{"en":"Model Q","ko":"모형 Q"},{"en":"Both equally","ko":"둘 다 같아요"}]}
+],
+"2": [
+{"ask":{"en":"Which test best checks the function of the toe webbing?","ko":"발가락 사이 물갈퀴의 쓰임을 가장 잘 살필 검사는?"},"show":{"en":"Two matching model feet have the same shape except that one has a sheet between its toes.","ko":"같은 모양의 모형 발 두 개 중 하나에만 발가락 사이 막이 있어요."},"right":{"en":"Pull both through water the same way and compare resistance","ko":"같은 방법으로 물속에서 당겨 저항을 비교해요"},"wrong":[{"en":"Pull them through different liquids at different speeds","ko":"서로 다른 액체에서 다른 속도로 당겨요"},{"en":"Compare only the two models’ paint colors","ko":"두 모형에 칠한 색만 비교해요"}]},
+{"ask":{"en":"Which comparison links both features to the observed functions?","ko":"두 특징을 관찰한 쓰임에 모두 연결한 비교는?"},"show":{"en":"Practice models: wide foot P pushes 3 cups of water; narrow foot Q pushes 1. Thick cover R loses 4°C; thin cover T loses 10°C under matching conditions.","ko":"연습 모형: 넓은 발 P는 물 3컵, 좁은 발 Q는 1컵을 밀어요. 같은 조건에서 두꺼운 덮개 R은 4°C, 얇은 덮개 T는 10°C 내려가요."},"right":{"en":"P moves more water; R retains more warmth","ko":"P가 물을 더 밀고 R이 따뜻함을 더 유지해요"},"wrong":[{"en":"Q moves more water; T retains more warmth","ko":"Q가 물을 더 밀고 T가 따뜻함을 더 유지해요"},{"en":"P moves less water; R loses more warmth","ko":"P가 물을 덜 밀고 R이 따뜻함을 더 잃어요"}]}
+]
+},
+"survival3": {
+"1": [
+{"ask":{"en":"After the change, which checked need is still missing?","ko":"변화 뒤에도 부족한 필요 조건은?"},"show":{"en":"Practice site needs food, water, and shelter. It starts with water only. A shelter is then added.","ko":"연습 장소에 먹이, 물, 숨을 곳이 필요해요. 처음에는 물만 있고 이후 숨을 곳을 더해요."},"right":{"en":"Food","ko":"먹이"},"wrong":[{"en":"Water","ko":"물"},{"en":"Shelter","ko":"숨을 곳"}]},
+{"ask":{"en":"Which checked resource is lost after this change?","ko":"변화 뒤에 사라진 필요 자원은?"},"show":{"en":"Practice site has water and trees. The stream dries up, while the trees remain.","ko":"연습 장소에 물과 나무가 있어요. 개울이 마르고 나무는 남아요."},"right":{"en":"Water","ko":"물"},"wrong":[{"en":"Trees","ko":"나무"},{"en":"Both resources","ko":"두 자원 모두"}]}
+],
+"2": [
+{"ask":{"en":"Which site meets all three listed needs after the changes?","ko":"변화 뒤에 적힌 세 조건을 모두 갖춘 곳은?"},"show":{"en":"Needs: food, water, shelter. P has food and water, then receives shelter. Q has all three, then loses water.","ko":"조건: 먹이, 물, 숨을 곳. P는 먹이와 물이 있고 숨을 곳을 더해요. Q는 셋 다 있다가 물을 잃어요."},"right":{"en":"Site P only","ko":"P만"},"wrong":[{"en":"Site Q only","ko":"Q만"},{"en":"Both sites","ko":"두 곳 모두"}]},
+{"ask":{"en":"Which plan fills the missing needs without replacing resources already present?","ko":"있는 자원은 바꾸지 않고 부족한 조건을 채우는 계획은?"},"show":{"en":"Both sites need food and water. P has food only. Q has water only.","ko":"두 곳 모두 먹이와 물이 필요해요. P에는 먹이만, Q에는 물만 있어요."},"right":{"en":"Add water at P and food at Q","ko":"P에 물, Q에 먹이를 더해요"},"wrong":[{"en":"Add food at P and water at Q","ko":"P에 먹이, Q에 물을 더해요"},{"en":"Add only shelter to both sites","ko":"두 곳에 숨을 곳만 더해요"}]}
+]
+},
+"pollution3": {
+"1": [
+{"ask":{"en":"Where should the next observer check after the spill reaches the drain?","ko":"유출된 물질이 배수구에 닿은 뒤 다음으로 살펴볼 곳은?"},"show":{"en":"Practice route: road → storm drain → pond. A spill has reached the middle step.","ko":"연습 경로: 도로 → 빗물 배수구 → 연못. 유출된 물질이 가운데 단계에 닿았어요."},"right":{"en":"Pond","ko":"연못"},"wrong":[{"en":"Road","ko":"도로"},{"en":"Storm drain","ko":"빗물 배수구"}]},
+{"ask":{"en":"Which statement records where particles were actually found?","ko":"입자를 실제로 찾은 곳을 적은 설명은?"},"show":{"en":"Practice pollutant count: near site—18 particles; far site—5 particles. Both were checked using the same method.","ko":"연습 오염 입자 기록: 가까운 곳 18개, 먼 곳 5개. 두 곳을 같은 방법으로 살폈어요."},"right":{"en":"Particles were found at both sites","ko":"두 곳 모두 입자를 찾았어요"},"wrong":[{"en":"Particles were found only near the source","ko":"가까운 곳에서만 입자를 찾았어요"},{"en":"Particles were found only at the far site","ko":"먼 곳에서만 입자를 찾았어요"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison best supports a change after the event?","ko":"사건 뒤 변화를 가장 잘 보여 주는 비교는?"},"show":{"en":"Practice counts, same method: P—2 before, 14 after; Q—3 before, 3 after.","ko":"같은 방법의 연습 기록: P는 전 2개, 후 14개. Q는 전 3개, 후 3개."},"right":{"en":"P increased by 12; Q stayed the same","ko":"P는 12개 늘고 Q는 그대로예요"},"wrong":[{"en":"Both increased by 12","ko":"두 곳 모두 12개 늘었어요"},{"en":"P stayed the same; Q increased by 12","ko":"P는 그대로이고 Q는 12개 늘었어요"}]},
+{"ask":{"en":"Which pathway includes both the first exposure and a later transfer?","ko":"처음 닿은 곳과 나중에 옮겨간 곳을 모두 나타낸 경로는?"},"show":{"en":"Practice record: soot first entered the air; later rain carried some soot onto the soil.","ko":"연습 기록: 검댕이 먼저 공기로 들어갔고 나중에 비가 일부를 흙으로 옮겼어요."},"right":{"en":"Air → land","ko":"공기 → 땅"},"wrong":[{"en":"Land → air","ko":"땅 → 공기"},{"en":"Water → air","ko":"물 → 공기"}]}
+]
+},
+"conserve3": {
+"1": [
+{"ask":{"en":"Which plan reduces single-use materials?","ko":"일회용 재료를 덜 쓰는 계획은?"},"show":{"en":"A class will hang the same sign at six weekly meetings.","ko":"학급이 6주 동안 매주 같은 안내판을 걸 거예요."},"right":{"en":"Keep one sturdy sign for all meetings","ko":"튼튼한 안내판 하나를 계속 써요"},"wrong":[{"en":"Make and discard a new sign each week","ko":"매주 새 안내판을 만들고 버려요"},{"en":"Make six extra signs and discard the unused ones","ko":"여분 6개를 만들고 안 쓴 것을 버려요"}]},
+{"ask":{"en":"Which plan meets the need without buying more tools?","ko":"도구를 더 사지 않고 필요를 채우는 계획은?"},"show":{"en":"Three pupils need a ruler at different times. One ruler is available.","ko":"학생 세 명이 서로 다른 시간에 자가 필요해요. 자 하나가 있어요."},"right":{"en":"Take turns using the available ruler","ko":"있는 자를 번갈아 써요"},"wrong":[{"en":"Buy a separate ruler for each pupil","ko":"학생마다 자를 하나씩 사요"},{"en":"Store the available ruler and buy three more","ko":"있는 자는 두고 세 개를 더 사요"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison best shows the material savings?","ko":"재료를 얼마나 덜 썼는지 가장 잘 보여 주는 비교는?"},"show":{"en":"Plan A uses one sign for six meetings. Plan B uses one new sign at every meeting.","ko":"A는 모임 6번에 안내판 하나를 써요. B는 매번 새 안내판 하나를 써요."},"right":{"en":"A uses five fewer signs than B","ko":"A는 B보다 안내판을 5개 덜 써요"},"wrong":[{"en":"A uses six fewer signs than B","ko":"A는 B보다 안내판을 6개 덜 써요"},{"en":"Both plans use six signs","ko":"두 계획 모두 6개를 써요"}]},
+{"ask":{"en":"Which comparison explains when sharing one ruler works?","ko":"자 하나를 공유할 수 있는 때를 바르게 비교한 것은?"},"show":{"en":"Group A measures one at a time. Group B must have all three pupils measure at once.","ko":"A는 한 명씩 재요. B는 세 명이 꼭 동시에 재야 해요."},"right":{"en":"One ruler meets A’s timing but not B’s","ko":"자 하나는 A의 시간 조건에 맞지만 B에는 안 맞아요"},"wrong":[{"en":"One ruler meets both groups’ timing equally","ko":"자 하나로 두 모임의 시간 조건을 똑같이 채워요"},{"en":"Both groups need a new ruler for every turn","ko":"두 모임 모두 차례마다 새 자가 필요해요"}]}
+]
+},
+"heatsource3": {
+"1": [
+{"ask":{"en":"Which setup gives evidence that the powered device warmed the sample?","ko":"기기를 켜서 표본이 따뜻해졌다는 근거가 있는 장치는?"},"show":{"en":"Practice test: matching devices and samples. A: off, 20°C → 20°C. B: on, 20°C → 32°C. C: off, 20°C → 20°C.","ko":"연습 실험: 같은 기기와 표본이에요. A: 끔, 20°C → 20°C. B: 켬, 20°C → 32°C. C: 끔, 20°C → 20°C."},"right":{"en":"Setup B","ko":"장치 B"},"wrong":[{"en":"Setup A","ko":"장치 A"},{"en":"Setup C","ko":"장치 C"}]},
+{"ask":{"en":"Which result supports the idea that direct light supplies warming energy?","ko":"빛이 직접 닿아 따뜻해진다는 생각을 뒷받침하는 결과는?"},"show":{"en":"Each trial uses matching blocks starting at 20°C. One receives direct sunlight and one is under an opaque cover. Other conditions stay the same. Compare final temperatures.","ko":"각 실험에서 같은 블록 두 개를 20°C로 시작해요. 하나는 햇빛을 직접 받고 하나는 빛을 막는 덮개 아래 있어요. 다른 조건은 같아요. 끝 온도를 비교해요."},"right":{"en":"Exposed 30°C; covered 21°C","ko":"노출 30°C, 덮음 21°C"},"wrong":[{"en":"Exposed 21°C; covered 30°C","ko":"노출 21°C, 덮음 30°C"},{"en":"Exposed 21°C; covered 21°C","ko":"노출 21°C, 덮음 21°C"}]}
+],
+"2": [
+{"ask":{"en":"Which comparison would help test this explanation?","ko":"이 설명을 확인하는 데 도움이 되는 비교는?"},"show":{"en":"An adult slides two rough surfaces together repeatedly. The contact area gets warmer.","ko":"어른이 거친 두 면을 여러 번 비벼요. 맞닿은 부분이 따뜻해져요."},"right":{"en":"Compare rubbing with resting surfaces in the same place","ko":"같은 곳에서 비빈 면과 가만둔 면 비교"},"wrong":[{"en":"Compare a sunny place with a dark place only","ko":"햇빛 있는 곳과 어두운 곳만 비교"},{"en":"Compare different colors without any rubbing","ko":"비비지 않고 색만 비교"}]},
+{"ask":{"en":"Why compare matching tiles at the same starting temperature?","ko":"같은 타일의 처음 온도를 같게 하는 까닭은?"},"show":{"en":"Two matching tiles start equally warm. One sits in direct sunshine; one is shaded. The sunlit tile warms more.","ko":"같은 타일 두 개의 처음 온도는 같아요. 하나는 햇빛에, 하나는 그늘에 두었더니 햇빛 쪽이 더 따뜻해졌어요."},"right":{"en":"To compare the different light exposure fairly","ko":"받는 햇빛의 차이를 공정하게 비교하려고"},"wrong":[{"en":"To guarantee that both end equally warm","ko":"끝 온도가 같아지도록 보장하려고"},{"en":"To test only the tiles’ different sizes","ko":"타일 크기의 차이만 검사하려고"}]}
+]
+},
+"sunshade3": {
+"1": [
+{"ask":{"en":"Which screen is between the incoming light and its block?","ko":"오는 빛과 블록 사이에 있는 가림막은?"},"show":{"en":"New model: light travels horizontally from LEFT. P has a vertical screen left of the block. Q has a screen above the block.","ko":"새 모형: 빛이 왼쪽에서 가로로 와요. P는 블록 왼쪽에 세로 가림막이 있고 Q는 위에 가림막이 있어요."},"right":{"en":"Screen P","ko":"가림막 P"},"wrong":[{"en":"Screen Q","ko":"가림막 Q"},{"en":"Both screens","ko":"두 가림막 모두"}]},
+{"ask":{"en":"Which design had the lower final temperature?","ko":"끝 온도가 더 낮았던 설계는?"},"show":{"en":"Practice test: matching blocks start at 20°C and run for the same time. Roof design U ends at 24°C; roof design V ends at 31°C.","ko":"연습 실험: 같은 블록을 20°C에서 같은 시간 실험해요. 지붕 설계 U는 24°C, 설계 V는 31°C로 끝나요."},"right":{"en":"Design U","ko":"설계 U"},"wrong":[{"en":"Design V","ko":"설계 V"},{"en":"Both equally","ko":"둘 다 같아요"}]}
+]
+}
+};
+const bankGrowthEscape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+const bankGrowthMake=(id,lv,make)=>{const rows=bankGrowthRows[id]?.[lv];if(rows&&rnd(6)===0){const r=pick(rows);const it=q(r.ask,panel(bankGrowthEscape(L(r.show))),r.right,r.wrong);it.bankGrowth=true;it.cls+=' bank-growth-options';return it;}return make(lv);};
 })();

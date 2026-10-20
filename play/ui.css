@@ -528,3 +528,15 @@ body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.
 .subject-group .group-say{margin-left:auto}
 .subject-group .home-subjects{margin-top:0;margin-bottom:10px}
 .group-description{margin:0 0 10px;font-size:15px}
+
+/* Expanded record questions keep their evidence and three choices visible on
+   short phones. Scope the compact spacing to these reviewed additions. */
+@media(max-width:599px) and (max-height:700px){
+ #view:has(.bank-growth-options) .prompt{font-size:clamp(18px,3.2dvh,22px);line-height:1.15;margin:4px 0}
+ #view:has(.bank-growth-options) .show{margin:4px auto}
+ #view:has(.bank-growth-options) .show>div{font-size:16px;line-height:1.18;padding:4px 6px}
+ #view:has(.bank-growth-options) .g5-scope{font-size:12px;line-height:1.15;margin:2px auto}
+ #view .bank-growth-options{gap:6px;margin:4px auto}
+ #view .bank-growth-options .word{font-size:16px;line-height:1.15}
+ #view .bank-growth-options .opt{min-height:44px;padding:5px 8px}
+}
