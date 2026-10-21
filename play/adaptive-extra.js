@@ -163,6 +163,7 @@
           window.quiz = (_g, item) => { candidate = { item, tile: false }; };
           window.tileRound = (_g, item) => { candidate = { item, tile: true }; };
           make.call(this);
+          if (!candidate && this.roundMenu) return; // The entry menu renders without a scored round.
           if (!candidate) throw new Error(`K round is not capturable: ${this.id}`);
           const key = identity(this, candidate.item, candidate.tile);
           state.pool.set(key, candidate);

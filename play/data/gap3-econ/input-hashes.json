@@ -1,0 +1,26 @@
+[
+  {
+    "file": "68e-agriculture.pdf",
+    "sha256": "19fabac225f6e4036a0631279a5510fb73b86611252fdabf93faa03c398a8e47"
+  },
+  {
+    "file": "68e-agriculture1914.pdf",
+    "sha256": "ba60c33e07bbbd3eb569a622dbe61e9cf86e796af2f3990460aec901c7b034ca"
+  },
+  {
+    "file": "68e-manufactures.pdf",
+    "sha256": "919db6c465e033fe0a4e67da6a88285584b259dc77d8a2563dcced79fe4f8dd1"
+  },
+  {
+    "file": "68e-manufactures1914.pdf",
+    "sha256": "d34695766620ebee2d11514628ebb8b4b12f57065fcaa04db86ab4ab5f38efa1"
+  },
+  {
+    "file": "68e-states.geojson",
+    "sha256": "0067dec6a2c4f9c7a644bf7a9a46163d8d881595953326d0c67d89934190aefe"
+  },
+  {
+    "file": "68e-population.pdf",
+    "sha256": "aac8a19013cf22da7ef3afd3fa900df4d8d396723fbca76c661ffa73d45efb85"
+  }
+]

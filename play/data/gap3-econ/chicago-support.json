@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "accessedOn": "2026-10-20",
+  "reviewer": "Codex 68E; independent historian review pending",
+  "cards": [
+    {
+      "id": "chicago-transport-market",
+      "agency": "U.S. National Park Service",
+      "sourceURL": "https://www.nps.gov/places/steelworkers-park.htm",
+      "locator": "History of the South Works, final paragraph",
+      "publicationYear": null,
+      "measurementPeriod": "early 1900s (qualitative historical account)",
+      "geography": "Calumet region / Chicago South Works / Pullman",
+      "indicator": "transport access, steel demand, workforce attraction",
+      "unit": "qualitative, not a statistical series",
+      "rights": "NPS factual paraphrase only; no photograph, logo, or attributed historical quotation copied. NPS government-text policy: https://www.nps.gov/aboutus/disclaimer.htm",
+      "text": {
+        "en": "In the early 1900s, Pullman used more steel for railcars, and South Works supplied steel. Water routes and rail connections helped Calumet industries, which attracted workers.",
+        "ko": "1900년대 초 Pullman은 철도 차량에 강철을 더 많이 썼고 South Works는 강철을 공급했어요. 수로와 철도 연결은 Calumet 지역의 산업에 도움이 되었고, 산업은 일할 사람들을 끌어들였어요."
+      },
+      "supports": ["both water and rail access", "industrial customer demand", "industry attracted workforce"],
+      "doesNotSupport": ["a named rail-line intersection", "route of a particular shipment", "population growth alone caused demand", "all Chicago industry had one cause", "a quantified causal effect"]
+    },
+    {
+      "id": "rail-resources-context",
+      "agency": "U.S. National Park Service",
+      "sourceURL": "https://www.nps.gov/stea/planyourvisit/park-brochure.htm",
+      "locator": "historical railroad expansion account: paragraph beginning As the railroads expanded",
+      "publicationYear": null,
+      "measurementPeriod": "Civil War through World War I (context includes pre-1900)",
+      "geography": "United States; not a Chicago-specific route",
+      "indicator": "raw-material and manufactured-goods rail transport",
+      "unit": "qualitative",
+      "rights": "Factual paraphrase of NPS government text only; no collection photography, marks, or third-party images. https://www.nps.gov/aboutus/disclaimer.htm",
+      "text": {
+        "en": "Railroads carried raw materials such as iron ore and coal to factories and carried finished goods away.",
+        "ko": "철도는 철광석과 석탄 같은 원료를 공장으로 나르고, 완성한 물건을 다른 곳으로 날랐어요."
+      },
+      "supports": ["general connection between resources, transport and manufacturing"],
+      "doesNotSupport": ["Chicago mined iron ore locally", "specific mine-to-Chicago water-and-rail route", "new resource-route change between 1909 and 1919"]
+    },
+    {
+      "id": "chicago-population-1910-1920",
+      "agency": "U.S. Census Bureau",
+      "sourceURL": "https://www2.census.gov/prod2/decennial/documents/41084484v1ch1.pdf",
+      "publicationURL": "https://www.census.gov/library/publications/1921/dec/vol-01-population.html",
+      "locator": "Table 46, printed p.78 / chapter PDF p.72; Chicago row; 1920 and 1910 columns visually verified",
+      "publicationYear": 1921,
+      "measurementYears": [1910, 1920],
+      "geography": "Chicago city, not Illinois or metropolitan district",
+      "indicator": "enumerated city population",
+      "unit": "persons",
+      "values": {"1910": 2185283, "1920": 2701705},
+      "boundaries": "city boundaries at each census; not asserted constant-area population growth",
+      "rights": "U.S. Census Bureau federal publication, Government Printing Office, 1921; public-domain government statistics. https://www2.census.gov/foia/ds_policies/ds027.pdf",
+      "text": {
+        "en": "The census counted 2,185,283 people in Chicago in 1910 and 2,701,705 in 1920.",
+        "ko": "인구조사에서 Chicago의 인구는 1910년에 2,185,283명, 1920년에 2,701,705명이었어요."
+      },
+      "supports": ["recorded city population increased by 516,422"],
+      "doesNotSupport": ["the same number of new buyers", "constant-boundary growth", "population increase caused steel production growth", "manufacturing employment equals population"]
+    }
+  ],
+  "blockedQuestionTemplates": [
+    {"template": "Which place connects two named rail lines?", "reason": "No historical route geometry or intersection has been admitted."},
+    {"template": "Population growth created more steel buyers.", "reason": "Census population is not a buyer series; use the NPS industrial customer account instead."},
+    {"template": "The resource supply route changed from water to rail between the two map years.", "reason": "No matched historical shipment-route pair has been verified."}
+  ]
+}

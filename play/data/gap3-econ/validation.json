@@ -1,0 +1,129 @@
+{
+  "checkedOn": "2026-10-20",
+  "status": "PASS",
+  "scope": "artifact integrity only; not independent factual or game validation",
+  "svgCount": 4,
+  "statePathsPerMap": 48,
+  "cornTranscribedStatesPerYear": 20,
+  "manufacturingTranscribedStatesPerYear": 48,
+  "categoryCounts": {
+    "corn-1909": {
+      "0": 13,
+      "1": 5,
+      "2": 2
+    },
+    "corn-1919": {
+      "0": 13,
+      "1": 5,
+      "2": 2
+    },
+    "manufacturing-1909": {
+      "0": 42,
+      "1": 6
+    },
+    "manufacturing-1919": {
+      "0": 30,
+      "1": 14,
+      "2": 4
+    }
+  },
+  "sharedGeometryAllFour": true,
+  "xmlAndJsonParse": true,
+  "referenceImageCount": 7,
+  "externalSvgReferences": 0,
+  "gameIdsCreated": [],
+  "files": [
+    {
+      "name": "build-pack.py",
+      "bytes": 8399,
+      "sha256": "a2e2ef81241ac9566b407e4cac86d76032a67859051cf7b4cd52c8beaf9b66db"
+    },
+    {
+      "name": "chicago-support.json",
+      "bytes": 4883,
+      "sha256": "5bcd7bf179d914e7823233c57f5cd6093912a48b074133c88f2decac7181479a"
+    },
+    {
+      "name": "corn-1909.svg",
+      "bytes": 38587,
+      "sha256": "95339bc722a592abdd738263a7dffe39a6bdf6ac32e2b09d0258c6c162a50b42"
+    },
+    {
+      "name": "corn-1919.svg",
+      "bytes": 38587,
+      "sha256": "f2e5b0e63475eeac1c49ac53a49253b426da88897fe4b130dd7a8515158b884d"
+    },
+    {
+      "name": "input-hashes.json",
+      "bytes": 787,
+      "sha256": "f6bb81172e265535ffdce97395b508ce731d7dc3b191ed2642f6a0454e0b7424"
+    },
+    {
+      "name": "manufacturing-1909.svg",
+      "bytes": 37930,
+      "sha256": "a1c5e123fa74ee2f42ff7136b0ec72e19efe09fd15af06c8afbe423154f56556"
+    },
+    {
+      "name": "manufacturing-1919.svg",
+      "bytes": 38058,
+      "sha256": "23c14a8ce61c642e84f07520629bd89ce76ad6f4aec288f1e1b96fa3fc6a1817"
+    },
+    {
+      "name": "observations.json",
+      "bytes": 4026,
+      "sha256": "99e16f757a85005d5e31790930fcdff8ddb924e694c311fbcd043be07e43f73f"
+    },
+    {
+      "name": "reference-chicago-population.webp",
+      "bytes": 179558,
+      "sha256": "c8699783f7862a12c3686154aecf6bcd222c115050ca3c0e34e3112c6a53985b"
+    },
+    {
+      "name": "reference-corn-1909.webp",
+      "bytes": 127202,
+      "sha256": "ee2384546206335094aed430bd254962cc3f77d3212a9f6518aa36e5d83c4295"
+    },
+    {
+      "name": "reference-corn-1919.webp",
+      "bytes": 112512,
+      "sha256": "26c698f3e961a69b506f12e684e5ab6ed848aa861b53d1b26370161f5cf24791"
+    },
+    {
+      "name": "reference-corn-comparison.webp",
+      "bytes": 123816,
+      "sha256": "f0a99676f852a8e098e01ba48f51d4c2a2aef03ce7366730a948c24fc66f97b1"
+    },
+    {
+      "name": "reference-manufacturing-1909.webp",
+      "bytes": 71928,
+      "sha256": "ab844d7231858cb2ef1cddf9bb561eec333a9ca9a1c6c39be40de0b2e1dba0b6"
+    },
+    {
+      "name": "reference-manufacturing-1919-bars.webp",
+      "bytes": 52986,
+      "sha256": "d447ed0a473b5ca7101048deb0d476372415e504febc66ea73b790c5bde7cac6"
+    },
+    {
+      "name": "reference-manufacturing-1919.webp",
+      "bytes": 88684,
+      "sha256": "c9b32ac8b039606e40d151beeb03d8fa3fc8f6b68374db4a5739405588f1f6c4"
+    },
+    {
+      "name": "sources.json",
+      "bytes": 7742,
+      "sha256": "ed30dc9c248a2c0f56b466f1a4d7c4ed4cef696662eb14d15784e7870ebfab4f"
+    },
+    {
+      "name": "state-paths.json",
+      "bytes": 33665,
+      "sha256": "e94b259c36563cfda9b4a291045625a7e1788c02fa6b0e06b40d3cc84e95b12c"
+    },
+    {
+      "name": "verify-pack.py",
+      "bytes": 4407,
+      "sha256": "92f56f81028a4d9e5e4f9bb6db006250bdd6d8d9c24444479a7ec7d518d3581a"
+    }
+  ],
+  "bytesExcludingValidation": 973757,
+  "bytesIncludingValidation": 977396
+}

@@ -1,0 +1,29 @@
+/* All layout overrides are scoped to this module's visible content. */
+#view:has(.g3p-material),#view:has(.g3p-maker){padding-bottom:4px}
+#view:has(.g3p-material) .prompt{font-size:clamp(20px,3.2dvh,27px);margin:4px 0;line-height:1.25}
+#view:has(.g3p-material) .show{font-size:20px;margin:4px 0}
+.g3p-material{max-width:660px;margin:auto;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.g3p-poem{background:#fff;border:2px solid #d4c9f2;border-radius:12px;padding:4px 8px;width:100%;font-size:clamp(17px,2.9dvh,23px);line-height:1.2}
+.g3p-line{display:flex;align-items:center;justify-content:space-between;gap:4px;text-align:left;min-height:44px}
+.g3p-hear{min-width:44px;min-height:44px;border-radius:12px;background:#dff3fb;font-size:19px;flex-shrink:0}
+.g3p-gloss{font:inherit;background:transparent;text-align:left;padding:0;min-height:44px}
+.g3p-dialog{max-width:90vw;border:2px solid #c8b9e7;border-radius:16px;font-size:20px}
+.g3p-note{font-size:14px;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:6px}
+.g3p-button{font-size:17px;min-height:44px;padding:5px 10px;border-radius:10px;background:#fff;border:2px solid #c8b9e7}
+.g3p-options{display:grid;grid-template-columns:1fr;gap:7px!important;margin-top:5px!important;max-width:660px;margin-inline:auto}
+.g3p-options .opt{min-height:48px!important;min-width:0!important;padding:5px 8px!important;border-radius:12px;font-size:19px;box-shadow:0 2px 0 #0002}
+#view:has(.g3p-material) .cheer{font-size:20px;min-height:24px;margin:3px 0}
+#view:has(.g3p-material) .cheer svg{width:28px;height:28px}
+#view:has(.g3p-material) .fact{font-size:17px;margin:2px 0;min-height:0}
+#view:has(.g3p-material) #next{min-height:44px;font-size:20px;padding:5px 16px;margin-top:4px}
+.g3p-maker{max-width:650px;margin:auto;font-size:18px}
+.g3p-instruction{font-weight:700;font-size:20px;margin-bottom:5px}
+.g3p-slots,.g3p-cards{display:grid;gap:5px;margin:5px 0}
+.g3p-slots [aria-pressed=true]{border:3px solid #6b45a4;background:#eee5ff}
+.g3p-tools,.g3p-topics{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin:5px 0}
+.g3p-status{font-size:16px;line-height:1.2;margin:6px 0}
+.g3p-button:focus-visible,.g3p-hear:focus-visible{outline:3px solid #503282;outline-offset:2px}
+.g3p-material:has(.g3p-poem:nth-child(2)) .g3p-poem{width:49%;padding:3px 5px;font-size:17px}
+.g3p-material:has(.g3p-poem:nth-child(2)) .g3p-line{gap:0}
+.g3p-material:has(.g3p-poem:nth-child(2)) .g3p-hear{font-size:16px;padding:0}
+@media(max-height:680px){.g3p-maker .g3p-button{font-size:16px}.g3p-maker .g3p-instruction{font-size:18px}}
