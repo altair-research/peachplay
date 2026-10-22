@@ -10,6 +10,7 @@ const I18N = {
     prekPolicy: 'Two picture choices, five activities. No check-ups, diagnostic practice or report-card import. Sound games are guided practice, not listening scores. Levels 1 and 2 are chosen by a grown-up.',
     reviewTitle: 'Try again', reviewSub: '10 questions from games to practice again',
     offlinePreparing: 'Preparing for offline use…', offlineReady: 'Ready to use offline', offlineFailed: 'Offline preparation could not finish. Open again with internet to retry.', offlineUnavailable: 'Offline use is unavailable in this browser.',
+    languageEndsPractice: 'Changing the language will end practice. Continue?',
     speech: 'en-US', switchTo: '한국어',
     app: 'PeachPlay', tagline: 'Georgia Learning Games',
     pick: 'Pick a game!',
@@ -56,6 +57,7 @@ const I18N = {
     prekPolicy: '그림 보기 두 개, 놀이 다섯 번이에요. 점검·진단 평가 연습·성적표 가져오기는 하지 않아요. 소리 게임은 함께 하는 놀이이며 듣기 점수가 아니에요. 어른이 1·2단계를 골라 주세요.',
     reviewTitle: '다시 도전', reviewSub: '어려웠던 게임으로 10문제를 다시 풀어요',
     offlinePreparing: '인터넷 없이 쓸 준비 중이에요…', offlineReady: '인터넷 없이도 쓸 준비가 됐어요', offlineFailed: '오프라인 준비를 끝내지 못했어요. 인터넷에 연결해 다시 열면 재시도해요.', offlineUnavailable: '이 브라우저에서는 오프라인 사용을 준비할 수 없어요.',
+    languageEndsPractice: '언어를 바꾸면 연습이 끝나요. 계속할까요?',
     speech: 'ko-KR', switchTo: 'English',
     app: '피치플레이', tagline: '조지아 학습 게임',
     pick: '게임을 골라요!',
@@ -97,3 +99,143 @@ const I18N = {
 };
 // Korean names for the game area labels (grade 1 and 2 files); a missing key falls back to the English name.
 const U_KO = { 'Add and subtract': '더하기와 빼기', 'Addition strategies': '덧셈 방법', 'Addition within 100': '100까지 덧셈', 'Animals': '동물', 'Arrays': '배열', 'Blends and digraphs': '자음 묶음 소리', 'Character': '인물', 'Citizenship': '시민', 'Comparing numbers': '수 비교', 'Comparing': '비교', 'Composing shapes (build)': '도형 만들기(조립)', 'Composing shapes': '도형 만들기', 'Conventions': '문장 규칙', 'Counting to 120': '120까지 세기', 'Counting': '세기', 'Data': '자료', 'Decoding': '낱말 읽기', 'Earth Changes': '땅의 변화', 'Earth': '지구', 'Economics': '경제', 'Equal groups': '똑같은 묶음', 'Equal shares (draw)': '똑같이 나누기(그리기)', 'Equal shares': '똑같이 나누기', 'Equal sign': '등호', 'Fluency within 10': '10까지 빠르게 계산', 'Fluency within 20': '20까지 빠르게 계산', 'Forces and Motion': '힘과 움직임', 'Government': '정부', 'Grammar': '문법', 'Graphs and data': '그래프와 자료', 'Historical figures': '역사 속 인물', 'History': '역사', 'Informational text': '정보 글', 'Joining ideas': '생각 이어 쓰기', 'Length': '길이', 'Life Cycles': '한살이', 'Light': '빛', 'Magnets': '자석', 'Map Skills': '지도 읽기', 'Map skills': '지도 읽기', 'Matter': '물질', 'Mental math': '머리셈', 'Money choices': '돈과 선택', 'Money': '돈', 'Multiples of 10': '10의 배수', 'My place on Earth': '지구에서 내 자리', 'Native Peoples': '원주민', 'Number line': '수직선', 'Numbers to 120': '120까지의 수', 'Odd and even': '홀수와 짝수', 'Onsets and rimes': '첫소리와 끝소리', 'Past and present': '옛날과 지금', 'Patriotism': '애국심', 'Patterns': '규칙', 'Place value': '자릿값', 'Plants': '식물', 'Poetry': '시', 'Reference skills': '사전 찾기', 'Seasons': '계절', 'Sentences': '문장', 'Shapes and attributes': '도형과 특징', 'Shapes': '도형', 'Sight words': '자주 쓰는 낱말', 'Sound': '소리', 'Sounds in words': '낱말 속 소리', 'Spelling': '철자', 'Stories': '이야기', 'Subtraction within 100': '100까지 뺄셈', 'Sun, Moon and Stars': '해, 달, 별', 'Syllables': '음절', 'Symmetry': '대칭', 'Tens in your head': '십 단위 머리셈', 'Thinking skills': '생각하는 힘', 'Time and place': '시간과 장소', 'Time': '시간', 'Unknown numbers': '모르는 수 찾기', 'Vocabulary': '어휘', 'Vowel patterns': '모음 규칙', 'Vowel sounds': '모음 소리', 'Weather': '날씨', 'Within 100': '100까지', 'Within 1000': '1000까지', 'Word meaning': '낱말 뜻', 'Word problems': '이야기 문제', 'Word study': '낱말 공부', 'Writing': '쓰기' };
+
+// Existing conditional-only game strings, scoped to avoid ambiguous Yes/No translations.
+const LANGUAGE_LEGACY = {
+  "bookmakersK": [
+    [
+      "en-US",
+      "ko-KR"
+    ]
+  ],
+  "economicmaps5": [
+    [
+      "en-US",
+      "ko-KR"
+    ]
+  ],
+  "memory": [
+    [
+      "Find the big and little letter pairs!",
+      "짝이 되는 큰 글자와 작은 글자를 찾아요!"
+    ]
+  ],
+  "truefalse": [
+    [
+      "True ✅",
+      "맞아요 ✅"
+    ],
+    [
+      "False ❌",
+      "틀려요 ❌"
+    ]
+  ],
+  "shapeattr": [
+    [
+      "Yes",
+      "네, 맞아요"
+    ],
+    [
+      "No",
+      "아니요"
+    ]
+  ],
+  "coins1": [
+    [
+      "Yes, the same",
+      "네, 같아요"
+    ],
+    [
+      "No, different",
+      "아니요, 달라요"
+    ]
+  ],
+  "magnets1": [
+    [
+      "attract (pull together)",
+      "끌어당겨요"
+    ],
+    [
+      "repel (push apart)",
+      "밀어내요"
+    ]
+  ],
+  "facts20": [
+    [
+      "True ✅",
+      "맞아요 ✅"
+    ],
+    [
+      "False ❌",
+      "틀려요 ❌"
+    ]
+  ],
+  "symmetry": [
+    [
+      "Yes",
+      "네, 있어요"
+    ],
+    [
+      "No",
+      "아니요, 없어요"
+    ],
+    [
+      "Yes, they match",
+      "네, 맞아요"
+    ],
+    [
+      "No",
+      "아니요"
+    ]
+  ],
+  "fractions2": [
+    [
+      "Yes, the same size",
+      "네, 같아요"
+    ],
+    [
+      "No",
+      "아니요"
+    ]
+  ],
+  "earthchange2": [
+    [
+      "Fast",
+      "빠르게"
+    ],
+    [
+      "Slowly",
+      "아주 천천히"
+    ]
+  ],
+  "matterchange2": [
+    [
+      "Yes, it can change back",
+      "네, 되돌릴 수 있어요"
+    ],
+    [
+      "No, it cannot change back",
+      "아니요, 되돌릴 수 없어요"
+    ]
+  ],
+  "force2": [
+    [
+      "Push",
+      "미는 힘"
+    ],
+    [
+      "Pull",
+      "당기는 힘"
+    ]
+  ],
+  "goods2": [
+    [
+      "A good (a thing you can hold)",
+      "물건(만져서 가질 수 있어요)"
+    ],
+    [
+      "A service (work done for you)",
+      "서비스(누군가 해 주는 일)"
+    ]
+  ]
+};

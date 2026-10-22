@@ -6,7 +6,10 @@ const SUBJECT_GROUPS = [
 ];
 const SUBJECT_ORDER = SUBJECT_GROUPS.flatMap(group => group.subjects);
 const SUBJECT_ICON = { math: '🔢', read: '📖', write: '✏️', ss: '🗺️', sci: '🔬', life: '🌈', create: '🎭', gifted: '🚀', brain: '🧠' };
-GAMES.forEach(g => { g.play = g.play.bind(g); });
+GAMES.forEach(g => {
+  const play = g.play.bind(g);
+  g.play = (...args) => { LANGUAGE_PAIRS.clear(); return play(...args); };
+});
 
 function home() {
   confetti.clear?.();
@@ -266,7 +269,35 @@ $('#navFaq').onclick = () => { quitDiag(); faqScreen(); };
 $('#rotok').onclick = () => document.body.classList.add('landok');
 $('#profBtn').onclick = () => { quitDiag(); profilesScreen(); };
 $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
-$('#langBtn').onclick = () => { S.lang = S.lang === 'en' ? 'ko' : 'en'; save(); quitDiag(); home(); };
+$('#langBtn').onclick = () => {
+  if (DIAG.active && !confirm(T().languageEndsPractice)) return;
+  const from = S.lang, diagnostic = DIAG.active;
+  S.lang = from === 'en' ? 'ko' : 'en'; save();
+  try { speechSynthesis.cancel(); } catch (_) {}
+  if (diagnostic) { quitDiag(); home(); return; }
+  if (LANGUAGE_SCREEN && LANGUAGE_SCREEN.root === view().firstElementChild) {
+    const values = [...view().querySelectorAll('input,textarea,select')].map(el => [el.id, el.value]);
+    const y = scrollY;
+    LANGUAGE_SCREEN.draw();
+    values.forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.value = value; });
+    window.scrollTo(0, y);
+  } else translateLiveScreen(from);
+  $('#langBtn').textContent = T().switchTo;
+  renderNav(); renderProfBtn();
+  document.documentElement.lang = S.lang;
+};
+let LANGUAGE_SCREEN = null;
+// These shell screens may be safely rendered again; gameplay keeps its live DOM.
+for (const name of ['home', 'subjectScreen', 'grownups', 'stickerBook', 'settings', 'progressScreen', 'profilesScreen', 'faqScreen', 'prekGrownups']) {
+  if (typeof window[name] !== 'function') continue;
+  const original = window[name];
+  window[name] = function (...args) {
+    LANGUAGE_PAIRS.clear();
+    const result = original.apply(this, args);
+    LANGUAGE_SCREEN = { root: view().firstElementChild, draw: () => window[name](...args) };
+    return result;
+  };
+}
 renderPeaches(); renderProfBtn();
 // Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language.
 (() => {

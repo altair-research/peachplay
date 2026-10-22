@@ -63,7 +63,93 @@ let S = { lang: 'en', peaches: 0, stats: {}, addr: { street: '', city: '' } };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, cleanState(JSON.parse(raw))); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 const T = () => I18N[S.lang];
-const L = (o) => (typeof o === 'string' ? o : (o[S.lang] || o.en));
+// Remember bilingual render strings so language changes can preserve live controls,
+// closures, drawings, option order and pending answer/next-button state.
+const LANGUAGE_PAIRS = new Map();
+const LANGUAGE_NODES = new WeakMap();
+const L = (o) => {
+  if (typeof o === 'string') return o;
+  if (o.en && o.ko && o.en !== o.ko) LANGUAGE_PAIRS.set(o.en, o.ko);
+  return o[S.lang] || o.en;
+};
+// Dynamic UI messages also need their original arguments when translated live.
+Object.keys(I18N.en).forEach(key => {
+  const en = I18N.en[key], ko = I18N.ko[key];
+  if (typeof en !== 'function' || typeof ko !== 'function') return;
+  for (const language of ['en', 'ko']) I18N[language][key] = (...args) => { const pair = { en: en(...args), ko: ko(...args) }; L(pair); return pair[language]; };
+});
+function translateLiveScreen(from) {
+  const pairs = new Map();
+  const add = (en, ko) => {
+    if (typeof en !== 'string' || typeof ko !== 'string' || en === ko) return;
+    pairs.set(from === 'en' ? en : ko, from === 'en' ? ko : en);
+  };
+  LANGUAGE_PAIRS.forEach((ko, en) => {
+    add(en, ko);
+    const enLines = en.split('\n'), koLines = ko.split('\n');
+    if (enLines.length === koLines.length && enLines.length > 1) enLines.forEach((line, i) => add(line, koLines[i]));
+    if (en.includes('<') || ko.includes('<')) {
+      const a = document.createElement('template'), b = document.createElement('template');
+      a.innerHTML = en; b.innerHTML = ko;
+      const texts = root => { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), out = []; while (w.nextNode()) out.push(w.currentNode.nodeValue); return out; };
+      const at = texts(a.content), bt = texts(b.content);
+      if (at.length === bt.length) at.forEach((t, i) => add(t, bt[i]));
+    }
+  });
+  const collect = (en, ko) => {
+    if (typeof en === 'string') add(en, ko);
+    else if (en && ko && typeof en === 'object') Object.keys(en).forEach(k => collect(en[k], ko[k]));
+  };
+  collect(I18N.en, I18N.ko);
+  const current = view().languageRefresh;
+  const legacy = current?.root === view().firstElementChild && current.legacyPairs || LANGUAGE_LEGACY[SESSION.id] || [];
+  legacy.forEach(([en, ko]) => add(en, ko));
+  const fragments = [...pairs].filter(([source]) => source.length > 8 && !source.includes('<')).sort((a, b) => b[0].length - a[0].length);
+  // Match whole fragments first, then long phrases embedded beside icons.
+  const translate = value => {
+    if (pairs.has(value)) return pairs.get(value);
+    const trimmed = value.trim();
+    if (pairs.has(trimmed)) return value.replace(trimmed, pairs.get(trimmed));
+    for (const [source, target] of fragments) {
+      if (value.includes(source)) return value.replace(source, target);
+    }
+    return value;
+  };
+  const translateNode = (node, key, value) => {
+    let records = LANGUAGE_NODES.get(node);
+    if (!records) { records = {}; LANGUAGE_NODES.set(node, records); }
+    const previous = records[key];
+    if (previous && previous[from] === value) return previous[S.lang];
+    const translated = translate(value);
+    records[key] = { [from]: value, [S.lang]: translated };
+    return translated;
+  };
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.parentElement.closest('script,style,textarea') && (!node.parentElement.closest('#view [lang="en"]') || node.parentElement.closest('button'))) node.nodeValue = translateNode(node, 'text', node.nodeValue);
+  }
+  document.querySelectorAll('[aria-label],[title],[placeholder]').forEach(el => {
+    for (const key of ['aria-label', 'title', 'placeholder']) if (el.hasAttribute(key)) el.setAttribute(key, translateNode(el, key, el.getAttribute(key)));
+  });
+  document.querySelectorAll('[data-pk-en]').forEach(el => el.setAttribute('aria-label', el.getAttribute('data-pk-' + S.lang)));
+  const refresh = view().languageRefresh;
+  if (refresh && refresh.root === view().firstElementChild) refresh.update();
+  else { const prompt = view().querySelector('.prompt'); if (prompt) say(prompt.textContent); }
+  // A translated prompt/label can need another line. Keep maps and answers visible.
+  const map = view().querySelector('.real-map');
+  if (map) {
+    map.style.width = '';
+    const originalWidth = map.getBoundingClientRect().width;
+    for (let i = 0; i < 2; i++) {
+      const overflow = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) - innerHeight;
+      const rect = map.getBoundingClientRect();
+      if (overflow <= 1 || !rect.height) break;
+      map.style.width = Math.max(originalWidth * 0.8, rect.width * (rect.height - overflow - 2) / rect.height) + 'px';
+    }
+  }
+}
+
 const B = (en, ko) => ({ en, ko });
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -330,8 +416,41 @@ function quiz(game, item) {
     ${item.show ? `<div class="show">${item.show}</div>` : ''}
     <div class="opts ${item.cls || ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}">${o.html}${o.label ? `<span class="ol">${labelText(o.label)}</span>` : ''}</button>`).join('')}</div>
     ${pk ? '<div class="cheer" id="cheer" role="status" aria-live="polite"></div>' : '<pk-cheer class="cheer" id="cheer"></pk-cheer>'}<div class="fact" id="fact" role="status"></div>`;
-  const ask = () => { say(item.askSay ? L(item.askSay) : askText); if (item.askExtra) say(item.askExtra.t, item.askExtra.lang, true); };
+  const question = value => {
+    let text = L(value);
+    // Some older English templates interpolated L(action) while Korean was active.
+    if (S.lang === 'en') LANGUAGE_PAIRS.forEach((ko, en) => { if (/[가-힣]/.test(ko) && !/[가-힣]/.test(en)) text = text.replaceAll(ko, en); });
+    return text;
+  };
+  const ask = () => { say(item.askSay ? question(item.askSay) : (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
+  view().languageRefresh = { root: view().firstElementChild,
+    legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No', '아니요']]) : null,
+    update: () => {
+    const prompt = $('#sp').parentElement;
+    const text = (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask);
+    if (pk) prompt.setAttribute('aria-label', text);
+    else { for (const node of [...prompt.childNodes]) if (node.nodeType === Node.TEXT_NODE) node.remove(); prompt.prepend(document.createTextNode(text)); }
+    opts.forEach((o, i) => { const label = view().querySelector(`[data-i="${i}"] .ol`); if (label && o.label) label.innerHTML = labelText(o.label); });
+    // Older generators conditionally append vocabulary help instead of using labels.
+    const hints = game.id === 'days' ? DAYS : game.id === 'logic' ? NAMES : game.id === 'clock1' || game.id === 'clock2g' ? [['AM', '오전'], ['PM', '오후']] : game.id === 'poems2' && item.ask.en === 'Which line repeats the same beginning sound?' ? [...ALLIT.map(row => [row[0].en, row[0].ko]), ['The dog ran home.', '개가 집에 달려갔어요.'], ['We eat lunch at noon.', '우리는 점심을 먹어요.'], ['My bike is red.', '내 자전거는 빨개요.']] : [];
+    if (hints.length) opts.forEach((o, i) => {
+      const original = document.createElement('div'); original.innerHTML = o.html;
+      const word = original.querySelector('.word'); if (!word) return;
+      const hint = hints.find(([en]) => word.textContent === en || word.textContent.startsWith(en + ' · ') || word.textContent.startsWith(en + ' (') || word.firstChild?.textContent === en);
+      if (!hint) return;
+      const button = view().querySelector(`[data-i="${i}"]`), target = button.querySelector('.word');
+      if (game.id === 'days') {
+        target.textContent = hint[0]; button.querySelector('.ol')?.remove();
+        if (S.lang === 'ko') { const label = document.createElement('span'); label.className = 'ol'; label.textContent = hint[1]; button.append(label); }
+      } else if (game.id === 'poems2') {
+        target.textContent = hint[0];
+        if (S.lang === 'ko') { target.append(document.createElement('br')); const small = document.createElement('small'); small.textContent = hint[1]; target.append(small); }
+      } else target.textContent = hint[0] + (S.lang === 'ko' ? (game.id === 'logic' ? ' · ' + hint[1] : ' (' + hint[1] + ')') : '');
+    });
+    if ($('#fact').textContent && item.after) $('#fact').textContent = L(item.after);
+    ask();
+  } };
   if (pk) {
     $$('[data-pk-en]').forEach(e=>e.setAttribute('aria-label',e.getAttribute('data-pk-'+S.lang)));
     const rb=document.createElement('button'); rb.className='say'; rb.id='pkReadChoices'; rb.textContent='🔉'; rb.setAttribute('aria-label',L(B('Hear the pictures','그림 이름 듣기')));
