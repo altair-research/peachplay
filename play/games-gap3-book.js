@@ -14,8 +14,9 @@
   const orders = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
   // Six genuinely different assignments × two requested roles, at each level.
   const bank = orders.flatMap((order, i) => [0,1].map(target => ({order, target, scene: scenes[i]})));
+  const roleTags = [B('✍️ words', '✍️ 글'), B('🖍️ pictures', '🖍️ 그림'), B('📖 reads', '📖 읽기')];
   const picture = (role, s) => role === 0
-    ? `<span class="g3b-work g3b-words">${L(B(s[3], s[4]))}</span>`
+    ? `<span class="g3b-work g3b-words" aria-hidden="true">📝✏️</span>`
     : `<span class="g3b-work" aria-hidden="true">${role === 1 ? '🖍️ ' + s[2] : '📖'}</span>`;
   registerGame({
     id: 'bookmakersK', grade: 'K', subject: 'read', icon: '📚',
@@ -34,9 +35,9 @@
       quiz(this, {
         ask: question,
         show: `<section class="g3b-stage" aria-label="${L(B('Made-up book workshop', '가상 책 작업실'))}">
-          <div class="g3b-scenes">${order.map((role, i) => `<div class="g3b-scene"><strong>${L(names[i])}</strong>${picture(role, scene)}<span class="g3b-job">${L(jobs[role])}</span><button class="say g3b-listen" data-g3b="${i}" aria-label="${L(B('Listen to ', '듣기: '))}${L(names[i])}">🔊</button></div>`).join('')}</div>
-          <div class="g3b-cover"><span aria-hidden="true">${scene[2]}</span> ${L(B(scene[0], scene[1]))} <span class="g3b-fiction">${L(B('Made-up book', '가상의 책'))}</span></div>
-          ${swap ? `<div class="g3b-swap">⇄ ${L(change)}</div>` : ''}
+          <div class="g3b-scenes">${order.map((role, i) => `<div class="g3b-scene"><strong>${L(names[i])}</strong>${picture(role, scene)}<span class="g3b-job" aria-label="${L(jobs[role])}">${L(roleTags[role])}</span><button class="say g3b-listen" data-g3b="${i}" aria-label="${L(B('Listen to ', '듣기: '))}${L(names[i])}">🔊</button></div>`).join('')}</div>
+          <div class="g3b-cover" aria-label="${L(B('Made-up book', '가상의 책'))}"><span aria-hidden="true">${scene[2]}</span> ${L(B(scene[0], scene[1]))}</div>
+          ${swap ? `<div class="g3b-swap" aria-label="${L(change)}">${L(names[person(0)])} ⇄ ${L(names[person(1)])} 📘</div>` : ''}
         </section>`,
         opts: names.map((n, i) => ({html: `<span class="word">${L(n)}</span>`, ok: i === answer, category: 'book-person'})),
         cls: 'g3b-options',

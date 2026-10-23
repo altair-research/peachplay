@@ -5,7 +5,7 @@
   registerGame({id:'compound',grade:'K',subject:'read',icon:'🧁',title:B('Word Sound Partners','낱말 소리 합치기'),sub:B('Join and take apart spoken words','말소리를 합치고 나눠요'),area:B('Reading · Compound words','읽기 · 합성어'),play(){
     const t=pick(words),lv=lvl('compound'),right=lv===1?t[2]:t[1],ds=shuffle(words.filter(x=>x!==t&&(lv===1||x[1]!==right))).filter((x,i,a)=>lv===1||a.findIndex(y=>y[1]===x[1])===i).slice(0,lv===1?2:3);
     const spoken=lv===1?`${t[0]}. ${t[1]}.`:`Say ${t[2]} without ${t[0]}.`;
-    quiz(this,{ask:lv===1?B('Listen. Join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'):B('Listen. Take away the first word.','듣고 앞 낱말 소리를 빼요.'),askExtra:{t:spoken,lang:'en-US'},show:`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${lv===1?`${t[0]} + ${t[1]}`:`${t[2]} − ${t[0]}`}</div>`,opts:[right,...ds.map(x=>lv===1?x[2]:x[1])].map((w,i)=>({html:`<span class="word" lang="en">${w}</span>`,ok:i===0})),cls:'words',vocab:right,
+    quiz(this,{ask:lv===1?B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'):B('Listen and take away the first word.','듣고 앞 낱말 소리를 빼요.'),askExtra:{t:spoken,lang:'en-US'},show:`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${lv===1?`${t[0]} + ${t[1]}`:`${t[2]} − ${t[0]}`}</div>`,opts:[right,...ds.map(x=>lv===1?x[2]:x[1])].map((w,i)=>({html:`<span class="word" lang="en">${w}</span>`,ok:i===0})),cls:'words',vocab:right,
       onRender(){const rb=$('#spo');if(rb)rb.onclick=()=>$$('.opt .word').forEach((e,i)=>say(e.textContent,'en-US',i>0));},after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
   }});
   registerGame({id:'bookway',grade:'K',subject:'read',icon:'📖',title:B('Follow the Book','책 읽는 방향'),sub:B('English books: start and follow','영어 책의 시작과 순서'),area:B('Reading · Book direction','읽기 · 책 방향'),play(){
@@ -14,7 +14,7 @@
     // L1: row indicated by arrow; L2: next print box after yellow marker.
     const target=lv===1?row*cols:next;
     const right=String(target+1),wrong=shuffle(Array.from({length:rows*cols},(_,i)=>String(i+1)).filter(x=>x!==right)).slice(0,lv===1?2:3);
-    quiz(this,{ask:lv===1?B(`English book: start row ${row+1}. Which box?`,`영어 책의 ${row+1}번째 줄은 어디서 시작할까요?`):B('English book: after yellow, which box?','영어 책에서 노란 칸 다음은 어느 칸일까요?'),show:`<svg viewBox="0 0 205 100" style="width:205px;height:min(100px,17dvh)" role="img" aria-label="${L(B('Three rows of numbered print boxes','숫자가 있는 글 칸 세 줄'))}"><rect x="2" y="2" width="200" height="96" rx="4" fill="white" stroke="#435269"/>${cells}${lv===1?`<text x="2" y="${29+row*25}" font-size="12">➜</text>`:''}</svg>`,opts:[right,...wrong].map((x,i)=>({html:`<span class="num">${x}</span>`,ok:i===0})),after:B('In an English book, follow print left to right.','영어 책은 글을 왼쪽에서 오른쪽으로 따라가요.')});
+    quiz(this,{ask:lv===1?B(`English book: where does row ${row+1} start?`,`영어 책의 ${row+1}번째 줄은 어디서 시작할까요?`):B('English book: after yellow, which box?','영어 책: 노란 칸 다음 칸은?'),show:`<svg viewBox="0 0 205 100" style="width:205px;height:min(100px,17dvh)" role="img" aria-label="${L(B('Three rows of numbered print boxes','숫자가 있는 글 칸 세 줄'))}"><rect x="2" y="2" width="200" height="96" rx="4" fill="white" stroke="#435269"/>${cells}${lv===1?`<text x="2" y="${29+row*25}" font-size="12">➜</text>`:''}</svg>`,opts:[right,...wrong].map((x,i)=>({html:`<span class="num">${x}</span>`,ok:i===0})),after:B('In an English book, follow print left to right.','영어 책은 글을 왼쪽에서 오른쪽으로 따라가요.')});
   }});
 })();
 // Reading extension: read & match, sight words, syllables, letter memory.
@@ -28,7 +28,7 @@ registerGame({
     const pool = lvl('readmatch') === 1 ? CVC : [...CVC, ...BIGGER], t = pick(pool), ds = others(pool, t, 2);
     const o = (w) => ({ html: `<span class="emo">${w[1]}</span>`, ok: w === t });
     quiz(this, {
-      ask: B('Read the word. Which picture matches?', '단어를 읽어 보세요. 어느 그림일까요?'),
+      ask: B('Read the word: which picture matches?', '단어를 읽고 어느 그림인지 골라요.'),
       show: `<div class="bigword">${t[0]} <button class="say" id="hear" aria-label="${T().listen}">🔊</button></div>`,
       opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`${t[0]}!`, `${t[0]} — ${t[2].ko}!`), vocab: t[0],
       onRender() { $('#hear').onclick = () => say(t[0], 'en-US'); }
@@ -45,7 +45,7 @@ registerGame({
   play() {
     const pool = lvl('sight') === 1 ? SIGHT1 : SIGHT2, t = pick(pool), ds = others(pool, t, 2);
     quiz(this, {
-      ask: B('Listen, then tap that word. Silent? Ask an adult.', '듣고 단어를 눌러요. 소리가 안 나면 어른에게 부탁해요.'), askSay: B('Listen.', '들어요.'), askExtra: { t, lang: 'en-US' },
+      ask: B('Listen, then tap that word.', '듣고 그 단어를 눌러요.'), askSay: B('Listen.', '들어요.'), askExtra: { t, lang: 'en-US' },
       show: `<button class="say big-say" id="hear">🔊</button>`,
       opts: [t, ...ds].map(w => ({ html: `<span class="num">${w}</span>`, ok: w === t })), cls: 'shapes',
       after: B(`${t}!`, `${t}!`), onRender() { $('#hear').onclick = () => say(t, 'en-US'); }
@@ -62,7 +62,7 @@ registerGame({
   play() {
     const pool = lvl('syllable') === 1 ? SYL.filter(x => x[2] <= 2) : SYL, t = pick(pool);
     quiz(this, {
-      ask: B('Say the word and clap. How many parts?', '단어를 말하며 박수를 쳐요. 몇 부분일까요?'),
+      ask: B('Say the word and clap: how many parts?', '말하며 박수 치면 몇 부분일까요?'),
       show: `<div class="bigword"><span class="emo">${t[1]}</span> ${t[0]} <button class="say" id="hear">🔊</button></div><button class="pill" id="clap">👏 <span id="cl">0</span></button>`,
       opts: [1, 2, 3].map(n => ({ html: `<span class="num">${n}</span>`, label: '👏'.repeat(n), ok: n === t[2] })), cls: 'shapes',
       after: B(`${t[0]} has ${t[2]} ${t[2] === 1 ? 'part' : 'parts'}!`, `${t[0]}는 ${t[2]}부분이에요!`), vocab: t[0],
@@ -86,8 +86,11 @@ registerGame({
     }
     history.push(key); if (history.length > 9) history.shift();
     const cards = shuffle(ls.flatMap(c => [{ k: c, t: c }, { k: c, t: c.toLowerCase() }]));
-    view().innerHTML = `<div class="prompt">${S.lang === 'ko' ? '짝이 되는 큰 글자와 작은 글자를 찾아요!' : 'Find the big and little letter pairs!'}</div>
+    // 70a: the instruction is read aloud on start and can be replayed (K cannot be expected to read it).
+    const instruction = L(B('Find the big and little letter pairs!', '짝이 되는 큰 글자와 작은 글자를 찾아요!'));
+    view().innerHTML = `<div class="prompt">${instruction}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
       <div class="mem">${cards.map((c, i) => `<button class="card" data-i="${i}"><span class="back">🍑</span><span class="face">${c.t}</span></button>`).join('')}</div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
+    $('#sp').onclick = () => say(instruction); say(instruction);
     let open = [], lock = false, misses = 0, matched = 0;
     const finish = () => { const ok = misses <= pairs; record('memory', ok); if (ok) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); };
     $$('.card').forEach(b => b.onclick = () => {
@@ -107,5 +110,5 @@ registerGame({
  const replace=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
  const sentences=[['___ can run.','we',['my','the']],['I ___ a cat.','see',['my','the']],['This is ___ hat.','my',['we','go']],['We ___ to school.','go',['my','the']],['I ___ to play.','like',['the','my']],['The dog ___ big.','is',['go','my']],['___ like apples.','I',['the','my']],['Look ___ the cat.','at',['we','he']],['The cat is ___ the box.','in',['we','my']],['___ is my sister.','she',['my','the']],['___ is my brother.','he',['my','the']],['My dog is little ___ brown.','and',['my','we']]];
  replace('sight',()=>{const [s,r,ds]=pick(sentences);return {ask:B('Which word makes the sentence work?','문장이 되게 하는 낱말은?'),askExtra:{t:s.replace('___','blank'),lang:'en-US'},show:`<div class="bigword">${s}</div>`,opts:[r,...ds].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
- replace('syllable',()=>{const a=pick(SYL),b=pick(SYL.filter(x=>x[2]!==a[2])),r=a[2]>b[2]?a:b,short=a[2]<b[2]?a:b;return {ask:B('Which word needs MORE claps?','박수를 더 많이 치는 낱말은?'),askExtra:{t:`${a[0]}. ${b[0]}.`,lang:'en-US'},show:`<div class="bigword">${a[0]} · ${b[0]}</div>`,opts:[r[0],short[0],L(B('Both need the same','둘 다 같아요'))].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
+ replace('syllable',()=>{const a=pick(SYL),b=pick(SYL.filter(x=>x[2]!==a[2])),r=a[2]>b[2]?a:b,short=a[2]<b[2]?a:b;return {ask:B('Which word needs MORE claps?','박수를 더 많이 치는 낱말은?'),askExtra:{t:`${a[0]}. ${b[0]}.`,lang:'en-US'},show:`<div class="bigword">${a[0]} · ${b[0]}</div>`,opts:[r[0],short[0],L(B('The same','똑같아요'))].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
 })();

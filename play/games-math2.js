@@ -68,8 +68,8 @@ registerGame({
     const a = pick(DAYTIME), b = pick(DAYTIME.filter(x => x[2] !== a[2]));
     const order = ['morning', 'afternoon', 'night'], earlier = !!rnd(2);
     const right = (order.indexOf(a[2]) < order.indexOf(b[2])) === earlier ? a : b;
-    const names = { morning:B('morning','아침'), afternoon:B('afternoon','오후'), night:B('night','밤') };
-    quiz(this, { ask: earlier ? B('In this one day, which comes earlier?', '같은 하루예요. 어느 일이 더 먼저일까요?') : B('In this one day, which comes later?', '같은 하루예요. 어느 일이 더 나중일까요?'),
-      opts: [a,b].map(x => ({html:'<span class="emo">'+x[0]+'</span><span class="ol">'+L(names[x[2]])+' · '+L(x[1])+'</span>', ok:x===right})), cls:'groups' });
+    const names = { morning:['🌅',B('morning','아침')], afternoon:['☀️',B('afternoon','오후')], night:['🌙',B('night','밤')] };
+    quiz(this, { ask: earlier ? B('In this one day, which comes earlier?', '하루 중 어느 일이 더 먼저일까요?') : B('In this one day, which comes later?', '하루 중 어느 일이 더 나중일까요?'),
+      opts: [a,b].map(x => ({html:'<span class="emo" role="img" aria-label="'+L(x[1])+'">'+x[0]+'</span><span class="ol">'+names[x[2]][0]+' '+L(names[x[2]][1])+'</span>', ok:x===right})), cls:'groups' });
   };
 })();

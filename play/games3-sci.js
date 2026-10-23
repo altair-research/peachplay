@@ -34,7 +34,7 @@ reg('soil3','Soil Evidence','흙의 성질','S3E1.b',lv=>{
 });
 reg('soilwater3','Soil and Water','흙과 물','S3E1.b',lv=>{
  const input=100,a=20+rnd(15),b=60+rnd(15),c=40+rnd(10),labels=shuffle(['A','B','C']),rows=[[labels[0],a],[labels[1],b],[labels[2],c]].sort((x,y)=>x[0].localeCompare(y[0]));
- if(lv===1)return q(B('Each dry soil gets 100 mL of water. Only drainage removes water. Which keeps the most?','마른 흙마다 물 100mL를 부어요. 아래로 빠진 물만 줄었어요. 물이 가장 많이 남은 흙은?'),table([made,B('Drained (mL)','빠진 물(mL)')],rows),labels[0],[labels[1],labels[2]],B('Less drained out, so more remained in this trial.','이번 실험에서는 적게 빠진 쪽에 더 많이 남았어요.'));
+ if(lv===1)return q(B('Each dry soil gets 100 mL of water, and only drainage removes water. Which keeps the most?','마른 흙마다 물 100mL를 부었고 아래로 빠진 물만 줄었어요. 물이 가장 많이 남은 흙은?'),table([made,B('Drained (mL)','빠진 물(mL)')],rows),labels[0],[labels[1],labels[2]],B('Less drained out, so more remained in this trial.','이번 실험에서는 적게 빠진 쪽에 더 많이 남았어요.'));
  const i=rnd(3),drained=[a,b,c][i];
  return q(B(`Each gets 100 mL; only drainage removes water. How many mL stay in soil ${labels[i]}?`,`흙마다 물 100mL를 부었고 아래로 빠진 물만 줄었어요. 흙 ${labels[i]}에 남은 물은 몇 mL일까요?`),table([made,B('Drained (mL)','빠진 물(mL)')],rows),input-drained,[drained,input-drained+10],B(`100 − ${drained} = ${100-drained} mL`,`100 − ${drained} = ${100-drained}mL`));
 });
@@ -172,7 +172,7 @@ const habitatNotes=[
  ['Valley and Ridge: ridges with valleys between.','계곡과 산등성이: 산등성이 사이에 계곡.','Ridges and valleys','산등성이와 계곡','Only sea ice','바다 얼음만','Only an ocean floor','바다 바닥만'],
  ['Appalachian Plateau: flat-topped mountains and caves.','애팔래치아 고원: 평평한 산 정상과 동굴.','Flat-topped mountains','평평한 산 정상','A tropical ocean','열대 바다','Sea ice alone','바다 얼음만'],
  ['Georgia coast: salt marshes near the ocean.','조지아 해안: 바다 가까운 염습지.','Salty wet habitat','소금기가 있는 젖은 서식지','Only dry sand','마른 모래만','A freshwater-only habitat','민물만 있는 서식지'],
- ['Blue Ridge: salamanders use moist forest-floor cover.','블루리지: 도롱뇽은 습한 숲 바닥의 숨을 곳을 이용해요.','Moist forest-floor cover','습한 숲 바닥의 숨을 곳','Dry sea ice','마른 바다 얼음','No shelter','숨을 곳이 없음'],
+ ['Blue Ridge: salamanders use moist forest-floor cover.','블루리지: 도롱뇽은 습한 숲 바닥의 숨을 곳을 이용해요.','Moist forest-floor cover','습한 숲 바닥 은신처','Dry sea ice','마른 바다 얼음','No shelter','숨을 곳이 없음'],
  ['Piedmont: some habitats include rock outcrops.','피드몬트: 일부 서식지에 드러난 암석이 있어요.','Rock outcrops','드러난 암석','Only floating ice','떠 있는 얼음만','Only salt water','소금물만'],
  ['Coastal Plain: Okefenokee is a wetland habitat.','해안 평야: 오키피노키는 습지 서식지예요.','Wetland','습지','Bare glacier','식물 없는 빙하','Only dry mountain peaks','마른 산 정상만'],
  ['Georgia salt marsh: cordgrass grows in tidal wetland.','조지아 염습지: 갯줄풀이 바닷물 드나드는 습지에서 자라요.','Tidal wetland','바닷물 드나드는 습지','Only dry desert','마른 사막만','Only ice','얼음만']
@@ -215,7 +215,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Which site has evidence of activity but no collected body parts?","ko":"활동 근거는 있지만 모은 몸의 일부는 없는 곳은?"},"show":{"en":"Practice survey: P—2 fossil teeth, 1 trackway; Q—0 fossil teeth, 4 trackways; R—3 fossil teeth, 0 trackways.","ko":"연습 조사: P—이빨 화석 2개, 발자국 길 1개. Q—이빨 화석 0개, 발자국 길 4개. R—이빨 화석 3개, 발자국 길 0개."},"right":{"en":"Site Q","ko":"장소 Q"},"wrong":[{"en":"Site P","ko":"장소 P"},{"en":"Site R","ko":"장소 R"}]},
-{"ask":{"en":"Which summary distinguishes a finding from a conclusion not yet tested?","ko":"발견한 것과 아직 확인하지 않은 결론을 구별한 요약은?"},"show":{"en":"Two trays each contain five shell fossils. Only tray A’s specimens have been identified by a specialist.","ko":"두 쟁반에 조개 화석이 다섯 개씩 있어요. 전문가가 종류를 확인한 것은 A의 표본뿐이에요."},"right":{"en":"The specimen counts match; species counts need more evidence","ko":"표본 수는 같지만 종 수는 근거가 더 필요해요"},"wrong":[{"en":"Matching specimen counts prove matching species","ko":"표본 수가 같으니 종도 같음이 증명돼요"},{"en":"Tray B must contain more species than A","ko":"B에 A보다 더 많은 종이 있어야 해요"}]}
+{"ask":{"en":"Which summary distinguishes a finding from a conclusion not yet tested?","ko":"발견한 것과 아직 확인하지 않은 결론을 구별한 요약은?"},"show":{"en":"Two trays each contain five shell fossils. Only tray A’s specimens have been identified by a specialist.","ko":"두 쟁반에 조개 화석이 다섯 개씩 있어요. 전문가가 종류를 확인한 것은 A의 표본뿐이에요."},"right":{"en":"The specimen counts match; species counts need more evidence","ko":"표본 수만 같고 종 수는 미확인이에요"},"wrong":[{"en":"Matching specimen counts prove matching species","ko":"표본 수가 같으니 종도 같음이 증명돼요"},{"en":"Tray B must contain more species than A","ko":"B에 A보다 더 많은 종이 있어야 해요"}]}
 ]
 },
 "fossilorder3": {
@@ -225,7 +225,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Which comparison supports a possible benefit of quick covering without guaranteeing it?","ko":"빨리 덮이면 도움 될 수 있음을 보이되 보장하지 않는 비교는?"},"show":{"en":"Practice model: covered group—8 of 10 shapes remain; exposed group—3 of 10 remain. These are made-up model results.","ko":"연습 모형: 덮은 무리 10개 중 8개가 남고 드러낸 무리 10개 중 3개가 남아요. 가상 모형 결과예요."},"right":{"en":"More covered shapes remained, but some were still lost","ko":"덮은 쪽이 더 남았지만 일부는 사라졌어요"},"wrong":[{"en":"Covered shapes lost more pieces than exposed ones","ko":"덮은 쪽이 드러낸 쪽보다 더 많이 사라졌어요"},{"en":"Fewer covered shapes remained than exposed shapes","ko":"덮은 쪽이 드러낸 쪽보다 적게 남았어요"}]},
-{"ask":{"en":"Which comparison best tests covering speed without changing the type of remains?","ko":"남은 부분의 종류는 같게 두고 덮이는 속도를 비교한 실험은?"},"show":{"en":"A class wants to compare quick and slow burial in a paper model.","ko":"학급이 종이 모형에서 빨리 묻히기와 천천히 묻히기를 비교하려 해요."},"right":{"en":"Identical paper shells, same layers, different covering speeds","ko":"같은 종이 껍데기와 층, 다른 덮기 속도"},"wrong":[{"en":"Hard shell shapes covered fast, soft leaf shapes covered slowly","ko":"단단한 껍데기는 빨리, 부드러운 잎은 천천히 덮기"},{"en":"Different shapes and different layers, both covered fast","ko":"다른 모양과 다른 층, 둘 다 빨리 덮기"}]}
+{"ask":{"en":"Which comparison best tests covering speed without changing the type of remains?","ko":"남은 부분의 종류는 같게 두고 덮이는 속도를 비교한 실험은?"},"show":{"en":"A class wants to compare quick and slow burial in a paper model.","ko":"학급이 종이 모형에서 빨리 묻히기와 천천히 묻히기를 비교하려 해요."},"right":{"en":"Identical paper shells, same layers, different covering speeds","ko":"같은 종이 껍데기와 층, 다른 덮기 속도"},"wrong":[{"en":"Hard shell shapes covered fast, soft leaf shapes covered slowly","ko":"단단한 껍데기는 빨리, 부드러운 잎은 천천히 덮기"},{"en":"Different shapes and different layers, both covered fast","ko":"모양도 층도 다르게, 둘 다 빨리"}]}
 ]
 },
 "habitat3": {
@@ -234,7 +234,7 @@ const bankGrowthRows={
 {"ask":{"en":"Which site would involve repeated gentle climbs and descents?","ko":"완만한 오르막과 내리막을 여러 번 걷게 될 곳은?"},"show":{"en":"Practice Georgia field notes: site M has low rolling hills. Site N has broad level ground.","ko":"조지아 연습 현장 기록: M은 낮고 완만한 언덕, N은 넓고 평평한 땅이에요."},"right":{"en":"Site M","ko":"장소 M"},"wrong":[{"en":"Site N","ko":"장소 N"},{"en":"Both sites","ko":"두 장소 모두"}]}
 ],
 "2": [
-{"ask":{"en":"Which comparison uses both notes?","ko":"두 기록을 모두 이용한 비교는?"},"show":{"en":"Practice Georgia field notes: site K has a steep rocky trail. Site L has a flat sandy trail.","ko":"조지아 연습 현장 기록: K는 가파른 돌길, L은 평평한 모랫길이에요."},"right":{"en":"K is steeper; L has a sandier trail","ko":"K가 더 가파르고 L의 길에 모래가 더 많아요"},"wrong":[{"en":"L is steeper; K has a sandier trail","ko":"L이 더 가파르고 K의 길에 모래가 더 많아요"},{"en":"Both have steep rocky trails","ko":"둘 다 가파른 돌길이에요"}]},
+{"ask":{"en":"Which comparison uses both notes?","ko":"두 기록을 모두 이용한 비교는?"},"show":{"en":"Practice Georgia field notes: site K has a steep rocky trail. Site L has a flat sandy trail.","ko":"조지아 연습 현장 기록: K는 가파른 돌길, L은 평평한 모랫길이에요."},"right":{"en":"K is steeper; L has a sandier trail","ko":"K가 더 가파르고 L이 더 모래가 많아요"},"wrong":[{"en":"L is steeper; K has a sandier trail","ko":"L이 더 가파르고 K가 더 모래가 많아요"},{"en":"Both have steep rocky trails","ko":"둘 다 가파른 돌길이에요"}]},
 {"ask":{"en":"Which claim goes beyond these notes?","ko":"이 기록만으로 알 수 없는 주장은?"},"show":{"en":"Practice Georgia field notes: site M has low rolling hills. Site N has broad level ground.","ko":"조지아 연습 현장 기록: M은 낮고 완만한 언덕, N은 넓고 평평한 땅이에요."},"right":{"en":"The same animals live at both sites","ko":"두 곳에 같은 동물이 살아요"},"wrong":[{"en":"M has more changes in ground height","ko":"M은 땅의 높낮이 변화가 더 있어요"},{"en":"N has a more level surface","ko":"N의 표면이 더 평평해요"}]}
 ]
 },
@@ -245,7 +245,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Which test best checks the function of the toe webbing?","ko":"발가락 사이 물갈퀴의 쓰임을 가장 잘 살필 검사는?"},"show":{"en":"Two matching model feet have the same shape except that one has a sheet between its toes.","ko":"같은 모양의 모형 발 두 개 중 하나에만 발가락 사이 막이 있어요."},"right":{"en":"Pull at the same speed in water; compare resistance","ko":"같은 방법으로 물속에서 당겨 저항을 비교해요"},"wrong":[{"en":"Pull them through different liquids at different speeds","ko":"서로 다른 액체에서 다른 속도로 당겨요"},{"en":"Compare the two models’ paint colors","ko":"두 모형에 칠한 색만 비교해요"}]},
-{"ask":{"en":"Which comparison links both features to the observed functions?","ko":"두 특징을 관찰한 쓰임에 모두 연결한 비교는?"},"show":{"en":"Practice models: wide foot P pushes 3 cups of water; narrow foot Q pushes 1. Thick cover R loses 4°C; thin cover T loses 10°C under matching conditions.","ko":"연습 모형: 넓은 발 P는 물 3컵, 좁은 발 Q는 1컵을 밀어요. 같은 조건에서 두꺼운 덮개 R은 4°C, 얇은 덮개 T는 10°C 내려가요."},"right":{"en":"P moves more water; R retains more warmth","ko":"P가 물을 더 밀고 R이 따뜻함을 더 유지해요"},"wrong":[{"en":"Q moves more water; T retains more warmth","ko":"Q가 물을 더 밀고 T가 따뜻함을 더 유지해요"},{"en":"P moves less water; R loses more warmth","ko":"P가 물을 덜 밀고 R이 따뜻함을 더 잃어요"}]}
+{"ask":{"en":"Which comparison links both features to the observed functions?","ko":"두 특징을 관찰한 쓰임에 모두 연결한 비교는?"},"show":{"en":"Practice models: wide foot P pushes 3 cups of water; narrow foot Q pushes 1. Thick cover R loses 4°C; thin cover T loses 10°C under matching conditions.","ko":"연습 모형: 넓은 발 P는 물 3컵, 좁은 발 Q는 1컵을 밀어요. 같은 조건에서 두꺼운 덮개 R은 4°C, 얇은 덮개 T는 10°C 내려가요."},"right":{"en":"P moves more water; R retains more warmth","ko":"P는 물을 더 밀고 R은 열을 지켜요"},"wrong":[{"en":"Q moves more water; T retains more warmth","ko":"Q는 물을 더 밀고 T는 열을 지켜요"},{"en":"P moves less water; R loses more warmth","ko":"P는 물을 덜 밀고 R은 열을 잃어요"}]}
 ]
 },
 "survival3": {

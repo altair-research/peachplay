@@ -10,13 +10,13 @@ registerGame({
   play() {
     if(lvl('living')===2){
       const t=pick(LIVING), plant=['seedling','tree','sunflower plant'].includes(t[1].en), key=t[2]?(plant?'plant':'animal'):'thing';
-      quiz(this,{ask:B('Plant, animal, or nonliving thing?','식물, 동물, 살아 있지 않은 것 중 무엇일까요?'),show:`<span class="emo">${t[0]}</span>`,opts:[['plant',B('Plant','식물')],['animal',B('Animal','동물')],['thing',B('Nonliving','살아 있지 않아요')]].map(([k,n])=>({html:`<span class="word">${L(n)}</span>`,ok:k===key})),cls:'words',vocab:t[1].en});return;
+      quiz(this,{ask:B('Plant, animal, or nonliving thing?','식물, 동물, 무생물 중 무엇일까요?'),show:`<span class="emo">${t[0]}</span>`,opts:[['plant','🌿',B('Plant','식물')],['animal','🐾',B('Animal','동물')],['thing','🧱',B('Nonliving','무생물')]].map(([k,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:k===key})),cls:'groups',vocab:t[1].en});return;
     }
     const t = pick(LIVING);
     quiz(this, {
       ask: B('Is it living or not living?', '살아 있는 것일까요, 아닐까요?'),
       show: `<div class="bigword"><span class="emo">${t[0]}</span></div>`,
-      opts: [{ html: '<span class="emo">🌿</span>', label: B('Living', '살아 있어요'), ok: t[2] }, { html: '<span class="emo">🧱</span>', label: B('Not living', '살아 있지 않아요'), ok: !t[2] }], cls: 'groups',
+      opts: [{ html: '<span class="emo">🌿</span>', label: B('Living', '살아 있어요'), ok: t[2] }, { html: '<span class="emo">🧱</span>', label: B('Not living', '아니에요'), ok: !t[2] }], cls: 'groups',
       after: B(`A ${t[1].en} is ${t[2] ? 'living' : 'not living'}.`, `${t[1].ko}은(는) ${t[2] ? '살아 있어요' : '살아 있지 않아요'}.`), vocab: `${t[1].en}`
     });
   }
@@ -33,13 +33,13 @@ registerGame({
       const day = rnd(2) === 0, good = pick(SKY.filter(x => x[2] === day && x[1].en !== 'moon')), bad = shuffle(SKY.filter(x => x[2] !== day && x[1].en !== 'moon')).slice(0, 2);
       const o = (x) => ({ html: `<span class="emo" data-cq-name="${L(x[1])}" aria-label="${L(x[1])}">${x[0]}</span>`, ok: x === good });
       quiz(this, {
-        ask: day ? B('Which one do you see in the DAY sky?', '낮 하늘에서 볼 수 있는 것은?') : B('Which one do you see in the NIGHT sky?', '밤 하늘에서 볼 수 있는 것은?'),
+        ask: day ? B('Which one is in the DAY sky?', '낮 하늘에서 볼 수 있는 것은?') : B('Which one is in the NIGHT sky?', '밤 하늘에서 볼 수 있는 것은?'),
         opts: [o(good), ...bad.map(o)], cls: 'shapes', onRender() { const b=document.createElement('button');b.className='say';b.textContent='🔊';b.setAttribute('aria-label',L(B('Hear picture names','그림 이름 듣기')));b.onclick=()=>$$('.opt [data-cq-name]').forEach((e,i)=>say(e.dataset.cqName,undefined,i>0));$('#sp').after(b); }, after: B(`You see the ${good[1].en} in the ${day ? 'day' : 'night'} sky.`, `${good[1].ko}은(는) ${day ? '낮' : '밤'} 하늘에서 봐요.`), vocab: good[1].en
       });
       return;
     }
     quiz(this, {
-      ask: B('Do you see this in the day sky or the night sky?', '낮 하늘에서 볼까요, 밤 하늘에서 볼까요?'),
+      ask: B('Is this in the day or night sky?', '낮 하늘에서 볼까요, 밤 하늘에서 볼까요?'),
       show: `<div class="bigword"><span class="emo">${t[0]}</span></div>`,
       opts: [{ html: '<span class="emo">🌤️</span>', label: B('Day', '낮'), ok: t[2] }, { html: '<span class="emo">🌃</span>', label: B('Night', '밤'), ok: !t[2] && t[1].en !== 'moon' }, ...(t[1].en === 'moon' ? [{ html: '<span class="emo">🌤️🌃</span>', label: B('Both', '낮에도 밤에도'), ok: true }] : [])], cls: 'groups',
       after: t[1].en === 'moon' ? B('The Moon can be seen in the day and at night.', '달은 낮에도 밤에도 볼 수 있어요.') : B(`You see the ${t[1].en} in the ${t[2] ? 'day' : 'night'} sky.`, `${t[1].ko}은(는) ${t[2] ? '낮' : '밤'} 하늘에서 봐요.`), vocab: t[1].en
@@ -57,7 +57,7 @@ registerGame({
   play() {
     if(lvl('motion')===2){
       const a=pick(MOTION),b=pick(MOTION.filter(x=>x!==a)),key=a[2]===b[2]?a[2]:'both';
-      quiz(this,{ask:B('Which forces appear in these TWO actions?','두 동작에 나타난 힘은?'),show:`<div style="font-size:clamp(16px,3dvh,22px)">${L(a[1])}<br>${L(b[1])}</div>`,opts:[['push',B('Push only','밀기만')],['pull',B('Pull only','당기기만')],['both',B('Push and pull','밀기와 당기기')]].map(([k,n])=>({html:`<span class="word">${L(n)}</span>`,ok:k===key})),cls:'words'});return;
+      quiz(this,{ask:B('Which forces appear in these TWO actions?','두 동작에 나타난 힘은?'),show:`<div style="display:flex;gap:18px;justify-content:center">${[a,b].map(x=>`<span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:clamp(28px,5dvh,40px);line-height:1.1">${x[0]}</span><small>${L(x[1])}</small></span>`).join('')}</div>`,opts:[['push','👉',B('Only push','밀기만')],['pull','🤏',B('Only pull','당기기만')],['both','👉🤏',B('Both','둘 다')]].map(([k,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:k===key})),cls:'shapes'});return;
     }
     const t = pick(MOTION);
     if (rnd(2) === 0) {                                              // "which one is a push / a pull?"
@@ -80,13 +80,19 @@ registerGame({
 
 // 63a: neutral descriptions do not name the force before the child chooses it.
 (() => {
+ // 70a: K pictures carry the meaning. Hand on the left; the arrow shows where the object goes
+ // (away from the hand = push, toward the hand = pull). Labels are two words and never name the force.
  const descriptions=[
- ['⚽',B('A foot sends a ball away.','발로 공을 멀리 보내요.'),'push'],
- ['🛒',B('Hands move a cart away from the body.','손으로 카트를 몸에서 멀리 보내요.'),'push'],
- ['🚪',B('A door moves away from your hand.','문이 손에서 멀어지게 해요.'),'push'],
- ['🛷',B('A rope brings a sled toward you.','줄로 썰매를 내 쪽으로 오게 해요.'),'pull'],
- ['🗄️',B('A handle brings a drawer toward you.','손잡이로 서랍을 내 쪽으로 오게 해요.'),'pull'],
- ['🧲',B('A paperclip moves toward a magnet.','클립이 자석 쪽으로 움직여요.'),'pull']];
+ ['🦶⚽➡️',B('kick ball','공 차기'),'push'],
+ ['🙌🛒➡️',B('move cart','카트 옮기기'),'push'],
+ ['✋🚪➡️',B('open door','문 열기'),'push'],
+ ['🙌📦➡️',B('move box','상자 옮기기'),'push'],
+ ['✋🧱➡️',B('slide block','블록 보내기'),'push'],
+ ['🙌⬅️🛷',B('sled rope','썰매 줄'),'pull'],
+ ['✋⬅️🗄️',B('open drawer','서랍 열기'),'pull'],
+ ['🧲⬅️📎',B('magnet clip','자석 클립'),'pull'],
+ ['🙌⬅️🪢',B('tug rope','줄다리기'),'pull'],
+ ['✋⬅️🌱',B('pick weed','풀 뽑기'),'pull']];
  MOTION.splice(0,MOTION.length,...descriptions);
  const sky=GAMES.find(g=>g.id==='sky'),old=sky.play;
  sky.play=function(){if(lvl(this.id)===1)return old.call(this);

@@ -157,7 +157,7 @@ G1T({
   id: 'goodsservices', icon: '🛍️', title: B('Goods and Services', '물건과 서비스'), sub: B('Things people make and jobs people do', '만든 물건과 해 주는 일'), u: 'Economics',
   play() {
     const lv = lvl('goodsservices'), kind = pick(lv === 1 ? ['gs', 'gs', 'gs'] : ['gs', 'gs', 'pc']);
-    if (kind === 'gs') { const good = rnd(2) === 0, t = good ? pick(GOODS) : pick(SERVICES); quiz(this, { ask: B('Is this a GOOD (a thing people make or grow) or a SERVICE (work done for others)?', '이것은 물건(만들거나 기른 것)일까요, 서비스(남을 위한 일)일까요?'), askSay: B('Is this a good, a thing people make, or a service, work done for others?', '이것은 물건일까요, 서비스일까요?'), show: `<div class="figbig"><span class="emo">${t[0]}</span><b>${L(t[1])}</b></div>`, opts: [['good', B('a good', '물건')], ['service', B('a service', '서비스')]].map(x => ({ html: `<span class="word">${L(x[1])}</span>`, ok: (x[0] === 'good') === good })), cls: 'words', after: good ? B('A good is a thing people make or grow.', '물건은 사람들이 만들거나 기른 것이에요.') : B('A service is work that one person does for others.', '서비스는 한 사람이 다른 사람을 위해 하는 일이에요.') }); }
+    if (kind === 'gs') { const good = rnd(2) === 0, t = good ? pick(GOODS) : pick(SERVICES); quiz(this, { ask: B('Is this a good or a service?', '물건일까요, 서비스일까요?'), askSay: B('Is this a good, a thing people make, or a service, work done for others?', '이것은 물건일까요, 서비스일까요?'), show: `<div class="figbig"><span class="emo">${t[0]}</span><b>${L(t[1])}</b></div>`, opts: [['good', B('good: a thing', '물건: 만든 것')], ['service', B('service: work done', '서비스: 도와준 일')]].map(x => ({ html: `<span class="word">${L(x[1])}</span>`, ok: (x[0] === 'good') === good })), cls: 'words', after: good ? B('A good is a thing people make or grow.', '물건은 사람들이 만들거나 기른 것이에요.') : B('A service is work that one person does for others.', '서비스는 한 사람이 다른 사람을 위해 하는 일이에요.') }); }
     else {
       const qs = [[B('A farmer grows peaches to sell. The farmer is a ___.', '농부가 복숭아를 길러서 팔아요. 농부는 ___예요.'), tx2('producer', '생산자'), tx2('consumer', '소비자')], [B('You buy and eat a peach. You are a ___.', '복숭아를 사서 먹어요. 나는 ___예요.'), tx2('consumer', '소비자'), tx2('producer', '생산자')], [B('A baker makes bread to sell. The baker is a ___.', '제빵사가 팔려고 빵을 만들어요. 제빵사는 ___예요.'), tx2('producer', '생산자'), tx2('consumer', '소비자')], [B('A family buys shoes at a store. They are ___.', '가족이 가게에서 신발을 사요. 그들은 ___예요.'), tx2('consumers', '소비자'), tx2('producers', '생산자')]], q = pick(qs);
       quiz(this, { ask: q[0], opts: tOpts(q[1], [q[2]]), cls: 'words', after: B('Producers make goods or give services. Consumers buy and use them. People can be both!', '생산자는 물건을 만들거나 서비스를 해요. 소비자는 사서 써요. 사람은 둘 다일 수 있어요!') });
@@ -192,12 +192,12 @@ const FACTOP = [
   [B('Atlanta is the capital of Georgia.', '애틀랜타는 조지아의 주도예요.'), 1], [B('A triangle has three sides.', '삼각형은 변이 세 개예요.'), 1], [B('Peaches grow on trees.', '복숭아는 나무에서 자라요.'), 1], [B('Georgia is a state.', '조지아는 미국의 주예요.'), 1], [B('Dogs have four legs.', '개는 다리가 네 개예요.'), 1], [B('The sun gives us light.', '해는 우리에게 빛을 줘요.'), 1], [B('There are seven days in a week.', '일주일은 7일이에요.'), 1],
   [B('Peaches are the yummiest fruit.', '복숭아는 가장 맛있는 과일이에요.'), 0], [B('Blue is the prettiest color.', '파랑은 가장 예쁜 색이에요.'), 0], [B('Dogs are better than cats.', '개가 고양이보다 더 좋아요.'), 0], [B('Summer is the best season.', '여름이 가장 좋은 계절이에요.'), 0], [B('Math is the most fun subject.', '수학이 가장 재미있는 과목이에요.'), 0], [B('The park is the nicest place.', '공원이 가장 멋진 곳이에요.'), 0], [B('Pizza is yummy.', '피자는 맛있어요.'), 0], [B('That movie was boring.', '그 영화는 지루했어요.'), 0], [B('Cats are scary.', '고양이는 무서워요.'), 0], [B('A cheetah is the fastest land animal.', '치타는 땅에서 가장 빠른 동물이에요.'), 1], [B('The Pacific is the biggest ocean.', '태평양은 가장 큰 바다예요.'), 1], [B('A whale is bigger than a mouse.', '고래는 쥐보다 커요.'), 1], [B('Summer is hotter than winter in Georgia.', '조지아는 여름이 겨울보다 더워요.'), 1]
 ];
-const CAUSE_EFFECT = [[B('It rained all morning, so the ground got wet.', '아침 내내 비가 와서 땅이 젖었어요.'), B('It rained.', '비가 왔어요.'), B('The ground got wet.', '땅이 젖었어요.')], [B('Sam forgot his coat, so he felt cold.', '샘이 코트를 안 가져가서 추웠어요.'), B('Sam forgot his coat.', '샘이 코트를 안 가져갔어요.'), B('Sam felt cold.', '샘이 추웠어요.')], [B('Mia studied hard, so she did well on the test.', '미아는 열심히 공부해서 시험을 잘 봤어요.'), B('Mia studied hard.', '미아가 열심히 공부했어요.'), B('Mia did well on the test.', '미아가 시험을 잘 봤어요.')], [B('The ice melted because it got hot.', '더워져서 얼음이 녹았어요.'), B('It got hot.', '더워졌어요.'), B('The ice melted.', '얼음이 녹았어요.')]];
+const CAUSE_EFFECT = [[B('It rained all morning, so the ground got wet.', '아침 내내 비가 와서 땅이 젖었어요.'), B('It rained.', '비가 왔어요.'), B('The ground got wet.', '땅이 젖었어요.')], [B('Sam forgot his coat, so he felt cold.', '샘이 코트를 안 가져가서 추웠어요.'), B('Sam forgot his coat.', '샘이 코트를 잊었어요.'), B('Sam felt cold.', '샘이 추웠어요.')], [B('Mia studied hard, so she did well on the test.', '미아는 열심히 공부해서 시험을 잘 봤어요.'), B('Mia studied hard.', '미아가 열심히 공부했어요.'), B('Mia did well.', '시험을 잘 봤어요.')], [B('The ice melted because it got hot.', '더워져서 얼음이 녹았어요.'), B('It got hot.', '더워졌어요.'), B('The ice melted.', '얼음이 녹았어요.')]];
 G1T({
   id: 'factopinion', icon: '⚖️', title: B('Fact or Opinion?', '사실일까 생각일까'), sub: B('Facts, opinions, causes and effects', '사실, 의견, 원인과 결과'), u: 'Thinking skills',
   play() {
     const lv = lvl('factopinion'), kind = pick(lv === 1 ? ['fo', 'fo', 'fo'] : ['fo', 'fo', 'cause', 'order']);
-    if (kind === 'fo') { const s = pick(FACTOP), fact = s[1] === 1; quiz(this, { ask: B('Is this a FACT (can be checked) or an OPINION (what someone thinks)?', '이것은 사실(확인할 수 있는 것)일까요, 의견(누군가의 생각)일까요?'), askSay: B('Is this a fact, or an opinion?', '이것은 사실일까요, 의견일까요?'), show: `<div class="bigword sent">${L(s[0])}</div>`, opts: [['fact', B('Fact', '사실')], ['opinion', B('Opinion', '의견')]].map(x => ({ html: `<span class="word">${L(x[1])}</span>`, ok: (x[0] === 'fact') === fact })), cls: 'words', after: fact ? B('A fact can be checked and proved.', '사실은 확인하고 증명할 수 있어요.') : B('An opinion is what someone thinks or feels.', '의견은 누군가가 생각하거나 느끼는 것이에요.') }); }
+    if (kind === 'fo') { const s = pick(FACTOP), fact = s[1] === 1; quiz(this, { ask: B('Is this a fact or an opinion?', '사실일까요, 의견일까요?'), show: `<div class="bigword sent">${L(s[0])}</div>`, opts: [['fact', B('Fact: we can check', '사실: 확인돼요')], ['opinion', B('Opinion: someone thinks', '의견: 누군가의 생각')]].map(x => ({ html: `<span class="word">${L(x[1])}</span>`, ok: (x[0] === 'fact') === fact })), cls: 'words', after: fact ? B('A fact can be checked and proved.', '사실은 확인하고 증명할 수 있어요.') : B('An opinion is what someone thinks or feels.', '의견은 누군가가 생각하거나 느끼는 것이에요.') }); }
     else if (kind === 'cause') { const c = pick(CAUSE_EFFECT), askCause = rnd(2) === 0; quiz(this, { ask: askCause ? B('What is the CAUSE (why it happened)?', '원인(왜 그랬는지)은 무엇일까요?') : B('What is the EFFECT (what happened)?', '결과(무슨 일이 생겼는지)는 무엇일까요?'), show: `<div class="bigword sent">${L(c[0])}</div>`, opts: [askCause ? c[1] : c[2], askCause ? c[2] : c[1]].map((x, i) => ({ html: `<span class="word">${L(x)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('The cause is why. The effect is what happened.', '원인은 이유이고, 결과는 일어난 일이에요.') }); }
     else { const day = [[B('wake up', '일어나요'), '⏰'], [B('eat breakfast', '아침을 먹어요'), '🥣'], [B('go to school', '학교에 가요'), '🏫'], [B('go to bed', '잠을 자요'), '🛏️']], idx = rnd(3), first = rnd(2) === 0, a = day[idx], b = day[idx + 1]; quiz(this, { ask: first ? B('Which happens FIRST?', '먼저 일어나는 일은?') : B('Which happens NEXT?', '그다음에 일어나는 일은?'), show: first ? '' : `<div class="bigword">${L(a[0])} ${a[1]} → ?</div>`, opts: first ? [a, b].map((x, i) => ({ html: `<span class="word">${x[1]} ${L(x[0])}</span>`, ok: i === 0 })) : [b, a].map((x, i) => ({ html: `<span class="word">${x[1]} ${L(x[0])}</span>`, ok: i === 0 })), cls: 'words', after: B('Think about the order of events.', '일이 일어난 순서를 생각해 봐요.') }); }
   }
@@ -234,7 +234,7 @@ G1T({
  const ch=GAMES.find(g=>g.id==='character1'),old=ch.play;ch.play=function(){if(lvl(this.id)===1)return old.call(this);const s=pick(SCEN);quiz(this,{ask:B('Which action shows the same trait?','같은 마음을 보여 주는 행동은?'),show:`<div class="storytext">${L(s[0])}</div>`,opts:o(examples[s[1]]),cls:'words'});};
  const patriot=[
  [B('What does liberty mean?','liberty는 무슨 뜻일까요?'),[B('Freedom','자유'),B('Fairness','공정'),B('Duty','의무')]],
- [B('Which action shows care for a neighbor?','이웃을 아끼는 행동은?'),[B('Help carry their bags','이웃의 짐을 들어 줘요'),B('Ask them to carry my bags','내 짐을 들어 달라고 해요'),B('Leave their bags by the door','이웃의 짐을 문 옆에 둬요')]],
+ [B('Which action shows care for a neighbor?','이웃을 아끼는 행동은?'),[B('Help carry their bags','이웃 짐을 들어 줘요'),B('Make them carry mine','내 짐 들어 달래요'),B('Leave their bags','짐을 그냥 둬요')]],
  [B('In America, sing: sweet land of ___.','America 노래: sweet land of ___'),[B('liberty','liberty'),B('unity','unity'),B('bravery','bravery')]]
  ];
  GAMES.find(g=>g.id==='patriot').play=function(){const q=pick(patriot);quiz(this,{ask:q[0],opts:o(q[1]),cls:'words'});};
@@ -303,5 +303,23 @@ G1T({
 (() => {
  const g=GAMES.find(g=>g.id==='whereilive'),old=g.play;
  g.play=function(){if(lvl(this.id)===2||rnd(2))return old.call(this);const i=rnd(4),right=NEST[i+1][0];
- quiz(this,{ask:B(`In this chart, which type of place directly contains the ${NEST[i][0].en}?`,`이 그림에서 ${NEST[i][0].ko} 바로 바깥의 장소 종류는?`),show:`<div class="storytext">${NEST.map(x=>L(x[0])).join(' → ')}</div>`,opts:tOpts(right,NEST.filter((_,j)=>j!==i+1&&j!==i).slice(0,2).map(x=>x[0])),cls:'words'});};
+ quiz(this,{ask:B(`Which place is just bigger than ${NEST[i][0].en}?`,`이 그림에서 ${NEST[i][0].ko} 바로 바깥의 장소 종류는?`),show:`<div class="storytext">${NEST.map(x=>L(x[0])).join(' → ')}</div>`,opts:tOpts(right,NEST.filter((_,j)=>j!==i+1&&j!==i).slice(0,2).map(x=>x[0])),cls:'words'});};
+})();
+
+// 70a: grade-1 questions are one sentence. Extra clue sentences in a question move to the read-aloud
+// material (storytext gets core's 🔊); the sentence with "?" (or the last one) stays as the question.
+(() => {
+ const sentences = t => String(t).split(/(?<=[.!?])\s+(?=[A-Z가-힣"'(])/).filter(Boolean);
+ const cut = t => { const all = sentences(t); if (all.length < 2) return ['', t]; const q = all.filter(x => /\?/.test(x)); if (q.length > 1) return ['', t]; const ask = q.length ? q[0] : all[all.length - 1]; return [all.filter(x => x !== ask).join(' '), ask]; };
+ const split = item => {
+  if (!item || !item.ask || typeof item.ask !== 'object') return item;
+  const en = cut(item.ask.en), ko = cut(item.ask.ko);
+  if (!en[0] && !ko[0]) return item;
+  const ctx = B(en[0], ko[0]);
+  return { ...item, ask: B(en[1], ko[1]), askSay: item.askSay || item.ask, show: `<div class="storytext">${L(ctx)}</div>` + (item.show || '') };
+ };
+ for (const id of ["goodsservices","savespend","worldmap","whereilive","figures1","placetime","character1","thennow","mapdir","patriot"]) {
+  const game = GAMES.find(g => g.id === id), play = game.play;
+  game.play = function () { const raw = window.quiz; window.quiz = (g, item) => { window.quiz = raw; return raw(g, split(item)); }; try { return play.apply(this, arguments); } finally { window.quiz = raw; } };
+ }
 })();

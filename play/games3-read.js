@@ -155,7 +155,7 @@ evidence3:[
  rr('Which detail tells how the parcel traveled?','소포를 어떻게 옮겼는지 알려 주는 근거는?','A courier carried the parcel by bicycle. It had a round stamp. The box was brown.','A courier carried it by bicycle.','It had a round stamp.','The box was brown.')],
 explain3:[
  rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Topic: Returning a borrowed board game','Count the pieces before closing the box.','Close the box without checking pieces.','Keep a few pieces for another game.'),
- rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Goal: Children can choose books without help in the reading corner.','Put cushions beside an easy-to-reach book basket.','Put the books on a high shelf that readers cannot reach.','Store the books in a locked supply cupboard.')],
+ rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Goal: Children can choose books without help in the reading corner.','Put cushions beside an easy-to-reach book basket.','Put the books on a shelf too high to reach.','Store the books in a locked supply cupboard.')],
 opinion3:[
  rr('Which reason serves our goal?','우리 목표에 도움이 되는 이유는?','Goal: compare weather changes over time. Our class should keep a weather journal.','Daily notes would help us compare changes.','A cover drawing would show our favorite season.','A neat title would show who owns the journal.'),
  rr('Which reason supports the proposal?','이 제안을 뒷받침하는 이유는?','Goal: Help newcomers find rooms. Put a school map near the front door.','A map would help them locate the rooms.','A map would tell when lessons start.','A map would list the lesson supplies.')],

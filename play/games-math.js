@@ -15,7 +15,7 @@ registerGame({
     if (kind === 'total') {
       const k = 2 + rnd(maxK - 1), ans = k * 10, seq = Array.from({ length: k }, (_, i) => (i + 1) * 10);
       quiz(this, {
-        ask: B('Each car has 10. How many in all?', '칸마다 10개씩 있어요. 모두 몇 개일까요?'),
+        ask: B('Count by tens: how many in all?', '10씩 세어요: 모두 몇 개일까요?'),
         show: `<div class="train sm">${seq.map(() => `<div class="car"><div class="dots">${dots}</div></div>`).join('')}</div>`,
         opts: near(ans), after: B(seq.join(', '), seq.join(', '))
       });
@@ -26,7 +26,7 @@ registerGame({
     if (kind === 'back') seq = seq.reverse();
     const gapAt = rnd(len), ans = seq[gapAt];
     quiz(this, {
-      ask: kind === 'back' ? B('Count backward by tens. Which number is missing?', '10씩 거꾸로 세어요. 빠진 숫자는?') : B('Which number is missing?', '빠진 숫자는 뭘까요?'),
+      ask: kind === 'back' ? B('Counting back by tens, which number is missing?', '10씩 거꾸로 셀 때 빠진 숫자는?') : B('Which number is missing?', '빠진 숫자는 뭘까요?'),
       show: `<div class="train">${seq.map((n, i) => `<div class="car ${i === gapAt ? 'gap' : ''}"><div class="n">${i === gapAt ? '?' : n}</div><div class="dots">${i === gapAt ? '' : dots}</div></div>`).join('')}</div>`,
       opts: near(ans), after: B(seq.join(', '), seq.join(', ')),
       onCorrect() { const g = $('.car.gap'); g.classList.remove('gap'); g.querySelector('.n').textContent = ans; g.querySelector('.dots').innerHTML = dots; }
@@ -57,7 +57,7 @@ registerGame({
       return;
     }
     quiz(this, {
-      ask: B(`There are ${n}. How many more to make ${T}?`, `${n}개 있어요. ${T}이(가) 되려면 몇 개 더 필요할까요?`), show: frameHtml(n, e, T),
+      ask: B(`${n} here: how many more to make ${T}?`, `${n}개에서 ${T}${[5, 9].includes(T) ? '가' : '이'} 되려면 몇 개 더?`), show: frameHtml(n, e, T),
       opts: numOpts(ans, 0, T - 1), after, onCorrect: fill
     });
   }
@@ -70,7 +70,7 @@ registerGame({
   play() {
     const lv = lvl('count'), n = lv === 1 ? 2 + rnd(9) : 8 + rnd(13), e = pick(['🍑', '🍑', '🍎', '🐞', '⭐', '🦆']);
     quiz(this, {
-      ask: B(T().countAsk, I18N.ko.countAsk),
+      ask: B('Tap each one: how many are there?', '하나씩 눌러 세면 모두 몇 개일까요?'),
       show: `<div class="scatter">${Array.from({ length: n }, () => `<button class="obj" style="transform:translate(${rnd(21) - 10}px,${rnd(21) - 10}px) rotate(${rnd(41) - 20}deg)">${e}</button>`).join('')}</div>`,
       opts: numOpts(n, 1, 20),
       after: B(`${n}`, `${n}`),
@@ -92,7 +92,7 @@ registerGame({
     let cards, ans, ask;
     if (kind === 'next') { const a = 1 + rnd(hi - 4); cards = [a, a + 1, a + 2, '?']; ans = a + 3; ask = B('What comes next?', '다음 숫자는 뭘까요?'); }
     else if (kind === 'before') { const a = 2 + rnd(hi - 4); cards = ['?', a, a + 1, a + 2]; ans = a - 1; ask = B('What comes before?', '앞에 올 숫자는 뭘까요?'); }
-    else if (kind === 'back') { const a = 4 + rnd(hi - 4); cards = [a, a - 1, a - 2, '?']; ans = a - 3; ask = B('Count backward. What comes next?', '거꾸로 세어요. 다음은 뭘까요?'); }
+    else if (kind === 'back') { const a = 4 + rnd(hi - 4); cards = [a, a - 1, a - 2, '?']; ans = a - 3; ask = B('Counting backward, what comes next?', '거꾸로 세면 다음은 뭘까요?'); }
     else { const a = 1 + rnd(hi - 4); cards = [a, a + 1, '?', a + 3]; ans = a + 2; ask = B('Which number is missing?', '빠진 숫자는 뭘까요?'); }
     quiz(this, { ask, show: `<div class="train">${cards.map(c => `<div class="car ${c === '?' ? 'gap' : ''}"><div class="n">${c}</div></div>`).join('')}</div>`, opts: numOpts(ans, 0, hi), after: B(`${ans}`, `${ans}`) });
   }
@@ -108,7 +108,7 @@ registerGame({
     let a = 1 + rnd(10), b = same ? a : 1 + rnd(10);
     if (!same && a === b) b = a === 10 ? 9 : a + 1;
     const more = lv === 1 ? rnd(2) === 0 : true;
-    const askMore = lv === 2 ? B('Which group has MORE? Or are they the SAME?', '어느 쪽이 더 많을까요? 아니면 같을까요?') : more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?');
+    const askMore = lv === 2 ? B('Which has MORE, or are they the SAME?', '어느 쪽이 더 많을까요, 같을까요?') : more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?');
     const opts = [{ html: '<small>A</small>' + emojiRow(a, e, 'sm'), ok: !same && (more ? a > b : a < b) || false }, { html: '<small>B</small>' + emojiRow(b, e, 'sm'), ok: !same && (more ? b > a : b < a) || false }];
     if (lv === 2) opts.push({ html: '<span class="num">=</span>', label: B('Same', '같아요'), ok: same });
     quiz(this, { ask: askMore, opts, cls: 'groups', after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`) });
@@ -126,12 +126,12 @@ registerGame({
     if (add) {
       const a = 1 + rnd(top - 1), b = 1 + rnd(top - a); ans = a + b;
       show = `<div class="story">${emojiRow(a, e, 'sm')}<span class="op">+</span>${emojiRow(b, e, 'sm')}</div>`;
-      ask = B(`${a} and ${b} more. How many in all?`, `${a}개에 ${b}개를 더하면 모두 몇 개일까요?`);
+      ask = B(`${a} and ${b} more makes how many?`, `${a}개에 ${b}개를 더하면 모두 몇 개일까요?`);
       speech = B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`);
     } else {
       const a = 2 + rnd(top - 1), b = 1 + rnd(a - 1); ans = a - b;
       show = `<div class="story">${Array.from({ length: a }, (_, i) => `<span class="${i >= a - b ? 'gone' : ''}">${e}</span>`).join('')}</div>`;
-      ask = B('Take away the crossed ones. How many are left?', '지워진 것을 빼면 몇 개 남을까요?');
+      ask = B('How many are left without the crossed ones?', '지워진 것을 빼면 몇 개 남을까요?');
       speech = B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`);
     }
     quiz(this, { ask, show, opts: numOpts(ans, 0, top), after: speech });
@@ -145,7 +145,7 @@ registerGame({
   play() {
     const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐']);
     quiz(this, {
-      ask: B('A full ten and some more. How many in all?', '가득 찬 10과 더 있어요. 모두 몇 개일까요?'),
+      ask: B('Ten and some more: how many in all?', '10과 조금 더: 모두 몇 개일까요?'),
       show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}</div>`,
       opts: numOpts(n, 11, 20), after: B(`Ten and ${n - 10} make ${n}.`, `10과 ${n - 10}를 합치면 ${n}.`)
     });
@@ -165,8 +165,8 @@ const shapeSvg = (k, rot) => `<svg viewBox="0 0 100 100" class="shape" style="tr
 const SHAPE_FACTS = {
   circle: B('Which shape is round, with no corners?', '둥글고 뾰족한 곳이 없는 모양은?'),
   triangle: B('Which shape has 3 sides?', '변이 3개인 모양은?'),
-  square: B('Which shape has 4 sides that are all the same?', '변 4개가 모두 같은 모양은?'),
-  rectangle: B('Which shape has 4 sides, with 2 long and 2 short?', '긴 변 2개, 짧은 변 2개인 모양은?'),
+  square: B('Which shape has 4 sides all the same?', '변 4개가 모두 같은 모양은?'),
+  rectangle: B('Which shape has 4 sides, with 2 long and 2 short?', '긴 변과 짧은 변이 2개씩인 모양은?'),
   hexagon: B('Which shape has 6 sides?', '변이 6개인 모양은?')
 };
 registerGame({
@@ -189,8 +189,8 @@ registerGame({
 // ---------- 9. 3-D shapes in my world ----------
 const SOLIDS = {
   sphere: { n: B('sphere', '구'), things: [['🏀', B('basketball', '농구공')], ['⚽', B('soccer ball', '축구공')], ['🌍', B('globe', '지구본')]] },
-  cube: { n: B('cube', '정육면체'), things: [['🎲', B('dice', '주사위')], ['🧊', B('ice cube', '얼음')]] },
-  cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream cone', '아이스크림콘')], ['🥳', B('party hat', '고깔모자')]] },
+  cube: { n: B('cube', '정육면체'), things: [['🎲', B('dice', '주사위')], ['🧊', B('ice', '얼음')]] },
+  cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')]] },
   cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('can', '캔')], ['🔋', B('battery', '건전지')]] }
 };
 registerGame({

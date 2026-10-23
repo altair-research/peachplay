@@ -37,13 +37,13 @@ reg('divide5','Division Strategies','나눗셈 전략','5.NR.2.2',(lv,i)=>{
 reg('remainder5','Remainders in Stories','나머지는 무엇일까요?','5.NR.2.2',(lv,i)=>{
  const b=3+i%5,n=(4+i)*b+1+i%(b-1),r=n%b;
  if(lv===1)return nq(B(`${n} objects, ${b} per full box. How many left?`,`물건 ${n}개를 상자마다 ${b}개씩 담아요. 꽉 찬 상자에 담고 나면 몇 개가 남을까요?`),eq(`${n} ÷ ${b}`),r,1,B(`${Math.floor(n/b)} full boxes; ${r} left.`,`꽉 찬 상자 ${Math.floor(n/b)}개와 남은 물건 ${r}개예요.`));
- if(i%3===0)return nq(B(`${n} riders; ${b} seats per van. Everyone needs a seat. How many vans?`,`${n}명이 타요. 차 한 대에 ${b}자리예요. 모두 앉으려면 차가 몇 대 필요할까요?`),eq(`${n} ÷ ${b}`),Math.ceil(n/b),1,B('An extra van carries the remaining riders.','남은 사람도 타려면 차 한 대가 더 필요해요.'));
+ if(i%3===0)return nq(B(`${n} riders; ${b} seats per van, and everyone needs a seat. How many vans?`,`${n}명이 타고 차 한 대에 ${b}자리예요. 모두 앉으려면 차가 몇 대 필요할까요?`),eq(`${n} ÷ ${b}`),Math.ceil(n/b),1,B('An extra van carries the remaining riders.','남은 사람도 타려면 차 한 대가 더 필요해요.'));
  if(i%3===1)return nq(B(`${n} cards, ${b} per complete set. Count only complete sets.`,`카드 ${n}장을 ${b}장씩 묶어요. 완전한 묶음만 세면 몇 묶음일까요?`),eq(`${n} ÷ ${b}`),Math.floor(n/b),1,B(`Keep ${r} leftover cards separate.`,`남은 카드 ${r}장은 따로 두어요.`));
  return q(B(`Share ${n} liters among ${b} containers equally. Liters per container?`,`${n}리터를 통 ${b}개에 똑같이 나눠요. 한 통에는 몇 리터일까요?`),eq(`${n} ÷ ${b}`),f(n,b),[Math.floor(n/b),Math.ceil(n/b)],B('Liquid can be divided further.','액체는 더 작게 나눌 수 있어요.'));
 });
 reg('fractiondivision5','Fractions Are Division','분수는 나눗셈이에요','5.NR.3.1',(lv,i)=>{
  const [n,d]=(lv===1?[[1,2],[2,3],[3,4],[2,5],[4,5],[3,8],[5,6],[1,4],[5,8],[4,7],[7,9],[5,12]]:[[7,3],[9,4],[11,5],[13,6],[8,3],[10,4],[17,8],[19,6],[14,5],[16,7],[23,8],[25,9]])[i];
- if(lv===2)return q(B(`Share ${n} loaves among ${d} people. Each person eats half their share. How many loaves remain per person?`,`빵 ${n}개를 ${d}명이 똑같이 나눠요. 각자 자기 몫의 절반을 먹으면 한 명에게 빵 몇 개가 남을까요?`),eq(`${n} ÷ ${d}, then half`),f(n,2*d),[f(n,d),f(2*n,d)]);
+ if(lv===2)return q(B(`Share ${n} loaves among ${d} people, and each person eats half their share. How many loaves remain per person?`,`빵 ${n}개를 ${d}명이 똑같이 나눠요. 각자 자기 몫의 절반을 먹으면 한 명에게 빵 몇 개가 남을까요?`),eq(`${n} ÷ ${d}, then half`),f(n,2*d),[f(n,d),f(2*n,d)]);
  return q(B(`Share ${n} identical loaves among ${d} people equally. Loaves per person?`,`같은 크기 빵 ${n}개를 ${d}명에게 똑같이 나눠요. 한 명의 몫은 빵 몇 개일까요?`),eq(`${n} ÷ ${d}`),f(n,d),[f(d,n),f(n+1,d)],B(`${n} ÷ ${d} = ${f(n,d)}`,`${n} ÷ ${d} = ${f(n,d)}`));
 });
 reg('fractionorder5','Order Fractions','분수 순서','5.NR.3.2',(lv,i)=>{
@@ -79,12 +79,12 @@ reg('scale5','Scaling by Fractions','곱해서 커지거나 작아져요','5.NR.
 });
 reg('unitdivide5','Divide a Unit Fraction','단위분수를 나누어요','5.NR.3.6',(lv,i)=>{
  const b=lv===1?2+i%5:3+i%5,n=lv===1?2+Math.floor(i/5):3+Math.floor(i/5),a=f(1,b*n);
- if(lv===2)return q(B(`Share 1/${b} liter equally among ${n} cups. Pour two cups into one jar. Liters in the jar?`,`1/${b}리터를 컵 ${n}개에 똑같이 나눠요. 두 컵의 물을 병 하나에 부으면 몇 리터일까요?`),eq(`(1/${b} ÷ ${n}) × 2`),f(2,b*n),[a,f(2*n,b)]);
+ if(lv===2)return q(B(`Share 1/${b} liter equally among ${n} cups, then pour two cups into one jar. How many liters are in the jar?`,`1/${b}리터를 컵 ${n}개에 똑같이 나눠요. 두 컵의 물을 병 하나에 부으면 몇 리터일까요?`),eq(`(1/${b} ÷ ${n}) × 2`),f(2,b*n),[a,f(2*n,b)]);
  return q(B(lv===1?'Share this unit fraction equally.':'Share this fraction of a liter equally among cups. Liters per cup?',lv===1?'단위분수를 똑같이 나눠요.':'이만큼의 액체를 컵에 똑같이 나눠요. 한 컵에는 몇 리터일까요?'),panel(`1/${b} ÷ ${n}${strip(1,b)}`),a,[f(n,b),f(1,b+n)],B(`1/${b} ÷ ${n} = ${a}`,`1/${b} ÷ ${n} = ${a}`));
 });
 reg('wholeunitdivide5','Count Fraction Groups','단위분수 몇 묶음일까요?','5.NR.3.6',(lv,i)=>{
  const n=1+i%5,b=lv===1?(i<5?2:i<10?4:8):(i<5?3:i<10?5:6);
- if(lv===2)return nq(B(`Cut ${n} meters into 1/${b}-meter pieces. Use two pieces. How many remain?`,`${n}미터를 1/${b}미터씩 잘라요. 두 조각을 쓰면 몇 조각 남을까요?`),eq(`(${n} ÷ 1/${b}) − 2`),n*b-2);
+ if(lv===2)return nq(B(`Cut ${n} meter${n>1?'s':''} into 1/${b}-meter pieces and use two pieces. How many pieces remain?`,`${n}미터를 1/${b}미터씩 잘라요. 두 조각을 쓰면 몇 조각 남을까요?`),eq(`(${n} ÷ 1/${b}) − 2`),n*b-2);
  return nq(B(lv===1?'How many unit-fraction groups fit?':`${n} meters, cut into 1/${b}-meter pieces. How many pieces?`,lv===1?'단위분수가 몇 묶음 들어갈까요?':`${n}미터를 1/${b}미터씩 잘라요. 몇 조각일까요?`),eq(`${n} ÷ 1/${b}`),n*b,1,B(`${n} × ${b} = ${n*b}`,`자연수 1에 ${b}묶음이 있어요. ${n} × ${b} = ${n*b}`));
 });
 })();

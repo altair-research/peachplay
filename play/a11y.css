@@ -60,3 +60,5 @@ body.readable.playing #view > .prompt{font-size:clamp(18px,5vw,29px)}
 /* Actual animation removal, including computed animation-name for feedback. */
 body.calm .opt.no,body.calm .peachy{animation:none!important}
 @media(prefers-reduced-motion:reduce){.opt.no,.peachy{animation:none!important}}
+/* shared read-aloud buttons do nothing without sound, so hide them when sound or voice is off */
+body:is(.muted,.voice-off) .say.auto-say{display:none}

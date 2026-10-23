@@ -19,7 +19,7 @@ const strip=(d,n,y=15)=>Array.from({length:d},(_,i)=>`<rect x="${10+i*300/d}" y=
 const q=(ask,show,a,w,after)=>({ask,show,opts:opts(a,w),cls:'g3-geometry-options',after:after||B(String(a),String(a))});
 const fraction=n=>n%1===0?String(n):n%1===0.5?`${Math.floor(n)?Math.floor(n)+' ':''}1/2`:`${Math.floor(n)?Math.floor(n)+' ':''}${Math.round((n%1)*4)}/4`;
 reg('unitfraction3','Unit Fractions','단위분수 만들기','3.NR.4.1',lv=>{
- if(lv===2){const d=pick([3,4,6,8]),used=1+rnd(d-1),left=d-used;return q(B(`One whole has ${d} equal pieces. ${used} are used. How many pieces of 1/${d} remain?`,`전체를 ${d}등분해서 ${used}조각을 썼어요. 1/${d}인 조각이 몇 개 남나요?`),svg(strip(d,used),65),left,[d,used+1].filter(x=>x!==left).concat([left+2,left+3]).slice(0,2));}
+ if(lv===2){const d=pick([3,4,6,8]),used=1+rnd(d-1),left=d-used;return q(B(`One whole has ${d} equal pieces, and ${used} are used. How many pieces of 1/${d} remain?`,`전체를 ${d}등분해서 ${used}조각을 썼어요. 1/${d}인 조각이 몇 개 남나요?`),svg(strip(d,used),65),left,[d,used+1].filter(x=>x!==left).concat([left+2,left+3]).slice(0,2));}
  const d=pick([2,3,4,6,8]),mode=rnd(3),circle=lv>1&&rnd(2);
  const model=circle?svg(Array.from({length:d},(_,i)=>{const a=i*2*Math.PI/d,b=(i+1)*2*Math.PI/d;return `<path d="M160 70 L${160+55*Math.sin(a)} ${70-55*Math.cos(a)} A55 55 0 ${d===2?0:0} 1 ${160+55*Math.sin(b)} ${70-55*Math.cos(b)} Z" fill="${i===0?'#236d98':'#fff'}" stroke="#17364a"/>`;}).join(''),140):svg(strip(d,1),65);
  if(mode===1)return q(B('How many equal parts make this whole?','전체를 똑같은 몇 조각으로 나누었나요?'),model,d,[d+1,d-1]);
@@ -53,12 +53,12 @@ reg('clock3','Minute Clock','몇 시 몇 분 읽기','3.MDR.5.2',lv=>{
  return q(round?B('About what time, to the nearest 15 minutes?','가장 가까운 15분 단위(정각, 15분, 30분, 45분)로 어림하면 몇 시 몇 분일까요?'):B('Read the clock to the minute.','시계를 보고 몇 시 몇 분인지 읽어요.'),clock(h,m),time(answer),[time(answer+(round?15:1)),time(answer-(round?15:1))],B(time(answer),time(answer)));
 });
 reg('elapsed3','Time Passed','걸린 시간 구하기','3.MDR.5.3',lv=>{
- if(lv===2){const start=480+rnd(8)*15,ride=15*(1+rnd(4)),wait=5+rnd(5),end=start+ride+wait;return q(B(`Both times are in the morning. The trip includes ${wait} minutes waiting. How many minutes were spent riding?`,`둘 다 오전이에요. 그중 ${wait}분은 기다렸어요. 타고 간 시간은 몇 분인가요?`),panel(`${time(start)} → ${time(end)}`),ride,[ride+wait,ride+2*wait]);}
+ if(lv===2){const start=480+rnd(8)*15,ride=15*(1+rnd(4)),wait=5+rnd(5),end=start+ride+wait;return q(B(`Both times are morning, and ${wait} minutes were spent waiting. How many minutes were spent riding?`,`둘 다 오전이고 그중 ${wait}분은 기다렸어요. 타고 간 시간은 몇 분인가요?`),panel(`${time(start)} → ${time(end)}`),ride,[ride+wait,ride+2*wait]);}
  const step=lv===1?30:15,start=8*60+rnd(4)*step,duration=(1+rnd(4))*step,end=start+duration;
  return q(B('Both times are in the morning. How many minutes passed?','둘 다 오전이에요. 몇 분이 지났을까요?'),panel(`<div class="g3-time">${time(start)} → ${time(end)}</div>`),duration,[duration+step,Math.max(0,duration-step)],B(`${duration} minutes`,`${duration}분`));
 });
 reg('ruler3','Inch Ruler','인치 눈금자','3.MDR.5.4',lv=>{
- if(lv===2){const len=3+rnd(6),start=pick([1,2,3,4,5].filter(x=>x!==len-1)),end=start+len,cut=1;return q(B(`A ribbon runs from ${start}/4 to ${end}/4 inch. Cut off 1/4 inch. How long remains?`,`리본이 자의 ${start}/4인치 눈금부터 ${end}/4인치 눈금까지 놓여 있어요. 1/4인치를 자르면 얼마가 남나요?`),panel(`${start}/4 → ${end}/4` ),fraction((end-start-cut)/4),[fraction((end-start)/4),fraction(end/4)]);}
+ if(lv===2){const len=3+rnd(6),start=pick([1,2,3,4,5].filter(x=>x!==len-1)),end=start+len,cut=1;return q(B(`A ribbon runs from ${start}/4 to ${end}/4 inch, and 1/4 inch is cut off. How long remains?`,`리본이 자의 ${start}/4인치 눈금부터 ${end}/4인치 눈금까지 놓여 있어요. 1/4인치를 자르면 얼마가 남나요?`),panel(`${start}/4 → ${end}/4` ),fraction((end-start-cut)/4),[fraction((end-start)/4),fraction(end/4)]);}
  const unit=lv===1?2:4,start=rnd(lv===1?3:5),max=lv===1?10:16,len=1+rnd(8),end=start+len,scale=280/max;
  return q(B('How long is the orange bar in inches? Drawing is not actual size.','주황 막대는 몇 인치일까요? 그림은 실제 크기가 아니에요.'),svg(`<rect x="${20+start*scale}" y="14" width="${len*scale}" height="14" fill="#ba4a22"/><path d="M20 50 H300" stroke="currentColor"/>${Array.from({length:max+1},(_,i)=>`<path d="M${20+i*scale} 50 V${i%unit===0?72:(unit===4&&i%2===0?67:62)}" stroke="currentColor"/>${i%unit===0?text(20+i*scale,94,i/unit):''}`).join('')}`,105),fraction((end-start)/unit),[fraction((len+1)/unit),fraction((len-1)/unit)],B(`${fraction(len/unit)} inches`,`${fraction(len/unit)}인치`));
 });
@@ -68,7 +68,7 @@ reg('measure3','Choose a Unit','알맞은 단위','3.MDR.5.5',lv=>{
  [B('Which unit measures the WEIGHT of a bag of flour?','밀가루 봉지의 무게를 재는 단위는?'),B('pounds','파운드'),B('gallons','갤런'),B('feet','피트')],
  [B('Which unit measures how much WATER a jug holds?','물통에 물이 얼마나 들어가는지(들이) 재는 단위는?'),B('gallons','갤런'),B('inches','인치'),B('pounds','파운드')],
  ...[['LENGTH','길이','a pencil','연필','inches','인치'],['LENGTH','길이','a table','탁자','feet','피트'],['LENGTH','길이','a hallway','복도','yards','야드'],['WEIGHT','무게','a potato','감자','ounces','온스'],['WEIGHT','무게','a suitcase','여행 가방','pounds','파운드'],['WEIGHT','무게','a melon','멜론','pounds','파운드'],['LIQUID VOLUME','들이','a cup of juice','주스 한 컵','fluid ounces','액량 온스'],['LIQUID VOLUME','들이','a bottle of milk','우유 한 병','pints','파인트'],['LIQUID VOLUME','들이','a bucket of water','물 한 양동이','gallons','갤런']].map(r=>[B(`Which unit measures the ${r[0]} of ${r[2]}?`,`${r[3]}: ${r[1]}를 재는 단위는?`),B(r[4],`${r[5]} (${r[4]})`),...(r[0]==='LENGTH'?[B('pounds','파운드 (pounds)'),B('gallons','갤런 (gallons)')]:r[0]==='WEIGHT'?[B('inches','인치 (inches)'),B('gallons','갤런 (gallons)')]:[B('inches','인치 (inches)'),B('pounds','파운드 (pounds)')])])];
- if(lv>1&&rnd(2)){const a=2+rnd(8),b=1+rnd(8);return q(B(`A ribbon is ${a} inches long. Add ${b} more inches. How many inches long is it now?`,`리본 길이가 ${a}인치예요. ${b}인치를 더 이으면 모두 몇 인치가 될까요?`),'',a+b,[a+b+1,Math.abs(a-b)]);}
+ if(lv>1&&rnd(2)){const a=2+rnd(8),b=1+rnd(8);return q(B(`A ribbon is ${a} inches long, and you add ${b} more inches. How long is it now?`,`리본 길이가 ${a}인치예요. ${b}인치를 더 이으면 모두 몇 인치가 될까요?`),'',a+b,[a+b+1,Math.abs(a-b)]);}
  const r=pick(rows);return {ask:r[0],opts:opts(r[1],r.slice(2)),cls:'words g3-geometry-options',after:r[1]};
 });
 reg('graph3','Data Stories','자료 이야기','3.MDR.5.1',lv=>{

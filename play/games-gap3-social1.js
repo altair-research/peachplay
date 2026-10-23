@@ -23,9 +23,9 @@
   ];
   const sourceQuestion = pair('Which record is from someone who was there?', '현장에 있던 사람이 남긴 기록은?');
   const laterMedia = [pair('diary', '일기'), pair('book', '책'), pair('letter', '편지'), pair('photo essay', '사진 해설'), pair('recording', '녹음'), pair('book', '책'), pair('news', '기사'), pair('report', '보고서'), pair('picture book', '그림책'), pair('notes', '메모'), pair('video', '영상'), pair('book', '책')];
-  const summary = pair('Another writer · two years later', '다른 글쓴이 · 두 해 뒤');
-  const explanation = pair('I compared this record with other old records.', '이 기록과 다른 옛 기록을 비교했어요.');
-  const shortened = pair('I shortened the later writer’s text.', '후대 글쓴이의 글을 줄였어요.');
+  const summary = pair('✍️ 2 years later', '✍️ 두 해 뒤');
+  const explanation = pair('I compared old records.', '옛 기록들을 비교했어요.');
+  const shortened = pair('I shortened that text.', '그 글을 줄였어요.');
   const speech = text => say(text, S.lang === 'ko' ? 'ko-KR' : 'en-US');
   function bindAudio(lines) {
     document.querySelectorAll('[data-g3s-read]').forEach(btn => {
@@ -39,7 +39,7 @@
     play() {
       const s = pick(sources), level2 = lvl(this.id) === 2;
       const media = laterMedia[sources.indexOf(s)];
-      const later = pair(`Historian: ${media.en}, next year`, `역사 글쓴이: 다음 해 ${media.ko}`);
+      const later = pair(`✍️ ${media.en}, next year`, `✍️ 다음 해 ${media.ko}`);
       const ordered = shuffle([
         {kind: 0, maker: s[1], text: s[2]},
         {kind: 1, maker: later, text: explanation},
@@ -51,7 +51,7 @@
       const lines = ordered.map((c, i) => `${letters[i]}. ${L(c.maker)}. ${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}`);
       quiz(this, {
         ask: level2 ? s[3] : sourceQuestion,
-        show: `<section class="g3s-stage"><div class="g3s-heading">${L(fiction)} · ${L(s[0])}</div><div class="g3s-records">${ordered.map((c, i) => `<article class="g3s-record"><strong>${letters[i]} · ${L(c.maker)}</strong><span>${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}</span><button class="say" data-g3s-read="${i}" aria-label="${L(listen)} ${letters[i]}">🔊</button></article>`).join('')}</div></section>`,
+        show: `<section class="g3s-stage"><div class="g3s-heading" aria-label="${L(fiction)}">${L(pair('Made-up', '가상'))} · ${L(s[0])}</div><div class="g3s-records">${ordered.map((c, i) => `<article class="g3s-record"><strong>${letters[i]} · ${L(c.maker)}</strong><span>${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}</span><button class="say" data-g3s-read="${i}" aria-label="${L(listen)} ${letters[i]}">🔊</button></article>`).join('')}</div></section>`,
         opts: ordered.map((c, i) => ({html: `<span class="word">${letters[i]}</span>`, ok: c.kind === target, category: 'record-card'})),
         cls: 'g3s-options',
         after: target === 0 ? pair('This person made a record of their own visit.', '직접 겪은 사람이 남긴 기록이에요.') : pair('This writer compared older records.', '옛 기록을 비교해서 쓴 글이에요.'),

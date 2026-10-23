@@ -71,7 +71,7 @@
     if(lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
     const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:['never','between','these','Many','during','between','until','difference','Despite','nobody']};
     const alternatives=lv===2?[t[1],(contextWrong[grade]||[])[index]||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
-    return { ask: B('Read. Choose a spelling.', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
+    return { ask: B('Which spelling is right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
       askExtra: { t: sentence.replace('___', 'blank'), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], alternatives), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
   });
@@ -95,7 +95,9 @@
     const index = rnd(oppositePairs.length), source = oppositePairs[index], pair = lv === 2 ? [...source].reverse() : source;
     const nearby = {hot:['warm','cool'],cold:['cool','warm'],up:['across','along'],down:['across','along'],big:['medium','huge'],small:['medium','tiny'],open:['ajar','wide'],closed:['ajar','narrow'],day:['dawn','noon'],night:['dawn','dusk'],full:['half-full','almost full'],empty:['half-full','almost empty'],wet:['damp','soaked'],dry:['damp','slightly wet'],near:['nearby','next to'],far:['farther','distant'],fast:['quick','steady'],slow:['steady','slower'],soft:['smooth','fluffy'],hard:['firm','rough'],in:['beside','near'],out:['beside','near'],on:['dim','bright'],off:['dim','bright']};
     if(grade==='1'&&lv===2){const other=pick(oppositePairs.filter(x=>x!==source)),right=pair[1]+' → '+other[1];return {ask:B('Which pair gives the opposites in order?','차례로 반대 뜻인 낱말의 짝은?'),show:passage(pair[0]+' → '+other[0]),askExtra:{t:pair[0]+', '+other[0],lang:'en-US'},opts:choices(right,[other[1]+' → '+pair[1],pair[1]+' → '+other[0]]),cls:'words'};}
-    const ds = nearby[pair[0]];
+    // 70b: K distractors are everyday words (no ajar/dusk/soaked) that are clearly not opposites.
+    const kNearby = {hot:['warm','sunny'],cold:['cool','icy'],up:['high','top'],down:['low','under'],big:['huge','tall'],small:['tiny','little'],open:['wide','big'],closed:['shut','locked'],day:['morning','sunny'],night:['dark','moon'],full:['lots','heavy'],empty:['little','light'],wet:['rainy','muddy'],dry:['sunny','hot'],near:['close','here'],far:['away','long'],fast:['quick','running'],slow:['late','tired'],soft:['fluffy','warm'],hard:['stiff','strong'],in:['inside','into'],out:['away','outside'],on:['bright','up'],off:['dark','down']};
+    const ds = (grade === 'K' ? kNearby : nearby)[pair[0]];
     return { ask: B(`Which word means the opposite of "${pair[0]}"?`, `"${pair[0]}"와 반대 뜻인 낱말을 골라요.`),
       askExtra: { t: pair[0], lang: 'en-US' }, opts: choices(pair[1], ds), cls: 'words', after: B(`${pair[0]} ↔ ${pair[1]}`, `${pair[0]} ↔ ${pair[1]}`) };
   });
@@ -107,38 +109,68 @@
     onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(text, 'en-US'); }
   });
   for (const grade of ['K', '1']) add('adstory' + grade, grade, B('Tiny Story Details', '짧은 이야기 살펴봐요'), B('Comprehension: Literature', '이해: 이야기'), lv => {
-    const name = pick(names), obj = pick(objects), ds = shuffle(objects.filter(o => o !== obj)).slice(0, 2).map(o => o[0]);
-    const text = lv === 1 ? `${name} has a ${obj[0]}. ${name} takes it home.` : `${name} cannot find a ${obj[0]}. It is under the bed. ${name} picks it up.`;
-    return textRound(text, B(`What does ${name} ${lv === 1 ? 'have' : 'find'}?`, `이야기에서 ${lv === 1 ? '가지고 있는' : '찾은'} 물건을 골라요.`), obj[0], ds, B(`The story tells us: ${obj[0]}.`, `이야기에 나온 물건을 확인해요: ${obj[0]}.`));
+    const name = pick(names), obj = pick(objects), others = shuffle(objects.filter(o => o !== obj)).slice(0, 2);
+    // 70b: two short sentences; L2 names a second object, so the child must tell "sees" from "finds".
+    const text = lv === 1 ? `${name} has a ${obj[0]}. ${name} takes it home.` : `${name} sees a ${others[0][0]}. ${name} finds a ${obj[0]}.`;
+    const round = textRound(text, B(`What does ${name} ${lv === 1 ? 'have' : 'find'}?`, `이야기에서 ${lv === 1 ? '가지고 있는' : '찾은'} 물건을 골라요.`), obj[0], others.map(o => o[0]), B(`The story tells us: ${obj[0]}.`, `이야기에 나온 물건을 확인해요: ${obj[0]}.`));
+    round.opts = [obj, ...others].map((o, i) => ({ html: `<span class="word">${o[1]} ${o[0]}</span>`, ok: i === 0 }));
+    return round;
   });
   add('adstoryorderK', 'K', B('First and Next', '처음과 다음'), B('Comprehension: Literature', '이해: 이야기'), lv => {
     const name = pick(names), obj = pick(objects);
-    const text = `${name} finds a ${obj[0]}. Then ${name} puts it in a box.`;
-    const first = B('Finds it', '물건을 찾아요'), next = B('Puts it in a box', '상자에 넣어요');
-    return textRound(text, lv === 1 ? B('What happens first?', '먼저 일어난 일을 골라요.') : B('What happens next?', '그다음 일어난 일을 골라요.'), lv === 1 ? first : next, [lv === 1 ? next : first, B('Goes to sleep', '잠을 자요')], B(text, text));
+    const text = `${name} finds a ${obj[0]}. ${name} packs it away.`;
+    const first = B('🔍 Finds it', '🔍 찾아요'), next = B('📦 Packs it', '📦 넣어 둬요');
+    return textRound(text, lv === 1 ? B('What happens first?', '먼저 일어난 일을 골라요.') : B('What happens next?', '그다음 일어난 일을 골라요.'), lv === 1 ? first : next, [lv === 1 ? next : first, B('😴 Sleeps', '😴 자요')], B(text, text));
   });
-  const instructions = [
-    ['Draw a sun', 'Get paper', 'Draw a circle', 'Add rays'], ['Pack a bag', 'Open the bag', 'Put a book inside', 'Close the bag'],
-    ['Build a tower', 'Get blocks', 'Stack the blocks', 'Put a flag on top'], ['Make a card', 'Fold paper', 'Draw a heart', 'Write your name'],
-    ['Set a table', 'Get a plate', 'Put it on the table', 'Add a spoon'], ['Wrap a gift', 'Get paper', 'Cover the gift', 'Add a bow'],
-    ['Make a bookmark', 'Cut a paper strip', 'Draw a star', 'Color the star'], ['Plant a pretend flower', 'Get a paper cup', 'Put a paper stem inside', 'Add a paper flower'],
-    ['Make a paper crown', 'Get a paper strip', 'Draw jewels', 'Join the ends'], ['Make a puppet', 'Get a paper bag', 'Draw a face', 'Add paper ears']
+  // 70b: picture step cards with two-word labels, so K children can use the pictures and read-aloud
+  // instead of decoding a full procedure. [title, title picture, steps [picture, short label, spoken form]].
+  const projects = [
+    ['Sun', '🌞', [['📄', 'Get paper', 'get paper'], ['⭕', 'Draw circle', 'draw a circle'], ['✏️', 'Add rays', 'add rays']]],
+    ['Bag', '🎒', [['👐', 'Open it', 'open the bag'], ['📖', 'Add book', 'put a book inside'], ['🤐', 'Zip it', 'zip the bag']]],
+    ['Tower', '🏰', [['🧱', 'Get blocks', 'get blocks'], ['⬆️', 'Stack blocks', 'stack the blocks'], ['🚩', 'Add flag', 'put a flag on top']]],
+    ['Card', '💌', [['📄', 'Fold paper', 'fold paper'], ['❤️', 'Draw heart', 'draw a heart'], ['✍️', 'Write name', 'write your name']]],
+    ['Table', '🍴', [['⚪', 'Get plate', 'get a plate'], ['🥤', 'Add cup', 'add a cup'], ['🥄', 'Add spoon', 'add a spoon']]],
+    ['Gift', '🎁', [['📄', 'Get paper', 'get paper'], ['📦', 'Cover box', 'cover the box'], ['🎀', 'Add bow', 'add a bow']]],
+    ['Bookmark', '🔖', [['✂️', 'Cut strip', 'cut a paper strip'], ['⭐', 'Draw star', 'draw a star'], ['🖍️', 'Color star', 'color the star']]],
+    ['Plant', '🌱', [['🏺', 'Get pot', 'get a pot'], ['🟫', 'Add soil', 'add soil'], ['🌰', 'Add seed', 'add a seed']]],
+    ['Crown', '👑', [['✂️', 'Cut strip', 'cut a paper strip'], ['💎', 'Draw jewels', 'draw jewels'], ['🔗', 'Join ends', 'join the ends']]],
+    ['Puppet', '🧦', [['🛍️', 'Get bag', 'get a paper bag'], ['🙂', 'Draw face', 'draw a face'], ['👂', 'Add ears', 'add paper ears']]],
+    ['Fish', '🐟', [['📄', 'Get paper', 'get paper'], ['🥚', 'Draw oval', 'draw an oval'], ['✏️', 'Add tail', 'add a tail']]],
+    ['Chain', '⛓️', [['✂️', 'Cut strips', 'cut paper strips'], ['⭕', 'Make loop', 'make a loop'], ['➕', 'Add loop', 'add another loop']]]
   ];
-  const kInstructions = [...instructions,
-    ['Draw a fish', 'Get paper', 'Draw an oval', 'Add a tail'],
-    ['Make a paper chain', 'Get paper strips', 'Make a loop', 'Add another loop']];
+  // Finishing steps from projects where they clearly do not fit (index into projects).
+  const wrongFinish = [[4, 1], [0, 10], [9, 4], [4, 1], [0, 9], [10, 4], [4, 1], [5, 0], [4, 10], [4, 1], [4, 1], [9, 4]];
+  const stepHtml = s => `<span class="word">${s[0]} ${s[1]}</span>`;
+  const stepChoices = (right, wrongs) => [right, ...wrongs].map((s, i) => ({ html: stepHtml(s), ok: i === 0 }));
+  const stepCards = (steps, words) => `<div class="storytext" lang="en" style="font-size:clamp(17px,3.1dvh,23px);line-height:1.5">${steps.map((s, i) =>
+    `<span style="display:inline-block;margin:.1em .45em;white-space:nowrap">${words ? `<b>${words[i]}</b> ` : ''}<span aria-hidden="true">${s[0]}</span> ${s[1]}</span>`).join('')}</div>`;
+  const spoken = steps => `First, ${steps[0][2]}. Next, ${steps[1][2]}. Last, ${steps[2][2]}.`;
+  const stepRound = (ask, show, sayText, right, wrongs, after) => ({ ask, show, opts: stepChoices(right, wrongs), cls: 'words', after,
+    onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sayText, 'en-US'); } });
   for (const grade of ['K', '1']) add('adinfo' + grade, grade, B('Read the Steps', '순서 글을 읽어요'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const t = pick(kInstructions);
-    const text = `${t[0]}: First, ${t[1].toLowerCase()}. Next, ${t[2].toLowerCase()}. Last, ${t[3].toLowerCase()}.`;
-    if(grade==='1'&&lv===2){const q=textRound(text,B('Which pair is step 2 → step 3?','2번 → 3번의 짝은?'),t[2]+' → '+t[3],[t[3]+' → '+t[2],t[1]+' → '+t[3]],B('Steps 2, then 3.','2번 다음 3번이에요.'));return {...q,show:passage(`${t[0]}<br>1. ${t[1]}<br>2. ${t[2]}<br>3. ${t[3]}`),cls:'words sents'};}
-    const step = lv === 1 ? 1 : 3;
-    return textRound(text, lv === 1 ? B('What is the first step?', '첫 번째 할 일을 골라요.') : B('What is the last step?', '마지막 할 일을 골라요.'), t[step], t.slice(1).filter((_, i) => i + 1 !== step), B(text, text));
+    const [title, , steps] = pick(projects), text = spoken(steps);
+    if (grade === '1' && lv === 2) {
+      const pair = (a, b) => ({ html: `<span class="word" aria-label="${a[1]}, then ${b[1]}">${a[0]} → ${b[0]}</span>` });
+      return { ask: B('Which pair is step 2 → step 3?', '2번 → 3번의 짝은?'), show: stepCards(steps, ['1)', '2)', '3)']),
+        opts: [pair(steps[1], steps[2]), pair(steps[2], steps[1]), pair(steps[0], steps[2])].map((o, i) => ({ ...o, ok: i === 0 })), cls: 'words',
+        after: B('Steps 2, then 3.', '2번 다음 3번이에요.'), onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(text, 'en-US'); } };
+    }
+    if (grade === '1') return stepRound(B('What is the first step?', '첫 번째 할 일을 골라요.'), passage(text), text, steps[0], [steps[1], steps[2]], B(text, text));
+    // K L1 finds the first step from First/Next/Last cards; L2 uses the order relation "after".
+    const show = stepCards(steps, ['First', 'Next', 'Last']);
+    return lv === 1
+      ? stepRound(B('What is the first step?', '첫 번째 할 일을 골라요.'), show, text, steps[0], [steps[1], steps[2]], B(text, text))
+      : stepRound(B(`What comes after "${steps[1][1]}"?`, `"${steps[1][1]}" 다음에 할 일은?`), show, text, steps[2], [steps[0], steps[1]], B(text, text));
   });
   add('adinfotopicK', 'K', B('What Do the Steps Make?', '무엇을 만드는 글일까요?'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const t = pick(kInstructions);
-    const text = lv === 1 ? `${t[1]}. ${t[2]}. ${t[3]}.` : `${t[1]}. ${t[2]}. What should you do next to finish?`;
-    const ds = shuffle(kInstructions.filter(x => x !== t)).slice(0, 2).map(x => x[0]);
-    return textRound(text, lv === 1 ? B('Which title matches these steps?', '이 순서 글에 맞는 제목을 골라요.') : B('Which step finishes this project?', '이 만들기를 마치려면 무엇을 해야 할까요?'), lv === 1 ? t[0] : t[3], lv === 1 ? ds : [t[1], t[2]], B(t[0], t[0]));
+    const index = rnd(projects.length), [title, picture, steps] = projects[index];
+    if (lv === 1) {
+      const ds = shuffle(projects.filter((_, j) => j !== index)).slice(0, 2);
+      return stepRound(B('What do these steps make?', '이 순서로 무엇을 만들까요?'), stepCards(steps), spoken(steps), [picture, title], ds.map(x => [x[1], x[0]]), B(title, title));
+    }
+    // L2: infer the missing finishing step from the first two steps.
+    const shown = steps.slice(0, 2).concat([['❓', '?', '']]);
+    return stepRound(B('What step comes next?', '다음에 할 일은?'), stepCards(shown), `First, ${steps[0][2]}. Next, ${steps[1][2]}. What comes last?`, steps[2], wrongFinish[index].map(j => projects[j][2][2]), B(`${title}: ${steps[2][1]}`, `${title}: ${steps[2][1]}`));
   });
 })();
 // K-only round selection. Identity ignores distractors/order; keep the last nine

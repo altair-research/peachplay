@@ -16,7 +16,7 @@ registerGame({
   id: 'quantity', subject: 'math', icon: '🎲', title: B('Show Me the Number', '수만큼 찾기'), sub: B('Match numbers to dots', '숫자와 점 짝 맞추기'),
   area: AREA_MATH('Counting & cardinality'),
   play() {
-    if(lvl('quantity')===2){const a=1+rnd(4),b=1+rnd(5),n=a+b;quiz(this,{ask:B(`There are ${n} dots altogether. How many are hidden?`,`점은 모두 ${n}개예요. 가린 점은 몇 개일까요?`),show:tfSvg(a)+' + ?',opts:[b,b+1,b===1?3:b-1].map(v=>({html:tfSvg(v),ok:v===b})),cls:'groups'});return;}
+    if(lvl('quantity')===2){const a=1+rnd(4),b=1+rnd(5),n=a+b;quiz(this,{ask:B(`Which dots make ${n} in all?`,`모두 ${n}개가 되게 하는 점은?`),askSay:B(`There are ${n} dots in all. Which picture shows the hidden dots?`,`점은 모두 ${n}개예요. 가린 점은 어느 그림일까요?`),show:tfSvg(a)+` + ? = <span class="num">${n}</span>`,opts:[b,b+1,b===1?3:b-1].map(v=>({html:tfSvg(v),ok:v===b})),cls:'groups'});return;}
     const lv = lvl('quantity'), n = lv === 1 ? 1 + rnd(8) : 3 + rnd(8), set = new Set([n]);
     while (set.size < 3) { const v = n + pick([-2, -1, 1, 2]); if (v >= 1 && v <= 10) set.add(v); }
     const maker = (v) => { const kinds = [() => tfSvg(v), () => scatterSvg(v)]; if (v <= 6) kinds.push(() => diceSvg(v)); return pick(kinds)(); };
@@ -44,7 +44,8 @@ registerGame({
     let a, b, ans;
     if (back) { a = 3 + rnd(8); b = 1 + rnd(Math.min(3, a)); ans = a - b; } else { a = rnd(8); b = 1 + rnd(Math.min(lv === 1 ? 3 : 5, 10 - a)); ans = a + b; }
     quiz(this, {
-      ask: back ? B(`The frog is on ${a}. Hop ${b} back. Where does it land?`, `개구리는 ${a}에 있어요. 뒤로 ${b}칸 뛰면 어디에 도착할까요?`) : B(`The frog is on ${a}. Hop ${b} forward. Where does it land?`, `개구리는 ${a}에 있어요. 앞으로 ${b}칸 뛰면 어디에 도착할까요?`),
+      ask: back ? B(`The frog hops ${b} back—where does it land?`, `개구리가 뒤로 ${b}칸 뛰면 어디일까요?`) : B(`The frog hops ${b} forward—where does it land?`, `개구리가 앞으로 ${b}칸 뛰면 어디일까요?`),
+      askSay: back ? B(`The frog is on ${a}. It hops ${b} back. Where does it land?`, `개구리는 ${a}에 있어요. 뒤로 ${b}칸 뛰면 어디에 도착할까요?`) : B(`The frog is on ${a}. It hops ${b} forward. Where does it land?`, `개구리는 ${a}에 있어요. 앞으로 ${b}칸 뛰면 어디에 도착할까요?`),
       show: nlSvg(a), opts: numOpts(ans, 0, 10), after: back ? B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`) : B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`),
       onCorrect() { $('.show').innerHTML = nlSvg(ans, a); }
     });
@@ -59,7 +60,7 @@ registerGame({
   id: 'clock', subject: 'math', icon: '🕒', title: B('What Time Is It?', '몇 시일까?'), sub: B("O'clock times", '정각 읽기'),
   area: AREA_MATH('Time (enrichment)'),
   play() {
-    if(lvl('clock')===2){const h=1+rnd(12),step=1+rnd(2),a=(h+step-1)%12+1;quiz(this,{ask:B(`The clock shows the start. What time is ${step} hour${step>1?'s':''} later?`,`시계는 시작 시각이에요. ${step}시간 뒤는 몇 시일까요?`),show:clockSvg(h),opts:[a,h,(h-step+11)%12+1].map(v=>({html:`<span class="num eq">${v}:00</span>`,ok:v===a})),cls:'shapes'});return;}
+    if(lvl('clock')===2){const h=1+rnd(12),step=1+rnd(2),a=(h+step-1)%12+1;quiz(this,{ask:B(`What time is it ${step} hour${step>1?'s':''} later?`,`${step}시간 뒤는 몇 시일까요?`),askSay:B(`Look at the clock. What time is it ${step} hour${step>1?'s':''} later?`,`시계를 보세요. ${step}시간 뒤는 몇 시일까요?`),show:clockSvg(h),opts:[a,h,(h-step+11)%12+1].map(v=>({html:`<span class="num eq">${v}:00</span>`,ok:v===a})),cls:'shapes'});return;}
     const h = 1 + rnd(12), set = new Set([h]); while (set.size < (lvl('clock') === 2 ? 4 : 3)) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
     quiz(this, {
       ask: B('What time does the clock show?', '시계가 가리키는 시각은?'), show: clockSvg(h),
@@ -77,7 +78,7 @@ registerGame({
   play() {
     if (rnd(2) === 0 && lvl('days') === 2 || rnd(3) === 0) {                         // seasons
       const t = pick(SEASONS), ds = others(SEASONS, t, 2), o = (s) => ({ html: `<span class="emo">${s[2]}</span>`, label: B(s[0], s[1]), ok: s === t });
-      quiz(this, { ask: B(`Which season is this? ${L(t[3])}`, `어느 계절일까요? ${L(t[3])}`), opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`It is ${t[0]}!`, `${t[1]}이에요!`), vocab: t[0] });
+      quiz(this, { ask: B('Which season is this?', '어느 계절일까요?'), askSay: B(`${t[3].en} Which season is this?`, `${t[3].ko} 어느 계절일까요?`), show: `<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(t[3])}</div>`, opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`It is ${t[0]}!`, `${t[1]}이에요!`), vocab: t[0] });
       return;
     }
     const i = rnd(7), kind = pick(lvl('days') === 1 ? ['after', 'after', 'weekend'] : ['after', 'before', 'weekend']);
@@ -126,10 +127,23 @@ registerGame({
   id: 'opposites', subject: 'read', icon: '↔️', title: B('Opposites', '반대말'), sub: B('Hot and cold, up and down', '뜨겁다와 차갑다'),
   area: AREA_READ('Vocabulary'),
   play() {
-    const rows=[['hot','cold','warm','뜨거운','차가운','따뜻한'],['big','small','medium','큰','작은','중간 크기의'],['up','down','sideways','위','아래','옆'],['wet','dry','damp','젖은','마른','축축한'],['fast','slow','steady','빠른','느린','일정한 속도의'],['open','closed','ajar','열린','닫힌','조금 열린'],['tall','short','medium-height','키 큰','키 작은','중간 키의'],['full','empty','half-full','가득 찬','빈','반쯤 찬'],['heavy','light','medium-weight','무거운','가벼운','중간 무게의'],['loud','quiet','medium-volume','큰 소리의','조용한','중간 소리의'],['near','far','midway','가까운','먼','중간 거리의'],['inside','outside','at the doorway','안','밖','문 앞']];
-    const r=pick(rows),lv=lvl('opposites'),target=lv===1?1:0;
-    const scenes=['The soup was cold. We heated it until it was ___.','The small bag filled up. We chose a ___ one to hold more.','The arrow pointed down. We turned it to point ___.','The dry towel went into water and became ___.','The slow toy was adjusted to move ___.','The closed lid was lifted until it was ___.','The short pole was replaced by a ___ one to reach the shelf.','The empty cup was filled until it was ___.','The light load was replaced by a ___ one that took more effort to lift.','The quiet speaker was turned up until it was ___.','The far chair was moved ___ to the table.','We were outside. We stepped through the door to go ___.'];
-    quiz(this,{ask:lv===1?B(`Which word is opposite to ${r[0]}?`,`영어 낱말 ${r[0]}의 반대말을 골라요.`):B('Choose the opposite change that completes the story.','상황에서 반대로 달라진 모습을 나타내는 영어 낱말을 골라요.'),show:lv===1?'':`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${scenes[rows.indexOf(r)]}</div>`,opts:r.slice(0,3).map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===target})),cls:'words'});
+    // [word, opposite, look-alike for L1, picture, story where the opposite is the missing word (L2), other-pair word for L2]
+    const rows=[
+     ['hot','cold','warm','🔥',B('The cold soup was heated. Now it is ___.','차가운 수프를 데웠어요. 이제 수프는 ___.'),'slow'],
+     ['big','small','huge','🐘',B('The small balloon got more air. Now it is ___.','작은 풍선에 바람을 더 넣었어요. 이제 ___.'),'quiet'],
+     ['up','down','high','⬆️',B('The kite was down. The wind lifted it ___.','연이 아래에 있었어요. 바람이 연을 ___ 올렸어요.'),'small'],
+     ['wet','dry','rainy','💧',B('The dry towel fell in the bath. Now it is ___.','마른 수건이 욕조에 빠졌어요. 이제 ___.'),'tall'],
+     ['fast','slow','quick','🐇',B('The slow toy car got new wheels. Now it is ___.','느린 장난감 차에 새 바퀴를 달았어요. 이제 ___.'),'quiet'],
+     ['open','closed','wide','📖',B('I pushed the closed door. Now it is ___.','닫힌 문을 밀었어요. 이제 문이 ___.'),'full'],
+     ['tall','short','big','🦒',B('The short plant grew and grew. Now it is ___.','키 작은 식물이 쑥쑥 자랐어요. 이제 ___.'),'empty'],
+     ['full','empty','heavy','🥛',B('The empty cup got milk to the top. Now it is ___.','빈 컵에 우유를 가득 부었어요. 이제 컵이 ___.'),'slow'],
+     ['heavy','light','big','🎒',B('I put books in my light bag. Now it is ___.','가벼운 가방에 책을 넣었어요. 이제 가방이 ___.'),'short'],
+     ['loud','quiet','noisy','📢',B('I turned up the quiet music. Now it is ___.','조용한 음악 소리를 키웠어요. 이제 ___.'),'wet'],
+     ['near','far','close','🏠',B('We walked to the far park. Now it is ___.','먼 공원까지 걸어갔어요. 이제 공원이 ___.'),'tall'],
+     ['inside','outside','under','🏡',B('We were outside. Rain came, so we went ___.','밖에 있었어요. 비가 와서 ___ 들어갔어요.'),'empty']];
+    const r=pick(rows),lv=lvl('opposites');
+    if(lv===1){quiz(this,{ask:B(`Which word is opposite to ${r[0]}?`,`영어 낱말 ${r[0]}의 반대말은?`),askExtra:{t:r[0],lang:'en-US'},show:`<div class="bigword"><span class="emo" role="img" aria-label="${r[0]}">${r[3]}</span> ${r[0]}</div>`,opts:r.slice(0,3).map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===1})),cls:'words',vocab:`${r[0]} – ${r[1]}`});return;}
+    quiz(this,{ask:B('Which opposite word finishes the story?','이야기를 끝내는 반대말 영어 낱말은?'),askSay:B(`${r[4].en.replace('___','blank')} Which opposite word finishes the story?`,`${r[4].ko.replace('___','빈칸')} 이야기를 끝내는 반대말 영어 낱말은?`),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(r[4])}</div>`,opts:[r[0],r[1],r[5]].map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===0})),cls:'words'});
   }
 });
 
@@ -138,7 +152,7 @@ registerGame({
   id: 'endsound', subject: 'read', icon: '🔚', title: B('Last Sound', '끝소리 찾기'), sub: B('cat ends with t', 'cat은 t로 끝나요'),
   area: AREA_READ('Phonemic awareness'),
   play() {
-    if(lvl('endsound')===2){const words=['cat','hat','bat','mat','dog','log','fog','pig','wig','sun','run','fan','pen','hen','bus','gas','cup','map','cap','bed','red','mud','duck','back','rock'].map(w=>[w]),w=pick(words),last=w[0].slice(-1),good=pick(words.filter(x=>x!==w&&x[0].endsWith(last))),wrong=shuffle(words.filter(x=>!x[0].endsWith(last))).slice(0,2);quiz(this,{ask:B(`Which word ends with the same sound as ${w[0]}?`,`영어 낱말 ${w[0]}와 끝소리가 같은 낱말을 골라요.`),opts:[good,...wrong].map(x=>({html:`<span class="word">${x[0]}</span>`,ok:x===good})),cls:'words'});return;}
+    if(lvl('endsound')===2){const words=['cat','hat','bat','mat','dog','log','fog','pig','wig','sun','run','fan','pen','hen','bus','gas','cup','map','cap','bed','red','mud','duck','back','rock'].map(w=>[w]),w=pick(words),last=w[0].slice(-1),good=pick(words.filter(x=>x!==w&&x[0].endsWith(last))),wrong=shuffle(words.filter(x=>!x[0].endsWith(last))).slice(0,2);quiz(this,{ask:B(`Which word ends like ${w[0]}?`,`${w[0]}와 끝소리가 같은 낱말은?`),askExtra:{t:w[0],lang:'en-US'},opts:[good,...wrong].map(x=>({html:`<span class="word">${x[0]}</span>`,ok:x===good})),cls:'words'});return;}
     const w = pick(CVC), last = w[0][w[0].length - 1], ds = others(ALPHA.filter(c => c !== last), '', lvl('endsound') === 2 ? 3 : 2);
     quiz(this, {
       ask: B(`Which letter does "${w[0]}" end with?`, `"${w[0]}"는 어떤 글자로 끝날까요?`), askSay: B(`Which letter does the word end with?`, `이 단어는 어떤 글자로 끝날까요?`), askExtra: { t: w[0], lang: 'en-US' },
@@ -183,13 +197,13 @@ registerGame({
 // ---------- 10. Color mixing ----------
 const CDOT = (c) => `<span class="cdot" style="background:${c}"></span>`;
 const MIX = [['#e63946', '#ffd166', '#ff8c42', B('red', '빨강'), B('yellow', '노랑'), B('orange', '주황')], ['#118ab2', '#ffd166', '#2dc653', B('blue', '파랑'), B('yellow', '노랑'), B('green', '초록')],
-  ['#e63946', '#118ab2', '#8338ec', B('red', '빨강'), B('blue', '파랑'), B('purple', '보라')], ['#e63946', '#ffffff', '#ffb3c1', B('red', '빨강'), B('white', '하양'), B('pink', '분홍')], ['#118ab2', '#ffffff', '#a8dadc', B('blue', '파랑'), B('white', '하양'), B('light blue', '하늘색')]];
+  ['#e63946', '#118ab2', '#8338ec', B('red', '빨강'), B('blue', '파랑'), B('purple', '보라')], ['#e63946', '#ffffff', '#ffb3c1', B('red', '빨강'), B('white', '하양'), B('pink', '분홍')], ['#118ab2', '#ffffff', '#a8dadc', B('blue', '파랑'), B('white', '하양'), B('sky-blue', '하늘색')]];
 registerGame({
   id: 'colors', subject: 'sci', icon: '🎨', title: B('Mix the Colors', '색 섞기'), sub: B('Red + yellow = ?', '빨강 + 노랑 = ?'),
   area: AREA_SCI('Colors & art'),
   play() {
     const t = pick(MIX), ds = others(MIX, t, 2), o = (m, ok) => ({ html: CDOT(m[2]), label: m[5], ok });
-    quiz(this, { ask: B(`What color do you get when you mix ${t[3].en} and ${t[4].en}?`, `${t[3].ko}과 ${t[4].ko}을 섞으면 무슨 색이 될까요?`), show: `<div class="mixrow">${CDOT(t[0])}<span class="op">+</span>${CDOT(t[1])}<span class="op">=</span><span class="qbox">?</span></div>`,
+    quiz(this, { ask: B(`${t[3].en[0].toUpperCase() + t[3].en.slice(1)} and ${t[4].en} make what color?`, `${t[3].ko}과 ${t[4].ko}을 섞으면 무슨 색?`), show: `<div class="mixrow">${CDOT(t[0])}<span class="op">+</span>${CDOT(t[1])}<span class="op">=</span><span class="qbox">?</span></div>`,
       opts: [o(t, true), ...ds.map(m => o(m, false))], cls: 'shapes', after: B(`${t[3].en} and ${t[4].en} make ${t[5].en}!`, `${t[3].ko}과 ${t[4].ko}을 섞으면 ${t[5].ko}!`), vocab: t[5].en, onCorrect() { $('.mixrow .qbox').outerHTML = CDOT(t[2]); } });
   }
 });
@@ -248,7 +262,7 @@ registerGame({
     const t = pick(MIX), i = rnd(2), shown = 1 - i;
     const colors = [...new Map(MIX.flatMap(m => [[m[0], m[3]], [m[1], m[4]]])).entries()];
     const wrong = shuffle(colors.filter(c => c[0] !== t[i])).slice(0, 2);
-    quiz(this, { ask: B(`Which color belongs in the empty spot? Look at the paint mix.`, `물감 섞기 그림을 보고 빈칸에 들어갈 색을 골라요.`), show: `<div class="mixrow">${CDOT(t[shown])}<span>+</span><span>?</span><span>=</span>${CDOT(t[2])}</div>`, opts: [[t[i], t[i + 3]], ...wrong].map((c, j) => ({ html: CDOT(c[0]), label: c[1], ok: j === 0 })), cls: 'shapes', vocab: t[i + 3].en });
+    quiz(this, { ask: B('Which color fills the empty spot?', '빈칸에 들어갈 색은?'), askSay: B('Look at the paint mix. Which color fills the empty spot?', '물감 섞기 그림을 보세요. 빈칸에 들어갈 색은?'), show: `<div class="mixrow">${CDOT(t[shown])}<span>+</span><span>?</span><span>=</span>${CDOT(t[2])}</div>`, opts: [[t[i], t[i + 3]], ...wrong].map((c, j) => ({ html: CDOT(c[0]), label: c[1], ok: j === 0 })), cls: 'shapes', vocab: t[i + 3].en });
   };
   // A child's stated feeling, rather than an assumed reaction, is the evidence.
   const feeling = GAMES.find(g => g.id === 'feelings');
@@ -268,7 +282,7 @@ registerGame({
   ];
   feeling.play = function () {
     const t = pick(scenes), keys = Object.keys(FEEL);
-    quiz(this, { ask: B('Find the face for the feeling I named.', '말한 기분에 어울리는 얼굴을 찾아요.'), askExtra: { t: L(t[1]) }, show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">${t[0]} ${L(t[1])}</div>`, opts: [t[2], ...others(keys, t[2], lvl('feelings') === 2 ? 3 : 2)].map(k => ({ html: `<span class="emo">${FEEL[k][0]}</span>`, label: FEEL[k][1], ok: k === t[2] })), cls: 'shapes', vocab: FEEL[t[2]][1].en });
+    quiz(this, { ask: B('Find the face for this feeling.', '이 기분에 맞는 얼굴을 찾아요.'), askSay: B(`${t[1].en} Find the face for this feeling.`, `${t[1].ko} 이 기분에 맞는 얼굴을 찾아요.`), show: `<div style="font-size:clamp(16px,3dvh,22px);line-height:1.3">${t[0]} ${L(t[1])}</div>`, opts: [t[2], ...others(keys, t[2], lvl('feelings') === 2 ? 3 : 2)].map(k => ({ html: `<span class="emo" role="img" aria-label="${L(FEEL[k][1])}">${FEEL[k][0]}</span>`, ok: k === t[2] })), cls: 'shapes', after: B(`${FEEL[t[2]][1].en}: ${FEEL[t[2]][0]}`, `${FEEL[t[2]][1].ko}: ${FEEL[t[2]][0]}`), vocab: FEEL[t[2]][1].en });
   };
 })();
 
@@ -292,7 +306,7 @@ registerGame({
  quiz(this,{ask:B('Follow BOTH actions. Which sequence fits?','두 행동을 모두 보고 변화 순서를 골라요.'),show:`<div style="font-size:clamp(16px,3dvh,22px)">${L(r[0])} ${L(stops[i])}</div>`,opts:[endings[i],wrong[i],other[i]].map((x,j)=>({html:`<span class="word">${L(x)}</span>`,ok:j===0})),cls:'words'});
  };
  const feelings=GAMES.find(g=>g.id==='feelings'),original=feelings.play;
- feelings.play=function(){if(lvl(this.id)===1)return original.call(this);const keys=shuffle(Object.keys(FEEL)),a=keys[0],b=keys[1],c=keys[2];quiz(this,{ask:B('Follow the two feelings in order. Which pair of faces fits?','말한 두 기분의 순서에 맞는 얼굴 짝을 골라요.'),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(FEEL[a][1])} → ${L(FEEL[b][1])}</div>`,opts:[[a,b],[b,a],[a,c]].map((ks,i)=>({html:ks.map(k=>`<span class="emo">${FEEL[k][0]}</span>`).join(' → '),ok:i===0})),cls:'shapes'});};
+ feelings.play=function(){if(lvl(this.id)===1)return original.call(this);const keys=shuffle(Object.keys(FEEL)),a=keys[0],b=keys[1],c=keys[2];quiz(this,{ask:B('Which faces match the two feelings?','두 기분에 맞는 얼굴은?'),askSay:B(`First ${FEEL[a][1].en}, then ${FEEL[b][1].en}. Which faces match, in order?`,`먼저 ${FEEL[a][1].ko}, 그다음 ${FEEL[b][1].ko}. 순서에 맞는 얼굴은?`),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(FEEL[a][1])} → ${L(FEEL[b][1])}</div>`,opts:[[a,b],[b,a],[a,c]].map((ks,i)=>({html:ks.map(k=>`<span class="emo" role="img" aria-label="${L(FEEL[k][1])}">${FEEL[k][0]}</span>`).join(' → '),ok:i===0})),cls:'shapes'});};
 })();
 
 // 65: use two existing recipes as joint evidence; no new paint formula.
@@ -300,7 +314,7 @@ registerGame({
  const game=GAMES.find(g=>g.id==='colors'),old=game.play;
  game.play=function(){if(lvl(this.id)===1)return old.call(this);const [a,b]=shuffle(MIX),ia=rnd(2),ib=rnd(2),other=pick(MIX.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.en} → ${y.en}`,`${x.ko} → ${y.ko}`);
  const row=(t,i)=>`${CDOT(t[1-i])} + ? = ${CDOT(t[2])}`;
- quiz(this,{ask:B('Which pair fills the two paint blanks in order?','두 물감 빈칸에 차례로 들어갈 짝은?'),show:`<div class="mixrow">1: ${row(a,ia)}</div><div class="mixrow">2: ${row(b,ib)}</div>`,opts:[pair(a[ia+3],b[ib+3]),pair(a[ia+3],other[5]),pair(other[5],b[ib+3])].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
+ quiz(this,{ask:B('Which two colors fill the blanks?','두 빈칸에 차례로 들어갈 색은?'),askSay:B('Look at paint mix 1, then paint mix 2. Which two colors fill the blanks, in order?','물감 섞기 1과 2를 차례로 보세요. 두 빈칸에 들어갈 색은?'),show:`<div class="mixrow">1: ${row(a,ia)}</div><div class="mixrow">2: ${row(b,ib)}</div>`,opts:[pair(a[ia+3],b[ib+3]),pair(a[ia+3],other[5]),pair(other[5],b[ib+3])].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
  const cause=GAMES.find(g=>g.id==='cause'),prior=cause.play;
  const rows=[
   [B('An uninflated balloon gets air from a pump.','부풀지 않은 풍선에 펌프로 공기를 넣어요.'),B('The air is let out again.','공기를 다시 빼요.'),B('Flat','납작함'),B('Inflated','부풀음'),B('Flat again','다시 납작함')],

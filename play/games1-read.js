@@ -16,13 +16,13 @@ G1R({
     const kind = lvl('sylplay')===2?'swap':pick(['delete', 'delete', 'add', 'swap']), c = pick(COMPOUNDS), [w, a, b, e] = c;
     if (kind === 'delete') {
       const first = rnd(2) === 0, ans = first ? b : a, drop = first ? a : b, ds = shuffle([...new Set(COMPOUNDS.flatMap(x => [x[1], x[2]]).filter(p => p !== ans && p !== drop && p !== a && p !== b))]).slice(0, 2);
-      quiz(this, { ask: B(`Say "${w}". Now take away "${drop}". What is left?`, `"${w}" 낱말을 말해 봐요. 여기서 "${drop}" 소리를 빼면 무엇이 남을까요?`), show: `<div class="bigword">${e} ${w}</div>`, opts: wordOpts(ans, ds), cls: 'words', after: B(`${w} without ${drop} is ${ans}.`, `${w}에서 ${drop} 부분을 빼면 ${ans}.`), vocab: ans });
+      quiz(this, { ask: B(`Say "${w}" without "${drop}": what is left?`, `"${w}"에서 "${drop}" 소리를 빼면?`), show: `<div class="bigword">${e} ${w}</div>`, opts: wordOpts(ans, ds), cls: 'words', after: B(`${w} without ${drop} is ${ans}.`, `${w}에서 ${drop} 부분을 빼면 ${ans}.`), vocab: ans });
     } else if (kind === 'add') {
       const rev = b + a, ds = [rev, a + a].filter(x => x !== w);
       quiz(this, { ask: B(`Put the word parts together: ${a} + ${b}`, `낱말 조각을 합쳐요: ${a} + ${b}`), show: `<div class="bigword">${a} + ${b} = ?</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(`${a} and ${b} make ${w}!`, `${a} + ${b} = ${w}!`), vocab: w });
     } else {
       const groups = { cake: ['cup', 'pan'], ball: ['foot', 'base', 'basket'], fish: ['star', 'gold', 'jelly'], house: ['dog', 'tree', 'doll'], time: ['bed', 'play', 'lunch'] }, key = pick(Object.keys(groups)), [p, q] = shuffle(groups[key]).slice(0, 2), from = p + key, to = q + key;
-      quiz(this, { ask: B(`Change "${p}" in "${from}" to "${q}". What is the new word?`, `"${from}"에서 "${p}" 부분을 "${q}"(으)로 바꾸면 어떤 낱말이 될까요?`), show: `<div class="bigword">${p}·${key} → ?</div>`, opts: wordOpts(to, [key + q, p + q]), cls: 'words', after: B(`${to}!`, `${to}!`), vocab: to });
+      quiz(this, { ask: B(`Change "${p}" in "${from}" to "${q}": what word?`, `"${from}"의 "${p}"를 "${q}"(으)로 바꾸면?`), show: `<div class="bigword">${p}·${key} → ?</div>`, opts: wordOpts(to, [key + q, p + q]), cls: 'words', after: B(`${to}!`, `${to}!`), vocab: to });
     }
   }
 });
@@ -95,13 +95,13 @@ G1R({
     const lv = lvl('longvowels'), v = pick(Object.keys(VOW)), kind = pick(lv === 1 ? ['findLong', 'findShort', 'sort'] : ['findLong', 'findShort', 'sort', 'magic', 'magic']);
     if (kind === 'findLong' || kind === 'findShort') {
       const wantLong = kind === 'findLong', right = pick(VOW[v][wantLong ? 'long' : 'short']), ds = shuffle(VOW[v][wantLong ? 'short' : 'long']).slice(0, 2);
-      quiz(this, { ask: wantLong ? B(`Which word has the LONG ${v} sound? (it says its name)`, `긴 ${v} 소리가 나는 낱말은? (알파벳 이름처럼 소리가 나요)`) : B(`Which word has the SHORT ${v} sound?`, `짧은 ${v} 소리가 나는 낱말은?`), askSay: wantLong ? B(`Which word has the long ${v} sound?`, `긴 ${v} 소리가 나는 낱말은?`) : B(`Which word has the short ${v} sound?`, `짧은 ${v} 소리가 나는 낱말은?`), opts: [right, ...ds].map((x, i) => picOpt(x[1], x[0], i === 0)), after: B(`${right[0]} has a ${wantLong ? 'long' : 'short'} ${v}.`, `"${right[0]}": ${wantLong ? '긴' : '짧은'} ${v} 소리예요.`), vocab: right[0] });
+      quiz(this, { ask: wantLong ? B(`Which word has the LONG ${v} sound, like its name?`, `알파벳 이름처럼 긴 ${v} 소리가 나는 낱말은?`) : B(`Which word has the SHORT ${v} sound?`, `짧은 ${v} 소리가 나는 낱말은?`), askSay: wantLong ? B(`Which word has the long ${v} sound?`, `긴 ${v} 소리가 나는 낱말은?`) : B(`Which word has the short ${v} sound?`, `짧은 ${v} 소리가 나는 낱말은?`), opts: [right, ...ds].map((x, i) => picOpt(x[1], x[0], i === 0)), after: B(`${right[0]} has a ${wantLong ? 'long' : 'short'} ${v}.`, `"${right[0]}": ${wantLong ? '긴' : '짧은'} ${v} 소리예요.`), vocab: right[0] });
     } else if (kind === 'sort') {
       const long = rnd(2) === 0, w = pick(VOW[v][long ? 'long' : 'short']);
       quiz(this, { ask: B(`Is the ${v} in "${w[0]}" long or short?`, `"${w[0]}"의 ${v}는 긴 소리일까요, 짧은 소리일까요?`), show: `<div class="story"><span class="emo">${w[1]}</span></div>`, opts: ['long', 'short'].map(k => ({ html: `<span class="word">${k === 'long' ? L(B('long', '긴 소리')) : L(B('short', '짧은 소리'))} ${v}</span>`, ok: (k === 'long') === long })), cls: 'words', after: B(`${w[0]}: ${long ? 'long' : 'short'} ${v}`, `${w[0]}: ${long ? '긴' : '짧은'} ${v}`), vocab: w[0] });
     } else {
       const [a, b] = pick(MAGIC);
-      quiz(this, { ask: B(`Add the magic e to "${a}". What is the new word?`, `"${a}"에 마법의 e를 붙이면 어떤 낱말이 될까요?`), show: `<div class="bigword">${a} + e = ?</div>`, opts: wordOpts(b, [a, a + a.slice(-1)]), cls: 'words', after: B(`${a} + e = ${b}. The magic e makes the vowel say its name.`, `${a} + e = ${b}. 마법의 e가 모음을 긴 소리로 만들어요.`), vocab: b });
+      quiz(this, { ask: B(`Add magic e to "${a}": what word?`, `"${a}"에 마법의 e를 붙이면 어떤 낱말?`), show: `<div class="bigword">${a} + e = ?</div>`, opts: wordOpts(b, [a, a + a.slice(-1)]), cls: 'words', after: B(`${a} + e = ${b}. The magic e makes the vowel say its name.`, `${a} + e = ${b}. 마법의 e가 모음을 긴 소리로 만들어요.`), vocab: b });
     }
   }
 });
@@ -116,7 +116,7 @@ G1R({
     const lv = lvl('silly'), kind = pick(lv === 1 ? ['which', 'which', 'rhyme'] : ['which', 'long', 'rhyme', 'blend']);
     if (kind === 'which') {
       const pool = lv === 1 ? SILLY.cvc : [...SILLY.cvc, ...SILLY.ccvc, ...SILLY.cvcc], silly = pick(pool), reals = shuffle(REAL1.filter(w => w.length === silly.length || lv === 2)).slice(0, 2);
-      quiz(this, { ask: B('Sound them out. Which one is a SILLY word (not a real word)?', '소리 내어 읽어 봐요. 진짜 낱말이 아닌 엉터리 낱말은?'), askSay: B('Which one is a silly word, not a real word?', '진짜 낱말이 아닌 엉터리 낱말은 어느 것일까요?'), opts: wordOpts(silly, reals), cls: 'words', after: B(`"${silly}" is a silly word. You can still sound it out!`, `"${silly}" 낱말은 엉터리 낱말이에요. 그래도 소리 내어 읽을 수 있어요!`), vocab: silly });
+      quiz(this, { ask: B('Sound them out: which one is not a real word?', '소리 내어 읽고 진짜가 아닌 낱말은?'), askSay: B('Which one is a silly word, not a real word?', '진짜 낱말이 아닌 엉터리 낱말은 어느 것일까요?'), opts: wordOpts(silly, reals), cls: 'words', after: B(`"${silly}" is a silly word. You can still sound it out!`, `"${silly}" 낱말은 엉터리 낱말이에요. 그래도 소리 내어 읽을 수 있어요!`), vocab: silly });
     } else if (kind === 'long') {
       const right = pick(SILLY.cvce), ds = shuffle(SILLY.cvc).slice(0, 2);
       quiz(this, { ask: B('Which silly word has a LONG vowel sound (magic e)?', '긴 모음 소리(마법의 e)가 나는 엉터리 낱말은?'), opts: wordOpts(right, ds), cls: 'words', after: B(`"${right}" ends with a magic e, so the vowel says its name.`, `"${right}" 낱말은 마법의 e가 있어서 모음이 긴 소리로 나요.`), vocab: right });
@@ -154,7 +154,7 @@ G1R({
   id: 'tricky1', icon: '🪄', title: B('Tricky Words', '까다로운 낱말'), sub: B('Words you cannot sound out', '소리와 철자가 다른 낱말'), u: 'Sight words',
   play() {
     const lv = lvl('tricky1'), t = pick(lv === 1 ? TRICKY.slice(0, 22) : TRICKY), [w, sent, ko, ds] = t, filled = sent.replace('___', `<span class="qbox">?</span>`);
-    quiz(this, { ask: B('Which word fits the sentence? Pick the right spelling.', '문장에 맞는 낱말은? 철자가 맞는 것을 골라요.'), askSay: B(sent.replace('___', 'blank'), ko.replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(sent.replace('___', w), ko.replace('___', w)), vocab: sent.replace('___', w) });
+    quiz(this, { ask: B('Which correctly spelled word fits the sentence?', '문장에 맞고 철자가 바른 낱말은?'), askSay: B(sent.replace('___', 'blank'), ko.replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(sent.replace('___', w), ko.replace('___', w)), vocab: sent.replace('___', w) });
   }
 });
 
@@ -292,7 +292,9 @@ G1R({
   id: 'wordmeaning', icon: '🔎', title: B('Word Detective', '낱말 탐정'), sub: B('Meanings, opposites, word parts', '뜻, 반대말, 낱말의 부분'), u: 'Word meaning',
   play() {
     const lv = lvl('wordmeaning'), w = pick(WORDM.filter(x => x[0] <= lv));
-    quiz(this, { ask: w[1], opts: wordOpts(w[2], w[3]), cls: 'words sents', after: B(`${w[2]}`, `${w[2]}`), vocab: w[2] });
+    // Context items: the clue sentences are shown (and read) as material, the last sentence is the question.
+    const cut = t => { const m = t.match(/^(.*[.!?])\s+([^.!?]*\?)$/); return m ? [m[1], m[2]] : ['', t]; }, ctx = B(cut(w[1].en)[0], cut(w[1].ko)[0]);
+    quiz(this, { ask: B(cut(w[1].en)[1], cut(w[1].ko)[1]), show: ctx.en ? `<div class="storytext">${L(ctx)}</div>` : '', opts: wordOpts(w[2], w[3]), cls: 'words sents', after: B(`${w[2]}`, `${w[2]}`), vocab: w[2] });
   }
 });
 

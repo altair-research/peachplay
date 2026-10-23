@@ -540,3 +540,7 @@ body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.
  #view .bank-growth-options .word{font-size:16px;line-height:1.15}
  #view .bank-growth-options .opt{min-height:44px;padding:5px 8px}
 }
+
+/* shared read-aloud (age-fit §3, request 70d): small replay button on text material; 44px hit area comes from a11y.css */
+.show.auto-say-host{position:relative}
+.show .say.auto-show{position:absolute;top:0;right:0;width:32px;height:32px;margin:0;font-size:16px;line-height:1;z-index:3;box-shadow:0 2px 0 rgba(0,0,0,.2)}

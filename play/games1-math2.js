@@ -21,7 +21,7 @@ G1({
       quiz(this, { ask: B('What comes next in the repeating pattern?', '반복되는 패턴에서 다음에 올 것은?'), show: `<div class="train pat">${seq.slice(0, total).map(s => `<div class="pc">${s}</div>`).join('')}<div class="pc gap">?</div></div>`, opts: [ans, ...ds].map(c => ({ html: `<span class="emo">${c}</span>`, ok: c === ans })), cls: 'shapes', after: B(`The pattern repeats: ${unit}.`, `패턴이 반복돼요: ${unit}.`), onCorrect() { const g = $('.pc.gap'); if (g) { g.classList.remove('gap'); g.textContent = ans; } } });
     } else {
       const g = pick([1, 2]), e = pick(['🟦', '🟩', '🟨']), rows = [1, 2, 3].map(i => g === 1 ? i : i * 2), ans = g === 1 ? 4 : 8;
-      quiz(this, { ask: B('The pattern keeps growing. How many in the next one?', '패턴이 계속 커져요. 다음 그림에는 몇 개가 있을까요?'), show: `<div class="growrow">${rows.map(n => `<div class="grow">${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`, opts: O(ans, [ans - 1, ans + 1, ans + 2]), after: B(`Add ${g === 1 ? 1 : 2} each time: ${ans}.`, `${g === 1 ? 1 : 2}개씩 늘어요: ${ans}.`) });
+      quiz(this, { ask: B('How many will the next one have?', '다음 그림에는 몇 개가 있을까요?'), show: `<div class="growrow">${rows.map(n => `<div class="grow">${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`, opts: O(ans, [ans - 1, ans + 1, ans + 2]), after: B(`Add ${g === 1 ? 1 : 2} each time: ${ans}.`, `${g === 1 ? 1 : 2}개씩 늘어요: ${ans}.`) });
     }
   }
 });
@@ -45,11 +45,11 @@ G1({
       const [k, n] = pick(polys), corner = rnd(2) === 0;
       quiz(this, { ask: corner ? B('How many corners does it have?', '꼭짓점(뾰족한 곳)이 몇 개일까요?') : B('How many sides does it have?', '변이 몇 개일까요?'), show: sh1(k, rnd(4) * 45, 1), opts: numO(n, [n - 1, n + 1, n + 2], 3, 8), after: B(`A ${SH1[k].n.en} has ${n} sides and ${n} corners.`, `${SH1[k].n.ko} 모양은 변 ${n}개, 꼭짓점 ${n}개예요.`) });
     } else if (kind === 'define') {
-      const facts = { triangle: [B('3 sides and 3 corners', '변 3개, 꼭짓점 3개'), 'triangle'], square: [B('4 equal sides and 4 square corners', '같은 변 4개와 직각 4개'), 'square'], rectangle: [B('4 sides and 4 square corners', '변 4개와 직각 꼭짓점 4개'), 'rectangle'], hexagon: [B('6 sides', '변 6개'), 'hexagon'] }, k = pick(Object.keys(facts)), nondef = k === 'square' || k === 'rectangle' ? [B('3 sides and 3 corners','변 3개, 꼭짓점 3개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')] : [B('4 sides and 4 corners','변 4개, 꼭짓점 4개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')], ds = shuffle(nondef).slice(0, 2);
+      const facts = { triangle: [B('3 sides and 3 corners', '변 3개, 꼭짓점 3개'), 'triangle'], square: [B('4 equal sides, square corners', '같은 변 4개, 직각'), 'square'], rectangle: [B('4 sides, 4 square corners', '변 4개, 직각 4개'), 'rectangle'], hexagon: [B('6 sides', '변 6개'), 'hexagon'] }, k = pick(Object.keys(facts)), nondef = k === 'square' || k === 'rectangle' ? [B('3 sides and 3 corners','변 3개, 꼭짓점 3개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')] : [B('4 sides and 4 corners','변 4개, 꼭짓점 4개'), B('5 sides and 5 corners','변 5개, 꼭짓점 5개')], ds = shuffle(nondef).slice(0, 2);
       quiz(this, { ask: B(`What makes a shape a ${SH1[k].n.en}?`, `무엇이 ${SH1[k].n.ko} 모양을 만들까요?`), show: sh1(k, 0, 1), opts: [facts[k][0], ...ds].map((v, i) => ({ html: `<span class="word">${L(v)}</span>`, ok: i === 0 })), cls: 'words', after: B('Sides and corners make the shape. Color and size do not.', '변과 꼭짓점이 모양을 정해요. 색과 크기는 상관없어요.') });
     } else if (kind === 'turn') {
       const k = pick(['triangle', 'rectangle', 'hexagon']);
-      quiz(this, { ask: B(`This ${SH1[k].n.en} is flipped and turned. Is it still a ${SH1[k].n.en}?`, `${SH1[k].n.ko} 모양을 뒤집고 돌렸어요. 그래도 ${SH1[k].n.ko} 모양일까요?`), show: sh1(k, 90 + rnd(3) * 60, 0.9, '#8338ec', true), opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 맞아요' : 'Yes'}</span>`, ok: true }, { html: `<span class="word">${S.lang === 'ko' ? '아니요' : 'No'}</span>`, ok: false }], cls: 'words', after: B('Turning or flipping does not change the shape.', '돌리거나 뒤집어도 모양은 그대로예요.') });
+      quiz(this, { ask: B(`Flipped and turned, is it still a ${SH1[k].n.en}?`, `뒤집고 돌려도 ${SH1[k].n.ko} 모양일까요?`), show: sh1(k, 90 + rnd(3) * 60, 0.9, '#8338ec', true), opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 맞아요' : 'Yes'}</span>`, ok: true }, { html: `<span class="word">${S.lang === 'ko' ? '아니요' : 'No'}</span>`, ok: false }], cls: 'words', after: B('Turning or flipping does not change the shape.', '돌리거나 뒤집어도 모양은 그대로예요.') });
     } else if (kind === 'faces') {
       const info = { cube: 6, cone: 1, cylinder: 2, sphere: 0 }, k = pick(Object.keys(info)), thing = pick(SOLIDS[k].things);
       quiz(this, { ask: B(`How many flat faces does a ${SOLIDS[k].n.en} have?`, `${SOLIDS[k].n.ko}에는 평평한 면이 몇 개 있을까요?`), show: `<span class="emo">${thing[0]}</span>`, opts: numO(info[k], [0, 1, 2, 4, 6, 8].filter(v => v !== info[k]), 0, 8), after: B(`A ${SOLIDS[k].n.en} has ${info[k]} flat ${info[k] === 1 ? 'face' : 'faces'}.`, `${SOLIDS[k].n.ko}의 평평한 면은 ${info[k]}개예요.`), vocab: SOLIDS[k].n.en });
@@ -95,7 +95,7 @@ G1({
     const sameShape = (a, b) => a.n.en === b.n.en && ((a.circle ? 1 : 0) === (b.circle ? 1 : 0)) || (a.circle && b.circle) || a.shape === b.shape;
     const other = (n) => shuffle(COMPS.filter(c => !sameShape(c, cp) && c.what.en !== cp.what.en)).filter((c, i, ar) => ar.findIndex(d => d.n.en === c.n.en && d.shape.slice(0, 6) === c.shape.slice(0, 6)) === i).slice(0, n);
     if (kind === 'make') {
-      const ds = other(2); quiz(this, { ask: B('Join these pieces without turning or rearranging them. Which picture matches?', '조각을 돌리거나 자리를 바꾸지 않고 붙여요. 알맞은 그림은?'), show: compApart(cp), opts: [cp, ...ds].map((c, i) => ({ html: compWhole(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make a ${L(cp.n)}.`, `${cp.what.ko}로 ${cp.n.ko}을 만들 수 있어요.`) });
+      const ds = other(2); quiz(this, { ask: B('Which picture shows these pieces joined as they are?', '조각을 그대로 붙인 그림은?'), show: compApart(cp), opts: [cp, ...ds].map((c, i) => ({ html: compWhole(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make a ${L(cp.n)}.`, `${cp.what.ko}로 ${cp.n.ko}을 만들 수 있어요.`) });
     } else if (kind === 'whatpieces') {
       const ds = other(2); quiz(this, { ask: B('Which pieces match the dividing lines in this picture?', '이 그림의 나눔선과 딱 맞는 조각들은?'), show: compWhole(cp), opts: [cp, ...ds].map((c, i) => ({ html: compApart(c), ok: i === 0 })), cls: 'shapes', after: B(`${L(cp.what)} make this shape.`, `${cp.what.ko}로 이 모양을 만들어요.`) });
     } else {
@@ -133,7 +133,7 @@ G1({
     } else if (kind === 'name') {
       const n = pick([2, 4]); quiz(this, { ask: B('These equal shares are called...', '이 똑같은 조각을 무엇이라고 부를까요?'), show: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), opts: [2, 4].map(k => ({ html: `<span class="word">${L(word(k))}</span>`, ok: k === n })), cls: 'words', after: B(n === 2 ? 'Two equal shares are halves.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.'), vocab: n === 2 ? 'halves' : 'fourths' });
     } else if (kind === 'size') {
-      quiz(this, { ask: B('Two pizzas are the same size. One is cut in halves and one in fourths. Which shares are bigger?', '크기가 같은 피자 두 판이에요. 하나는 반으로, 하나는 4조각으로 잘랐어요. 어느 조각이 더 클까요?'), show: `<div class="story">${partSvg('circle', 2, true)}<span class="op">vs</span>${partSvg('circle', 4, true)}</div>`, opts: [{ html: `<span class="word">${L(B('Halves (2 shares)', '반 (2조각)'))}</span>`, ok: true }, { html: `<span class="word">${L(B('Fourths (4 shares)', '4분의 1 (4조각)'))}</span>`, ok: false }, { html: `<span class="word">${L(B('The same', '같아요'))}</span>`, ok: false }], cls: 'words', after: B('More equal shares means smaller shares.', '조각 수가 많을수록 한 조각은 작아져요.') });
+      quiz(this, { ask: B('Which shares are bigger?', '어느 조각이 더 클까요?'), show: `<div class="storytext">${L(B('Two same-size pizzas: one cut in halves, one in fourths.', '크기가 같은 피자 두 판: 하나는 반으로, 하나는 4조각으로.'))}</div><div class="story">${partSvg('circle', 2, true)}<span class="op">vs</span>${partSvg('circle', 4, true)}</div>`, opts: [{ html: `<span class="word">${L(B('Halves (2 shares)', '반 (2조각)'))}</span>`, ok: true }, { html: `<span class="word">${L(B('Fourths (4 shares)', '4분의 1 (4조각)'))}</span>`, ok: false }, { html: `<span class="word">${L(B('The same', '같아요'))}</span>`, ok: false }], cls: 'words', after: B('More equal shares means smaller shares.', '조각 수가 많을수록 한 조각은 작아져요.') });
     } else {
       const n = pick([2, 4]); quiz(this, { ask: B(`How many ${n === 2 ? 'halves' : 'fourths'} make the whole?`, `${n === 2 ? '반' : '4분의 1'}이 몇 개 모여야 전체가 될까요?`), show: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), opts: numO(n, [2, 3, 4, 1].filter(x => x !== n), 1, 6), after: B(`${n} ${n === 2 ? 'halves' : 'fourths'} make 1 whole.`, `${n === 2 ? '반' : '4분의 1'}이 ${n}개 모이면 전체가 돼요.`) });
     }
@@ -154,7 +154,7 @@ G1({
       quiz(this, { ask: B(`How many cubes long is the ${o[0]}?`, `${o[1]}의 길이는 블록 몇 개일까요?`), show: lenSvg(o[0], o[2], L1), opts: numO(L1, [L1 - 1, L1 + 1, L1 + 2], 1, 12), after: B(`The ${o[0]} is ${L1} cubes long.`, `${o[1]}의 길이는 블록 ${L1}개예요.`) });
     } else if (kind === 'correct') {
       const L1 = 4 + rnd(4), o = objs[0], right = lenSvg(o[0], o[2], L1), gaps = lenSvg(o[0], o[2], L1, { cubes: L1 - 1, gap: 6 }), over = lenSvg(o[0], o[2], L1, { cubes: L1 + 2, over: 6 });
-      quiz(this, { ask: B('Which one measures correctly? (no gaps, no overlaps)', '바르게 잰 것은? (틈도 겹침도 없이)'), askSay: B('Which one measures correctly, with no gaps and no overlaps?', '틈도 겹침도 없이 바르게 잰 것은?'), opts: [{ html: right, ok: true }, { html: gaps, ok: false }, { html: over, ok: false }], cls: 'groups', after: B('Cubes go end to end, with no gaps and no overlaps.', '블록은 틈이나 겹침 없이 끝과 끝을 이어 놓아요.') });
+      quiz(this, { ask: B('Which one measures with no gaps or overlaps?', '틈도 겹침도 없이 바르게 잰 것은?'), askSay: B('Which one measures correctly, with no gaps and no overlaps?', '틈도 겹침도 없이 바르게 잰 것은?'), opts: [{ html: right, ok: true }, { html: gaps, ok: false }, { html: over, ok: false }], cls: 'groups', after: B('Cubes go end to end, with no gaps and no overlaps.', '블록은 틈이나 겹침 없이 끝과 끝을 이어 놓아요.') });
     } else if (kind === 'longest' || kind === 'order') {
       const n = lv === 1 ? 2 : 3, lens = shuffle([2, 3, 4, 5, 6, 7, 8]).slice(0, n), os = objs.slice(0, n), asc = rnd(2) === 0, target = asc ? Math.min(...lens) : Math.max(...lens);
       if (kind === 'order') {
@@ -165,7 +165,7 @@ G1({
       }
     } else {
       const a = 3 + rnd(5), d = 1 + rnd(4), o1 = objs[0], o2 = objs[1];
-      quiz(this, { ask: B(`The ${o2[0]} is ${a + d} cubes. The ${o1[0]} is ${a} cubes. How many more cubes is the ${o2[0]}?`, `${o2[1]}의 길이는 블록 ${a + d}개, ${o1[1]}의 길이는 ${a}개예요. ${o2[1]}의 길이는 ${o1[1]}보다 블록 몇 개 더 길까요?`), show: `<div class="lenlist">${lenSvg(o2[0], o2[2], a + d)}${lenSvg(o1[0], o1[2], a)}</div>`, opts: numO(d, [d + 1, d - 1, a], 0, 9), after: B(`${a + d} − ${a} = ${d}`, `${a + d} − ${a} = ${d}`) });
+      quiz(this, { ask: B(`How many more cubes long is the ${o2[0]}?`, `${o2[1]}이(가) 블록 몇 개 더 길까요?`), show: `<div class="storytext">${L(B(`${o2[0]}: ${a + d} cubes · ${o1[0]}: ${a} cubes`, `${o2[1]}: 블록 ${a + d}개 · ${o1[1]}: 블록 ${a}개`))}</div><div class="lenlist">${lenSvg(o2[0], o2[2], a + d)}${lenSvg(o1[0], o1[2], a)}</div>`, opts: numO(d, [d + 1, d - 1, a], 0, 9), after: B(`${a + d} − ${a} = ${d}`, `${a + d} − ${a} = ${d}`) });
     }
   }
 });
@@ -196,7 +196,7 @@ G1({
       quiz(this, { ask: B(`Which clock shows ${right}?`, `${right}을 가리키는 시계는?`), opts: [right, ...wrongs].map(t => { const [hh, mm] = spec(t); return { html: clock2(hh, mm), ok: t === right }; }), cls: 'shapes', after: B(`${right} is ${m === 0 ? "o'clock" : 'half past'}.`, `맞아요! ${right}이에요.`) });
     } else if (kind === 'elapsed') {
       const hrs = 2 + rnd(3), start = 1 + rnd(8), ans = ((start - 1 + hrs) % 12) + 1;
-      quiz(this, { ask: B(`It is ${start}:00. What time will it be in ${hrs} hours?`, `지금은 ${start}:00이에요. ${hrs}시간 뒤는 몇 시일까요?`), show: numLineHours(start, hrs), opts: numO(ans, [ans + 1, ans - 1, start + hrs + 1, hrs], 1, 12).map(o => ({ html: o.html.replace(/>(\d+)</, (m1, v) => `>${v}:00<`), ok: o.ok })), after: B(`${start}:00 plus ${hrs} hours is ${ans}:00.`, `${start}:00에서 ${hrs}시간 뒤는 ${ans}:00이에요.`) });
+      quiz(this, { ask: B(`What time is ${hrs} hours after ${start}:00?`, `${start}:00에서 ${hrs}시간 뒤는 몇 시일까요?`), show: numLineHours(start, hrs), opts: numO(ans, [ans + 1, ans - 1, start + hrs + 1, hrs], 1, 12).map(o => ({ html: o.html.replace(/>(\d+)</, (m1, v) => `>${v}:00<`), ok: o.ok })), after: B(`${start}:00 plus ${hrs} hours is ${ans}:00.`, `${start}:00에서 ${hrs}시간 뒤는 ${ans}:00이에요.`) });
     } else {
       const it = pick(AMPM), right = it[2], tm = `${it[1]}:00`;
       quiz(this, { ask: B(`You ${L(it[0])} at ${tm}. Is that AM or PM?`, `${tm}에 ${it[0].ko}. 오전(AM)일까요, 오후(PM)일까요?`), show: clock2(it[1], 0), opts: ['AM', 'PM'].map(v => ({ html: `<span class="word">${v}${S.lang === 'ko' ? (v === 'AM' ? ' (오전)' : ' (오후)') : ''}</span>`, ok: v === right })), cls: 'words', after: B(`${tm} ${right}`, `${tm} ${right === 'AM' ? '오전' : '오후'}`) });

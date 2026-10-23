@@ -31,7 +31,7 @@ reg('compare3','Compare Big Numbers','큰 수 비교','3.NR.1.2',lv=>{
 });
 reg('round3','Near Tens and Hundreds','몇십, 몇백으로 반올림','3.NR.1.3',lv=>{
  const step=lv===1?10:pick([10,100]),n=rnd(lv===1?101:1001),lo=Math.floor(n/step)*step,hi=lo+step,a=Math.floor(n/step+0.5)*step,x=25+(n-lo)/step*250;
- return q(B(`Round to the nearest ${step}. Halfway? Choose the larger multiple.`,`${step===10?'몇십':'몇백'}으로 반올림(rounding)해요. 딱 중간이면 더 큰 수를 골라요.`),panel(`<svg viewBox="0 0 300 100" role="img" aria-label="${lo} — ${n} — ${hi}"><path d="M25 50 H275 M25 42 V58 M275 42 V58" stroke="currentColor" stroke-width="2"/><circle cx="${x}" cy="50" r="6" fill="#ba4a22"/><text x="${x}" y="25" text-anchor="middle">${n}</text><text x="25" y="82" text-anchor="middle">${lo}</text><text x="275" y="82" text-anchor="middle">${hi}</text></svg>`),a,[a===lo?hi:lo,a+step],B(`${n} → ${a}`,`${n} → ${a}`));
+ return q(B(`Round to the nearest ${step}. If it is halfway, choose the larger multiple.`,`${step===10?'몇십':'몇백'}으로 반올림(rounding)해요. 딱 중간이면 더 큰 수를 골라요.`),panel(`<svg viewBox="0 0 300 100" role="img" aria-label="${lo} — ${n} — ${hi}"><path d="M25 50 H275 M25 42 V58 M275 42 V58" stroke="currentColor" stroke-width="2"/><circle cx="${x}" cy="50" r="6" fill="#ba4a22"/><text x="${x}" y="25" text-anchor="middle">${n}</text><text x="25" y="82" text-anchor="middle">${lo}</text><text x="275" y="82" text-anchor="middle">${hi}</text></svg>`),a,[a===lo?hi:lo,a+step],B(`${n} → ${a}`,`${n} → ${a}`));
 });
 reg('addsub3','Calculation Strategies','여러 방법으로 계산하기','3.PAR.2.1',lv=>{
  const a=100+rnd(700),b=10+rnd(Math.min(190,1000-a)),minus=!!rnd(2),ans=minus?a-b:a+b;
@@ -41,9 +41,9 @@ reg('addsub3','Calculation Strategies','여러 방법으로 계산하기','3.PAR
  return q(B('Find the value. You can split a number into parts.','값을 구해요. 수를 몇백, 몇십, 몇으로 갈라서 계산해도 돼요.'),eq(lv===1?`${left} ${op} ${Math.floor(right/10)*10} ${op} ${right%10}`:`${left} ${op} ${right}`),value,[value+10,Math.abs(value-10)],B(`${left} ${op} ${right} = ${value}`,`${left} ${op} ${right} = ${value}`));
 });
 reg('barstory3','Bar Stories','막대 그림 문제','3.PAR.2.2',lv=>{
- if(lv===2){const a=10+rnd(80),b=10+rnd(80),sent=1+rnd(9);return q(B(`A shelf has ${a} books and a cart has ${b}. ${sent} are lent out. How many remain?`,`선반에 ${a}권, 수레에 ${b}권이 있어요. ${sent}권을 빌려주면 모두 몇 권이 남나요?`),eq(`${a} + ${b} − ?`),a+b-sent,[a+b,a+b+sent]);}
+ if(lv===2){const a=10+rnd(80),b=10+rnd(80),sent=1+rnd(9);return q(B(`A shelf has ${a} books, a cart has ${b}, and ${sent} are lent out. How many remain?`,`선반에 ${a}권, 수레에 ${b}권이 있어요. ${sent}권을 빌려주면 모두 몇 권이 남나요?`),eq(`${a} + ${b} − ?`),a+b-sent,[a+b,a+b+sent]);}
  const a=10+rnd(lv===1?390:4490),b=10+rnd(lv===1?390:4490),t=a+b,m=rnd(3),ans=[a,b,t][m],v=[a,b,t].map((n,i)=>i===m?'n':n);
- const asks=[B(`There are ${t} books. ${b} are on a cart; the rest are on a shelf. How many on the shelf?`,`책 ${t}권 중 ${b}권은 수레에 있어요. 나머지는 선반에 있어요. 선반에는 몇 권일까요?`),B(`A shelf has ${a} books. More arrive, making ${t}. How many arrived?`,`선반에 책 ${a}권이 있었어요. 책이 더 들어와서 ${t}권이 되었어요. 더 들어온 책은 몇 권일까요?`),B(`A shelf has ${a} books and a cart has ${b}. How many altogether?`,`선반에 책 ${a}권, 수레에 ${b}권이 있어요. 모두 몇 권일까요?`)];
+ const asks=[B(`Of ${t} books, ${b} are on a cart and the rest are on a shelf. How many on the shelf?`,`책 ${t}권 중 ${b}권은 수레에, 나머지는 선반에 있어요. 선반에는 몇 권일까요?`),B(`A shelf has ${a} books, and more arrive to make ${t}. How many arrived?`,`선반에 책 ${a}권이 있었는데 더 들어와서 ${t}권이 되었어요. 더 들어온 책은 몇 권일까요?`),B(`A shelf has ${a} books and a cart has ${b}. How many altogether?`,`선반에 책 ${a}권, 수레에 ${b}권이 있어요. 모두 몇 권일까요?`)];
  return q(asks[m],panel(`<div class="g3-bar"><span style="flex:${a}">${v[0]}</span><span style="flex:${b}">${v[1]}</span></div><div>${v[2]}</div>`),ans,[ans+10,ans+100],B(`${a} + ${b} = ${t}`,`${a} + ${b} = ${t}`));
 });
 reg('array3','Multiplication Arrays','곱셈 배열','3.PAR.3.2',lv=>{
@@ -60,12 +60,12 @@ reg('factfamily3','Related Facts','곱셈과 나눗셈의 관계','3.PAR.3.2',lv
  return q(B('Use the related fact to find n.','곱셈식과 나눗셈식의 관계를 이용해 n을 구해요.'),eq(d?`${p} ÷ n = ${b}`:`${a} × n = ${p}`),d?a:b,[p,a+b]);
 });
 reg('splitmultiply3','Split to Multiply','쪼개서 곱하기','3.PAR.3.3',lv=>{
- if(lv===2){const a=2+rnd(3),b=1+rnd(3),c=2+rnd(7),ans=b*c;return q(B(`There are ${a+b} rows of ${c}. The top ${a} rows are packed away. How many dots remain?`,`한 줄에 ${c}개씩 ${a+b}줄이에요. 위 ${a}줄을 치우면 몇 개가 남나요?`),dots(a+b,c,a),ans,[(a+b)*c,a*c],B(`${a+b} × ${c} − ${a} × ${c} = ${ans}`,`${a+b} × ${c} − ${a} × ${c} = ${ans}`));}
+ if(lv===2){const a=2+rnd(3),b=1+rnd(3),c=2+rnd(7),ans=b*c;return q(B(`There are ${a+b} rows of ${c}, and the top ${a} rows are packed away. How many dots remain?`,`한 줄에 ${c}개씩 ${a+b}줄이에요. 위 ${a}줄을 치우면 몇 개가 남나요?`),dots(a+b,c,a),ans,[(a+b)*c,a*c],B(`${a+b} × ${c} − ${a} × ${c} = ${ans}`,`${a+b} × ${c} − ${a} × ${c} = ${ans}`));}
  const a=2+rnd(3),b=1+rnd(3),c=2+rnd(lv===1?4:8);
  return q(B('Add the two parts. How many dots altogether?','두 부분을 합쳐요. 점은 모두 몇 개일까요?'),dots(a+b,c,a),(a+b)*c,[a*c,b*c],B(`${a} × ${c} + ${b} × ${c} = ${(a+b)*c}`,`${a} × ${c} + ${b} × ${c} = ${(a+b)*c}`));
 });
 reg('multiplytens3','Multiply Tens','몇십 곱하기','3.PAR.3.5',lv=>{
- if(lv===2){const packs=2+rnd(7),each=10*(1+rnd(8)),used=1+rnd(9);return q(B(`${packs} packs hold ${each} sheets each. Use ${used} sheets. How many remain?`,`${packs}묶음에 종이가 ${each}장씩 있어요. ${used}장을 쓰면 몇 장이 남나요?`),'',packs*each-used,[packs*each,packs*each+used]);}
+ if(lv===2){const packs=2+rnd(7),each=10*(1+rnd(8)),used=1+rnd(9);return q(B(`${packs} packs hold ${each} sheets each, and you use ${used} sheets. How many remain?`,`${packs}묶음에 종이가 ${each}장씩 있어요. ${used}장을 쓰면 몇 장이 남나요?`),'',packs*each-used,[packs*each,packs*each+used]);}
  const a=1+rnd(9),b=10*(1+rnd(lv===1?2:9));
  return q(B('How many altogether?','모두 얼마일까요?'),eq(`${a} × ${b}`),a*b,[a*b/10,a+b],B(`${a} × ${b/10} tens = ${a*b}`,`${a} × (10이 ${b/10}개) = 10이 ${a*(b/10)}개 = ${a*b}`));
 });

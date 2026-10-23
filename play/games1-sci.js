@@ -40,9 +40,9 @@ G1S({
 const PRECIP_PICS = [
   { id: 'rain', n: B('rain', '비'), ask: B('Which picture shows rain falling?', '비가 내리는 그림은?'), clue: B('Drops of water fall from a cloud. Which picture matches?', '구름에서 물방울이 떨어져요. 어떤 그림일까요?'), detail: B('Rain falls as drops of water.', '비는 물방울로 내려요.') },
   { id: 'snow', n: B('snow', '눈'), ask: B('Which picture shows snow falling?', '눈이 내리는 그림은?'), clue: B('Snowflakes fall from a cloud. Which picture matches?', '구름에서 눈송이가 내려요. 어떤 그림일까요?'), detail: B('Snow falls as ice crystals called snowflakes.', '눈은 얼음 결정인 눈송이로 내려요.') },
-  { id: 'cloud', n: B('clouds without rain or snow', '비나 눈이 내리지 않는 구름'), ask: B('Which sky has clouds but no rain or snow?', '구름은 있지만 비나 눈은 내리지 않는 하늘은?'), clue: B('Clouds cover the sky. Nothing is falling from them. Which picture matches?', '구름이 하늘을 덮고 있어요. 구름에서 아무것도 내리지 않아요. 어떤 그림일까요?'), detail: B('Clouds do not always bring rain or snow.', '구름이 있어도 비나 눈이 내리지 않을 수 있어요.') },
+  { id: 'cloud', n: B('dry clouds', '비 없는 구름'), ask: B('Which sky has clouds but no rain or snow?', '구름은 있지만 비나 눈은 내리지 않는 하늘은?'), clue: B('Clouds cover the sky. Nothing is falling from them. Which picture matches?', '구름이 하늘을 덮고 있어요. 구름에서 아무것도 내리지 않아요. 어떤 그림일까요?'), detail: B('Clouds do not always bring rain or snow.', '구름이 있어도 비나 눈이 내리지 않을 수 있어요.') },
   { id: 'wind', n: B('wind', '바람'), ask: B('Which picture shows wind blowing a windsock?', '바람이 불어 바람자루가 펴진 그림은?'), clue: B('Moving air stretches out a windsock. Which picture matches?', '움직이는 공기가 바람자루를 쭉 펴요. 어떤 그림일까요?'), detail: B('Wind is moving air. It blows the windsock out.', '바람은 움직이는 공기예요. 바람이 바람자루를 펴 줘요.') },
-  { id: 'sun', n: B('sun in a clear sky', '맑은 하늘의 해'), ask: B('Which picture shows the sun in a clear sky?', '맑은 하늘에 해가 떠 있는 그림은?'), clue: B('The sun shines. There are no clouds in this sky. Which picture matches?', '해가 빛나요. 하늘에 구름이 없어요. 어떤 그림일까요?'), detail: B('This sky is clear, with no clouds.', '이 하늘에는 구름이 없고 맑아요.') }
+  { id: 'sun', n: B('sunny sky', '맑은 하늘'), ask: B('Which picture shows the sun in a clear sky?', '맑은 하늘에 해가 떠 있는 그림은?'), clue: B('The sun shines. There are no clouds in this sky. Which picture matches?', '해가 빛나요. 하늘에 구름이 없어요. 어떤 그림일까요?'), detail: B('This sky is clear, with no clouds.', '이 하늘에는 구름이 없고 맑아요.') }
 ];
 const precipPicture = (w) => {
   const cloud = '<path d="M22 52 C8 52 8 30 24 28 C25 9 51 7 59 24 C79 13 99 29 93 43 C111 47 102 64 86 64 H27 C18 64 16 57 22 52Z" fill="#fff" stroke="#526d82" stroke-width="3"/>';
@@ -90,7 +90,7 @@ G1S({
 });
 
 // ---------- 4. Magnet power ----------
-const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron nut and bolt', '쇠 볼트와 너트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')]];
+const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron bolt', '쇠 볼트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')]];
 const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🖍️', B('crayon', '크레용')]];
 const barMagnet = (dir, x) => `<g transform="translate(${x} 0)"><rect x="0" y="0" width="38" height="22" fill="${dir ? '#ef476f' : '#118ab2'}"/><rect x="38" y="0" width="38" height="22" fill="${dir ? '#118ab2' : '#ef476f'}"/><rect x="0" y="0" width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/></g>`;
 G1S({
@@ -126,7 +126,7 @@ G1S({
     const lv = lvl('light1'), kind = pick(lv === 1 ? ['source', 'source', 'see'] : ['source', 'see', 'shadow', 'shadow', 'dir']);
     if (rnd(3) === 0) {
       const object = pick([B('a book', '책'), B('a ball', '공'), B('a chair', '의자')]);
-      quiz(this, { ask: B(`Can you see ${object.en} in a room with no light at all?`, `빛이 전혀 없는 방에서 ${object.ko}의 모습을 볼 수 있을까요?`), opts: sOpts(B('No, light is needed.', '아니요, 빛이 필요해요.'), [B('Yes, even with no light.', '네, 빛이 전혀 없어도 보여요.')]), cls: 'words sents', after: B('Light must reach our eyes for us to see an object.', '물체를 보려면 빛이 우리 눈에 들어와야 해요.') }); return;
+      quiz(this, { ask: B(`Can you see ${object.en} in total darkness?`, `아주 깜깜하면 ${object.ko}이(가) 보일까요?`), opts: sOpts(B('No, light is needed.', '아니요, 빛이 필요해요.'), [B('Yes, even in darkness.', '네, 어두워도 보여요.')]), cls: 'words sents', after: B('Light must reach our eyes for us to see an object.', '물체를 보려면 빛이 우리 눈에 들어와야 해요.') }); return;
     }
     if (kind === 'source') {
       const yes = [['☀️', B('sun', '해')], ['💡', B('lamp', '전등')], ['🔦', B('flashlight', '손전등')], ['🕯️', B('candle', '촛불')]], no = [['📖', B('book', '책')], ['🪨', B('rock', '돌')], ['⚽', B('ball', '공')], ['🪑', B('chair', '의자')]], y = pick(yes), ds = shuffle(no).slice(0, 2);
@@ -134,7 +134,7 @@ G1S({
     } else if (kind === 'see') {
       quiz(this, { ask: B('You are in a very dark room. Why can you not see the toys?', '아주 깜깜한 방에 있어요. 장난감이 왜 안 보일까요?'), show: '<span class="emo">🌑🧸</span>', opts: sOpts(tx('There is no light.', '빛이 없어요.'), [tx('The toys are quiet.', '장난감이 조용해요.'), tx('The toys are cold.', '장난감이 차가워요.')]), cls: 'words sents', after: B('We need light to see things.', '물건을 보려면 빛이 필요해요.') });
     } else if (kind === 'shadow') {
-      const near = rnd(2) === 0, a = 70, b = 190; quiz(this, { ask: near ? B('Where is the shadow BIGGER? When the object is close to the light, or far?', '그림자가 더 큰 때는 언제일까요? 물체가 빛에 가까울 때, 아니면 멀 때?') : B('Which picture has the SMALLER shadow?', '그림자가 더 작은 그림은 어느 것일까요?'), askSay: near ? B('When is the shadow bigger, close to the light or far?', '그림자가 더 큰 때는 빛에 가까울 때일까요, 멀 때일까요?') : B('Which picture has the smaller shadow?', '그림자가 더 작은 그림은 어느 것일까요?'), show: near ? '' : '', opts: near ? [{ html: `<span class="word">${L(B('Close to the light', '빛에 가까울 때'))}</span>`, ok: true }, { html: `<span class="word">${L(B('Far from the light', '빛에서 멀 때'))}</span>`, ok: false }] : [{ html: shadowSvg(a), ok: false }, { html: shadowSvg(b), ok: true }], cls: near ? 'words' : 'groups', after: B('The closer the object is to the light, the bigger the shadow.', '물체가 빛에 가까울수록 그림자가 커져요.') });
+      const near = rnd(2) === 0, a = 70, b = 190; quiz(this, { ask: near ? B('Is the shadow BIGGER close to the light, or far?', '그림자가 더 큰 때는 가까울 때, 멀 때?') : B('Which picture has the SMALLER shadow?', '그림자가 더 작은 그림은 어느 것일까요?'), askSay: near ? B('When is the shadow bigger, close to the light or far?', '그림자가 더 큰 때는 빛에 가까울 때일까요, 멀 때일까요?') : B('Which picture has the smaller shadow?', '그림자가 더 작은 그림은 어느 것일까요?'), show: near ? '' : '', opts: near ? [{ html: `<span class="word">${L(B('Close to the light', '빛에 가까울 때'))}</span>`, ok: true }, { html: `<span class="word">${L(B('Far from the light', '빛에서 멀 때'))}</span>`, ok: false }] : [{ html: shadowSvg(a), ok: false }, { html: shadowSvg(b), ok: true }], cls: near ? 'words' : 'groups', after: B('The closer the object is to the light, the bigger the shadow.', '물체가 빛에 가까울수록 그림자가 커져요.') });
     } else {
       const left = rnd(2) === 0; quiz(this, { ask: left ? B('The light is on the LEFT. Which way does the shadow fall?', '빛이 왼쪽에 있어요. 그림자는 어느 쪽으로 생길까요?') : B('The light is on the RIGHT. Which way does the shadow fall?', '빛이 오른쪽에 있어요. 그림자는 어느 쪽으로 생길까요?'), show: `<span class="emo">${left ? '🔦➡️🧍' : '🧍⬅️🔦'}</span>`, opts: sOpts(left ? tx('to the right', '오른쪽') : tx('to the left', '왼쪽'), [left ? tx('to the left', '왼쪽') : tx('to the right', '오른쪽')]), cls: 'words', after: B('A shadow falls on the side away from the light.', '그림자는 빛의 반대쪽에 생겨요.') });
     }
@@ -158,9 +158,9 @@ G1S({
     } else if (kind === 'feel') {
       quiz(this, { ask: B('Hum and touch your throat. What do you feel?', '콧노래를 부르며 목을 만져 봐요. 무엇이 느껴질까요?'), show: '<span class="emo">🎶🤚</span>', opts: sOpts(tx('A tiny vibration', '작은 떨림'), [tx('Something cold', '차가운 것'), tx('Something wet', '젖은 것')]), cls: 'words', after: B('Your throat vibrates when you hum.', '콧노래를 부르면 목이 떨려요.') });
     } else {
-      const items = [[B('a whistle blown loudly', '크게 부는 호루라기'), true], [B('a flashlight that flashes on and off', '깜빡이는 손전등'), true], [B('a very quiet whisper', '아주 작은 속삭임'), false], [B('a tiny candle in a house', '집 안의 작은 촛불'), false]];
+      const items = [[B('a loud whistle', '크게 부는 호루라기'), true], [B('a flashing flashlight', '깜빡이는 손전등'), true], [B('a quiet whisper', '아주 작은 속삭임'), false], [B('a tiny candle indoors', '집 안의 작은 촛불'), false]];
       const good = pick(items.filter(x => x[1])), bad = shuffle(items.filter(x => !x[1]));
-      quiz(this, { ask: B('You need a signal for help that people far away can notice. Which is best?', '멀리 있는 사람에게 도움을 청하려고 해요. 가장 좋은 신호는?'), opts: [good, ...bad].map(x => ({ html: `<span class="word">${L(x[0])}</span>`, ok: x === good })), cls: 'words sents', after: B('Loud sounds and bright lights can be seen or heard from far away.', '큰 소리와 밝은 빛은 멀리서도 보이고 들려요.') });
+      quiz(this, { ask: B('Which help signal can people far away notice?', '멀리 있는 사람이 알아챌 도움 신호는?'), opts: [good, ...bad].map(x => ({ html: `<span class="word">${L(x[0])}</span>`, ok: x === good })), cls: 'words sents', after: B('Loud sounds and bright lights can be seen or heard from far away.', '큰 소리와 밝은 빛은 멀리서도 보이고 들려요.') });
     }
   }
 });
@@ -226,11 +226,11 @@ G1S({
  const light=GAMES.find(g=>g.id==='light1'),oldLight=light.play;
  light.play=function(){if(rnd(2))return oldLight.call(this);const obj=pick([B('book','책'),B('ball','공'),B('chair','의자'),B('rock','돌')]),on=rnd(2)===0;
  if(lvl(this.id)===2){const hidden=B('Hidden → visible → hidden','안 보임 → 보임 → 안 보임'),visible=B('Visible → hidden → visible','보임 → 안 보임 → 보임');round(this,B('Which sequence matches what you can see?','보이는 모습의 순서에 맞는 것은?'),B(`Only one lamp lights a ${obj.en}. It starts ${on?'off':'on'}. Switch it ${on?'on, then off':'off, then on'}.`,`${obj.ko} 옆에 전등 하나만 있어요. 처음에는 ${on?'꺼져':'켜져'} 있어요. ${on?'켠 다음 꺼요':'끈 다음 켜요'}.`),on?hidden:visible,[on?visible:hidden,on?B('Hidden → hidden → visible','안 보임 → 안 보임 → 보임'):B('Visible → visible → hidden','보임 → 보임 → 안 보임')]);return;}
- round(this,B('What changes in what you can see?','보이는 모습은 어떻게 바뀔까요?'),B(`In a room with no other light, a lamp is turned ${on?'on':'off'} beside a ${obj.en}.`,`다른 빛이 없는 방에서 ${obj.ko} 옆 전등을 ${on?'켜요':'꺼요'}.`),on?B('It becomes visible','모습이 보여요'):B('It is no longer visible','모습이 안 보여요'),[on?B('It is no longer visible','모습이 안 보여요'):B('It becomes visible','모습이 보여요'),B('Its shape changes','모양이 바뀌어요')]);};
+ round(this,B('What changes in what you can see?','보이는 모습은 어떻게 바뀔까요?'),B(`In a room with no other light, a lamp is turned ${on?'on':'off'} beside a ${obj.en}.`,`다른 빛이 없는 방에서 ${obj.ko} 옆 전등을 ${on?'켜요':'꺼요'}.`),on?B('We can see it','모습이 보여요'):B('We cannot see it','모습이 안 보여요'),[on?B('We cannot see it','모습이 안 보여요'):B('We can see it','모습이 보여요'),B('Its shape changes','모양이 바뀌어요')]);};
  const sound=GAMES.find(g=>g.id==='sound1'),oldSound=sound.play;
  sound.play=function(){if(rnd(2))return oldSound.call(this);const obj=pick([B('drum skin','북의 가죽'),B('guitar string','기타 줄'),B('bell','종'),B('rubber band','고무줄')]);
  if(lvl(this.id)===2){round(this,B('Which sound sequence follows both actions?','두 행동에 맞는 소리의 순서는?'),B(`A ${obj.en} makes a sound. Stop its movement, then set it moving again.`,`${obj.ko}에서 소리가 나요. 움직임을 멈췄다가 다시 움직이게 해요.`),B('Sound → quiet → sound','소리 → 조용 → 소리'),[B('Sound → sound → quiet','소리 → 소리 → 조용'),B('Quiet → sound → quiet','조용 → 소리 → 조용')]);return;}
- round(this,B('What happens to the sound?','소리는 어떻게 될까요?'),B(`A ${obj.en} makes a sound. Its movement is completely stopped.`,`${obj.ko}에서 소리가 나요. 움직임을 완전히 멈춰요.`),B('It stops','소리가 멈춰요'),[B('It gets louder','소리가 더 커져요'),B('It keeps sounding the same','같은 소리가 계속 나요')]);};
+ round(this,B('What happens to the sound?','소리는 어떻게 될까요?'),B(`A ${obj.en} makes a sound. Its movement is completely stopped.`,`${obj.ko}에서 소리가 나요. 움직임을 완전히 멈춰요.`),B('It stops','소리가 멈춰요'),[B('It gets louder','소리가 더 커져요'),B('It stays the same','같은 소리가 나요')]);};
  const plant=GAMES.find(g=>g.id==='plants1'),oldPlant=plant.play;
  plant.play=function(){if(rnd(2))return oldPlant.call(this);const letter=pick(Object.keys(PLANT_PARTS)),names=Object.values(PLANT_PARTS);
  quiz(this,{ask:B(`What part is marked ${letter}?`,`${letter}로 표시한 부분은?`),show:plantSvg(),opts:sOpts(PLANT_PARTS[letter],others(names,PLANT_PARTS[letter],2)),cls:'words'});};
@@ -244,4 +244,22 @@ G1S({
  const oldCare=plant.careNeed;plant.careNeed=function(){if(rnd(2))return oldCare.call(this);const q=pick(lvl(this.id)===1?care.slice(0,2):care);round(this,B('Which change meets the missing need?','부족한 것을 채우는 방법은?'),q[0],q[1],q[2]);};
  const animal=GAMES.find(g=>g.id==='animals1'),oldAnimal=animal.play;
  animal.play=function(){if(rnd(2))return oldAnimal.call(this);const y=pick(YOUNG);quiz(this,{ask:B(`What is a baby ${y[1].en} called?`,`${y[1].ko}의 새끼 이름은?`),show:`<span class="emo">${y[0]}</span>`,opts:sOpts(y[2],others(YOUNG,y,2).map(x=>x[2])),cls:'words'});};
+})();
+
+// 70a: grade-1 questions are one sentence. Extra clue sentences in a question move to the read-aloud
+// material (storytext gets core's 🔊); the sentence with "?" (or the last one) stays as the question.
+(() => {
+ const sentences = t => String(t).split(/(?<=[.!?])\s+(?=[A-Z가-힣"'(])/).filter(Boolean);
+ const cut = t => { const all = sentences(t); if (all.length < 2) return ['', t]; const q = all.filter(x => /\?/.test(x)); if (q.length > 1) return ['', t]; const ask = q.length ? q[0] : all[all.length - 1]; return [all.filter(x => x !== ask).join(' '), ask]; };
+ const split = item => {
+  if (!item || !item.ask || typeof item.ask !== 'object') return item;
+  const en = cut(item.ask.en), ko = cut(item.ask.ko);
+  if (!en[0] && !ko[0]) return item;
+  const ctx = B(en[0], ko[0]);
+  return { ...item, ask: B(en[1], ko[1]), askSay: item.askSay || item.ask, show: `<div class="storytext">${L(ctx)}</div>` + (item.show || '') };
+ };
+ for (const id of ["weather1","seasons1","magnets1","light1","sound1","precip","plants1"]) {
+  const game = GAMES.find(g => g.id === id), play = game.play;
+  game.play = function () { const raw = window.quiz; window.quiz = (g, item) => { window.quiz = raw; return raw(g, split(item)); }; try { return play.apply(this, arguments); } finally { window.quiz = raw; } };
+ }
 })();

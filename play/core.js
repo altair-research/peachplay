@@ -396,6 +396,20 @@ function nextButton(fn, opts = {}) {
   }, 450);
 }
 
+// Reading-goal games (age-fit §5): hearing these choices/material before answering would replace decoding or spelling with sound matching.
+// A game or item can also set readGoal: true | 'both' | 'opts' | 'show'.
+const READ_GOAL = { letters: 'both', sight: 'opts', silly: 'opts', silly2: 'opts', tricky1: 'opts', tricky2: 'opts', twosyl: 'opts', syllables2: 'opts', vowels2: 'opts', spell3: 'opts', spell4: 'opts', spell5: 'opts', decode4: 'opts', decode5: 'opts' };
+// Visible words of an element for speech: no pictures/emoji, no buttons' own icons.
+function speakable(el) {
+  const c = el.cloneNode(true);
+  c.querySelectorAll('svg,canvas,img,.say,.sr-only,[aria-hidden="true"],#sps').forEach(e => e.remove());
+  c.querySelectorAll('br').forEach(e => e.replaceWith(' ')); c.querySelectorAll('div,p,li,tr,td').forEach(e => e.append(' '));
+  const t = c.textContent.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}\u{20E3}\u{1F3FB}-\u{1F3FF}]/gu, ' ');
+  return t.replace(/(^|\s)(?:\?|_{2,})(?=$|[\s.,!])/g, '$1' + (/[가-힣]/.test(t) ? '빈칸' : 'blank')).replace(/\s+/g, ' ').trim();   // a lone ? or ___ is a fill-in blank, named in the sentence's language
+}
+const hasReplay = el => [...el.querySelectorAll('button,[role="button"]')].some(e => /🔊|🔉/.test(e.textContent) || e.classList.contains('say')) || !!el.querySelector('[onclick*="say"]');
+const speechLang = t => /[가-힣]/.test(t) ? 'ko-KR' : /[A-Za-z]/.test(t) ? 'en-US' : undefined;
+
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
 function quiz(game, item) {
@@ -456,14 +470,26 @@ function quiz(game, item) {
     const rb=document.createElement('button'); rb.className='say'; rb.id='pkReadChoices'; rb.textContent='🔉'; rb.setAttribute('aria-label',L(B('Hear the pictures','그림 이름 듣기')));
     rb.onclick=()=>opts.forEach((o,i)=>{ const temp=document.createElement('div'); temp.innerHTML=o.html; const e=temp.querySelector('[aria-label]'); const label=e?.getAttribute('data-pk-'+S.lang)||e?.getAttribute('aria-label'); say(o.say ? L(o.say) : label || L(B('Picture '+(i+1),'그림 '+(i+1))), item.pkChoiceLang, i>0); }); $('#sp').after(rb);
   }
-  const optTexts = () => $$('.opt').map(b => (b.querySelector('.word,.num') || b).innerText.replace(/\s+/g, ' ').trim()).filter(t => /[A-Za-zㄱ-힝0-9]{2,}/.test(t));
-  if (optTexts().length >= 2 && optTexts().join('').length >= 8 && !$$('.opt svg').length) {      // read the choices aloud (text choices only; pictures have nothing to read)
-    const rb = document.createElement('button'); rb.className = 'say'; rb.id = 'spo'; rb.textContent = '🔉'; rb.setAttribute('aria-label', L(B('Read the choices', '보기 읽어 주기')));
-    rb.onclick = () => optTexts().forEach((t, i) => say(t, undefined, i > 0));
+  // Shared read-aloud (age-fit §3): text choices and text material get a small replay button unless the game already has one.
+  // Not auto-started; reading-goal games (§5) skip the part that would turn decoding into sound matching.
+  const readGoal = item.readGoal || game.readGoal || READ_GOAL[game.id] || '';
+  const skipOpts = readGoal === true || readGoal === 'both' || readGoal === 'opts', skipShow = readGoal === true || readGoal === 'both' || readGoal === 'show';
+  const optTexts = pk
+    ? () => $$('.opt').map(b => (b.querySelector('.word,.num') || b).innerText.replace(/\s+/g, ' ').trim()).filter(t => /[A-Za-zㄱ-힝0-9]{2,}/.test(t))
+    : () => $$('.opt').map(b => speakable(b)).filter(Boolean);
+  if (pk ? optTexts().length >= 2 && optTexts().join('').length >= 8 && !$$('.opt svg').length : !skipOpts && optTexts().some(t => /\p{L}/u.test(t))) {
+    const rb = document.createElement('button'); rb.className = pk ? 'say' : 'say auto-say'; rb.id = 'spo'; rb.textContent = '🔉'; rb.setAttribute('aria-label', L(B('Read the choices', '보기 읽어 주기')));
+    rb.onclick = () => optTexts().forEach((t, i) => say(t, speechLang(t), i > 0));
     $('#sp').after(rb);
   }
   $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
+  const showBox = $('.show');
+  if (!pk && !skipShow && showBox && !hasReplay(showBox) && /\p{L}/u.test(speakable(showBox))) {
+    const mb = document.createElement('button'); mb.className = 'say auto-say auto-show'; mb.id = 'sps'; mb.textContent = '🔊'; mb.setAttribute('aria-label', L(B('Read this aloud', '자료 읽어 주기')));
+    mb.onclick = e => { e.stopPropagation(); const t = speakable(showBox); if (t) say(t, speechLang(t)); };
+    showBox.classList.add('auto-say-host'); showBox.prepend(mb);
+  }
   const showStreak = () => {
     const chip = $('#cleanStreak'); if (!chip) return;
     const show = !pk && kidGrade() !== 'P' && !DIAG.active && !SESSION.review && document.body.classList.contains('skin-explorer') && SESSION.cleanStreak >= 3;

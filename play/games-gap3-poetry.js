@@ -128,9 +128,10 @@
       const item=build(grade,lvl(this.id),rnd(12)), game=this;
       const canMake=!DIAG.active&&!SESSION.review;
       quiz(this,{ask:item.ask,askExtra:{t:item.lines.join(' '),lang:'en-US'},
-        show:`<div class="g3p-material">${item.poems?item.poems.map((lines,i)=>poem(lines,['A','B'][i])).join(''):poem(item.lines)}<div class="g3p-note">${L(B('Silent? An adult can read.','무음이면 어른이 읽어 주세요.'))}${canMake?` <button class="g3p-button" id="g3p-make">${L(B('Make','만들기'))}</button>`:''}</div></div>`,
+        show:`<div class="g3p-material">${item.poems?item.poems.map((lines,i)=>poem(lines,['A','B'][i])).join(''):poem(item.lines)}</div>`,
         cls:'g3p-options',opts:item.choices.map((text,i)=>({html:`<span class="g3p-choice">${escape(text)}</span>`,ok:i===item.right,category:'poetry-choice'})),after:item.after,
-        onRender(){bindSpeech();if($('#g3p-make'))$('#g3p-make').onclick=()=>maker(game);
+        onRender(){const note=document.createElement('div');note.className='g3p-note';note.innerHTML=`${L(B('Silent? An adult can read.','무음이면 어른이 읽어 주세요.'))}${canMake?` <button class="g3p-button" id="g3p-make">${L(B('Make','만들기'))}</button>`:''}`;$('.opts').after(note);
+          bindSpeech();if($('#g3p-make'))$('#g3p-make').onclick=()=>maker(game);
           let reader=$('#spo');
           if(!reader){reader=document.createElement('button');reader.id='spo';reader.className='say';reader.textContent='🔉';reader.setAttribute('aria-label',L(B('Hear choices','보기 듣기')));$('#sp').after(reader);}
           reader.onclick=()=>$$('.g3p-choice').forEach((e,i)=>{
