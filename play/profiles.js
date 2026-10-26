@@ -17,7 +17,9 @@ const PT = {
   back: B('Back', '뒤로'), who: B('Playing now', '지금 하는 아이'),
   cheer0: B('Play a game to start your streak!', '게임을 하면 연속 기록이 시작돼요!'), cheerN: (n) => B(`${n} ${n === 1 ? 'day' : 'days'} in a row. Great job!`, `${n}일 연속! 잘했어요!`)
 };
-const PREK_READY = false; // hidden until grown-up, teacher and device review
+// Pre-K stays hidden until a grown-up approves it. ?prek=1 turns on a preview for this browser tab only (?prek=0 turns it off).
+const PREK_PREVIEW = (() => { try { const v = new URLSearchParams(location.search).get('prek'); if (v === '1') sessionStorage.setItem('peach-prek', '1'); if (v === '0') sessionStorage.removeItem('peach-prek'); return sessionStorage.getItem('peach-prek') === '1'; } catch (e) { return false; } })();
+const PREK_READY = false || PREK_PREVIEW; // hidden until grown-up, teacher and device review
 const gradeLabel = g => g === 'P' ? L(PT.gP) : g === 'K' ? L(PT.gK) : L(PT['g'+g]);
 const GRADE3_READY = true; 
 const GRADE4_READY = true;                       // flip when grade 4 is built, reviewed and approved
