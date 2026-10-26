@@ -149,9 +149,12 @@ registerGame({
   play() {
     const lv = lvl('skipcount'), step = pick(lv === 1 ? [2, 5, 10] : [2, 3, 4, 5, 10]), back = lv === 2 && rnd(3) === 0, start = step * rnd(5) + step;
     const seq = Array.from({ length: 5 }, (_, i) => back ? start + step * (5 - i) : start + step * i), ans = seq[4], shown = seq.slice(0, 4), set = new Set([ans]);
+    const lo = Math.min(...seq), hi = Math.max(...seq), bar = n => Math.round(20 + 80 * (n - lo) / (hi - lo)) + '%';   // a clear staircase from smallest to largest
     while (set.size < 3) { const v = ans + pick([-step, step, -1, 1]); if (v > 0) set.add(v); }
-    quiz(this, { ask: back ? B(`Count backward by ${step}s. What comes next?`, `${step}씩 거꾸로 세어요. 다음은?`) : B(`Count by ${step}s. What comes next?`, `${step}씩 세어요. 다음은?`), show: `<div class="train">${shown.map(n => `<div class="car"><div class="n">${n}</div></div>`).join('')}<div class="car gap"><div class="n">?</div></div></div>`,
-      opts: [...set].map(v => ({ html: `<span class="num">${v}</span>`, ok: v === ans })), after: B(seq.join(', '), seq.join(', ')), onCorrect() { const g = $('.car.gap'); g.classList.remove('gap'); g.querySelector('.n').textContent = ans; } });
+    quiz(this, { ask: back ? B(`Count backward by ${step}s. What comes next?`, `${step}씩 거꾸로 세어요. 다음은?`) : B(`Count by ${step}s. What comes next?`, `${step}씩 세어요. 다음은?`), // Picture-first: each car carries a bar as tall as its number and the cars arrive one by one, so a child who cannot
+      // read sees the numbers growing (or shrinking, when counting backward) without the words.
+      show: `<div class="train skiptrain${back ? ' back' : ''}">${shown.map((n, i) => `<div class="car" style="--d:${i * 0.35}s"><div class="n">${n}</div><div class="skipbar" aria-hidden="true"><i style="height:${bar(n)}"></i></div></div>`).join('')}<div class="car gap" style="--d:${shown.length * 0.35}s"><div class="n">?</div><div class="skipbar" aria-hidden="true"><i style="height:0"></i></div></div></div>`,
+      opts: [...set].map(v => ({ html: `<span class="num">${v}</span>`, ok: v === ans })), after: B(seq.join(', '), seq.join(', ')), onCorrect() { const g = $('.car.gap'); g.classList.remove('gap'); g.querySelector('.n').textContent = ans; g.querySelector('.skipbar i').style.height = bar(ans); } });
   }
 });
 

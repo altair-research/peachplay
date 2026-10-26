@@ -32,3 +32,10 @@
 #view:has(.z-board) > .fact { font-size: 14px; min-height: 18px; }
 #view:has(.z-board) .next { margin-top: 2px; min-height: 44px; padding: 4px 12px; }
 @media (prefers-reduced-motion: reduce) { .z-options .opt { transition: none; } }
+/* the one unknown block: empty, dashed and gently pulsing (no "?" so the screen has a single question) */
+.z-pyramid b.z-empty { min-width: 38px; min-height: 1.4em; background: #fff; border: 2px dashed #e0703a; animation: zEmpty 1.4s ease-in-out infinite; }
+@keyframes zEmpty { 50% { box-shadow: 0 0 0 4px #ffd7b8; } }
+@media (prefers-reduced-motion: reduce) { .z-pyramid b.z-empty { animation: none; box-shadow: 0 0 0 3px #ffd7b8; } }
+.z-cell.z-empty { background: #fff; outline: 2px dashed #e0703a; outline-offset: -3px; animation: zEmpty 1.4s ease-in-out infinite; }
+.z-cell.z-empty.z-drop { min-width: 0; min-height: 0; border-radius: 0; font-size: inherit; }
+@media (prefers-reduced-motion: reduce) { .z-cell.z-empty { animation: none; } }

@@ -6,11 +6,12 @@ const AREA_WRITE = (u) => B(`Writing · ${u}`, `쓰기 · ${u}`);
 function tileRound(game, cfg) {
   if (dup(game, cfg.target.join(' '))) return game.play();
   const tokens = shuffle([...cfg.target, ...cfg.extra]);
+  if (cfg.oneRow === undefined && tokens.length <= 7 && tokens.every(t => String(t).length <= 2)) cfg.oneRow = true;   // letter tiles stay on one line
   view().innerHTML = `
     <div class="prompt">${L(cfg.ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
     <div class="show">${cfg.show || ''}</div>
-    <div class="slots">${cfg.target.map(() => '<div class="slot"></div>').join('')}</div>
-    <div class="opts tiles">${tokens.map((t, i) => `<button class="opt tile" data-i="${i}">${t}</button>`).join('')}</div>
+    <div class="slots${cfg.oneRow ? ' onerow' : ''}">${cfg.target.map(() => '<div class="slot"></div>').join('')}</div>
+    <div class="opts tiles${cfg.oneRow ? ' onerow' : ''}">${tokens.map((t, i) => `<button class="opt tile" data-i="${i}">${t}</button>`).join('')}</div>
     <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact"></div>`;
   const ask = () => say(L(cfg.askSay || cfg.ask));
   $('#sp').onclick = ask; ask();
@@ -49,7 +50,7 @@ registerGame({
     const letters = w[0].split(''), extra = others(ALPHA.filter(c => !letters.includes(c)), '', 2);
     tileRound(this, {
       ask: B('Spell the word for the picture!', '그림의 이름을 글자로 만들어요!'), show: `<span class="emo">${w[1]}</span>`,
-      target: letters, extra, speakTiles: true, after: B(`${w[0]}!`, `${w[0]} — ${w[2].ko}!`), vocab: w[0]
+      target: letters, extra, speakTiles: true, oneRow: true, after: B(`${w[0]}!`, `${w[0]} — ${w[2].ko}!`), vocab: w[0]
     });
   }
 });

@@ -130,7 +130,8 @@ registerGame({
       speech = B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`);
     } else {
       const a = 2 + rnd(top - 1), b = 1 + rnd(a - 1); ans = a - b;
-      show = `<div class="story">${Array.from({ length: a }, (_, i) => `<span class="${i >= a - b ? 'gone' : ''}">${e}</span>`).join('')}</div>`;
+      // One row only: the ones that stay first, then the crossed-out ones together in a dashed box, so nothing wraps to a second line.
+      show = `<div class="story takeaway"><span class="keep">${e.repeat(a - b)}</span><span class="gonebox">${Array.from({ length: b }, () => `<span class="gone"><i>${e}</i></span>`).join('')}</span></div>`;
       ask = B('How many are left without the crossed ones?', '지워진 것을 빼면 몇 개 남을까요?');
       speech = B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`);
     }
@@ -236,7 +237,9 @@ registerGame({
   play() {
     const lv = lvl('graph'), cats = shuffle(['🍎', '🍌', '🍇', '🍑']).slice(0, lv === 1 ? 2 : 3);
     const counts = shuffle([1, 2, 3, 4, 5, 6]).slice(0, cats.length);
-    const col = (c, n) => `<div class="gcol"><div class="gstack">${Array.from({ length: n }, () => `<span>${c}</span>`).join('')}</div><div class="glabel">${c}</div></div>`;
+    // The label under the line is a small word, not another copy of the picture, so the only pictures to count are in the column (2026-10-26).
+    const NAME = { '🍎': B('apple', '사과'), '🍌': B('banana', '바나나'), '🍇': B('grapes', '포도'), '🍑': B('peach', '복숭아') };
+    const col = (c, n) => `<div class="gcol"><div class="gstack">${Array.from({ length: n }, () => `<span>${c}</span>`).join('')}</div><div class="glabel gword">${L(NAME[c])}</div></div>`;
     const show = `<div class="graph">${cats.map((c, i) => col(c, counts[i])).join('')}</div>`;
     const mode = rnd(2) === 0 ? 'most' : 'howmany';
     if (mode === 'most') {

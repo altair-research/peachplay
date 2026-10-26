@@ -8,7 +8,7 @@
   const permutations = a => a.length ? a.flatMap((x, i) => permutations(a.filter((_, j) => j !== i)).map(p => [x, ...p])) : [[]];
   const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const text = s => `<span class="z-number">${s}</span>`;
-  const grid = (a, n, mark = -1, box = 0) => `<div class="z-grid" style="--z-n:${n}">${a.map((v, i) => `<span class="z-cell ${i === mark ? 'z-mark' : ''} ${box && (i % n + 1) % box === 0 ? 'z-edge' : ''} ${box && (Math.floor(i / n) + 1) % (n / box) === 0 ? 'z-bottom' : ''}">${i === mark ? '?' : v === null ? '·' : v}</span>`).join('')}</div>`;
+  const grid = (a, n, mark = -1, box = 0) => `<div class="z-grid" style="--z-n:${n}">${a.map((v, i) => `<span class="z-cell ${i === mark ? 'z-mark z-empty' : ''} ${box && (i % n + 1) % box === 0 ? 'z-edge' : ''} ${box && (Math.floor(i / n) + 1) % (n / box) === 0 ? 'z-bottom' : ''}">${i === mark ? '' : v === null ? '·' : v}</span>`).join('')}</div>`;
   const bits = (a, n) => grid(a.map(v => v ? '●' : '·'), n);
   const line = s => `<div class="z-line">${s}</div>`;
   const nums = answer => shuffle([answer, answer + 1, answer + 2, Math.max(0, answer - 1)]).filter((v, i, a) => a.indexOf(v) === i);
@@ -16,9 +16,12 @@
     const options = [...new Map(candidates.map(v => [JSON.stringify(v), v])).values()];
     const answers = options.filter(valid);
     if (options.length < 2 || answers.length !== 1) throw new Error('Puzzle answer is not unique');
-    return { ask, show: `<div class="z-board">${show}<div class="z-drop" aria-label="${L(B('Answer here', '여기에 답해요'))}">?</div></div>`,
+    // A board that already has its own empty spot (number pyramid) uses that spot as the answer place: one unknown on screen.
+    const inline = /\bz-empty\b/.test(show) && !show.includes('data-sep');   // data-sep: the answer is a further step, not the empty spot itself
+    return { ask, show: inline ? `<div class="z-board">${show.replace(/\bz-empty\b/, 'z-empty z-drop')}</div>` : `<div class="z-board">${show}<div class="z-drop" aria-label="${L(B('Answer here', '여기에 답해요'))}">?</div></div>`,
       opts: options.map(v => ({ html: render(v), ok: valid(v) })), cls: 'z-options',
       after: B('You followed the clues!', '단서를 차근차근 풀었어요!'),
+      onCorrect() { const d = inline && view().querySelector('.z-drop'); if (d) { const r = document.createElement('div'); r.innerHTML = render(answers[0]); d.textContent = r.textContent.trim(); d.style.animation = 'none'; } },
       onRender() {
         const root = view(), board = root.querySelector('.z-board');
         root.querySelector('.opts').style.setProperty('--z-count', options.length);
@@ -92,7 +95,7 @@
     if (solution.length !== 1) throw new Error('Grid is not unique');
     const glyph = n === 4 ? ['●', '▲', '■', '★'] : seq(n).map(x => String(x + 1));
     const opts = [full[at], ...shuffle(seq(n).map(x => x + 1).filter(v => v !== full[at])).slice(0, 3)];
-    return item(B(`Each row, column and ${bw}×${bh} box uses each symbol once. What goes at ?`, `가로·세로·${bw}×${bh} 묶음마다 같은 표시를 한 번씩 써요. ?는 무엇일까요?`), grid(a.map(v => v ? glyph[v - 1] : null), n, at, bw), opts, v => v === solution[0][at], B('Start with a row that has the fewest empty cells.', '빈칸이 가장 적은 줄부터 살펴봐요.'), v => text(glyph[v - 1]));
+    return item(B(`Each row, column and ${bw}×${bh} box uses each symbol once. What goes in the empty box?`, `가로·세로·${bw}×${bh} 묶음마다 같은 표시를 한 번씩 써요. 빈칸에는 무엇이 들어갈까요?`), grid(a.map(v => v ? glyph[v - 1] : null), n, at, bw), opts, v => v === solution[0][at], B('Start with a row that has the fewest empty cells.', '빈칸이 가장 적은 줄부터 살펴봐요.'), v => text(glyph[v - 1]));
   });
 
   const runs = row => { const out = []; let count = 0; for (const v of [...row, 0]) { if (v) count++; else if (count) { out.push(count); count = 0; } } return out.length ? out : [0]; };
@@ -152,8 +155,9 @@
     const n = t === 0 ? 2 : 3 + Math.floor(t / 2), rows = [seq(n).map(() => t===0 ? rnd(4) : 1 + rnd(3 + t))];
     while (rows[rows.length - 1].length > 1) { const r = rows[rows.length - 1]; rows.push(r.slice(1).map((v, i) => v + r[i])); }
     const at = t <= 2 ? rows.length - 1 : rnd(rows.length - 1) + 1, col = rnd(rows[at].length), ans = rows[at][col];
-    const visual = rows.slice().reverse().map((r, k) => `<div class="z-pyramid">${r.map((v, j) => `<b>${rows.length - 1 - k === at && j === col ? '?' : v}</b>`).join('')}</div>`).join('');
-    return numberItem(B('Each block is the sum of the two below it. Find ?.', '아래 두 칸을 더하면 위 칸이 돼요. ?를 찾아요.'), visual, ans, B('Look at the pair directly under an empty block.', '빈칸 바로 아래 두 칸부터 보세요.'));
+    const visual = rows.slice().reverse().map((r, k) => `<div class="z-pyramid">${r.map((v, j) => rows.length - 1 - k === at && j === col ? `<b class="z-empty" aria-label="${L(B('empty block', '빈 칸'))}"></b>` : `<b>${v}</b>`).join('')}</div>`).join('');
+    // One unknown only: the missing block is an empty glowing box, so the screen never shows two question marks.
+    return numberItem(B('Each block is the sum of the two below it. What goes in the empty block?', '아래 두 칸을 더하면 위 칸이 돼요. 빈 칸에 들어갈 수는?'), visual, ans, B('Look at the pair directly under an empty block.', '빈칸 바로 아래 두 칸부터 보세요.'));
   });
 
   register('zbalance', '⚖️', 'Balance Clues', '저울 단서', t => {
@@ -166,8 +170,8 @@
 
   register('zmagic', '✨', 'Equal Sum Square', '합이 같은 네모', t => {
     const scale = 1 + Math.floor(t / 2), offset = rnd(3 + t), base = [8, 1, 6, 3, 5, 7, 4, 9, 2], a = base.map(v => v * scale + offset), at = rnd(9), target = 15 * scale + 3 * offset;
-    if(t===2)return numberItem(B('Find the missing number, then add 2.','빠진 수를 구한 뒤 2를 더해요.'),line(L(B(`Each row, column and diagonal totals ${target}.`,`가로·세로·대각선 합은 ${target}예요.`)))+grid(a,3,at),a[at]+2,B('First fill the grid, then apply the extra step.','먼저 빈칸을 구하고 다음 단계를 적용해요.'));
-    return numberItem(B(`Every row, column and diagonal totals ${target}. Find ?.`, `가로·세로·대각선의 합이 모두 ${target}예요. ?는?`), grid(a, 3, at), a[at], B('Add the two known numbers in the row with ?.', '?가 있는 줄의 나머지 두 수부터 더해요.'));
+    if(t===2)return numberItem(B('Find the missing number, then add 2.','빠진 수를 구한 뒤 2를 더해요.'),line(L(B(`Each row, column and diagonal totals ${target}.`,`가로·세로·대각선 합은 ${target}예요.`)))+grid(a,3,at)+'<i data-sep hidden></i>',a[at]+2,B('First fill the grid, then apply the extra step.','먼저 빈칸을 구하고 다음 단계를 적용해요.'));
+    return numberItem(B(`Every row, column and diagonal totals ${target}. What goes in the empty box?`, `가로·세로·대각선의 합이 모두 ${target}예요. 빈칸에 들어갈 수는?`), grid(a, 3, at), a[at], B('Add the two known numbers in the row with the empty box.', '빈칸이 있는 줄의 나머지 두 수부터 더해요.'));
   });
 
   register('zsymbols', '➕', 'Missing Signs', '빠진 기호', t => {

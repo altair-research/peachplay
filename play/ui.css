@@ -544,3 +544,34 @@ body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.
 /* shared read-aloud (age-fit §3, request 70d): small replay button on text material; 44px hit area comes from a11y.css */
 .show.auto-say-host{position:relative}
 .show .say.auto-show{position:absolute;top:0;right:0;width:32px;height:32px;margin:0;font-size:16px;line-height:1;z-index:3;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+
+/* picture-first fixes (docs/picture-first-principles.md, 2026-10-26) */
+/* skip counting: each car shows a bar as tall as its number; cars arrive left to right */
+.skiptrain .car{animation:carIn .35s ease-out both;animation-delay:var(--d,0s)}
+.skipbar{height:clamp(30px,8dvh,64px);display:flex;align-items:flex-end;justify-content:center;margin-top:4px}
+.skipbar i{display:block;width:60%;min-height:3px;background:var(--math,#f4a261);border-radius:4px 4px 0 0;transition:height .4s}
+.car.gap .skipbar i{background:transparent}
+@keyframes carIn{from{transform:translateY(-10px) scale(.7)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.skiptrain .car{animation:none}}
+/* spell the picture: slots and letter tiles stay on one line */
+.slots.onerow,.opts.tiles.onerow{display:flex !important;flex-wrap:nowrap !important;width:100%;max-width:460px;gap:6px;justify-content:center;margin-left:auto;margin-right:auto}
+.opts.tiles.onerow .opt.tile{flex:1 1 0 !important;min-width:44px !important;max-width:64px;padding:2px 0 !important;font-size:clamp(20px,min(7vw,4.6dvh),36px) !important}
+.slots.onerow .slot{min-width:0 !important;flex:0 1 52px}
+/* take-away story: one row, crossed ones grouped in a dashed box */
+.story.takeaway{flex-wrap:nowrap;gap:clamp(4px,2vw,14px);font-size:clamp(20px,min(7.5vw,5dvh),34px)}
+.story.takeaway .keep{letter-spacing:2px;white-space:nowrap}
+.story.takeaway .gonebox{display:inline-flex;gap:2px;border:3px dashed #c1121f;border-radius:12px;padding:2px 6px;white-space:nowrap}
+.story.takeaway .gone{opacity:1;filter:none;text-decoration:none}
+.story.takeaway .gone i{font-style:normal;opacity:.35;filter:grayscale(1)}
+.story.takeaway .gone::after{left:50%;top:50%;transform:translate(-50%,-50%);font-size:1.1em;font-weight:900;color:#d00000}
+/* previous-question peek: read-only copy of the question just answered */
+#prevQ{font-size:18px}
+.prevpeek{position:fixed;inset:0;z-index:50;background:var(--bg,#fff7f0);overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.prevpeek .peekbody{pointer-events:none}
+.prevpeek .peektag{font-weight:800;text-align:center;opacity:.75}
+.prevpeek .next{align-self:center}
+/* motion plan: the thing to move pulses; a tapped push slides it */
+.moveplan-obj{transform-box:fill-box;transform-origin:center;animation:mpPulse 1.4s ease-in-out infinite;transition:transform .9s ease-in-out}
+@keyframes mpPulse{50%{filter:drop-shadow(0 0 4px #e0703a)}}
+@media (prefers-reduced-motion:reduce){.moveplan-obj{animation:none;transition:none}}
+.graph .glabel.gword{font-size:clamp(12px,2dvh,15px);font-weight:700;opacity:.8}

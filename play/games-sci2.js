@@ -74,13 +74,16 @@
   const objects=[[B('ball','공을'),true],[B('wheel','바퀴를'),true],[B('orange','오렌지를'),true],[B('block','블록을'),false],[B('box','상자를'),false],[B('book','책을'),false]];
   add('moveplan',B('Plan a Move','움직임 계획'),'↔️',B('Science · Motion plans','과학 · 움직임 계획'),lv=>{
     const [obj,round]=pick(objects),right=!!rnd(2);
-    const svg=`<svg viewBox="0 0 180 65" style="width:180px;height:65px"><path d="M5 55H175" stroke="#435269" stroke-width="3"/>${round?'<circle cx="90" cy="40" r="14" fill="#f3b65d"/>':'<rect x="76" y="27" width="28" height="28" fill="#76bec7"/>'}<text x="${right?148:12}" y="48" font-size="24">★</text></svg>`;
+    const svg=`<svg viewBox="0 0 180 65" style="width:180px;height:65px"><path d="M5 55H175" stroke="#435269" stroke-width="3"/>${round?'<circle class="moveplan-obj" cx="90" cy="40" r="14" fill="#f3b65d" stroke="#435269" stroke-width="2"/>':'<rect class="moveplan-obj" x="76" y="27" width="28" height="28" fill="#76bec7" stroke="#435269" stroke-width="2"/>'}<text x="${right?148:12}" y="48" font-size="24" fill="#e0a800">★</text></svg>`;
     // 70a: two-word options with arrows. L2 combines the shape (roll or slide) with the star's side.
-    const mv=(e,en,ko)=>({e,t:B(en,ko)}),side=right?['➡️','right','오른쪽으로']:['⬅️','left','왼쪽으로'],away=right?['⬅️','left','왼쪽으로']:['➡️','right','오른쪽으로'];
-    const choices=lv===1?[mv(side[0],`push ${side[1]}`,`${side[2]} 밀어요`),mv(away[0],`push ${away[1]}`,`${away[2]} 밀어요`),mv('✋','stay still','그대로 두어요')]
-      :round?[mv('🔄'+side[0],`roll ${side[1]}`,`${side[2]} 굴려요`),mv('🔄'+away[0],`roll ${away[1]}`,`${away[2]} 굴려요`),mv('⬆️','lift up','들어 올려요')]
-      :[mv('📦'+side[0],`slide ${side[1]}`,`${side[2]} 밀어요`),mv('🔄'+side[0],`roll ${side[1]}`,`${side[2]} 굴려요`),mv('📦'+away[0],`slide ${away[1]}`,`${away[2]} 밀어요`)];
-    return {ask:lv===1?B(`Which push moves the ${obj.en} to the star?`,`${obj.ko} 어느 쪽으로 밀면 별에 닿을까요?`):B(`Which move takes the ${obj.en} to the star?`,`${obj.ko} 별까지 옮기는 움직임은?`),show:svg,opts:choices.map((c,i)=>({html:`<span class="emo">${c.e}</span>`,label:c.t,ok:i===0})),cls:'shapes',after:B('This is a plan. Test real objects with an adult to observe what happens.','움직임 계획이에요. 실제 결과는 어른과 물체를 움직여 관찰해요.')};
+    const mv=(e,en,ko,m)=>({e,t:B(en,ko),m}),side=right?['➡️','right','오른쪽으로']:['⬅️','left','왼쪽으로'],away=right?['⬅️','left','왼쪽으로']:['➡️','right','오른쪽으로'];
+    const choices=lv===1?[mv(side[0],`push ${side[1]}`,`${side[2]} 밀어요`,'side'),mv(away[0],`push ${away[1]}`,`${away[2]} 밀어요`,'away'),mv('✋','stay still','그대로 두어요','stay')]
+      :round?[mv('🔄'+side[0],`roll ${side[1]}`,`${side[2]} 굴려요`,'side'),mv('🔄'+away[0],`roll ${away[1]}`,`${away[2]} 굴려요`,'away'),mv('⬆️','lift up','들어 올려요','up')]
+      :[mv('📦'+side[0],`slide ${side[1]}`,`${side[2]} 밀어요`,'side'),mv('🔄'+side[0],`roll ${side[1]}`,`${side[2]} 굴려요`,'stay'),mv('📦'+away[0],`slide ${away[1]}`,`${away[2]} 밀어요`,'away')];
+    return {ask:lv===1?B(`Which push moves the ${obj.en} to the star?`,`${obj.ko} 어느 쪽으로 밀면 별에 닿을까요?`):B(`Which move takes the ${obj.en} to the star?`,`${obj.ko} 별까지 옮기는 움직임은?`),show:svg,opts:choices.map((c,i)=>({html:`<span class="emo" data-mv="${c.m}">${c.e}</span>`,label:c.t,ok:i===0})),cls:'shapes',
+      // Picture-first: a tapped move is acted out on the model (toward the star, away from it, or not at all), then a wrong one slides back.
+      onRender(){const o=$('.show .moveplan-obj');if(!o)return;const dx=right?58:-58;$$('.opt').forEach(b=>b.addEventListener('click',()=>{const m=b.querySelector('[data-mv]')?.dataset.mv;o.style.transform=m==='side'?`translateX(${dx}px)`:m==='away'?`translateX(${-dx*0.6}px)`:m==='up'?'translateY(-14px)':'rotate(8deg)';if(m!=='side')setTimeout(()=>{o.style.transform='';},1100);}));},
+      after:B('This is a plan. Test real objects with an adult to observe what happens.','움직임 계획이에요. 실제 결과는 어른과 물체를 움직여 관찰해요.')};
   });
 })();
 

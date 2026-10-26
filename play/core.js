@@ -303,7 +303,7 @@ function startReview() {
   const rounds = kidGrade() === 'P' ? 5 : ROUNDS;
   const items = Array.from({ length: rounds }, (_, i) => pool[i % Math.min(pool.length, rounds)]);
   NEXT_TOK++;
-  Object.assign(SESSION, { review: items, n: 0, done: 0, mix: false, rounds });
+  Object.assign(SESSION, { review: items, n: 0, done: 0, mix: false, rounds, prevPeek: null });
   reviewStep();
 }
 function reviewStep() {
@@ -333,7 +333,7 @@ function launch(game, mix) {
   if (!DIAG.active && !mix) { S.last = game.id; save(); }                     // for the home screen's Continue button
   Object.keys(MISS).forEach(k => { MISS[k] = false; });
   Object.assign(SESSION, { id: game.id, n: 0, mix: !!mix, done: 0, rounds: mix ? Math.min(3, game.rounds || 3) : (game.rounds || ROUNDS) });
-  SESSION.misses = 0; SESSION.easyNext = false; SESSION.easyLevel = false;
+  SESSION.misses = 0; SESSION.easyNext = false; SESSION.easyLevel = false; SESSION.prevPeek = null;
   SESSION.learnerMode = kidGrade() === 'P' || gradeOf(game) === 'P' ? 'unknown' : window.Learner.style();
   SESSION.styleWeak = kidGrade() !== 'P' && gradeOf(game) !== 'P' && window.Learner.weakDomain(window.Learner.domainFor(game.id));
   SESSION.styleCompleted = false; SESSION.cleanStreak = 0;
@@ -438,6 +438,18 @@ function quiz(game, item) {
   };
   const ask = () => { say(item.askSay ? question(item.askSay) : (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
+  // Previous question (2026-10-26): a read-only look at the question just solved in this round, then back to this one.
+  if (SESSION.prevPeek && !DIAG.active) {
+    const pb = document.createElement('button'); pb.className = 'say'; pb.id = 'prevQ'; pb.textContent = '⏮️'; pb.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
+    const peek = SESSION.prevPeek;
+    pb.onclick = () => {
+      try { speechSynthesis.cancel(); } catch (e) {}
+      const box = document.createElement('div'); box.className = 'prevpeek'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
+      box.innerHTML = `<div class="peektag">⏮️ ${L(B('Previous question', '이전 문제'))}</div><div class="peekbody">${peek}</div><button class="next" id="peekBack">▶ ${L(B('Back to this question', '지금 문제로'))}</button>`;
+      document.body.append(box); box.querySelector('#peekBack').onclick = () => box.remove(); box.querySelector('#peekBack').focus();
+    };
+    $('#sp').before(pb);
+  }
   view().languageRefresh = { root: view().firstElementChild,
     legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No', '아니요']]) : null,
     update: () => {
@@ -513,6 +525,9 @@ function quiz(game, item) {
     }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
+      setTimeout(() => { if (!btn.isConnected) return; const c = document.createElement('div'); [...view().children].filter(e => e.matches('.prompt,.show,.opts')).forEach(e => c.append(e.cloneNode(true)));
+        c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); c.querySelectorAll('.say,.z-tools').forEach(e => e.remove()); c.querySelectorAll('button').forEach(e => { e.disabled = true; e.tabIndex = -1; });
+        SESSION.prevPeek = c.innerHTML; }, 0);   // after the game's own onCorrect has filled in the answer
       if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
       $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && !document.body.classList.contains('skin-explorer') && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
