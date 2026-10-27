@@ -13,6 +13,7 @@ function cleanProf(p) {                                   // -> { active, list }
 }
 function cleanState(s) {                                  // keeps only known, well-typed fields
   const o = {}; if (!isObj(s)) return o;
+  if (isObj(s.demoSeen)) o.demoSeen = Object.fromEntries(Object.entries(s.demoSeen).filter(([k,v]) => /^[A-Za-z0-9_-]{1,40}$/.test(k) && v === true).slice(0, 800));
   if (Array.isArray(s.log)) o.log = window.LearnLog.clean(s.log);
   if (isObj(s.mastery) && window.Learner) o.mastery = window.Learner.cleanMastery(s.mastery);
   if (['slow', 'challenge', 'unknown'].includes(s.learningStyle)) o.learningStyle = s.learningStyle;
@@ -413,6 +414,7 @@ const speechLang = t => /[가-힣]/.test(t) ? 'ko-KR' : /[A-Za-z]/.test(t) ? 'en
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
 function quiz(game, item) {
+  if (window.PictureDemo?.intercept(game, item)) return;
   confetti.clear?.();
   const pk=game.grade === 'P';
   document.body.classList.toggle('pk-playing', pk);

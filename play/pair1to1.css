@@ -1,0 +1,17 @@
+.pair-board{position:relative;width:min(100%,600px);margin:auto}
+.pair-instruction{font-size:20px;line-height:28px;text-align:center}
+.pair-group{position:relative;border:2px solid #9aaec7;border-radius:14px;height:84px;margin:0 0 24px;background:var(--card,#fff)}
+.pair-board[data-level="2"] .pair-group{height:108px}
+.pair-label{position:absolute;left:5px;top:0;font-size:14px;font-weight:800;color:#244166}
+.pair-token{position:absolute;transform:translateX(-50%);width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:2px solid transparent;border-radius:12px;background:transparent;font-size:27px;z-index:2;touch-action:manipulation}
+.pair-token[aria-pressed="true"]{border-color:#214e99;background:#e4efff}.pair-token.paired{outline:2px solid #426daa;outline-offset:-7px}
+.pair-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.pair-leftover{animation:pair-glow 1s ease-in-out infinite alternate;outline:3px dashed #a06d00;background:#fff5c7}
+@keyframes pair-glow{to{box-shadow:0 0 0 4px #ffd35d}}
+@media(prefers-reduced-motion:reduce){.pair-leftover{animation:none}}
+body.calm .pair-leftover{animation:none}
+.opts.pair-answers{display:flex!important;gap:8px;margin:4px auto;width:min(100%,600px)}
+.pair-answers .opt{flex:1;min-width:44px;min-height:68px;padding:4px;font-size:18px}.pair-answers svg{width:66px;height:47px;display:block;margin:auto}.pair-answers .ol{font-size:16px}
+#view:has(.pair-board) .show{margin:0;width:100%}#view:has(.pair-board) .prompt{font-size:clamp(19px,3vw,28px);margin:4px 0}
+#view:has(.pair-board) .cheer{font-size:20px;min-height:28px;margin:2px}#view:has(.pair-board) .fact{font-size:16px;margin:2px}
+#view:has(.pair-board) .next{font-size:20px;margin:3px;padding:8px 18px}

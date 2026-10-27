@@ -575,3 +575,15 @@ body.skin-explorer .menu.intro.round-actions small{font-size:12px;line-height:1.
 @keyframes mpPulse{50%{filter:drop-shadow(0 0 4px #e0703a)}}
 @media (prefers-reduced-motion:reduce){.moveplan-obj{animation:none;transition:none}}
 .graph .glabel.gword{font-size:clamp(12px,2dvh,15px);font-weight:700;opacity:.8}
+/* Request 73: numbered stroke practice. */
+.trace-guided{position:relative;display:inline-block;max-width:100%;margin:4px auto}
+.trace-guided canvas{max-width:100%;touch-action:none}
+.trace-tools{display:flex;align-items:center;justify-content:center;gap:12px;min-height:46px}
+.trace-tools button{min-width:44px;min-height:44px}.trace-hint{font-size:18px}
+.trace-start-hint{position:absolute;transform:translate(-50%,-50%);width:42px;height:42px;line-height:42px;border:3px dashed #225caa;border-radius:50%;color:#123b73;background:#dcecffb0;pointer-events:none;animation:trace-pulse .6s alternate infinite;font-size:24px;font-weight:800}
+@keyframes trace-pulse{to{box-shadow:0 0 0 7px #78a5e766}}
+@media(prefers-reduced-motion:reduce){.trace-start-hint{animation:none}}
+body.calm .trace-start-hint{animation:none}
+#view:has(.trace-guided) .prompt{font-size:clamp(20px,4vw,28px);margin:6px 0}
+#view:has(.trace-guided) .cheer{font-size:22px;min-height:28px;margin:5px}
+#view:has(.trace-guided) .next{font-size:20px;margin:4px;padding:8px 18px;min-width:44px;min-height:44px}
