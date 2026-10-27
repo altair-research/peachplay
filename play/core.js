@@ -372,9 +372,36 @@ function sessionEnd(game) {
 }
 let NEXT_TOK = 0;
 // Shows a "Next" button and moves on by itself after a short pause (tap to go sooner).
+// Previous question (2026-10-26; all games 2026-10-26 night): nextButton keeps a read-only copy of the solved screen,
+// and the next question shows ⏮️ next to 🔊 to look back at it. Canvas drawings are copied as pictures.
+function snapPrev() {
+  const c = document.createElement('div');
+  [...view().children].filter(e => !e.matches('.cheer,.fact,.next,#nx,script,style')).forEach(e => {
+    const w = document.createElement('div'); w.append(e.cloneNode(true));
+    const src = e.tagName === 'CANVAS' ? [e] : [...e.querySelectorAll('canvas')];
+    [...w.querySelectorAll('canvas')].forEach((d, i) => { try { const img = document.createElement('img'); img.src = src[i].toDataURL(); img.style.cssText = `width:${src[i].style.width || src[i].width + 'px'};max-width:100%;height:auto`; img.alt = ''; d.replaceWith(img); } catch (err) { d.remove(); } });
+    c.append(...w.childNodes);
+  });
+  c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); c.querySelectorAll('.say,.z-tools,.trace-tools').forEach(e => e.remove()); c.querySelectorAll('button,input').forEach(e => { e.disabled = true; e.tabIndex = -1; }); c.querySelectorAll('.no').forEach(e => e.classList.remove('no'));
+  if (c.textContent.trim() || c.querySelector('img,svg,canvas')) SESSION.prevPeek = c.innerHTML;
+}
+function addPrevButton() {
+  const sp = $('#sp');
+  if (!SESSION.prevPeek || DIAG.active || !sp || $('#prevQ')) return;
+  const pb = document.createElement('button'); pb.className = 'say'; pb.id = 'prevQ'; pb.textContent = '⏮️'; pb.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
+  const peek = SESSION.prevPeek;
+  pb.onclick = () => {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    const box = document.createElement('div'); box.className = 'prevpeek'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
+    box.innerHTML = `<div class="peektag">⏮️ ${L(B('Previous question', '이전 문제'))}</div><div class="peekbody">${peek}</div><button class="next" id="peekBack">▶ ${L(B('Back to this question', '지금 문제로'))}</button>`;
+    document.body.append(box); box.querySelector('#peekBack').onclick = () => box.remove(); box.querySelector('#peekBack').focus();
+  };
+  sp.before(pb);
+}
 function nextButton(fn, opts = {}) {
   if (!DIAG.active && SESSION.n + 1 >= SESSION.rounds) window.LearnLog.finish();
   const tok = ++NEXT_TOK;
+  if (!DIAG.active) setTimeout(() => { if (tok === NEXT_TOK) snapPrev(); }, 0);   // after the game has filled in the answer
   setTimeout(() => {
     const cheer = $('#cheer'); if (!cheer || tok !== NEXT_TOK) return;
     cheer.insertAdjacentHTML('afterend', `<button class="next" id="nx">${T().next}</button>`);
@@ -388,7 +415,7 @@ function nextButton(fn, opts = {}) {
       if (g && g.grade === 'P' && SESSION.pkMixed && SESSION.n < SESSION.rounds) { const next=pick(visibleGames()); SESSION.id=next.id; return next.play(); }
       if (!g || SESSION.n < SESSION.rounds) {
         SESSION.easyLevel = !!SESSION.easyNext; SESSION.easyNext = false;
-        try { return fn(); } finally { SESSION.easyLevel = false; }
+        try { return fn(); } finally { SESSION.easyLevel = false; addPrevButton(); }
       }
       window.LearnLog.finish(); if (SESSION.mix) window.Learner.complete(); return SESSION.mix ? surprise() : sessionEnd(g);
     };
@@ -440,18 +467,7 @@ function quiz(game, item) {
   };
   const ask = () => { say(item.askSay ? question(item.askSay) : (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
-  // Previous question (2026-10-26): a read-only look at the question just solved in this round, then back to this one.
-  if (SESSION.prevPeek && !DIAG.active) {
-    const pb = document.createElement('button'); pb.className = 'say'; pb.id = 'prevQ'; pb.textContent = '⏮️'; pb.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
-    const peek = SESSION.prevPeek;
-    pb.onclick = () => {
-      try { speechSynthesis.cancel(); } catch (e) {}
-      const box = document.createElement('div'); box.className = 'prevpeek'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', L(B('Previous question', '이전 문제')));
-      box.innerHTML = `<div class="peektag">⏮️ ${L(B('Previous question', '이전 문제'))}</div><div class="peekbody">${peek}</div><button class="next" id="peekBack">▶ ${L(B('Back to this question', '지금 문제로'))}</button>`;
-      document.body.append(box); box.querySelector('#peekBack').onclick = () => box.remove(); box.querySelector('#peekBack').focus();
-    };
-    $('#sp').before(pb);
-  }
+  addPrevButton();
   view().languageRefresh = { root: view().firstElementChild,
     legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No', '아니요']]) : null,
     update: () => {
@@ -527,9 +543,6 @@ function quiz(game, item) {
     }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
-      setTimeout(() => { if (!btn.isConnected) return; const c = document.createElement('div'); [...view().children].filter(e => e.matches('.prompt,.show,.opts')).forEach(e => c.append(e.cloneNode(true)));
-        c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); c.querySelectorAll('.say,.z-tools').forEach(e => e.remove()); c.querySelectorAll('button').forEach(e => { e.disabled = true; e.tabIndex = -1; });
-        SESSION.prevPeek = c.innerHTML; }, 0);   // after the game's own onCorrect has filled in the answer
       if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
       $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && !document.body.classList.contains('skin-explorer') && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
