@@ -19,7 +19,11 @@
   add('workmoney',B('Work, Money, Choices','일과 돈과 선택'),'🛍️',lv=>{
     const a=pick(goods),b=pick(goods.filter(x=>x!==a)),price=1+rnd(4);
     if(lv===1){const service=!!rnd(2),repair=pick([['🚲',B('fixes a bike','자전거를 고쳐 줘요')],['👞',B('mends a shoe','신발을 고쳐 줘요')],['⌚',B('fixes a watch','시계를 고쳐 줘요')],['👜',B('mends a bag','가방을 고쳐 줘요')],['💡',B('fixes a lamp','전등을 고쳐 줘요')],['👕',B('mends a shirt','옷을 고쳐 줘요')]]),story=service?B(`A worker ${repair[1].en}.`,repair[1].ko):B(`You buy a ${a[1].en}.`,`${a[1].ko} 구입이에요.`);return {ask:B('A thing or work for someone?','물건일까요, 해 주는 일일까요?'),show:text((service?repair[0]:a[0])+' '+L(story)),askExtra:{t:L(story)},opts:[[true,'🛠️',B('service','서비스')],[false,'📦',B('goods','재화')]].map(([v,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:v===service})),cls:'groups',after:B('Money buys goods and services.','돈으로 물건과 서비스를 사요.')};}
-    return {ask:B(`How many can ${price} buy at ${price} each?`,`${price}달러로 하나에 ${price}달러면 몇 개 살까요?`),show:text(`${a[0]} ${price}　${b[0]} ${price}`),opts:choice(B('Buy one','한 개'),[B('Buy two','두 개'),B('Buy three','세 개')]),cls:'words',after:B('Money is limited, so choose one.','돈이 한정되어 있어서 하나를 골라요.')};
+    // Picture-first (2026-10-26): the money and the price are both drawn as bills, the answers are pictures of 1-3 items.
+    const each=1+rnd(2),k=1+rnd(3),money=each*k,row=(e,n)=>e.repeat(n);
+    return {ask:B(`How many ${a[1].en}s can you buy?`,`${a[1].ko}을(를) 몇 개 살 수 있을까요?`),askSay:B(`You have ${money} dollars. One ${a[1].en} costs ${each}. How many can you buy?`,`${money}달러가 있어요. ${a[1].ko} 하나는 ${each}달러예요. 몇 개 살 수 있을까요?`),
+      show:`<div style="font-size:clamp(22px,4.5dvh,32px);line-height:1.4">👛 ${row('💵',money)}<br>${a[0]} = ${row('💵',each)}</div>`,
+      opts:[1,2,3].map(n=>({html:`<span class="emo" style="font-size:clamp(16px,min(5.5vw,4dvh),30px);white-space:nowrap">${row(a[0],n)}</span>`,label:B(String(n),String(n)),ok:n===k})),cls:'shapes',after:B(`${money} dollars buys ${k}.`,`${money}달러로 ${k}개를 살 수 있어요.`)};
   });
 })();
 // Georgia & Our Nation (HMH Into Social Studies K: The World Around Us; Georgia K Social Studies AKS)
