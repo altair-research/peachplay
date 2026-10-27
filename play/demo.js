@@ -45,23 +45,50 @@
       root.querySelectorAll('button:not(.demo-actions button):not(#demoSay),[tabindex],input,a').forEach(e => {
         if (e.id !== 'demoSay') { e.tabIndex = -1; e.style.pointerEvents = 'none'; }
       });
-      let animation;
-      const replay = () => {
+      let animation, run = 0;
+      const board = root.querySelector('.pair-board');
+      // Pair Them Up (2026-10-27): show the joining itself, one top picture to one bottom picture, then the leftover, then the answer.
+      const pairSteps = () => {
+        if (!board) return [];
+        const A = [...board.querySelectorAll('.pair-A .pair-token')], Bs = [...board.querySelectorAll('.pair-B .pair-token')], lines = board.querySelector('.pair-lines'), steps = [];
+        const n = Math.min(A.length, Bs.length);
+        for (let i = 0; i < n; i++) {
+          steps.push({ el: A[i], tap: () => A[i].setAttribute('aria-pressed', 'true') });
+          steps.push({ el: Bs[i], tap: () => {
+            A[i].setAttribute('aria-pressed', 'false'); [A[i], Bs[i]].forEach(e => e.classList.add('paired'));
+            const r = board.getBoundingClientRect(), p = A[i].getBoundingClientRect(), q = Bs[i].getBoundingClientRect();
+            lines.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
+            lines.insertAdjacentHTML('beforeend', `<line x1="${p.left + p.width / 2 - r.left}" y1="${p.top + p.height / 2 - r.top}" x2="${q.left + q.width / 2 - r.left}" y2="${q.top + q.height / 2 - r.top}" stroke="#426daa" stroke-width="3"/>`);
+            if (i === n - 1) [...A.slice(n), ...Bs.slice(n)].forEach(e => e.classList.add('pair-leftover'));
+          } });
+        }
+        return steps;
+      };
+      const resetPairs = () => { if (!board) return; board.querySelector('.pair-lines').innerHTML = ''; board.querySelectorAll('.pair-token').forEach(e => { e.classList.remove('paired', 'pair-leftover'); e.setAttribute('aria-pressed', 'false'); }); };
+      const replay = async () => {
         if (!root.isConnected) return;
-        animation?.cancel();
+        const me = ++run; finger.getAnimations().forEach(x => x.cancel()); resetPairs();
         const target = root.querySelectorAll('.demo-option')[item.opts.findIndex(o => o.ok)];
         if (!target) return;
-        const r = root.getBoundingClientRect(), t = target.getBoundingClientRect();
-        const end = { left: `${t.left - r.left + t.width / 2 - 18}px`, top: `${t.top - r.top + t.height / 2}px`, opacity: 1 };
         const calm = S.calm || matchMedia('(prefers-reduced-motion: reduce)').matches;
-        animation = finger.animate(calm ? [{...end, opacity: 0}, end, end, {...end, opacity: 0}] :
-          [{left: '5px', top: '20px', opacity: 0}, {left: '5px', top: '20px', opacity: 1}, end, {...end, transform: 'scale(.8)'}, {...end, opacity: 0}],
-          {duration: calm ? 1800 : 3000, fill: 'forwards'});
+        const at = el => { const r = root.getBoundingClientRect(), t = el.getBoundingClientRect(); return { left: `${t.left - r.left + t.width / 2 - 18}px`, top: `${t.top - r.top + t.height / 2}px`, opacity: 1 }; };
+        const steps = [...pairSteps(), { el: target }];
+        let from = { left: '5px', top: '20px', opacity: 0 };
+        for (const [k, st] of steps.entries()) {
+          const end = at(st.el), last = k === steps.length - 1;
+          animation = finger.animate(calm ? [{ ...end, opacity: 0 }, end, end, ...(last ? [{ ...end, opacity: 0 }] : [])] :
+            [from, ...(k ? [] : [{ ...from, opacity: 1 }]), end, { ...end, transform: 'scale(.8)' }, ...(last ? [{ ...end, opacity: 0 }] : [end])],
+            { duration: calm ? 900 : (steps.length > 1 ? (last ? 1800 : 700) : 3000), fill: 'forwards' });
+          try { await animation.finished; } catch (e) { return; }
+          if (me !== run || !root.isConnected) return;
+          st.tap?.(); from = end;
+          if (st.tap && k === steps.length - 2) await new Promise(r => setTimeout(r, 900));   // let the leftover glow be seen
+        }
       };
-      $('#demoSay').onclick = () => say(text('Watch. Tap one picture. Then it is your turn.', '보아요. 그림 하나를 눌러요. 다음은 내 차례예요.'));
+      $('#demoSay').onclick = () => say(board ? text('Watch. Join one top picture to one bottom picture. The picture left over shows which group has more. Then it is your turn.', '보아요. 위 그림 하나와 아래 그림 하나를 이어요. 남는 그림이 있는 쪽이 더 많아요. 다음은 내 차례예요.') : text('Watch. Tap one picture. Then it is your turn.', '보아요. 그림 하나를 눌러요. 다음은 내 차례예요.'));
       $('#demoReplay').onclick = replay;
       $('#demoGo').onclick = () => {
-        animation?.cancel(); S.demoSeen ||= {}; S.demoSeen[game.id] = true; save();
+        run++; finger.getAnimations().forEach(x => x.cancel()); S.demoSeen ||= {}; S.demoSeen[game.id] = true; save();
         pending = {id: game.id, key, tries: 0}; game.play();
       };
       requestAnimationFrame(replay); $('#demoGo').focus();
