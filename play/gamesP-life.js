@@ -8,9 +8,15 @@
     return task(deliver?'The delivery helper brings this parcel. Find the person with the parcel.':'The librarian reads this book with us. Find the person reading the book.',deliver?'배달하는 분이 이 소포를 가져다줘요. 소포를 든 사람을 찾아요.':'사서가 이 책을 읽어 줘요. 책을 읽어 주는 사람을 찾아요.',art(object),scene([person('happy',i%3),art(object)]),scene([person('happy',i%3),art(foil)]));
   }));
   const playthings=['ball','book','box','hat','cup','bear','cat','fish','duck','boat','frog','sock'];
+  // [first, next, wrong choice, story en, story ko]: the wrong choice is a real thing, never one of the story's two steps.
+  const routines=[['soap','apple','ball','we wash our hands, then we eat an apple','손을 씻고 사과를 먹어요.'],['soap','towel','hat','we wash our hands, then we dry them with a towel','손을 씻고 수건으로 닦아요.'],['cloud','rain','sun','dark clouds come, then rain falls','먹구름이 오고 비가 내려요.'],['moon','sun','rain','we sleep at night, then the sun comes up','밤에 자고 해가 떠요.'],['key','house','boat','we open the door with a key, then we go into the house','열쇠로 문을 열고 집에 들어가요.']];
   register('routineP','ss','What happens next?','다음에는 무엇','CD-SS5',banks((lv,i)=>{
     const object=playthings[i%12];
-    if(lv===1)return task(`In this story, we wash our hands, then eat an apple. What is next after washing?`,`이 이야기에서는 손을 씻고 사과를 먹어요. 손을 씻은 다음은 무엇일까요?`,scene([art('soap'),art('apple')]),art('apple'),art(object==='apple'?'ball':object),{pkSound:true});
+    // 2026-10-28: L1 used one fixed story with the answer drawn in the question (PF2), so after the demo no new item existed and the screen went blank.
+    if(lv===1){
+      const [a,b,near,en,ko]=routines[i%routines.length],far=playthings.filter(x=>![a,b,near].includes(x)),foil=i<routines.length?near:far[i%far.length],blank=svg('<rect x="22" y="12" width="76" height="76" rx="10" fill="#fff" stroke="#966639" stroke-width="3" stroke-dasharray="8 6"/><text x="60" y="64" text-anchor="middle" font-size="40" fill="#966639">?</text>',B('what comes next','다음은 무엇'));
+      return task(`Listen to the story: ${en}. What comes next?`,`이야기를 들어요. ${ko} 다음은 무엇일까요?`,scene([art(a),blank]),art(b),art(foil),{pkSound:true});
+    }
     return task(`In this story, we play with the ${names[object].en} picture card, then put the card away. What comes next after playing?`,`이 이야기에서는 ${names[object].ko} 그림 카드로 놀고 정리해요. 놀이 다음에는 무엇을 하나요?`,scene([art(object),position('inside',object)]),position('inside',object),position('outside',object),{pkSound:true});
   }));
   register('feelingP','life','Listen to a feeling','마음을 들어요','SED2',banks((lv,i)=>{
