@@ -303,5 +303,7 @@ renderPeaches(); renderProfBtn();
 (() => {
   const q = new URLSearchParams(location.search), g = q.get('game') && gameById(q.get('game')), lg = q.get('lang');
   if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
+  // &lv=1|2 (sample review links): start that game at the given level so a reviewer sees the exact screen being judged.
+  const lv = +q.get('lv'); if (g && (lv === 1 || lv === 2)) { stat(g.id).level = lv; save(); }
   if (g) { home(); launch(g); } else if (S.introSeen) home(); else intro();
 })();

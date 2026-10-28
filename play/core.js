@@ -426,6 +426,7 @@ function nextButton(fn, opts = {}) {
 
 // Reading-goal games (age-fit §5): hearing these choices/material before answering would replace decoding or spelling with sound matching.
 // A game or item can also set readGoal: true | 'both' | 'opts' | 'show'.
+// quietShow: the question's 🔊 already reads the material (askSay), so the material gets no second speaker (2026-10-28 samples).
 const READ_GOAL = { letters: 'both', sight: 'opts', silly: 'opts', silly2: 'opts', tricky1: 'opts', tricky2: 'opts', twosyl: 'opts', syllables2: 'opts', vowels2: 'opts', spell3: 'opts', spell4: 'opts', spell5: 'opts', decode4: 'opts', decode5: 'opts' };
 // Visible words of an element for speech: no pictures/emoji, no buttons' own icons.
 function speakable(el) {
@@ -515,7 +516,7 @@ function quiz(game, item) {
   $$('.storytext').forEach(st => { const txt = st.innerText; const b = document.createElement('button'); b.className = 'say rd'; b.setAttribute('aria-label', T().listen); b.textContent = '🔊'; b.onclick = () => say(txt); st.prepend(b); });   // read-aloud for stories and passages
   if (item.onRender) item.onRender();
   const showBox = $('.show');
-  if (!pk && !skipShow && showBox && !hasReplay(showBox) && /\p{L}/u.test(speakable(showBox))) {
+  if (!pk && !skipShow && !item.quietShow && showBox && !hasReplay(showBox) && /\p{L}/u.test(speakable(showBox))) {
     const mb = document.createElement('button'); mb.className = 'say auto-say auto-show'; mb.id = 'sps'; mb.textContent = '🔊'; mb.setAttribute('aria-label', L(B('Read this aloud', '자료 읽어 주기')));
     mb.onclick = e => { e.stopPropagation(); const t = speakable(showBox); if (t) say(t, speechLang(t)); };
     showBox.classList.add('auto-say-host'); showBox.prepend(mb);

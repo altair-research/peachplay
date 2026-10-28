@@ -124,7 +124,7 @@ registerGame({
     const color = '#ef476f', bw = 16;
     const ask = B(`Trace the ${mode === 'num' ? 'number' : 'letter'} ${ch}. Use your finger!`, `${ch} ${mode === 'num' ? '숫자' : '글자'}를 손가락으로 따라 써요!`);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div><div class="canvaswrap" id="cw"></div>
-      <div><button class="pill" id="clr">${T().clear}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
+      <div><button class="pill" id="clr">${T().clear}</button> <button class="pill" id="tdone">✓ ${T().done}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#cw').appendChild(disp.c);
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
     if (DIAG.active) DIAG.decorate(this);
@@ -140,9 +140,16 @@ registerGame({
       if (r.coverage >= 0.5 && r.spill < 0.65) {
         done = true; if (DIAG.active) { DIAG.answer(this, !missed, null); return; }
         recordFinal('trace', missed); if (!missed) addPeach();
-        $('#cheer').textContent = pick(T().right); say(ch, 'en-US'); disp.c.onpointerdown = null; disp.c.onkeydown = null; nextButton(() => this.play());
+        $('#cheer').textContent = pick(T().right); say(ch, 'en-US'); disp.c.onpointerdown = null; disp.c.onkeydown = null; $('#tdone').disabled = true; nextButton(() => this.play());
       }
     });
+    let doneTries = 0;
+    $('#tdone').onclick = () => {
+      if (done) return;
+      if (++doneTries < 2) { const t = L(B('Trace over the whole pink shape.', '분홍 글자 위를 끝까지 따라 써요.')); $('#cheer').textContent = t; say(t); return; }
+      done = true; if (DIAG.active) { DIAG.answer(this, false, null); return; }
+      if (SESSION.review) reviewSolved(); else SESSION.done++; $('#cheer').textContent = L(B('Nice try! Let us trace again next time.', '잘했어요! 다음에 또 따라 써 봐요.')); disp.c.onpointerdown = null; disp.c.onkeydown = null; $('#tdone').disabled = true; nextButton(() => this.play());
+    };
     $('#clr').onclick = () => { ink.ctx.clearRect(0, 0, w, h); disp.ctx.clearRect(0, 0, w, h); disp.ctx.fillStyle = '#ffd9c7'; disp.ctx.fillText(ch, w / 2, base); };
     window.__traceTest = { ch, w, h, maskData, ink, disp, dpr: mask.dpr };
   }
@@ -161,7 +168,7 @@ function traceGuidedRound(game, ch, lv) {
   paths.forEach(p=>line(mask.ctx,p,bw*1.4,'#000'));
   const maskData=mask.ctx.getImageData(0,0,w*mask.dpr,h*mask.dpr).data;
   const ask=B(`Trace ${ch} from dot 1.`,`${ch}, 1번 점부터 따라 써요.`);
-  view().innerHTML=`<div class="prompt">${L(ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div><div class="canvaswrap trace-guided" id="cw"></div><div class="trace-tools"><button class="pill" id="clr">${T().clear}</button><span class="trace-hint" id="traceHint" role="status"></span></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
+  view().innerHTML=`<div class="prompt">${L(ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div><div class="canvaswrap trace-guided" id="cw"></div><div class="trace-tools"><button class="pill" id="clr">${T().clear}</button><span class="trace-hint" id="traceHint" role="status"></span><button class="pill" id="tdone">✓ ${T().done}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
   $('#cw').append(disp.c);$('#sp').onclick=()=>say(L(ask));say(L(ask));
   if(DIAG.active)DIAG.decorate(game);
   const paint = () => {
@@ -183,7 +190,7 @@ function traceGuidedRound(game, ch, lv) {
       disp.ctx.fillStyle=active?'#fff':'#33465c';disp.ctx.font='bold 15px Arial';disp.ctx.textAlign='center';disp.ctx.textBaseline='middle';disp.ctx.fillText(String(i+1),labelX,y);
       if(shared)line(disp.ctx,[[x,y+12],[labelX,y+12]],1,'#788aa0');
     });
-    const key=$('#traceHint');if(key)key.textContent=current<paths.length?'● '+(current+1):'✓';
+    const key=$('#traceHint');if(key)key.textContent='✓'.repeat(Math.min(current,paths.length))+(current<paths.length?' ●'+(current+1):'');
   };
   const hint=()=>{
     if(!disp.c.isConnected)return;
@@ -220,10 +227,19 @@ function traceGuidedRound(game, ch, lv) {
     if(current===paths.length){
       if(r.coverage>=.5&&r.spill<.65){
         done=true;if(DIAG.active){DIAG.answer(game,true,null);return;}
-        recordFinal('trace',false);addPeach();$('#cheer').textContent=pick(T().right);say(ch,'en-US');disp.c.onpointerdown=null;disp.c.onkeydown=null;nextButton(()=>game.play());
+        recordFinal('trace',false);addPeach();$('#cheer').textContent=pick(T().right);say(ch,'en-US');disp.c.onpointerdown=null;disp.c.onkeydown=null;$('#tdone').disabled=true;nextButton(()=>game.play());
       }else{$('#traceHint').textContent=L(B('Clear and try again.','지우고 다시 해요.'));}
     }
   });
+  // 2026-10-28 sample S3: a child whose strokes were not accepted saw only "Clear" and no way forward.
+  // "Done" first points at the next dot; on the second press it moves on without a peach (motor practice, not a knowledge error).
+  let doneTries=0;
+  $('#tdone').onclick=()=>{
+    if(done)return;
+    if(++doneTries<2){if(current<paths.length)hint();else{const t=L(B('Clear and try again.','지우고 다시 해요.'));$('#traceHint').textContent=t;say(t);}return;}
+    done=true;if(DIAG.active){DIAG.answer(game,false,null);return;}
+    if(SESSION.review)reviewSolved();else SESSION.done++;$('#cheer').textContent=L(B('Nice try! Let us trace again next time.','잘했어요! 다음에 또 따라 써 봐요.'));disp.c.onpointerdown=null;disp.c.onkeydown=null;$('#tdone').disabled=true;nextButton(()=>game.play());
+  };
   $('#clr').onclick=()=>{if(done)return;current=0;startOK=false;$('#cw').querySelectorAll('.trace-start-hint').forEach(e=>e.remove());ink.ctx.clearRect(0,0,w,h);draft.ctx.clearRect(0,0,w,h);paint();};
   window.__traceTest={ch,w,h,maskData,ink,disp,dpr:mask.dpr,paths,level:lv,current:()=>current,evaluate};
 }

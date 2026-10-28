@@ -18,9 +18,9 @@
     if (options.length < 2 || answers.length !== 1) throw new Error('Puzzle answer is not unique');
     // A board that already has its own empty spot (number pyramid) uses that spot as the answer place: one unknown on screen.
     const inline = /\bz-empty\b/.test(show) && !show.includes('data-sep');   // data-sep: the answer is a further step, not the empty spot itself
-    return { ask, show: inline ? `<div class="z-board">${show.replace(/\bz-empty\b/, 'z-empty z-drop')}</div>` : `<div class="z-board">${show}<div class="z-drop" aria-label="${L(B('Answer here', '여기에 답해요'))}">?</div></div>`,
+    return { ask, show: inline ? `<div class="z-board">${show.replace(/\bz-empty\b/, 'z-empty z-drop')}</div>` : `<div class="z-board">${show}</div>`,   // 2026-10-28 sample S4: a separate "?" box next to "One step" felt redundant (and pulled in a second speaker)
       opts: options.map(v => ({ html: render(v), ok: valid(v) })), cls: 'z-options',
-      after: B('You followed the clues!', '단서를 차근차근 풀었어요!'),
+      after: B('Great job!', '잘했어요!'),
       onCorrect() { const d = inline && view().querySelector('.z-drop'); if (d) { const r = document.createElement('div'); r.innerHTML = render(answers[0]); d.textContent = r.textContent.trim(); d.style.animation = 'none'; } },
       onRender() {
         const root = view(), board = root.querySelector('.z-board');
@@ -39,7 +39,7 @@
           button.onpointermove = e => { if (start && Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 10) { moved = true; button.classList.add('z-drag'); } };
           button.onpointerup = e => {
             if (!start) return; start = null; button.classList.remove('z-drag');
-            if (moved) { const r = root.querySelector('.z-drop').getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) button.click(); }
+            const drop = root.querySelector('.z-drop'); if (moved && drop) { const r = drop.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) button.click(); }
           };
           button.addEventListener('click', e => { if (moved && e.isTrusted && e.detail > 0) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
           button.onpointercancel = () => { start = null; moved = false; button.classList.remove('z-drag'); };
@@ -200,14 +200,16 @@
     for (let q = 0; q < queue.length; q++) { const i = queue[q], r = Math.floor(i / n), c = i % n; for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const rr = r + dr, cc = c + dc, j = rr * n + cc; if (rr >= 0 && rr < n && cc >= 0 && cc < n && !a[j] && d[j] < 0) { d[j] = d[i] + 1; queue.push(j); } } }
     return d;
   }
+  // 2026-10-28 sample S4: walls are rocks a child can name, open cells stay empty, and kindergarten gets one short sentence without the key step.
+  const pathCell = (v, i, len, key = -1) => i === 0 ? '🍑' : i === key ? '🔑' : i === len - 1 ? '🚩' : v ? '🪨' : '';
   register('zpath', '🗺️', 'Shortest Walk', '가장 짧은 길', t => {
-    const n = Math.min(6, 3 + Math.floor(t / 2)); let a, ds;
+    const n = Math.min(6, 3 + Math.floor(t / 2)), young = kidGrade() === 'K'; let a, ds;
     do { a = seq(n * n).map(i => i === 0 || i === n * n - 1 ? 0 : rnd(4) === 0 ? 1 : 0); ds = distances(a, n); } while (ds[a.length - 1] < 0);
-    if (lvl('zpath') === 2) {
+    if (lvl('zpath') === 2 && !young) {
       const key = pick(seq(a.length).filter(i => i > 0 && i < a.length - 1 && ds[i] >= 0)), fromKey = distances(a, n, key);
-      return numberItem(B('Collect the key, then reach the flag. Move up/down/left/right. Fewest steps?', '먼저 열쇠를 얻은 뒤 깃발로 가요. 상하좌우로 가는 가장 적은 걸음 수는?'), grid(a.map((v, i) => i === 0 ? '🍑' : i === key ? '🔑' : i === a.length - 1 ? '🚩' : v ? '■' : '·'), n), ds[key] + fromKey[a.length - 1], B('Find the shortest walk to the key, then from the key to the flag.', '열쇠까지와 열쇠에서 깃발까지의 가장 짧은 길을 각각 찾아요.'));
+      return numberItem(B('Collect the key, then reach the flag. Move up/down/left/right. Fewest steps?', '먼저 열쇠를 얻은 뒤 깃발로 가요. 상하좌우로 가는 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, a.length, key)), n), ds[key] + fromKey[a.length - 1], B('Find the shortest walk to the key, then from the key to the flag.', '열쇠까지와 열쇠에서 깃발까지의 가장 짧은 길을 각각 찾아요.'));
     }
-    return numberItem(B('Walk from peach to flag, up/down/left/right. Fewest steps?', '복숭아에서 깃발까지 상하좌우로 가요. 가장 적은 걸음 수는?'), grid(a.map((v, i) => i === 0 ? '🍑' : i === a.length - 1 ? '🚩' : v ? '■' : '·'), n), ds[a.length - 1], B('Label nearby open cells 1, then their neighbors 2.', '옆의 빈칸에 1, 그다음 빈칸에 2를 붙여 생각해요.'));
+    return numberItem(young ? B('How many steps from 🍑 to 🚩? Rocks 🪨 block the way.', '🍑에서 🚩까지 몇 걸음? 🪨는 못 지나가요.') : B('Walk from peach to flag, up/down/left/right. Fewest steps?', '복숭아에서 깃발까지 상하좌우로 가요. 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, a.length)), n), ds[a.length - 1], B('Label nearby open cells 1, then their neighbors 2.', '옆의 빈칸에 1, 그다음 빈칸에 2를 붙여 생각해요.'));
   });
 
   register('zcode', '🔐', 'Shape Code', '모양 암호', t => {

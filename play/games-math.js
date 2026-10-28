@@ -278,7 +278,9 @@ registerGame({
 // 63a: L2 adds a comparison or a missing-part decision, within K quantities.
 (() => {
  const upgrade=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
- upgrade('count',()=>{const a=2+rnd(5),b=1+rnd(a-1);return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:`<div style="font-size:clamp(20px,4dvh,30px)">A: ${'🍑'.repeat(a)}<br>B: ${'🍑'.repeat(b)}</div>`,opts:numO(a-b,[a,b,a-b+1],0,10)};});
+ // 2026-10-28 sample S1: A and B sit apart, left and right, each named above its box, so the extra peaches stand out.
+ const moreSets=(a,b)=>{const box=(n,name)=>`<div style="flex:0 1 auto;border:3px solid #f2b28c;border-radius:16px;padding:6px 10px;background:#fff"><div style="font-weight:800;font-size:clamp(22px,4.5dvh,34px);color:#c4552b">${name}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;font-size:clamp(24px,5dvh,38px);line-height:1.1">${'<span>🍑</span>'.repeat(n)}</div></div>`;return `<div style="display:flex;gap:clamp(24px,8vw,72px);justify-content:center;align-items:flex-start">${box(a,'A')}${box(b,'B')}</div>`;};
+ upgrade('count',()=>{const a=2+rnd(5),b=1+rnd(a-1);return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:moreSets(a,b),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10)};});
  upgrade('addsub',()=>{const a=2+rnd(4),b=1+rnd(3),c=1+rnd(a),ans=a+b-c;return {ask:B('How many peaches are left?','복숭아가 몇 개 남을까요?'),askSay:B(`${a} peaches. Get ${b} more, then give away ${c}. How many left?`,`${a}개에서 ${b}개를 받고 ${c}개를 주면 몇 개 남을까요?`),show:`<div class="bigword">${a} + ${b} − ${c} = ?</div>`,opts:numO(ans,[a+b,a-c,ans+1],0,10)};});
  upgrade('teens',()=>{const a=1+rnd(7),b=1+rnd(9-a),ans=10+a+b;return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="bigword">10 + ${a} + ? = ${ans}</div>`,opts:numO(b,[a,a+b,b+1],0,10)};});
 })();

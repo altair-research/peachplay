@@ -4,6 +4,11 @@
   'use strict';
   const card = s => `<div style="font-size:${/^[^\p{L}\p{N}<>]+$/u.test(s)?'clamp(36px,7dvh,48px)':'clamp(16px,3dvh,22px)'};line-height:1.2">${s}</div>`;
   const opts = (right, wrongs) => [right, ...wrongs].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+  // 2026-10-28 sample S5: K children cannot read word-only choices, so every choice here carries a picture (the word stays as a small label).
+  const pic = (p, x, ok) => ({html:`<span class="emo">${p}</span><span class="ol">${L(x)}</span>`,ok});
+  // One 🔊 reads the question and its clue together (no second speaker on the clue card).
+  const withClue = (ask, clue) => ({ask, askSay:B(`${ask.en} ${clue.en}`,`${ask.ko} ${clue.ko}`), quietShow:true});
+  const pics = (right, wrongs, icon) => [right, ...wrongs].map((x,i)=>pic(icon(x),x,i===0));
   const add = (id,title,icon,make) => registerGame({id,grade:'K',subject:'sci',icon,title,sub:B('Look, listen, and compare','보고 듣고 비교해요'),area:B('Science · Observing properties','과학 · 특징 관찰'),play(){quiz(this,make(lvl(id)));}});
   const materials = [
     ['wooden spoon','나무 숟가락','🥄','wood','나무'],['wooden block','나무 블록','🧱','wood','나무'],['wooden chair','나무 의자','🪑','wood','나무'],
@@ -13,16 +18,18 @@
   ];
   // 70a: everyday clues a K child can hear and check by touch; the Korean wood clue avoids 나무 (the answer).
   const materialClues={wood:B('It is cut from trees.','숲에서 베어 와요.'),metal:B('It is shiny and feels cold.','반짝이고 만지면 차가워요.'),plastic:B('It is light and keeps out water.','가볍고 물이 스며들지 않아요.'),paper:B('It folds and tears easily.','쉽게 접히고 찢어져요.')};
-  const clueCard=(e,clue)=>`<div style="display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:clamp(36px,7dvh,48px)">${e}</span><span style="font-size:clamp(17px,3dvh,23px)">${L(clue)}</span></div>`;
+  // Picture clues first (tree and axe, shiny and cold, light and dry, scissors), the sentence underneath for the grown-up.
+  const matPic={wood:'🪵',metal:'🔩',plastic:'🧴',paper:'📰'},cluePic={wood:'🌳🪓',metal:'✨🧊',plastic:'🪶☔',paper:'✂️🤏'};
+  const clueCard=(e,clue,k)=>`<div style="display:flex;align-items:center;justify-content:center;gap:12px"><span style="font-size:clamp(36px,7dvh,48px)">${e}</span><span style="font-size:clamp(30px,6dvh,42px)">${cluePic[k]}</span></div><div style="font-size:clamp(15px,2.6dvh,19px)">${L(clue)}</div>`;
   const rock = (color,big,dots) => `<svg viewBox="0 0 120 60" style="width:120px;height:60px" role="img" aria-label="${L(B('Rock model','암석 모형'))}"><ellipse cx="60" cy="30" rx="${big?48:28}" ry="${big?25:16}" fill="${color}" stroke="#25324a" stroke-width="2"/>${dots?'<g fill="#fff"><circle cx="48" cy="25" r="3"/><circle cx="65" cy="34" r="3"/><circle cx="73" cy="24" r="3"/></g>':''}</svg>`;
   add('materials',B('Material Detectives','재질 탐정'),'🪨',lv=>{
     if(lv===1){
       const t=pick(materials),names=[B('wood','나무'),B('metal','금속'),B('plastic','플라스틱'),B('paper','종이')];
-      return {ask:B('What material is this?','어떤 재질일까요?'),show:clueCard(t[2],materialClues[t[3]]),opts:opts(B(t[3],t[4]),shuffle(names.filter(n=>n.en!==t[3])).slice(0,2)),cls:'words'};
+      return {...withClue(B('What material is this?','어떤 재질일까요?'),materialClues[t[3]]),show:clueCard(t[2],materialClues[t[3]],t[3]),opts:pics(B(t[3],t[4]),shuffle(names.filter(n=>n.en!==t[3])).slice(0,2),x=>matPic[x.en]),cls:'shapes'};
     }
     const t=pick(materials), mate=pick(materials.filter(x=>x!==t&&x[3]===t[3]));
     const ds=shuffle(materials.filter(x=>x[3]!==t[3])).slice(0,2);
-    return {ask:B('Which thing is made of the same material?','같은 재질로 만든 물건은?'),show:clueCard(t[2],materialClues[t[3]]),opts:opts(B(mate[0],mate[1]),ds.map(x=>B(x[0],x[1]))),cls:'words'};
+    return {...withClue(B('Which thing is made of the same material?','같은 재질로 만든 물건은?'),materialClues[t[3]]),show:clueCard(t[2],materialClues[t[3]],t[3]),opts:[mate,...ds].map((x,i)=>pic(x[2],B(x[0],x[1]),i===0)),cls:'shapes'};
   });
   // [picture, short place name, material, clue]. 70a: the clue is shown (and read) as material; question stays one short sentence.
   const earth=[
@@ -31,28 +38,29 @@
     ['🌱',B('plant soil','식물 흙'),'soil',B('Roots spread through loose ground.','부드러운 땅속으로 뿌리가 뻗어요.')],['🌱',B('garden soil','정원 흙'),'soil',B('A gardener digs loose ground for seeds.','씨앗을 심으려고 부드러운 땅을 파요.')],['🌱',B('pot soil','화분 흙'),'soil',B('Roots grow in tiny grains in a pot.','화분 속 작은 알갱이 사이로 뿌리가 자라요.')],
     ['🎈',B('balloon air','풍선 공기'),'air',B('Something you cannot see fills a balloon.','보이지 않는 것이 풍선을 채워요.')],['💨',B('pinwheel air','바람개비 공기'),'air',B('Something you cannot see turns a pinwheel.','보이지 않는 것이 바람개비를 돌려요.')],['🛞',B('tire air','타이어 공기'),'air',B('Something you cannot see is pumped into a tire.','펌프로 보이지 않는 것을 타이어에 넣어요.')]
   ];
-  const earthNames={water:B('Water','물'),rock:B('Rock','암석'),soil:B('Soil','흙'),air:B('Air','공기')};
+  const earthNames={water:B('Water','물'),rock:B('Rock','암석'),soil:B('Soil','흙'),air:B('Air','공기')},earthPic={Water:'💧',Rock:'🪨',Soil:'🟫',Air:'💨'};
   add('earthstuff',B('Earth Materials','지구의 물질'),'🌱',lv=>{
     const t=pick(earth),same=pick(earth.filter(x=>x!==t&&x[2]===t[2])),ds=shuffle(earth.filter(x=>x[2]!==t[2])).slice(0,2);
     const place=x=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`});
-    return {ask:lv===1?B('Which material is it?','어떤 물질일까요?'):B('Where else is this material?','이 물질이 또 있는 곳은?'),show:`<div style="font-size:clamp(17px,3dvh,23px)">${L(t[3])}</div>`,opts:lv===1?opts(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k])):[same,...ds].map((x,i)=>({...place(x),ok:i===0})),cls:lv===1?'words':'shapes'};
+    return {...withClue(lv===1?B('Which material is it?','어떤 물질일까요?'):B('Where else is this material?','이 물질이 또 있는 곳은?'),t[3]),show:`<div style="font-size:clamp(17px,3dvh,23px)">${L(t[3])}</div>`,opts:lv===1?pics(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k]),x=>earthPic[x.en]):[same,...ds].map((x,i)=>({...place(x),ok:i===0})),cls:'shapes'};
   });
   add('rocksort',B('Rock and Earth Clues','암석과 지구 물질'),'🌎',lv=>{
     const colors=[['#b96742',B('red-brown','적갈색')],['#adb5bd',B('gray','회색')],['#e5cc88',B('tan','황갈색')]],ci=rnd(3),big=!!rnd(2),dots=!!rnd(2),c=colors[ci];
     const feature=pick(['size','color','dots']);
     const right=feature==='size'?(big?B('Large','커요'):B('Small','작아요')):feature==='color'?c[1]:(dots?B('Spotted','점이 있어요'):B('No spots','점이 없어요'));
     const wrong=feature==='size'?[big?B('Small','작아요'):B('Large','커요')]:feature==='color'?colors.filter((_,i)=>i!==ci).map(x=>x[1]):[dots?B('No spots','점이 없어요'):B('Spotted','점이 있어요')];
-    if(lv===1)return {ask:B(`Describe the rock model's ${feature==='dots'?'spots':feature}.`,`암석 모형의 ${feature==='size'?'크기':feature==='color'?'색':'점'}를 살펴봐요.`),show:rock(c[0],big,dots),opts:opts(right,wrong),cls:'words'};
+    const look=x=>feature==='size'?rock('#adb5bd',x.en==='Large',false):feature==='color'?rock(colors.find(cc=>cc[1].en===x.en)[0],true,false):rock('#adb5bd',true,x.en==='Spotted');
+    if(lv===1)return {ask:B(`Describe the rock model's ${feature==='dots'?'spots':feature}.`,`암석 모형의 ${feature==='size'?'크기':feature==='color'?'색':'점'}를 살펴봐요.`),show:rock(c[0],big,dots),opts:[right,...wrong].map((x,i)=>({html:`${look(x)}<span class="ol">${L(x)}</span>`,ok:i===0})),cls:'shapes'};
     const other=feature==='color'?colors[(ci+1)%3][0]:c[0],body=rock(c[0],big,dots)+rock(other,feature==='size'?!big:big,feature==='dots'?!dots:dots);
-    return {ask:B('Which property is different?','두 모형의 어떤 특징이 다를까요?'),show:body,opts:opts(feature==='size'?B('Size','크기'):feature==='color'?B('Color','색'):B('Spots','점'),[...(feature!=='size'?[B('Size','크기')]:[]),...(feature!=='color'?[B('Color','색')]:[]),...(feature!=='dots'?[B('Spots','점')]:[])]),cls:'words'};
+    return {ask:B('Which property is different?','두 모형의 어떤 특징이 다를까요?'),show:body,opts:pics(feature==='size'?B('Size','크기'):feature==='color'?B('Color','색'):B('Spots','점'),[...(feature!=='size'?[B('Size','크기')]:[]),...(feature!=='color'?[B('Color','색')]:[]),...(feature!=='dots'?[B('Spots','점')]:[])],x=>({Size:'↔️',Color:'🎨',Spots:'⚫'})[x.en]),cls:'shapes'};
   });
   const animals=[['🐕','dog','개','fur','털'],['🐈','cat','고양이','fur','털'],['🐇','rabbit','토끼','fur','털'],['🐻','bear','곰','fur','털'],['🐦','bird','새','feathers','깃털'],['🦆','duck','오리','feathers','깃털']];
   const leaf=(n,round)=>`<svg viewBox="0 0 120 70" style="width:120px;height:70px" role="img" aria-label="${L(B('Plant model','식물 모형'))}"><path d="M60 65V8" stroke="#256b34" stroke-width="3"/>${Array.from({length:n},(_,i)=>`<ellipse cx="${i%2?75:45}" cy="${15+i*10}" rx="${round?12:19}" ry="${round?11:5}" fill="#479e53"/>`).join('')}</svg>`;
   add('lifeclues',B('Living Thing Clues','생물의 특징'),'🐾',lv=>{
-    if(rnd(3)===0){const n=2+rnd(4),round=!!rnd(2);return {ask:lv===1?B('How many leaves in this model?','식물 모형의 잎은 몇 개일까요?'):B('What is different in the two plants?','두 식물 모형에서 다른 것은?'),show:leaf(n,round)+(lv===2?leaf(n,!round):''),opts:lv===1?opts(String(n),[String(n+1),String(n-1)]):opts(B('Leaf shape','잎 모양'),[B('Leaf count','잎 수'),B('Leaf color','잎 색')]),cls:'words'};}
+    if(rnd(3)===0){const n=2+rnd(4),round=!!rnd(2);return {ask:lv===1?B('How many leaves in this model?','식물 모형의 잎은 몇 개일까요?'):B('What is different in the two plants?','두 식물 모형에서 다른 것은?'),show:leaf(n,round)+(lv===2?leaf(n,!round):''),opts:lv===1?opts(String(n),[String(n+1),String(n-1)]):pics(B('Leaf shape','잎 모양'),[B('Leaf count','잎 수'),B('Leaf color','잎 색')],x=>({'Leaf shape':'🍃','Leaf count':'🔢','Leaf color':'🎨'})[x.en]),cls:lv===1?'words':'shapes'};}
     const a=pick(animals);
-    if(lv===1)return {ask:B(`What covers the ${a[1]}'s body?`,`${a[2]}의 몸을 덮고 있는 것은?`),show:card(a[0]),opts:opts(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')]),cls:'words'};
-    return {ask:B(`What do both ${a[1]}s have?`,`두 ${a[2]} 모두 가진 것은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:opts(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')]),cls:'words',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
+    if(lv===1)return {ask:B(`What covers the ${a[1]}'s body?`,`${a[2]}의 몸을 덮고 있는 것은?`),show:card(a[0]),opts:pics(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')],x=>({fur:'🧸',feathers:'🪶',scales:'🐟'})[x.en]),cls:'shapes'};
+    return {ask:B(`What do both ${a[1]}s have?`,`두 ${a[2]} 모두 가진 것은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:pics(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')],x=>({fur:'🧸',feathers:'🪶',scales:'🐟'})[x.en]),cls:'shapes',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
   });
 })();
 // Science extension: five senses, what living things need.
@@ -67,7 +75,7 @@
     const firstName=B('Earlier','먼저'),lastName=B('Later','나중');
     const NO=B('No change','변화 없어요'),MORE=B('More stars','별이 늘어요'),FEWER=B('Fewer stars','별이 줄어요'),HIGH=B('Sun higher','해가 올라가요'),LOW=B('Sun lower','해가 내려가요');
     const result=same?NO:night?(up?MORE:FEWER):(up?HIGH:LOW);
-    if(lv===1)return {ask:B('What changed from earlier to later?','먼저에서 나중으로 무엇이 바뀌었나요?'),show:`<div style="font-size:16px">${L(firstName)}　→　${L(lastName)}<br>${frame(first,night?a:0)}${frame(last,night?b:0)}</div>`,opts:[option(result,true),...shuffle([NO,night?MORE:HIGH,night?FEWER:LOW].filter(x=>x.en!==result.en)).map(x=>option(x,false))],cls:'words',after:B('These are recorded pictures, not a rule that all skies change this way.','관찰을 기록한 그림이에요. 하늘이 언제나 이렇게 변한다는 뜻은 아니에요.')};
+    if(lv===1)return {ask:B('What changed from earlier to later?','먼저에서 나중으로 무엇이 바뀌었나요?'),quietShow:true,show:`<div style="font-size:16px">${L(firstName)}　→　${L(lastName)}<br>${frame(first,night?a:0)}${frame(last,night?b:0)}</div>`,opts:[result,...shuffle([NO,night?MORE:HIGH,night?FEWER:LOW].filter(x=>x.en!==result.en))].map((x,i)=>({html:`<span class="emo">${({'No change':'⏸️','More stars':'⭐⬆️','Fewer stars':'⭐⬇️','Sun higher':'☀️⬆️','Sun lower':'☀️⬇️'})[x.en]}</span><span class="ol">${L(x)}</span>`,ok:i===0})),cls:'shapes',after:B('These are recorded pictures, not a rule that all skies change this way.','관찰을 기록한 그림이에요. 하늘이 언제나 이렇게 변한다는 뜻은 아니에요.')};
     const middle=night?6:56;
     return {ask:B('Which picture matches the later view?','나중 하늘과 같은 그림은?'),show:`<div style="font-size:16px">${L(firstName)}　→　${L(lastName)}<br>${frame(first,night?a:0)}${frame(last,night?b:0)}</div>`,opts:[{html:frame(last,night?b:0),label:B('View A','그림 A'),ok:true},{html:frame(night?last:(last===12?20:12),night?(b===1?2:1):0),label:B('View B','그림 B'),ok:false},{html:frame(middle,night?middle:0),label:B('View C','그림 C'),ok:false}],after:B('The last picture is evidence of the later view.','마지막 그림이 나중 하늘의 관찰 근거예요.'),onRender(){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);}};
   });
