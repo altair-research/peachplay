@@ -16,6 +16,7 @@ const SUBJECT_DEFAULT = {
 // [subject, regex on assignment name, games (first = strongest link)]
 const SKILL_RULES = [
   ['math', /by 10|tens/i, ['tens', 'order']],
+  ['math', /represent|draw a picture/i, ['represent', 'ten']],              // represent: show a number with a picture (2026-10-28)
   ['math', /representing 10|10 in sets|ten frame|make 10|compos|decompos/i, ['ten', 'teens']],
   ['math', /one to one|one-to-one/i, ['pair1to1', 'count']],                 // pair1to1: one-to-one matching (v4.35)
   ['math', /counting sets|scattered|array|circle|line/i, ['count']],

@@ -25,6 +25,7 @@ function cleanState(s) {                                  // keeps only known, w
   if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
   if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };
   if (s.profile === null || isObj(s.profile)) { o.profile = s.profile; if (isObj(o.profile)) { o.profile = Object.assign({}, o.profile); if ('diag' in o.profile && !(isObj(o.profile.diag) && Array.isArray(o.profile.diag.missed) && o.profile.diag.missed.every(x => typeof x === 'string'))) delete o.profile.diag; if ('report' in o.profile && !(isObj(o.profile.report) && Array.isArray(o.profile.report.picks) && o.profile.report.picks.every(p => isObj(p) && typeof p.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(p.id) && Number.isFinite(p.score) && p.score >= 0 && Array.isArray(p.reasons) && p.reasons.every(r => typeof r === 'string')))) delete o.profile.report; } }
+  if (isObj(o.profile) && 'school' in o.profile) { const sc = o.profile.school, IRK = ['pa', 'ph', 'hfw', 'voc', 'lit', 'inf', 'num', 'alg', 'meas', 'geo']; if (isObj(sc)) o.profile.school = { at: typeof sc.at === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(sc.at) ? sc.at : '', grade: ['K', '1', '2', '3', '4', '5'].includes(sc.grade) ? sc.grade : 'K', ir: Object.fromEntries(Object.entries(isObj(sc.ir) ? sc.ir : {}).filter(([k, v]) => IRK.includes(k) && ['m', 'e', 'b'].includes(v))), miss: Array.isArray(sc.miss) ? [...new Set(sc.miss.filter(k => typeof k === 'string' && /^[a-z0-9]{1,20}$/.test(k)))].slice(0, 40) : [] }; else delete o.profile.school; }
   if (Array.isArray(s.checks)) o.checks = s.checks.filter(c => isObj(c) && Array.isArray(c.items)).slice(-40).map(c => {
     const items = c.items.filter(it => isObj(it) && typeof it.id === 'string' && it.id.length <= 40 && typeof it.ok === 'boolean').map(it => ({ id: it.id, lv: Math.min(3, Math.max(1, numOr(it.lv, 1))), ok: it.ok }));
     return { at: typeof c.at === 'string' ? c.at.slice(0, 16) : '', scope: typeof c.scope === 'string' ? c.scope.slice(0, 12) : 'all', ...(Array.isArray(c.est) ? { est: c.est.filter(e => Array.isArray(e) && e.length === 2 && ['num','alg','meas','geo','pa','ph','hfw','voc','lit','inf'].includes(e[0]) && Number.isInteger(e[1]) && e[1] >= 0 && e[1] <= 7) } : {}), grade: GRADE_LIST.includes(c.grade) ? c.grade : 'K', items, ok: items.filter(x => x.ok).length, total: items.length };
@@ -40,6 +41,9 @@ function cleanState(s) {                                  // keeps only known, w
     const seen = new Set();
     o.review = s.review.filter(x => isObj(x) && typeof x.key === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(x.key) && typeof x.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(x.id) && Number.isInteger(x.lv) && x.lv >= 1 && x.lv <= 3 && !seen.has(x.key) && seen.add(x.key)).slice(-50).map(x => ({ key: x.key, id: x.id, lv: x.lv }));
   }
+  if (Array.isArray(s.spacing) && window.Spacing) o.spacing = window.Spacing.clean(s.spacing);
+  if (isObj(s.today) && window.Today) o.today = window.Today.clean(s.today);
+  if (Array.isArray(s.fluency) && window.Fluency) o.fluency = window.Fluency.clean(s.fluency);
   ['muted', 'introSeen', 'showK', 'sfxOff', 'voiceOff', 'calm', 'readable'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
   if (isObj(s.metWords)) {
@@ -170,6 +174,7 @@ function say(text, lang, keepQueue) {
     if (!keepQueue) speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang || T().speech; u.rate = 0.85;
+    if (window.Voice) window.Voice.apply(u, u.lang);
     speechSynthesis.speak(u);
   } catch (e) {}
 }
@@ -189,9 +194,10 @@ function record(id, ok) {
   if (DIAG.active) return;
   if (SESSION.review) {
     if (ok) reviewSolved();
-    else MISS[id] = true;
+    else { MISS[id] = true; if (window.Spacing) window.Spacing.missed(SESSION.review[SESSION.n]); }
     return;
   }
+  if (window.Spacing && id !== 'blockpuzzle') window.Spacing.note(id, lvl(id), ok, !!MISS[id]);   // 1·3·7-day spaced review
   if (!ok && !MISS[id] && id !== 'blockpuzzle') { // puzzle score is not a first-attempt question; its bonus questions use their own IDs
     const list = S.review = S.review || [];
     list.push({ key: Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12), id, lv: lvl(id) });
@@ -210,7 +216,7 @@ function record(id, ok) {
 }
 
 // End of a round: a clean first-try finish counts as right; a round that had a miss counts as wrong once (not again if the miss was already logged).
-function recordFinal(id, missed) { window.LearnLog.answer(id, missed ? 0 : 1); if (SESSION.review) { reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
+function recordFinal(id, missed) { window.LearnLog.answer(id, missed ? 0 : 1); if (SESSION.review) { if (missed && window.Spacing) window.Spacing.missed(SESSION.review[SESSION.n]); reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
 // ---- sound effects, mascot, confetti, session bar ----
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
@@ -293,6 +299,7 @@ function reviewSolved() {
   const it = SESSION.review[SESSION.n];
   if (!SESSION.reviewAnswered) { SESSION.done++; SESSION.reviewAnswered = true; }
   S.review = (S.review || []).filter(x => x.key !== it.key); save();
+  if (window.Spacing) window.Spacing.solved(it);
 }
 function startReview() {
   quitDiag();
@@ -312,7 +319,7 @@ function reviewStep() {
     window.LearnLog.finish();
     SESSION.review = null;
     view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${kidGrade() === 'P' ? T().prekDone : T().gotRight(SESSION.done, SESSION.rounds)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
-    $('#reviewHome').onclick = home; say(T().roundDone); return;
+    $('#reviewHome').onclick = home; say(T().roundDone); if (window.Today) window.Today.afterReview(); return;
   }
   const it = SESSION.review[SESSION.n]; SESSION.id = it.id; SESSION.reviewAnswered = false;
   MISS[it.id] = false; updateBar(); gameById(it.id).play();
@@ -369,6 +376,7 @@ function sessionEnd(game) {
     <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}<small>${t.anotherSub}</small></button></div>`;
   $('#again').onclick = () => launch(game); $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
   say(t.roundDone); sfx('win'); confetti(150);
+  if (window.Today) window.Today.afterRound(game);
 }
 let NEXT_TOK = 0;
 // Shows a "Next" button and moves on by itself after a short pause (tap to go sooner).
@@ -439,20 +447,38 @@ function speakable(el) {
 const hasReplay = el => [...el.querySelectorAll('button,[role="button"]')].some(e => /🔊|🔉/.test(e.textContent) || e.classList.contains('say')) || !!el.querySelector('[onclick*="say"]');
 const speechLang = t => /[가-힣]/.test(t) ? 'ko-KR' : /[A-Za-z]/.test(t) ? 'en-US' : undefined;
 
+// ---- Step-down and picture fading (JUMP Math, 2026-10-28; docs/review/impl-stepdown.md) ----
+// Step-down: a game may offer game.stepDown(item) -> a smaller item (or null). On the 2nd miss of the same question,
+// quiz shows that smaller step once, then the same question again (re-shuffled). Steps are not scored or logged.
+// Off for Pre-K, the quick check (DIAG) and review rounds, which must stay as they were.
+const stepDownReady = (game) => typeof game.stepDown === 'function' && !DIAG.active && !SESSION.review && gradeOf(game) !== 'P' && kidGrade() !== 'P';
+// Picture fading (a "support step", separate from levels): per game + question type, first-try answers in a row
+// move the picture from objects (0) to plain dots (1) to numbers only (2); a miss puts the full picture back.
+// In memory only (not saved); full pictures in Pre-K, DIAG and review. Thresholds 2/4 are a starting guess.
+const SCAFFOLD = {};
+function scaffoldStep(game, type) {
+  if (DIAG.active || SESSION.review || gradeOf(game) === 'P' || kidGrade() === 'P') return 0;
+  const c = SCAFFOLD[game.id + ':' + type] || 0;
+  return c >= 4 ? 2 : c >= 2 ? 1 : 0;
+}
+function scaffoldNote(game, type, ok) { const k = game.id + ':' + type; SCAFFOLD[k] = ok ? Math.min(9, (SCAFFOLD[k] || 0) + 1) : 0; }
+
 // Generic multiple-choice round.
-// item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls? }
-function quiz(game, item) {
-  if (window.PictureDemo?.intercept(game, item)) return;
+// item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls?, fade?, sd? }
+// ctx (engine only): { step: originalItem } = the smaller step; { resume: true } = the original question again after it.
+function quiz(game, item, ctx = {}) {
+  const follow = !!(ctx.step || ctx.resume);         // same question continues: no new dup/log entry, misses kept
+  if (!follow && window.PictureDemo?.intercept(game, item)) return;
   confetti.clear?.();
   const pk=game.grade === 'P';
   document.body.classList.toggle('pk-playing', pk);
-  MISS[game.id] = false;
-  const boss = !pk && !DIAG.active && !SESSION.review && SESSION.learnerMode === 'challenge' && lvl(game.id) >= 2;
-  const askText = (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + L(item.ask);
+  if (!follow) MISS[game.id] = false;
+  const boss = !ctx.step && !pk && !DIAG.active && !SESSION.review && SESSION.learnerMode === 'challenge' && lvl(game.id) >= 2;
+  const askText = (ctx.step ? '👣 ' : '') + (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + L(item.ask);
   const key = askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
-  if (dup(game, key)) return game.play();
+  if (!follow && dup(game, key)) return game.play();
   if (DIAG.confirm) window.Learner.confirmOptions(item.opts.length);
-  window.LearnLog.begin(game, lvl(game.id));
+  if (!follow) window.LearnLog.begin(game, lvl(game.id));
   const opts = shuffle(item.opts);
   view().innerHTML = `
     <div class="prompt"${pk ? ` aria-label="${askText.replace(/"/g, '&quot;')}"` : ''}>${pk ? '' : askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
@@ -468,7 +494,8 @@ function quiz(game, item) {
   };
   const ask = () => { say(item.askSay ? question(item.askSay) : (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
-  addPrevButton();
+  if (!ctx.step) addPrevButton();
+  const root = view().firstElementChild, still = () => view().firstElementChild === root;
   view().languageRefresh = { root: view().firstElementChild,
     legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No', '아니요']]) : null,
     update: () => {
@@ -529,12 +556,21 @@ function quiz(game, item) {
     else chip.innerHTML = `<span aria-hidden="true">🔥 ${SESSION.cleanStreak}</span><span class="sr-only">${L(B(`${SESSION.cleanStreak} in a row`, `${SESSION.cleanStreak}번 연속`))}</span>`;
   };
   showStreak();
-  let missed = false;
+  let missed = !!ctx.resume, wrongs = 0;
   // Sound games remain guided picture practice: browser audio success is not observable reliably.
   const practice = pk && item.pkSound;
   if (DIAG.active) DIAG.decorate(game);
   $$('.opt').forEach(btn => btn.onclick = () => {
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
+    if (ctx.step) {                                  // the smaller step: feedback only, then back to the question
+      if (!opts[+btn.dataset.i].ok) { btn.classList.add('no'); $('#cheer').textContent = T().again; say(T().again); setTimeout(() => btn.classList.remove('no'), 400); return; }
+      btn.classList.add('ok'); $$('.opt').forEach(o => o.disabled = true);
+      const back = L(B('Good! Now the first question again.', '좋아요! 이제 처음 문제를 다시 풀어요.'));
+      $('#cheer').textContent = back; say(back);
+      setTimeout(() => { if (still()) quiz(game, ctx.step, { resume: true }); }, 1900);
+      return;
+    }
+    if (item.fade && !pk && kidGrade() !== 'P' && !missed && !SESSION.review) scaffoldNote(game, item.fade, !!opts[+btn.dataset.i].ok);
     if (!pk && kidGrade() !== 'P' && !missed && !SESSION.review) {
       SESSION.cleanStreak = opts[+btn.dataset.i].ok ? (SESSION.cleanStreak || 0) + 1 : 0;
       showStreak();
@@ -559,6 +595,14 @@ function quiz(game, item) {
       btn.classList.add('no'); missed = true; record(game.id, false);
       $('#cheer').textContent = T().again; say(T().again);
       setTimeout(() => btn.classList.remove('no'), 400);
+      if (++wrongs === 2 && !ctx.resume && stepDownReady(game)) {
+        let small = null; try { small = game.stepDown(item); } catch (e) { small = null; }
+        if (small && small.opts?.length) {
+          $$('.opt').forEach(o => o.disabled = true);
+          say(L(B("Let's try a smaller step first.", '먼저 작은 단계를 해 봐요.')), undefined, true);
+          setTimeout(() => { if (still()) quiz(game, small, { step: item }); }, 1500);
+        }
+      }
     }
   });
 }

@@ -36,6 +36,9 @@ registerGame({
 
 // ---------- 2. Make a number (number bonds: parts that make 5..10) ----------
 const frameHtml = (n, e, T) => `<div class="frame big10">${Array.from({ length: T }, (_, i) => i < n ? `<div class="cell on">${e}</div>` : `<div class="cell empty"></div>`).join('')}</div>`;
+// Picture fading (core.js scaffoldStep): 0 = objects, 1 = plain dots, 2 = numbers only. FADE_DOT is the "dot" counter.
+const FADE_DOT = '🔵';
+const tenMoreAsk = (n, T) => B(`${n} here: how many more to make ${T}?`, `${n}개에서 ${T}${[5, 9].includes(T) ? '가' : '이'} 되려면 몇 개 더?`);
 registerGame({
   id: 'ten', subject: 'math', icon: '🍎', title: B('Make a Number', '수 만들기'), sub: B('How many more to make it?', '몇 개 더 필요할까?'),
   area: AREA_MATH('Within 10'),
@@ -47,19 +50,27 @@ registerGame({
       const a = 1 + rnd(T - 1), bad = [];
       let guard = 0; while (bad.length < 2 && guard++ < 60) { const y = Math.max(0, Math.min(T, T - a + pick([-3, -2, -1, 1, 2, 3]))); if (a + y !== T && !bad.some(b => b[1] === y)) bad.push([a, y]); }
       const o = (p, ok) => ({ html: `<span class="num eq">${p[0]} + ${p[1]}</span>`, ok });
-      quiz(this, { ask: B(`Which pair makes ${T}?`, `더해서 ${T}이(가) 되는 짝은?`), opts: [o([a, T - a], true), ...bad.map(p => o(p, false))], cls: 'words', after: B(`${a} and ${T - a} make ${T}!`, koPair(a, T - a)) });
+      quiz(this, { ask: B(`Which pair makes ${T}?`, `더해서 ${T}이(가) 되는 짝은?`), opts: [o([a, T - a], true), ...bad.map(p => o(p, false))], cls: 'words', after: B(`${a} and ${T - a} make ${T}!`, koPair(a, T - a)), sd: { n: a, T, e } });
       return;
     }
     const n = lv === 1 ? Math.max(1, T - 5) + rnd(Math.min(5, T - 1)) : 1 + rnd(T - 1), ans = T - n, after = B(`${n} and ${ans} make ${T}!`, koPair(n, ans));
-    const fill = () => $$('.show .cell:not(.on)').forEach(c => { c.classList.add('on', 'new'); c.textContent = e; });
     if (mode === 'missing') {
-      quiz(this, { ask: B(`What number makes ${T}?`, `${T}이(가) 되려면 어떤 수가 필요할까요?`), show: `<div class="bigword eqline"><span class="qbox">?</span> + ${n} = ${T}</div>`, opts: numOpts(ans, 0, T), after });
+      quiz(this, { ask: B(`What number makes ${T}?`, `${T}이(가) 되려면 어떤 수가 필요할까요?`), show: `<div class="bigword eqline"><span class="qbox">?</span> + ${n} = ${T}</div>`, opts: numOpts(ans, 0, T), after, sd: { n, T, e } });
       return;
     }
+    const fs = scaffoldStep(this, 'more'), dot = fs ? FADE_DOT : e;
     quiz(this, {
-      ask: B(`${n} here: how many more to make ${T}?`, `${n}개에서 ${T}${[5, 9].includes(T) ? '가' : '이'} 되려면 몇 개 더?`), show: frameHtml(n, e, T),
-      opts: numOpts(ans, 0, T - 1), after, onCorrect: fill
+      ask: tenMoreAsk(n, T), show: fs < 2 ? frameHtml(n, dot, T) : `<div class="bigword eqline">${n} + <span class="qbox">?</span> = ${T}</div>`,
+      opts: numOpts(ans, 0, T - 1), after, fade: 'more', sd: { n, T, e, fs, more: true },
+      onCorrect: fs < 2 ? () => $$('.show .cell:not(.on)').forEach(c => { c.classList.add('on', 'new'); c.textContent = dot; }) : null
     });
+  },
+  // Step-down: numbers with no frame (or a faded frame) get the full ten-frame back; a full frame gets a smaller total.
+  stepDown(item) {
+    const d = item.sd; if (!d) return null;
+    let { n, T } = d;
+    if (d.more && !d.fs) { const ans = T - n; T = T > 5 ? 5 : 3; n = T - (1 + rnd(Math.min(T - 1, Math.max(1, ans - 1)))); }   // smaller total, and no more to add than before
+    return { ask: tenMoreAsk(n, T), show: frameHtml(n, d.e, T), opts: numOpts(T - n, 0, T - 1) };
   }
 });
 
@@ -73,14 +84,20 @@ registerGame({
       ask: B('Tap each one: how many are there?', '하나씩 눌러 세면 모두 몇 개일까요?'),
       show: `<div class="scatter">${Array.from({ length: n }, () => `<button class="obj" style="transform:translate(${rnd(21) - 10}px,${rnd(21) - 10}px) rotate(${rnd(41) - 20}deg)">${e}</button>`).join('')}</div>`,
       opts: numOpts(n, 1, 20),
-      after: B(`${n}`, `${n}`),
-      onRender() {
-        let c = 0;
-        $$('.obj').forEach(b => b.onclick = () => { if (b.classList.contains('counted')) return; c++; b.classList.add('counted'); b.dataset.n = c; say(String(c)); });
-      }
+      after: B(`${n}`, `${n}`), sd: { n, e }, onRender: countTaps
     });
+  },
+  // Step-down: fewer objects in one straight row (the 2-level "how many more" step uses smaller sets, lined up).
+  stepDown(item) {
+    const d = item.sd; if (!d) return null;
+    if (d.more) { const b = 1 + rnd(2), a = b + 1 + rnd(2); return { ask: B('How many more peaches are in A?', 'A의 복숭아는 몇 개 더 많을까요?'), show: lineSets(a, b), quietShow: true, opts: numOpts(a - b, 0, 4) }; }
+    const n = d.n <= 4 ? d.n : Math.max(3, Math.ceil(d.n / 2));
+    return { ask: B('Tap each one: how many are there?', '하나씩 눌러 세면 모두 몇 개일까요?'), show: `<div class="scatter">${`<button class="obj">${d.e}</button>`.repeat(n)}</div>`, opts: numOpts(n, 1, 10), onRender: countTaps };
   }
 });
+function countTaps() { let c = 0; $$('.obj').forEach(b => b.onclick = () => { if (b.classList.contains('counted')) return; c++; b.classList.add('counted'); b.dataset.n = c; say(String(c)); }); }
+// Two rows lined up one under the other (one-to-one), A on top, for the smaller "how many more" step.
+const lineSets = (a, b) => `<div style="display:grid;gap:6px;justify-content:center;font-size:clamp(26px,5.5dvh,42px);line-height:1.1">${[[a, 'A'], [b, 'B']].map(([n, name]) => `<div style="display:flex;align-items:center;gap:6px"><b style="color:#c4552b;width:1.2em">${name}</b>${'<span>🍑</span>'.repeat(n)}</div>`).join('')}</div>`;
 
 // ---------- 4. Number order: next / before / counting back ----------
 registerGame({
@@ -111,7 +128,14 @@ registerGame({
     const askMore = lv === 2 ? B('Which has MORE, or are they the SAME?', '어느 쪽이 더 많을까요, 같을까요?') : more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?');
     const opts = [{ html: '<small>A</small>' + emojiRow(a, e, 'sm'), ok: !same && (more ? a > b : a < b) || false }, { html: '<small>B</small>' + emojiRow(b, e, 'sm'), ok: !same && (more ? b > a : b < a) || false }];
     if (lv === 2) opts.push({ html: '<span class="num">=</span>', label: B('Same', '같아요'), ok: same });
-    quiz(this, { ask: askMore, opts, cls: 'groups', after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`) });
+    quiz(this, { ask: askMore, opts, cls: 'groups', after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`), sd: { e, more: lv === 2 || more } });
+  },
+  // Step-down: smaller groups (1 to 5, at least 2 apart) and only two choices (the "Same" choice is taken away).
+  stepDown(item) {
+    const d = item.sd; if (!d) return null;
+    const a = 1 + rnd(3), b = a + 2 + rnd(4 - a), [x, y] = rnd(2) ? [a, b] : [b, a];
+    return { ask: d.more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?'), cls: 'groups',
+      opts: [{ html: '<small>A</small>' + emojiRow(x, d.e, 'sm'), ok: d.more ? x > y : x < y }, { html: '<small>B</small>' + emojiRow(y, d.e, 'sm'), ok: d.more ? y > x : y < x }] };
   }
 });
 
@@ -122,36 +146,56 @@ registerGame({
   play() {
     const lv = lvl('addsub'), top = lv === 1 ? 5 : 10, e = pick(['🍑', '🍎', '🐥', '🍪']);
     const add = rnd(2) === 0;
-    let show, ans, ask, speech;
-    if (add) {
-      const a = 1 + rnd(top - 1), b = 1 + rnd(top - a); ans = a + b;
-      show = `<div class="story">${emojiRow(a, e, 'sm')}<span class="op">+</span>${emojiRow(b, e, 'sm')}</div>`;
-      ask = B(`${a} and ${b} more makes how many?`, `${a}개에 ${b}개를 더하면 모두 몇 개일까요?`);
-      speech = B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`);
-    } else {
-      const a = 2 + rnd(top - 1), b = 1 + rnd(a - 1); ans = a - b;
-      // One row only: the ones that stay first, then the crossed-out ones together in a dashed box, so nothing wraps to a second line.
-      show = `<div class="story takeaway"><span class="keep">${e.repeat(a - b)}</span><span class="gonebox">${Array.from({ length: b }, () => `<span class="gone"><i>${e}</i></span>`).join('')}</span></div>`;
-      ask = B('How many are left without the crossed ones?', '지워진 것을 빼면 몇 개 남을까요?');
-      speech = B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`);
-    }
-    quiz(this, { ask, show, opts: numOpts(ans, 0, top), after: speech });
+    if (add) { const a = 1 + rnd(top - 1), b = 1 + rnd(top - a); quiz(this, { ...addsubItem(true, a, b, e, scaffoldStep(this, 'add')), opts: numOpts(a + b, 0, top) }); }
+    else { const a = 2 + rnd(top - 1), b = 1 + rnd(a - 1); quiz(this, { ...addsubItem(false, a, b, e, scaffoldStep(this, 'take')), opts: numOpts(a - b, 0, top) }); }
+  },
+  // Step-down: a faded picture comes back with the same numbers; a full picture gets smaller numbers;
+  // the 2-level "a + b - c" story first asks only the "a + b" part, with pictures.
+  stepDown(item) {
+    const d = item.sd; if (!d) return null;
+    if (d.l2) return { ...addsubItem(true, d.a, d.b, '🍑', 0), opts: numOpts(d.a + d.b, 0, 10) };
+    let { a, b } = d;
+    if (!d.fs) { if (d.add) { a = 1 + rnd(2); b = 1; } else { a = 2 + rnd(2); b = 1; } }
+    return { ...addsubItem(d.add, a, b, d.e, 0), opts: numOpts(d.add ? a + b : a - b, 0, 5) };
   }
 });
+// One add/take-away story at a picture-fading step (0 objects, 1 dots, 2 numbers only).
+function addsubItem(add, a, b, e, fs) {
+  const c = fs ? FADE_DOT : e, ans = add ? a + b : a - b, sd = { add, a, b, e, fs };
+  if (add) return {
+    ask: B(`${a} and ${b} more makes how many?`, `${a}개에 ${b}개를 더하면 모두 몇 개일까요?`),
+    show: fs < 2 ? `<div class="story">${emojiRow(a, c, 'sm')}<span class="op">+</span>${emojiRow(b, c, 'sm')}</div>` : `<div class="bigword">${a} + ${b} = ?</div>`,
+    after: B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`), fade: 'add', sd };
+  return {
+    ask: fs < 2 ? B('How many are left without the crossed ones?', '지워진 것을 빼면 몇 개 남을까요?') : B(`${a} take away ${b}: how many are left?`, `${a}개에서 ${b}개를 빼면 몇 개 남을까요?`),
+    // One row only: the ones that stay first, then the crossed-out ones together in a dashed box, so nothing wraps to a second line.
+    show: fs < 2 ? `<div class="story takeaway"><span class="keep">${c.repeat(a - b)}</span><span class="gonebox">${Array.from({ length: b }, () => `<span class="gone"><i>${c}</i></span>`).join('')}</span></div>` : `<div class="bigword">${a} − ${b} = ?</div>`,
+    after: B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`), fade: 'take', sd };
+}
 
 // ---------- 7. Teen numbers (ten and some more) ----------
 registerGame({
   id: 'teens', subject: 'math', icon: '🧱', title: B('Ten and More', '10과 더'), sub: B('11 to 19', '11부터 19까지'),
   area: AREA_MATH('Numbers to 20'),
   play() {
-    const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐']);
+    const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐']), fs = scaffoldStep(this, 'teen');
     quiz(this, {
       ask: B('Ten and some more: how many in all?', '10과 조금 더: 모두 몇 개일까요?'),
-      show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}</div>`,
-      opts: numOpts(n, 11, 20), after: B(`Ten and ${n - 10} make ${n}.`, `10과 ${n - 10}를 합치면 ${n}.`)
+      show: fs === 0 ? teenShow(n, e) : fs === 1 ? `<div class="story"><span class="bigword" style="border:3px solid #f2b28c;border-radius:12px;padding:0 .3em">10</span><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}</div>` : `<div class="bigword">10 + ${n - 10}</div>`,
+      opts: numOpts(n, 11, 20), after: B(`Ten and ${n - 10} make ${n}.`, `10과 ${n - 10}를 합치면 ${n}.`), fade: 'teen', sd: { n, e, fs }
     });
+  },
+  // Fading: 0 = full ten-frame + objects, 1 = the ten as the number 10 + objects, 2 = numbers only.
+  // Step-down: a faded picture comes back; with the full picture, first count only the ones next to the ten.
+  // The 2-level "10 + a + ? = total" asks the within-10 part on a ten-frame.
+  stepDown(item) {
+    const d = item.sd; if (!d) return null;
+    if (d.l2) return { ask: tenMoreAsk(d.a, d.a + d.b), show: frameHtml(d.a, '🍑', d.a + d.b), opts: numOpts(d.b, 0, d.a + d.b - 1) };
+    if (d.fs) return { ask: B('Ten and some more: how many in all?', '10과 조금 더: 모두 몇 개일까요?'), show: teenShow(d.n, d.e), opts: numOpts(d.n, 11, 20) };
+    return { ask: B('How many are next to the ten?', '10 옆에는 몇 개 있을까요?'), show: teenShow(d.n, d.e), opts: numOpts(d.n - 10, 1, 9) };
   }
 });
+const teenShow = (n, e) => `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}</div>`;
 
 // ---------- 8. 2-D shapes (SVG, random rotation) ----------
 const SHAPES = {
@@ -279,8 +323,8 @@ registerGame({
 (() => {
  const upgrade=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
  // 2026-10-28 sample S1: A and B sit apart, left and right, each named above its box, so the extra peaches stand out.
- const moreSets=(a,b)=>{const box=(n,name)=>`<div style="flex:0 1 auto;border:3px solid #f2b28c;border-radius:16px;padding:6px 10px;background:#fff"><div style="font-weight:800;font-size:clamp(22px,4.5dvh,34px);color:#c4552b">${name}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;font-size:clamp(24px,5dvh,38px);line-height:1.1">${'<span>🍑</span>'.repeat(n)}</div></div>`;return `<div style="display:flex;gap:clamp(24px,8vw,72px);justify-content:center;align-items:flex-start">${box(a,'A')}${box(b,'B')}</div>`;};
- upgrade('count',()=>{const a=2+rnd(5),b=1+rnd(a-1);return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:moreSets(a,b),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10)};});
- upgrade('addsub',()=>{const a=2+rnd(4),b=1+rnd(3),c=1+rnd(a),ans=a+b-c;return {ask:B('How many peaches are left?','복숭아가 몇 개 남을까요?'),askSay:B(`${a} peaches. Get ${b} more, then give away ${c}. How many left?`,`${a}개에서 ${b}개를 받고 ${c}개를 주면 몇 개 남을까요?`),show:`<div class="bigword">${a} + ${b} − ${c} = ?</div>`,opts:numO(ans,[a+b,a-c,ans+1],0,10)};});
- upgrade('teens',()=>{const a=1+rnd(7),b=1+rnd(9-a),ans=10+a+b;return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="bigword">10 + ${a} + ? = ${ans}</div>`,opts:numO(b,[a,a+b,b+1],0,10)};});
+ const moreSets=(a,b)=>{const box=(n,name)=>`<div style="flex:0 1 auto;border:3px solid #f2b28c;border-radius:16px;padding:6px 10px;background:#fff"><div style="font-weight:800;font-size:clamp(22px,4.5dvh,34px);color:#c4552b">${name}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;font-size:clamp(22px,min(5dvh,8.5vw),38px);line-height:1.1">${'<span>🍑</span>'.repeat(n)}</div></div>`;return `<div style="display:flex;gap:clamp(24px,8vw,72px);justify-content:center;align-items:flex-start">${box(a,'A')}${box(b,'B')}</div>`;};
+ upgrade('count',()=>{const a=2+rnd(5),b=1+rnd(a-1);return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:moreSets(a,b),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10),sd:{more:true}};});
+ upgrade('addsub',()=>{const a=2+rnd(4),b=1+rnd(3),c=1+rnd(a),ans=a+b-c;return {ask:B('How many peaches are left?','복숭아가 몇 개 남을까요?'),askSay:B(`${a} peaches. Get ${b} more, then give away ${c}. How many left?`,`${a}개에서 ${b}개를 받고 ${c}개를 주면 몇 개 남을까요?`),show:`<div class="bigword">${a} + ${b} − ${c} = ?</div>`,opts:numO(ans,[a+b,a-c,ans+1],0,10),sd:{l2:true,a,b}};});
+ upgrade('teens',()=>{const a=1+rnd(7),b=1+rnd(9-a),ans=10+a+b;return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="bigword">10 + ${a} + ? = ${ans}</div>`,opts:numO(b,[a,a+b,b+1],0,10),sd:{l2:true,a,b}};});
 })();

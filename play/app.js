@@ -46,8 +46,9 @@ function home() {
     <h1 class="sr-only">${T().app}</h1>
     <div class="tag sr-only">${T().tagline}</div>
     ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}
+    ${window.Today ? window.Today.homeHtml() : ''}
     <div id="subjtiles">${SUBJECT_GROUPS.map(group => `<section class="subject-group" data-group="${group.id}" aria-labelledby="group-${group.id}"><h2 id="group-${group.id}">${group.icon} ${T().subjectGroups[group.id]}<button class="home-say group-say" data-say-group="${group.id}" aria-label="${T().listen}: ${T().subjectGroups[group.id]}">🔊</button></h2>${group.id === 'think' ? `<p class="group-description">${T().thinkDescription}</p>` : ''}<div class="menu home-subjects">${group.subjects.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div></section>`).join('')}</div>
-    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
+    ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) || (window.Spacing && window.Spacing.dueCount() > 0) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
     ${favHtml()}
     ${picksHtml()}
@@ -72,7 +73,8 @@ function home() {
   if ($('#homeFaq')) $('#homeFaq').onclick = faqScreen;
   $$('.gchip').forEach(b => b.onclick = () => { const k = curKid(); if (k && k.grade !== b.dataset.g) { k.grade = b.dataset.g; saveProf(); S.showK = false; save(); } home(); });
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
-  if ($('#reviewStart')) $('#reviewStart').onclick = startReview;
+  if ($('#reviewStart')) $('#reviewStart').onclick = () => (window.Spacing && kidGrade() !== 'P' ? window.Spacing.start() : startReview());
+  if (window.Today) window.Today.bind();
   $('#gsearch').oninput = (e) => {
     const q = e.target.value.trim().toLowerCase(), box = $('#gresults');
     if (!q) { box.innerHTML = ''; $('#subjtiles').style.display = ''; return; }
@@ -133,16 +135,21 @@ function applyPrefs() {
   document.body.classList.toggle('skin-explorer', explorer); document.body.classList.toggle('theme-dark', S.theme === 'dark'); document.body.classList.toggle('theme-system', S.theme === 'system');
 }
 const LOOKS = [['skin', '🎨', B('Look', '스킨'), [['auto', B('Match grade (auto)', '학년에 맞게 (자동)')], ['peachy', B('Peachy', '피치')], ['explorer', B('Explorer (for older kids)', '탐험가 (큰 아이용)')]]], ['theme', '🌓', B('Screen', '화면 모드'), [['light', B('Light', '밝게')], ['dark', B('Night', '어둡게')], ['system', B('Follow device', '기기 설정 따르기')]]]];
+const vEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+if (window.Voice) window.Voice.onChange(() => { if (document.querySelector('.voice-pick')) settings(); });
 function settings(focusKey, focusLook) {
   // the first two are stored as "off" switches so that older saves keep sound on
   const on = (p) => (p[3] ? !S[p[0]] : !!S[p[0]]);
   view().innerHTML = `<h1>⚙️ ${L(B('Settings', '설정'))}</h1><p class="tag">${L(B('These settings are saved for this child on this device.', '이 기기에서 이 아이에게만 저장돼요.'))}</p>
     <div class="prefs">${LOOKS.map(p => { const cur = p[3].find(v => v[0] === (S[p[0]] || p[3][0][0])) || p[3][0]; return `<button class="pref look" data-look="${p[0]}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${L(cur[1])}${p[0] === 'skin' ? `<small>${L(B('Now: ', '현재: '))}${document.body.classList.contains('skin-explorer') ? L(B('Explorer', '탐험가')) : L(B('Peachy', '피치'))}</small>` : ''}</span></button>`; }).join('')}${PREFS.map(p => `<button class="pref${on(p) ? ' on' : ''}" data-k="${p[0]}" aria-pressed="${on(p)}"><span class="pi">${p[1]}</span><span class="pt">${L(p[2])}</span><span class="ps">${on(p) ? L(B('On', '켜짐')) : L(B('Off', '꺼짐'))}</span></button>`).join('')}</div>
+    ${window.Voice && 'speechSynthesis' in window ? `<div class="voice-pick"><h2>🗣️ ${L(B('Choose the voice', '목소리 고르기'))}</h2>${['en', 'ko'].map(lg => { const o = window.Voice.options(lg); if (!o.length) return ''; let cur = ''; try { cur = localStorage.getItem('pp.voice.' + lg) || ''; } catch (e) {} return `<label class="vp-row"><span>${lg === 'en' ? 'English' : '한국어'}</span><select data-vlang="${lg}"><option value="">${L(B('Best on this device (auto)', '이 기기에서 가장 좋은 목소리 (자동)'))}</option>${o.map(v => `<option value="${vEsc(v.uri)}"${v.uri === cur ? ' selected' : ''}>${vEsc(v.name)}${v.cloud ? ' ☁️' : ''}</option>`).join('')}</select><button class="pill" data-vtry="${lg}">▶ ${L(B('Try', '들어 보기'))}</button></label>`; }).join('')}<p class="tag">${L(B('☁️ = online voice: only the sentence is sent to the browser company to make the sound; no child information. When offline, a voice on this device is used.', '☁️ = 온라인 목소리: 소리를 만들려고 문장만 브라우저 회사로 가고, 아이 정보는 가지 않아요. 인터넷이 없으면 기기 안의 목소리를 써요.'))}</p></div>` : ''}
     <p class="offline-status" role="status" data-offline-status>${T()[window.peachOfflineState || 'offlinePreparing']}</p>
     ${kidGrade() === 'P' ? '' : `<button class="pill" id="learnerPrefs">${L(B('Child profile: learning approach', '아이 프로필: 학습 접근 방식'))}</button>`}
     <div><button class="next" id="b">${T().back}</button></div>`;
   $$('.pref.look').forEach(b => b.onclick = () => { const p = LOOKS.find(x => x[0] === b.dataset.look), vals = p[3].map(v => v[0]), i = vals.indexOf(S[p[0]] || vals[0]); S[p[0]] = vals[(i + 1) % vals.length]; save(); applyPrefs(); settings(null, b.dataset.look); });
   $$('.pref[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; S[k] = !S[k]; save(); applyPrefs(); if (k === 'voiceOff' && S.voiceOff) { try { speechSynthesis.cancel(); } catch (e) {} } settings(k); });
+  $$('[data-vlang]').forEach(s => s.onchange = () => { window.Voice.setPreferred(s.dataset.vlang, s.value); window.Voice.preview(s.dataset.vlang); });
+  $$('[data-vtry]').forEach(b => b.onclick = () => window.Voice.preview(b.dataset.vtry));
   $('#b').onclick = home; window.scrollTo(0, 0);
   if ($('#learnerPrefs')) $('#learnerPrefs').onclick = () => gate(window.Learner.styleSettings);
   view().classList.add('settings-screen');
@@ -228,13 +235,14 @@ function grownups() {
     <div id="learnReport">${window.SessionReport.html(window.SessionReport.range)}</div>
     ${window.Learner.panel()}
     ${window.Learner.stylePanel()}
+    ${window.Fluency ? window.Fluency.html() : ''}${window.Spacing ? window.Spacing.summary() : ''}${window.Today ? window.Today.grownHtml() : ''}
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
     <h2>${T().challengeTitle}</h2>
     <div class="tablewrap">${challengeTable()}</div>
     <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>
     <h2>${T().progressTitle}</h2>
-    <button class="pill" id="gprint">🖨️ ${L(B('Print practice report', '연습 보고서 인쇄'))}</button> <button class="pill" id="gcert">🏅 ${L(B('Print celebration certificate', '칭찬 수료증 인쇄'))}</button> <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button>
+    <button class="pill" id="gprint">🖨️ ${L(B('Print practice report', '연습 보고서 인쇄'))}</button> <button class="pill" id="gcert">🏅 ${L(B('Print celebration certificate', '칭찬 수료증 인쇄'))}</button> <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button> ${window.SchoolResults ? `<button class="pill" id="gschool">🏫 ${L(B('School results (i-Ready, tests)', '학교 결과 넣기(i-Ready·평가지)'))}</button>` : ''}
     <div class="tablewrap">${checksTable()}</div>
     <h2>${T().addrTitle}</h2>
     <div class="form"><input id="street" placeholder="${T().street}" value="${S.addr.street.replace(/"/g, '&quot;')}"><input id="city" placeholder="${T().city}" value="${S.addr.city.replace(/"/g, '&quot;')}">
@@ -248,12 +256,13 @@ function grownups() {
   window.SessionReport.bind();
   window.Learner.bind();
   window.Learner.bindStyle();
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
+  if (window.Fluency) window.Fluency.bind();
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.spacing = []; S.today = null; S.fluency = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
   if (typeof backupBind === 'function') backupBind();
-  $('#gprint').onclick = () => window.openPrintReport && window.openPrintReport(); $('#gcert').onclick = () => window.openPrintReport && window.openPrintReport('certificate'); $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen;
+  $('#gprint').onclick = () => window.openPrintReport && window.openPrintReport(); $('#gcert').onclick = () => window.openPrintReport && window.openPrintReport('certificate'); $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen; if ($('#gschool')) $('#gschool').onclick = () => window.SchoolResults.open(grownups);
   $('#b').onclick = home;
 }
 

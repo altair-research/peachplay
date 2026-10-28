@@ -40,6 +40,7 @@ function currentPicks(max = 3) {
     const top = (P.report.picks.find(p => isObj(p) && Number.isFinite(p.score)) || {}).score || 1;
     P.report.picks.filter(p => isObj(p) && Number.isFinite(p.score) && Array.isArray(p.reasons)).forEach(p => add(p.id, (p.score / top) * 3, p.reasons[0]));
   }
+  if (window.SchoolResults) window.SchoolResults.picks().forEach(p => add(p.id, p.score, p.why));   // i-Ready placements and missed test questions (school-results.js)
   Object.keys(res).forEach(id => { if (res[id] === false) add(id, 3, '__quick__'); });
   const base = Object.keys(need)
     .filter(id => { const saved = S.stats[id] || freshStat(); return gameById(id) && visibleGames().includes(gameById(id)) && saved.right - saved.wrong < 8; })
@@ -133,8 +134,11 @@ function importScreen() {
     <textarea id="paste" rows="6" placeholder="${T().pastePh}"></textarea>
     <div><button class="next" id="go">${T().readIt}</button></div>
     <div id="result"></div>
+    ${window.SchoolResults ? `<p class="note2">${L(B('Have an i-Ready report or a returned unit test instead?', 'i-Ready 결과나 돌려받은 단원 평가지가 있나요?'))}</p>
+    <div><button class="pill" id="srIr">📊 i-Ready</button> <button class="pill" id="srCk">✏️ ${L(B('Missed test questions', '틀린 문항 체크'))}</button></div>` : ''}
     <button class="link" id="b">${T().back}</button>`;
   $('#b').onclick = intro;
+  if (window.SchoolResults) { $('#srIr').onclick = () => window.SchoolResults.irScreen(); $('#srCk').onclick = () => window.SchoolResults.checkScreen(); }
   $('#go').onclick = async () => {
     const out = $('#result'); out.textContent = '…';
     try {
@@ -149,8 +153,10 @@ function importScreen() {
       save();
       out.innerHTML = `<p>✅ ${T().found(parsed.items.length, graded.length)}</p>
         ${sc.unmapped.length ? `<p class="note2">${T().unmapped}: ${sc.unmapped.join(' · ')}</p>` : ''}
-        <button class="next" id="seePicks">${T().seePicks}</button>`;
+        <button class="next" id="seePicks">${T().seePicks}</button>
+        ${window.SchoolResults ? `<div><button class="pill" id="srCard">🗂️ ${L(B('Result card for grown-ups', '보호자용 결과 풀이 카드'))}</button></div>` : ''}`;
       $('#seePicks').onclick = () => picksScreen(false);
+      if (window.SchoolResults) $('#srCard').onclick = () => window.SchoolResults.cardScreen();
     } catch (e) { out.innerHTML = `<p class="warn">${T().readFail}</p>`; }
   };
 }
@@ -169,7 +175,8 @@ function picksScreen(fromQuiz) {
 function whyText(p) {
   if (kidGrade() === 'P') return L(B('Explore together','함께 둘러봐요'));
   const quick = p.why.includes('__quick__'), rep = p.why.find(x => x && !x.startsWith('__'));
-  return [p.why.includes('__review__') ? L(B('Try again', '다시 해 보기')) : '', p.why.includes('__up__') ? L(B('One step up', '한 단계 위')) : '', p.why.includes('__warm__') ? L(B('Warm-up', '몸풀기')) : '', p.why.includes('__style__') ? L(B('A familiar game', '익숙한 게임')) : '', rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
+  const school = window.SchoolResults ? [...new Set(p.why.filter(x => /^__(ir|ck):/.test(x)).map(x => window.SchoolResults.whyLabel(x)))].slice(0, 2) : [];
+  return [...school,p.why.includes('__review__') ? L(B('Try again', '다시 해 보기')) : '', p.why.includes('__up__') ? L(B('One step up', '한 단계 위')) : '', p.why.includes('__warm__') ? L(B('Warm-up', '몸풀기')) : '', p.why.includes('__style__') ? L(B('A familiar game', '익숙한 게임')) : '', rep ? `${T().fromReport}: ${rep}` : '', quick ? T().fromQuick : ''].filter(Boolean).join(' · ');
 }
 
 function intro() {

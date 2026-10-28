@@ -1,0 +1,35 @@
+/* Phoneme games (games-phoneme.js): sound boxes, letter tiles, word chain, daily sound routine. One screen, sizes in dvh. */
+.ph-stage{display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2dvh,10px)}
+.ph-row{display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,14px);flex-wrap:nowrap}
+.ph-row .emo.ph-pic,.ph-chain .emo.ph-pic{font-size:clamp(48px,min(11dvh,15vw),88px);line-height:1}
+.ph-chain .emo.ph-sm{font-size:clamp(28px,6dvh,44px);line-height:1}
+.show .say.ph-hear{width:clamp(44px,8dvh,60px);height:clamp(44px,8dvh,60px);font-size:clamp(22px,4.4dvh,32px);margin:0}
+.ph-boxes{display:inline-flex;gap:clamp(4px,1vw,8px);justify-content:center;flex-wrap:nowrap}
+.ph-box{box-sizing:border-box;width:clamp(36px,8dvh,56px);height:clamp(36px,8dvh,56px);border:3px solid var(--read);border-radius:10px;background:#fff;color:#3a2a2a;display:inline-flex;align-items:center;justify-content:center;font-size:clamp(20px,4.6dvh,34px);font-weight:800;transition:background .15s,transform .15s}
+.ph-box.lit{background:#ffd166;transform:scale(1.08)}
+.ph-box.q{border-style:dashed;color:var(--read)}
+.ph-boxes.wide .ph-box{width:clamp(64px,14dvh,96px);font-size:clamp(16px,3.6dvh,26px)}
+.opt .ph-boxes.sm .ph-box{width:clamp(24px,4.8dvh,34px);height:clamp(24px,4.8dvh,34px);border-width:2px;border-radius:7px;font-size:clamp(14px,3dvh,22px)}
+.opts.ph-strips{gap:10px}
+.opts.ph-strips .opt{min-width:0;max-width:100%;min-height:clamp(52px,9dvh,76px);padding:6px 10px}
+.ph-tap{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;font-size:clamp(20px,4dvh,28px)}
+.ph-chips{display:inline-block;min-width:3.2em;text-align:left;letter-spacing:1px;color:var(--read);font-size:.8em}
+.ph-tiles{display:inline-flex;gap:3px;flex-wrap:nowrap}
+.ph-tile{box-sizing:border-box;min-width:clamp(26px,min(6dvh,8vw),42px);height:clamp(32px,6.5dvh,46px);padding:0 4px;border-radius:8px;background:#fff7d6;border:2px solid #d9b44a;color:#3a2a2a;display:inline-flex;align-items:center;justify-content:center;font-size:clamp(20px,min(4.4dvh,6.4vw),32px);font-weight:800}
+.ph-tile.hi{background:#ffd166;border-color:#e09f00;box-shadow:0 0 0 3px #ffd16688}
+.ph-tile.q{border-style:dashed;background:#fff;color:var(--read)}
+.ph-chain{display:flex;align-items:center;justify-content:center;gap:clamp(4px,1.6vw,10px);flex-wrap:nowrap;margin-bottom:clamp(2px,1dvh,8px)}
+.ph-from{display:inline-flex;align-items:center;gap:4px}
+.ph-arrow{font-size:clamp(20px,4dvh,30px);color:var(--read);font-weight:800}
+.ph-eq{display:flex;align-items:center;justify-content:center;gap:clamp(4px,1.5vw,10px);font-size:clamp(38px,8.5dvh,68px);line-height:1;margin-bottom:clamp(2px,1dvh,8px)}
+.ph-eq b{font-size:.6em;color:var(--read)}
+.ph-steps{display:flex;gap:6px;justify-content:center;margin-bottom:clamp(2px,.8dvh,6px)}
+.ph-steps span{width:10px;height:10px;border-radius:50%;background:#0002}
+.ph-steps span.on{background:var(--read);transform:scale(1.3)}
+.ph-steps span.done{background:var(--good)}
+.opt .ph-claps{font-size:clamp(22px,4.4dvh,34px);letter-spacing:-2px;line-height:1.2}
+.opt .ph-letter{font-size:clamp(36px,7dvh,52px)}
+.opts.words .opt .ph-tiles{pointer-events:none}
+@media (max-width:420px){.opt .ph-boxes.sm .ph-box{width:24px;height:24px}.opts.words .opt{min-width:150px}}
+
+.ph-chain{max-width:100%}

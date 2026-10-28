@@ -131,6 +131,7 @@
     const ids = Object.values(domain.g).flat();
     const report = S.profile && S.profile.report;
     if (report && report.picks.some(item => ids.includes(item.id) && item.reasons.some(reason => /\((?:N|U)\)/.test(reason)))) return true;
+    if (window.SchoolResults && window.SchoolResults.weakKeys().includes(domain.k)) return true;   // i-Ready placement One Grade Level Below or lower (school-results.js)
     return typeof latestResults === 'function' && Object.entries(latestResults()).some(([id, right]) => ids.includes(id) && right === false);
   };
   const weakGame = game => {

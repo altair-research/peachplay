@@ -53,7 +53,7 @@
       try {
         window.speechSynthesis.cancel();
         const utterance = new window.SpeechSynthesisUtterance(word[language]);
-        utterance.lang = language === 'en' ? 'en-US' : 'ko-KR'; utterance.rate = 0.85;
+        utterance.lang = language === 'en' ? 'en-US' : 'ko-KR'; utterance.rate = 0.85; if (window.Voice) window.Voice.apply(utterance, utterance.lang);
         utterance.onerror = () => { if (active === dialog) status.textContent = t.unavailable; };
         window.speechSynthesis.speak(utterance);
       } catch { status.textContent = t.unavailable; }
