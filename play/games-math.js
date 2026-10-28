@@ -203,7 +203,16 @@ const SHAPES = {
   square: { n: B('square', '네모(정사각형)'), svg: '<rect x="14" y="14" width="72" height="72"/>' },
   triangle: { n: B('triangle', '세모'), svg: '<polygon points="50,10 92,86 8,86"/>' },
   rectangle: { n: B('rectangle', '직사각형'), svg: '<rect x="6" y="26" width="88" height="48"/>' },
-  hexagon: { n: B('hexagon', '육각형'), svg: '<polygon points="50,6 87,28 87,72 50,94 13,72 13,28"/>' }
+  hexagon: { n: B('hexagon', '육각형'), svg: '<polygon points="50,6 87,28 87,72 50,94 13,72 13,28"/>' },
+  // D7 (2026-10-28): the K school test asked for an octagon (stop sign); the child colored it as a hexagon.
+  octagon: { n: B('octagon', '팔각형'), svg: '<polygon points="90.7,66.8 66.8,90.7 33.2,90.7 9.3,66.8 9.3,33.2 33.2,9.3 66.8,9.3 90.7,33.2"/>' }
+};
+// Side-count distractors only (not taught as names in K): a wrong answer one or two sides away.
+const NEAR_SHAPES = {
+  pentagon: { n: 5, svg: '<polygon points="50,6 91.8,36.4 75.9,85.6 24.1,85.6 8.2,36.4"/>' },
+  hexagon: { n: 6, svg: SHAPES.hexagon.svg },
+  heptagon: { n: 7, svg: '<polygon points="50,6 84.4,22.6 92.9,59.8 69.1,89.6 30.9,89.6 7.1,59.8 15.6,22.6"/>' },
+  octagon: { n: 8, svg: SHAPES.octagon.svg }
 };
 const SHAPE_COLORS = ['#ef476f', '#118ab2', '#06d6a0', '#ffb703', '#8338ec'];
 const shapeSvg = (k, rot) => `<svg viewBox="0 0 100 100" class="shape" style="transform:rotate(${rot}deg)" fill="${pick(SHAPE_COLORS)}" stroke="#1d3557" stroke-width="3">${SHAPES[k].svg}</svg>`;
@@ -212,13 +221,29 @@ const SHAPE_FACTS = {
   triangle: B('Which shape has 3 sides?', '변이 3개인 모양은?'),
   square: B('Which shape has 4 sides all the same?', '변 4개가 모두 같은 모양은?'),
   rectangle: B('Which shape has 4 sides, with 2 long and 2 short?', '긴 변과 짧은 변이 2개씩인 모양은?'),
-  hexagon: B('Which shape has 6 sides?', '변이 6개인 모양은?')
+  hexagon: B('Which shape has 6 sides?', '변이 6개인 모양은?'),
+  octagon: B('Which shape has 8 sides?', '변이 8개인 모양은?')
 };
+const sideSticks = (n) => `<div style="display:flex;gap:6px;justify-content:center;align-items:center;font-size:clamp(16px,3dvh,24px);font-weight:800;line-height:1">${Array.from({ length: n }, () => '<span style="display:inline-block;width:6px;height:clamp(16px,3.2dvh,26px);background:#1d3557;border-radius:3px"></span>').join('')}<span style="margin-left:8px">${n}</span></div>`;
 registerGame({
   id: 'shapes2d', subject: 'math', icon: '🔺', title: B('Shape Finder', '모양 찾기'), sub: B('Circles, squares, triangles...', '동그라미, 네모, 세모...'),
   area: AREA_MATH('Shapes'),
   play() {
     const lv = lvl('shapes2d'), pool = lv === 1 ? ['circle', 'square', 'triangle', 'rectangle'] : Object.keys(SHAPES);
+    // D7: level 2 compares the many-sided shapes by counting sides. The clue is a row of side sticks (works with sound off);
+    // wrong answers are one or two sides away (6 vs 8, 7 vs 8, 5 vs 6).
+    if (lv === 2 && rnd(3) === 0) {
+      const t = pick(['hexagon', 'octagon']), near = t === 'octagon' ? ['hexagon', 'heptagon'] : ['pentagon', 'octagon'], k = NEAR_SHAPES[t].n;
+      const svg = (key) => `<svg viewBox="0 0 100 100" class="shape" style="transform:rotate(${rnd(31) - 15}deg)" fill="${pick(SHAPE_COLORS)}" stroke="#1d3557" stroke-width="3">${NEAR_SHAPES[key].svg}</svg>`;
+      quiz(this, {
+        ask: B(`Count the sides. Which shape has ${k} sides?`, `변을 세어 봐요. 변이 ${k}개인 모양은?`),
+        show: sideSticks(k),
+        opts: [t, ...near].map(key => ({ html: svg(key), ok: key === t })), cls: 'shapes',
+        after: t === 'octagon' ? B('An octagon has 8 sides, like a stop sign 🛑.', '팔각형은 변이 8개예요. 정지 표지판 🛑처럼요.') : B('A hexagon has 6 sides.', '육각형은 변이 6개예요.'),
+        vocab: SHAPES[t].n.en
+      });
+      return;
+    }
     const t = pick(pool), ds = others(pool, t, 2), byFact = rnd(2) === 0;
     const rot = () => (lv === 1 ? rnd(2) * 15 : rnd(61) - 30);
     quiz(this, {
@@ -226,7 +251,7 @@ registerGame({
       askSay: byFact ? SHAPE_FACTS[t] : B(`Tap the ${SHAPES[t].n.en}.`, `${SHAPES[t].n.ko}을 눌러요.`),
       askExtra: S.lang === 'ko' && !byFact ? { t: SHAPES[t].n.en, lang: 'en-US' } : null,
       opts: [t, ...ds].map(k => ({ html: shapeSvg(k, rot()), ok: k === t })), cls: 'shapes',
-      after: B(`That is a ${SHAPES[t].n.en}.`, `${SHAPES[t].n.ko}이에요.`), vocab: SHAPES[t].n.en
+      after: t === 'octagon' ? B('That is an octagon, like a stop sign 🛑.', '팔각형이에요. 정지 표지판 🛑 모양이에요.') : B(`That is a ${SHAPES[t].n.en}.`, `${SHAPES[t].n.ko}이에요.`), vocab: SHAPES[t].n.en
     });
   }
 });

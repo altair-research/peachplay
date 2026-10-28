@@ -233,16 +233,17 @@ function grownups() {
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
     <div id="learnReport">${window.SessionReport.html(window.SessionReport.range)}</div>
+    ${window.HomeCard ? window.HomeCard.html() : ''}
     ${window.Learner.panel()}
     ${window.Learner.stylePanel()}
-    ${window.Fluency ? window.Fluency.html() : ''}${window.Spacing ? window.Spacing.summary() : ''}${window.Today ? window.Today.grownHtml() : ''}
+    ${window.Fluency ? window.Fluency.html() : ''}${window.Ladder ? window.Ladder.html() : ''}${window.Spacing ? window.Spacing.summary() : ''}${window.Today ? window.Today.grownHtml() : ''}
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
     <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
     <h2>${T().challengeTitle}</h2>
     <div class="tablewrap">${challengeTable()}</div>
     <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>
     <h2>${T().progressTitle}</h2>
-    <button class="pill" id="gprint">🖨️ ${L(B('Print practice report', '연습 보고서 인쇄'))}</button> <button class="pill" id="gcert">🏅 ${L(B('Print celebration certificate', '칭찬 수료증 인쇄'))}</button> <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button> ${window.SchoolResults ? `<button class="pill" id="gschool">🏫 ${L(B('School results (i-Ready, tests)', '학교 결과 넣기(i-Ready·평가지)'))}</button>` : ''}
+    <button class="pill" id="gprint">🖨️ ${L(B('Print practice report', '연습 보고서 인쇄'))}</button> <button class="pill" id="gcert">🏅 ${L(B('Print celebration certificate', '칭찬 수료증 인쇄'))}</button> ${window.Paper ? `<button class="pill" id="gpaper">📝 ${L(B('Paper worksheet', '종이 학습지 만들기'))}</button>` : ''} <button class="pill" id="gprog">📈 ${L(PT.prog)}</button> <button class="pill" id="gkids">👧👦 ${L(PT.kids)}</button> ${window.SchoolResults ? `<button class="pill" id="gschool">🏫 ${L(B('School results (i-Ready, tests)', '학교 결과 넣기(i-Ready·평가지)'))}</button>` : ''}
     <div class="tablewrap">${checksTable()}</div>
     <h2>${T().addrTitle}</h2>
     <div class="form"><input id="street" placeholder="${T().street}" value="${S.addr.street.replace(/"/g, '&quot;')}"><input id="city" placeholder="${T().city}" value="${S.addr.city.replace(/"/g, '&quot;')}">
@@ -254,15 +255,16 @@ function grownups() {
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   window.SessionReport.bind();
+  if (window.HomeCard) window.HomeCard.bind();
   window.Learner.bind();
   window.Learner.bindStyle();
   if (window.Fluency) window.Fluency.bind();
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.spacing = []; S.today = null; S.fluency = []; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.spacing = []; S.today = null; S.homecard = null; S.fluency = []; S.ladder = null; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); if (window.Paper) window.Paper.clear(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };
   if (typeof backupBind === 'function') backupBind();
-  $('#gprint').onclick = () => window.openPrintReport && window.openPrintReport(); $('#gcert').onclick = () => window.openPrintReport && window.openPrintReport('certificate'); $('#gprog').onclick = progressScreen; $('#gkids').onclick = profilesScreen; if ($('#gschool')) $('#gschool').onclick = () => window.SchoolResults.open(grownups);
+  $('#gprint').onclick = () => window.openPrintReport && window.openPrintReport(); $('#gcert').onclick = () => window.openPrintReport && window.openPrintReport('certificate'); $('#gprog').onclick = progressScreen; if ($('#gpaper')) $('#gpaper').onclick = () => window.Paper.open(grownups); $('#gkids').onclick = profilesScreen; if ($('#gschool')) $('#gschool').onclick = () => window.SchoolResults.open(grownups);
   $('#b').onclick = home;
 }
 

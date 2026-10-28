@@ -55,6 +55,32 @@ registerGame({
   id: 'motion', subject: 'sci', icon: '🧲', title: B('Push or Pull?', '밀기 당기기'), sub: B('How things move', '물체가 움직이는 방법'),
   area: AREA_SCI('Motion'),
   play() {
+    // D7 (2026-10-28, K school test): fair-test choice ("which test tells us?"), best-reason choice and the wheels feature.
+    // Every picture keeps the rule from 70a: the pusher is on the left, the arrow shows where the thing goes.
+    const lanes=(a,b)=>`<span class="emo" style="display:flex;flex-direction:column;align-items:flex-start;font-size:clamp(12px,min(4.2vw,3.4dvh),26px);line-height:1.3;white-space:nowrap"><span>${a}</span><span>${b}</span></span>`;
+    if(lvl('motion')===2&&rnd(3)===0){
+      // One thing changes (right), two things change, nothing changes. Same car, same floor unless that is what we test.
+      const tests=[
+        {q:B('Does a BIGGER push make it go farther?','더 세게 밀면 더 멀리 갈까요?'),cue:'👉 ❓ 👉👉',a:'👉🚗⬜',ok:'👉👉🚗⬜',two:'👉👉🚙⬜',after:B('Only the push changes, so we learn about the push.','미는 힘만 바꿨으니 미는 힘에 대해 알 수 있어요.')},
+        {q:B('Does it roll farther on a smooth floor than on grass?','풀밭보다 매끈한 바닥에서 더 멀리 갈까요?'),cue:'⬜ ❓ 🌿',a:'👉🚗🌿',ok:'👉🚗⬜',two:'👉👉🚗⬜',after:B('Only the floor changes, so we learn about the floor.','바닥만 바꿨으니 바닥에 대해 알 수 있어요.')},
+        {q:B('Do wheels help a box move?','바퀴가 있으면 상자가 더 잘 움직일까요?'),cue:'📦 ❓ 🛞',a:'👉📦⬜',ok:'👉📦🛞⬜',two:'👉👉📦🛞⬜',after:B('Only the wheels change, so we learn about wheels.','바퀴만 바꿨으니 바퀴에 대해 알 수 있어요.')}];
+      const t=pick(tests);
+      quiz(this,{ask:B('Which test can tell us?','어떤 실험이 알려 줄까요?'),askSay:B(`${t.q.en} Which test can tell us? Change only one thing.`,`${t.q.ko} 어떤 실험이 알려 줄까요? 한 가지만 바꿔요.`),show:`<div class="emo" style="font-size:clamp(24px,5dvh,36px)">${t.cue}</div>`,
+        opts:shuffle([{html:lanes(t.a,t.ok),ok:true},{html:lanes(t.a,t.two),ok:false},{html:lanes(t.a,t.a),ok:false}]),cls:'shapes',after:t.after});return;
+    }
+    if(lvl('motion')===2&&rnd(2)===0){
+      // Best reason: B went farther. The right reason is the one thing that is different; the other reasons are the same in A and B.
+      const why=[['push','👉👉',B('a bigger push','더 센 밀기')],['floor','⬜',B('a smooth floor','매끈한 바닥')],['wheels','🛞',B('wheels on the box','상자에 단 바퀴')]];
+      const k=pick(why)[0],base={push:'👉',floor:'🌿',wheels:''},thing=k==='wheels'?'📦':'🚗';
+      const lane=(far)=>{const push=k==='push'&&far?'👉👉':'👉',floor=k==='floor'&&far?'⬜':(k==='floor'?'🌿':'⬜'),wheel=k==='wheels'&&far?'🛞':'';return `${far?'B':'A'} ${push}${thing}${wheel}${floor}${far?'➡️➡️➡️':'➡️'}`;};
+      quiz(this,{ask:B('Why did B go farther?','B가 더 멀리 간 까닭은?'),askSay:B('B went farther than A. What is the best reason?','B가 A보다 더 멀리 갔어요. 가장 알맞은 까닭은?'),show:lanes(lane(false),lane(true)),
+        opts:why.map(([key,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:key===k})),cls:'shapes',after:B('The best reason is the one thing that is different.','가장 좋은 까닭은 서로 다른 한 가지예요.')});return;
+    }
+    if(lvl('motion')===1&&rnd(4)===0){
+      const t=pick([['🛒',B('cart','카트')],['🚲',B('bike','자전거')],['🛹',B('skateboard','스케이트보드')],['🚗',B('toy car','장난감 차')]]);
+      quiz(this,{ask:B('What helps it roll?','무엇이 굴러가게 도와줄까요?'),show:`<div class="bigword"><span class="emo">${t[0]}</span></div>`,
+        opts:[['wheels','🛞',B('round wheels','둥근 바퀴')],['flat','⬛',B('flat sides','평평한 면')],['corner','🔺',B('pointy corners','뾰족한 모서리')]].map(([key,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:key==='wheels'})),cls:'shapes',after:B('Round wheels roll. Flat sides slide.','둥근 바퀴는 굴러가요. 평평한 면은 미끄러져요.'),vocab:'wheels'});return;
+    }
     if(lvl('motion')===2){
       const a=pick(MOTION),b=pick(MOTION.filter(x=>x!==a)),key=a[2]===b[2]?a[2]:'both';
       quiz(this,{ask:B('Which forces appear in these TWO actions?','두 동작에 나타난 힘은?'),show:`<div style="display:flex;gap:18px;justify-content:center">${[a,b].map(x=>`<span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:clamp(28px,5dvh,40px);line-height:1.1">${x[0]}</span><small>${L(x[1])}</small></span>`).join('')}</div>`,opts:[['push','👉',B('Only push','밀기만')],['pull','🤏',B('Only pull','당기기만')],['both','👉🤏',B('Both','둘 다')]].map(([k,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:k===key})),cls:'shapes'});return;
@@ -88,6 +114,7 @@ registerGame({
  ['✋🚪➡️',B('open door','문 열기'),'push'],
  ['🙌📦➡️',B('move box','상자 옮기기'),'push'],
  ['✋🧱➡️',B('slide block','블록 보내기'),'push'],
+ ['✋🚗➡️',B('toy car','장난감 차'),'push'],
  ['🙌⬅️🛷',B('sled rope','썰매 줄'),'pull'],
  ['✋⬅️🗄️',B('open drawer','서랍 열기'),'pull'],
  ['🧲⬅️📎',B('magnet clip','자석 클립'),'pull'],

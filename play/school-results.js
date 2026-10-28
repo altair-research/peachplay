@@ -220,7 +220,7 @@
         <p class="note2">${L(B('About 5 minutes each. Start at level 1 if it feels hard.', '하나에 약 5분. 어려우면 레벨 1부터 해요.'))}</p>
         <div class="menu">${games.map(p => { const g = gameById(p.id); return g ? `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText ? whyText(p) : ''}</small></button>` : ''; }).join('') || `<p>${T().noPicks}</p>`}</div>
         <h2>3. ${L(B('One thing to do at home', '집에서 할 것 1개'))}</h2>
-        <p>${homeAct ? homeAct.home : L(B('Read a picture book together and talk about it for 5 minutes.', '그림책을 함께 읽고 5분 동안 이야기해요.'))}</p>
+        <p>${homeAct ? homeAct.home : (window.HomeCard && window.HomeCard.homeText(window.HomeCard.dayPick().k)) || L(B('Read a picture book together and talk about it for 5 minutes.', '그림책을 함께 읽고 5분 동안 이야기해요.'))}</p>
         <h2>4. ${L(B('What to look at on the next school result', '다음 결과지에서 볼 것'))}</h2>
         ${nexts.length ? `<ul>${nexts.map(x => `<li>${x.next}</li>`).join('')}</ul>` : `<p>${L(B('Whether anything new is marked as needing practice.', '새로 연습이 필요하다고 표시된 것이 있는지.'))}</p>`}
         <p class="note2">✍️ ${L(B('Your eyes matter most: you know how your child learns. Change anything here that does not fit.', '아이를 가장 잘 아는 건 보호자예요. 맞지 않는 부분은 언제든 바꿔 주세요.'))}</p>

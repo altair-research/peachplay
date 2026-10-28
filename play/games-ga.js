@@ -34,16 +34,32 @@
   const card=s=>`<div style="font-size:${/^[^\p{L}\p{N}<>]+$/u.test(s)?'clamp(36px,7dvh,48px)':'clamp(16px,2.9dvh,21px)'};line-height:1.2">${s}</div>`;
   const add=(id,title,icon,area,make)=>registerGame({id,grade:'K',subject:'ss',icon,title,sub:B('Listen to the clues','단서를 듣고 골라요'),area,play(){quiz(this,make(lvl(id)));}});
   const symbols=[
-    [B('Pledge of Allegiance','충성 맹세'),'📜',B('Words of loyalty to the U.S. flag','미국 국기에 충성을 약속하는 말'),B('Spoken words, not the national song','국가 노래가 아니라 말로 하는 맹세')],
+    [B('Pledge of Allegiance','충성 맹세'),'🗣️',B('Words of loyalty to the U.S. flag','미국 국기에 충성을 약속하는 말'),B('Spoken words, not the national song','국가 노래가 아니라 말로 하는 맹세')],
     [B('The Star-Spangled Banner','성조기여 영원하라'),'🎵',B('The U.S. national anthem','미국의 국가'),B('A song used as a national symbol','나라의 상징으로 쓰는 노래')],
     [B('Bald eagle','흰머리수리'),'🦅',B('A bird used as a U.S. emblem','미국의 상징인 새'),B('The eagle on the Great Seal','미국의 큰 인장에 그려진 독수리')],
     [B('Statue of Liberty','자유의 여신상'),'🗽',B('A statue that stands for liberty','자유를 나타내는 조각상'),B('A statue holding a torch','횃불을 들고 있는 조각상')],
     [B('Lincoln Memorial','링컨 기념관'),'🏛️',B('A memorial honoring Abraham Lincoln','에이브러햄 링컨을 기리는 기념관'),B('A seated president inside a columned hall','기둥이 있는 건물 안에 앉아 있는 대통령 조각상')],
     [B('Washington Monument','워싱턴 기념탑'),'📐',B('A monument honoring George Washington','조지 워싱턴을 기리는 기념탑'),B('A tall, pointed stone monument','높고 끝이 뾰족한 돌 기념탑')],
-    [B('White House','백악관'),'🏠',B('The home of the U.S. president','미국 대통령의 집'),B('A building where the U.S. president works','미국 대통령이 일하는 건물')]
+    [B('White House','백악관'),'🏠',B('The home of the U.S. president','미국 대통령의 집'),B('A building where the U.S. president works','미국 대통령이 일하는 건물')],
+    [B('Constitution','헌법'),'📜',B('The most important rule book of our country','우리나라의 가장 중요한 규칙 책'),B('Written rules that everyone in the country follows','나라의 모든 사람이 따르는 글로 쓴 규칙')]
   ];
+  // D7 (2026-10-28, K school test): the child missed the NAMES of the Pledge, the anthem and the Constitution.
+  // Each one gets its own scene picture (what people DO with it): say words with a hand on the heart, sing, read written rules.
+  // The answer cards use different icons from the scene (PF2): 🗣️ Pledge, 🎵 anthem, 📜 Constitution.
+  const civic=[
+    {s:symbols[0],scene:['🧒❤️🇺🇸','🏫👧❤️🇺🇸'],act:B('We SAY these words to the flag.','국기를 보며 이 말을 해요.'),why:B('to make a promise to the flag','국기에 약속하려고')},
+    {s:symbols[1],scene:['🧑‍🤝‍🧑🎤🇺🇸','🏟️🎤🇺🇸'],act:B('We SING this song for the country.','나라를 위해 이 노래를 불러요.'),why:B('to sing for the country','나라를 위해 노래하려고')},
+    {s:symbols[7],scene:['🏛️✍️⚖️','👀⚖️🏛️'],act:B('It is the rule book for the whole country.','나라 전체의 규칙 책이에요.'),why:B('to know the country’s rules','나라의 규칙을 알려고')}
+  ];
+  const civicCard=(c,ok)=>({html:`<span class="emo">${c.s[1]}</span>`,label:c.s[0],ok});
   // Generic icons are memory cues, not depictions of specific buildings or people.
   add('nationcards',B('U.S. Symbol Clues','미국 상징 단서'),'🇺🇸',B('Social Studies · National symbols','사회 · 미국의 상징'),lv=>{
+    // Level 1: scene picture -> name card. Level 2: name -> best reason we have it (reason choice, not more options).
+    if(rnd(2)===0){
+      const c=pick(civic),cards=shuffle(civic);
+      if(lv===1)return {ask:B('What is this called?','이것을 무엇이라고 할까요?'),askSay:B(`${c.act.en} What is it called?`,`${c.act.ko} 무엇이라고 할까요?`),show:card(pick(c.scene)),opts:cards.map(x=>civicCard(x,x===c)),cls:'shapes',after:B(`${c.s[0].en}: ${c.s[2].en}.`,`${c.s[0].ko}: ${c.s[2].ko}.`)};
+      return {ask:B(`Why do we have ${/^The /.test(c.s[0].en)?c.s[0].en.replace(/^The /,'the '):'the '+c.s[0].en}?`,`${c.s[0].ko}은(는) 왜 있을까요?`),show:card(c.s[1]),opts:cards.map(x=>({html:`<span class="emo" style="font-size:clamp(16px,min(5.5vw,3.6dvh),30px);white-space:nowrap">${pick(x.scene)}</span>`,label:x.why,ok:x===c})),cls:'words',after:B(`${c.s[0].en}: ${c.s[2].en}.`,`${c.s[0].ko}: ${c.s[2].ko}.`)};
+    }
     const pool=symbols.filter((_,i)=>[3,4,5].includes(i)),t=pick(pool),ds=pool.filter(x=>x!==t),clues={
      'Statue of Liberty':[B('A tall figure holds a torch.','큰 사람 조각상이 횃불을 들고 있어요.'),B('A crown sits on its head.','머리에 왕관을 쓰고 있어요.'),B('It stands on an island.','섬 위에 서 있어요.'),B('One hand holds a tablet.','한 손에 판을 들고 있어요.')],
      'Lincoln Memorial':[B('A seated president is inside.','안에 앉아 있는 대통령 조각상이 있어요.'),B('Tall columns surround the hall.','높은 기둥들이 건물을 둘러싸요.'),B('Wide steps lead up to it.','넓은 계단을 올라가요.'),B('Its statue is under a roof.','조각상이 지붕 아래에 있어요.')],
@@ -311,6 +327,14 @@ registerGame({
     if (mode === 0) return flagsPlay.call(this);
     if (mode === 1) {
       const ga = !!rnd(2);
+      // D7 (2026-10-28): the school test showed the U.S. and Georgia name tags swapped. Pick the pair whose tags are right;
+      // the wrong pair is the same two flags with the tags swapped (the real mistake).
+      if (rnd(2)) {
+        const usFirst = !!rnd(2), mini = f => f.replace('<svg ', '<svg style="width:clamp(64px,min(22vw,13dvh),120px);height:auto" ');
+        const tag = us => L(us ? B('U.S.A.', '미국') : B('Georgia', '조지아'));
+        const pair = (swap) => `<span style="display:flex;gap:8px;align-items:flex-start">${[usFirst, !usFirst].map(us => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px">${mini(us ? flagUS() : flagGA())}<span class="word" style="font-size:clamp(14px,2.6dvh,19px);border:2px solid #8ea0b5;border-radius:6px;padding:0 6px;background:#fff">${tag(swap ? !us : us)}</span></span>`).join('')}</span>`;
+        return quiz(this, { ask: B('Which flags have the correct name tags?', '이름표가 바르게 붙은 쪽은?'), opts: shuffle([{ html: pair(false), ok: true }, { html: pair(true), ok: false }]), cls: 'words', after: B('The Georgia flag has a ring of stars. The U.S.A. flag has 50 stars and 13 stripes.', '조지아 주기에는 별이 고리 모양으로 있어요. 미국 국기에는 별 50개와 줄 13개가 있어요.') });
+      }
       return quiz(this, { ask: B('What is the name of this flag?', '이 깃발의 이름을 골라요.'), show: (ga ? flagGA() : flagUS()).replace('<svg ', '<svg style="width:min(70vw,42dvh);height:auto" '), opts: [true, false].map(v => ({ html: `<span class="word">${L(v ? B('Georgia flag', '조지아 주기') : B('USA flag', '미국 국기'))}</span>`, ok: v === ga })), cls: 'words' });
     }
     const [ga, ask] = pick(questions);

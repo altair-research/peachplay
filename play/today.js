@@ -144,7 +144,7 @@
     t.step = STEPS.length; save();
     view().innerHTML = `<div class="hb-wrap"><h1 class="round-title">${PEACH_SVG('yay')}${L(TX.finish)}</h1>
       <p class="hb-row" aria-hidden="true">${icons().map(([ic]) => `<span>${ic}</span>`).join('<i>✔️</i>')}</p>
-      <p class="tag">${first ? '🍑 +1 · ' : ''}${L(TX.days(recentDays()))}</p><button class="next" id="hbHome">🏠 ${L(TX.home)}</button></div>`;
+      <p class="tag">${first ? '🍑 +1 · ' : ''}${L(TX.days(recentDays()))}</p><button class="next" id="hbHome">🏠 ${L(TX.home)}</button>${window.HomeCard ? window.HomeCard.miniHtml() : ''}</div>`;
     $('#hbHome').onclick = home; say(L(TX.finish)); sfx('win'); confetti(150);
   }
   const recentDays = () => { const from = window.Spacing ? window.Spacing.addDays(-13) : ''; return st().done.filter(d => d >= from).length; };

@@ -43,7 +43,9 @@ function cleanState(s) {                                  // keeps only known, w
   }
   if (Array.isArray(s.spacing) && window.Spacing) o.spacing = window.Spacing.clean(s.spacing);
   if (isObj(s.today) && window.Today) o.today = window.Today.clean(s.today);
+  if (isObj(s.homecard) && window.HomeCard) { const hc = window.HomeCard.clean(s.homecard); if (hc) o.homecard = hc; }
   if (Array.isArray(s.fluency) && window.Fluency) o.fluency = window.Fluency.clean(s.fluency);
+  if (isObj(s.ladder)) o.ladder = { r: Math.min(99, Math.max(1, Math.floor(numOr(s.ladder.r, 1)))), low: s.ladder.low === 1 ? 1 : 0, best: Math.min(99, Math.max(1, Math.floor(numOr(s.ladder.best, 1)))), h: (Array.isArray(s.ladder.h) ? s.ladder.h : []).filter(e => Array.isArray(e) && e.length === 6 && /^\d{4}-\d{2}-\d{2}$/.test(e[0]) && e.slice(1).every(Number.isFinite)).slice(-40) };   // Number Ladder rung (games-ladder.js re-checks with Ladder.clean)
   ['muted', 'introSeen', 'showK', 'sfxOff', 'voiceOff', 'calm', 'readable'].forEach(k => { if (typeof s[k] === 'boolean') o[k] = s[k]; });
   if (isObj(s.hist)) { o.hist = {}; Object.entries(s.hist).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d) && isObj(v)) { const g = {}; if (isObj(v.g)) Object.entries(v.g).forEach(([id, x]) => { if (Array.isArray(x) && x.length === 2 && x.every(Number.isFinite)) g[id] = [Math.max(0, x[0]), Math.max(0, x[1])]; }); o.hist[d] = { r: Math.max(0, numOr(v.r)), w: Math.max(0, numOr(v.w)), g }; } }); }
   if (isObj(s.metWords)) {

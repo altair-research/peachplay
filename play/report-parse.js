@@ -16,7 +16,7 @@ const SUBJECT_DEFAULT = {
 // [subject, regex on assignment name, games (first = strongest link)]
 const SKILL_RULES = [
   ['math', /by 10|tens/i, ['tens', 'order']],
-  ['math', /represent|draw a picture/i, ['represent', 'ten']],              // represent: show a number with a picture (2026-10-28)
+  ['math', /represent|draw a picture/i, ['represent', 'directions', 'ten']],              // represent: show a number with a picture (2026-10-28)
   ['math', /representing 10|10 in sets|ten frame|make 10|compos|decompos/i, ['ten', 'teens']],
   ['math', /one to one|one-to-one/i, ['pair1to1', 'count']],                 // pair1to1: one-to-one matching (v4.35)
   ['math', /counting sets|scattered|array|circle|line/i, ['count']],
@@ -30,6 +30,7 @@ const SKILL_RULES = [
   ['math', /add|subtract|take away|put together/i, ['addsub']],
   ['math', /graph|data/i, ['graph']],
   ['math', /unit 1 summative/i, ['ten', 'count', 'tens']],
+  ['read', /follow(s|ing)? (one|two|multi)?[- ]?(step )?directions|directions|listening comprehension/i, ['directions', 'askfindK']],   // teacher direction words (2026-10-28)
   ['read', /uppercase|lowercase|letter names|alphabet/i, ['letters']],
   ['read', /letter sounds?|phonic|beginning sound/i, ['sounds', 'rhyme']],
   ['read', /rhym/i, ['rhyme']],

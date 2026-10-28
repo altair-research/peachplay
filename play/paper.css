@@ -1,0 +1,66 @@
+/* P-paper: grown-ups screens (app) + the printable worksheet (iframe document). Prefix pw-. */
+.pw-make { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+.pw-chk { font-size: 15px; display: inline-flex; gap: 6px; align-items: center; }
+.pw-chk input { width: 22px; height: 22px; }
+.pw-msg { font-weight: 700; color: #2f6b3a; }
+.pw-rows { list-style: none; padding: 0; margin: 6px 0 14px; }
+.pw-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; padding: 10px 4px; border-bottom: 1px solid #0001; }
+.pw-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.pw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; margin: 12px 0; }
+.pw-num { min-height: 84px; border: 3px solid #c9b7a6; border-radius: 16px; background: #fff; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px; }
+.pw-num b { font-size: 30px; line-height: 1; }
+.pw-num small { font-size: 11px; color: #6b5b55; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pw-num.wrong { border-color: #c0392b; background: #fdecea; }
+.pw-num.wrong b::after { content: ' ✗'; color: #c0392b; }
+
+/* ---- printable document (inside the sandboxed iframe) ---- */
+.pw-doc { margin: 0; background: #eee; color: #111; font-family: Arial, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; font-size: 13pt; line-height: 1.3; }
+.pw-sheet { box-sizing: border-box; width: 192mm; margin: 12px auto; padding: 0; background: #fff; outline: 8mm solid #fff; }   /* screen width = printable width of A4/Letter, so the one-page fit measured here holds in print */
+.pw-head { border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px; }
+.pw-title { font-size: 17pt; font-weight: 700; }
+.pw-fill { display: flex; gap: 14px; margin: 6px 0 2px; font-size: 12pt; }
+.pw-fill span { flex: 1; display: flex; align-items: flex-end; gap: 6px; }
+.pw-fill i { flex: 1; border-bottom: 1px solid #000; min-height: 1.2em; }
+.pw-sub { font-size: 10pt; }
+.pw-how { font-size: 11pt; font-weight: 700; margin-top: 2px; }
+.pw-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; }
+.pw-q { border: 1px solid #000; border-radius: 3mm; padding: 2mm 3mm; break-inside: avoid; page-break-inside: avoid; overflow: hidden; }
+.pw-ask { font-size: 13pt; font-weight: 700; margin-bottom: 1mm; }
+.pw-n { display: inline-block; min-width: 1.6em; height: 1.6em; line-height: 1.6em; text-align: center; border: 2px solid #000; border-radius: 50%; margin-right: 4px; font-size: 12pt; }
+.pw-show { font-size: 20pt; text-align: center; margin: 1mm 0; }   /* never clipped: the whole sheet is zoomed to fit instead */
+.pw-show .storytext { font-size: 12pt !important; text-align: left; line-height: 1.35 !important; }
+.pw-show svg { max-width: 100%; max-height: 34mm; height: auto; }
+.pw-o svg { max-width: 100%; max-height: 18mm; height: auto; }
+.pw-show img, .pw-o img { max-width: 100%; max-height: 30mm; filter: grayscale(1); }
+.pw-show .grp, .pw-o .grp { display: inline-flex; flex-wrap: wrap; gap: 1px; justify-content: center; max-width: 60mm; font-size: 18pt; line-height: 1.1; }
+.pw-opts { list-style: none; padding: 0; margin: 1mm 0 0; display: flex; flex-wrap: wrap; gap: 2mm; }
+.pw-opts li { flex: 1 1 28%; display: flex; align-items: center; gap: 2mm; border: 1px dashed #777; border-radius: 2mm; padding: 1mm 2mm; min-height: 9mm; }
+.pw-letter { flex: none; width: 7mm; height: 7mm; line-height: 7mm; text-align: center; border: 1px solid #000; border-radius: 50%; font-weight: 700; font-size: 11pt; }
+.pw-o { flex: 1; font-size: 15pt; text-align: center; overflow-wrap: anywhere; }
+.pw-o .word, .pw-o .num { font-size: inherit; }
+.pw-ol { display: block; font-size: 9pt; }
+.pw-hint { font-size: 22pt; text-align: center; }
+.pw-big { font-size: 30pt; font-weight: 700; }
+.pw-seq { font-size: 24pt; font-weight: 700; letter-spacing: 1px; }
+.pw-blank { display: inline-block; width: 14mm; height: 12mm; border: 2px solid #000; vertical-align: middle; }
+.pw-trace { font-size: 44pt; color: #fff; -webkit-text-stroke: 1px #777; letter-spacing: 8mm; font-family: Arial, sans-serif; }
+.pw-box { height: 30mm; border: 2px solid #000; border-radius: 2mm; margin-top: 1mm; }
+.pw-box.pw-lines { height: 24mm; background: repeating-linear-gradient(#fff 0 11mm, #999 11mm 11.3mm); }
+.pw-k .pw-ask { font-size: 14pt; }
+.pw-k .pw-show { font-size: 24pt; }
+.pw-k .pw-o { font-size: 18pt; }
+.pw-key { margin-top: 5mm; font-size: 9pt; transform: rotate(180deg); }
+.pw-key.pw-page2 { transform: none; break-before: page; page-break-before: always; font-size: 12pt; }
+.pw-cut { border-top: 2px dashed #000; text-align: center; padding-top: 1mm; font-size: 9pt; }
+.pw-key h2 { font-size: 10pt; margin: 1mm 0; }
+.pw-key.pw-page2 h2 { font-size: 14pt; }
+.pw-keylist { margin: 0; padding-left: 0; list-style: none; columns: 2; column-gap: 6mm; }
+.pw-small { font-size: 8pt; }
+@media print {
+  .pw-doc { background: #fff; }
+  .pw-sheet { width: 100%; max-width: none; margin: 0; padding: 0; outline: none; }
+  .pw-sheet, .pw-show, .pw-o, .pw-hint { filter: grayscale(1); }   /* black-and-white, ink-saving */
+  .pw-sheet * { color: #000 !important; background-color: transparent !important; box-shadow: none !important; }
+  .pw-trace { color: #fff !important; }
+}
+@media (max-width: 560px) { .pw-list { grid-template-columns: 1fr; } }

@@ -104,13 +104,27 @@ const canvasSize = () => { const w = Math.min(560, Math.max(260, window.innerWid
 
 // ---------- 3. Trace letters and numbers ----------
 const TRACE_UP = 'ABCDEFHILOTUVXYZ'.split(''), TRACE_LOW = 'acehilmnorstuvwxz'.split('');
+// D7 (2026-10-28, K school test): 4 and 5 were written backward several times. These digits keep the start dot and
+// direction arrows at every level, come up a little more often, and sometimes ask "which one faces the right way?".
+const TRACE_FLIP = '234579';
+const TRACE_NUMS = '0123456789'.split('').concat(['4', '5']);
+// The digit is drawn from its stroke path (no text), so the mirrored wrong answer is the same shape turned around.
+const digitSvg = (ch, mirror) => `<svg viewBox="0 0 100 100" style="width:clamp(70px,16dvh,120px);height:auto" aria-hidden="true">${TraceStrokes[ch].map(st => `<polyline points="${st.map(([x, y]) => `${((mirror ? 1 - x : x) * 100).toFixed(1)},${(y * 100).toFixed(1)}`).join(' ')}" fill="none" stroke="#1d3557" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>`;
+function traceFlipRound(game, ch) {
+  quiz(game, {
+    ask: B(`Which ${ch} faces the right way?`, `바르게 쓴 ${ch}는 어느 쪽일까요?`),
+    opts: shuffle([{ html: digitSvg(ch, false), ok: true }, { html: digitSvg(ch, true), ok: false }]), cls: 'shapes',
+    after: B(`This ${ch} faces the right way. When you trace it, start at dot 1.`, `이 ${ch}가 바른 방향이에요. 따라 쓸 때는 1번 점에서 시작해요.`), vocab: ch
+  });
+}
 registerGame({
   id: 'trace', subject: 'write', icon: '✏️', title: B('Trace It', '따라 쓰기'), sub: B('Letters and numbers', '글자와 숫자'),
   area: AREA_WRITE('Letter & number formation'),
   play() {
     const lv = lvl('trace'), mode = pick(lv === 1 ? ['up', 'num'] : ['up', 'low', 'num']);
-    const ch = mode === 'up' ? pick(TRACE_UP) : mode === 'low' ? pick(TRACE_LOW) : String(rnd(10));
+    const ch = mode === 'up' ? pick(TRACE_UP) : mode === 'low' ? pick(TRACE_LOW) : pick(TRACE_NUMS);
     if (dup(this, mode + ch)) return this.play();
+    if (mode === 'num' && TRACE_FLIP.includes(ch) && window.TraceStrokes?.[ch] && rnd(3) === 0) return traceFlipRound(this, ch);
     if (window.TraceStrokes?.[ch]) return traceGuidedRound(this, ch, lv);
     const [w, h] = canvasSize(), disp = makeCanvas(w, h), ink = makeCanvas(w, h), mask = makeCanvas(w, h);
     const font = (px) => `800 ${px}px "Arial Rounded MT Bold", Arial, sans-serif`;
@@ -175,7 +189,7 @@ function traceGuidedRound(game, ch, lv) {
     disp.ctx.clearRect(0,0,w,h);
     paths.forEach((pts,i)=>{
       const active=i===current, color=active?'#225caa':'#aeb8c3';
-      if(lv===1){
+      if(lv===1||TRACE_FLIP.includes(ch)){
         line(disp.ctx,pts,active?5:3,color,[5,7]);
         const a=pts[0],b=pts[1],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),tip=[a[0]+dx*.65,a[1]+dy*.65],ang=Math.atan2(dy,dx);
         if(len>8)line(disp.ctx,[[tip[0]-10*Math.cos(ang-.55),tip[1]-10*Math.sin(ang-.55)],tip,[tip[0]-10*Math.cos(ang+.55),tip[1]-10*Math.sin(ang+.55)]],3,color);
@@ -186,7 +200,7 @@ function traceGuidedRound(game, ch, lv) {
       const [x,y]=pts[0],active=i===current;
       const shared=paths.slice(0,i).filter(p=>Math.hypot(p[0][0]-x,p[0][1]-y)<15).length;
       const labelX=x+shared*25;
-      disp.ctx.fillStyle=active?'#225caa':'#dbe3ed';disp.ctx.beginPath();disp.ctx.arc(labelX,y,11,0,Math.PI*2);disp.ctx.fill();
+      disp.ctx.fillStyle=active?'#225caa':'#dbe3ed';disp.ctx.beginPath();disp.ctx.arc(labelX,y,active&&TRACE_FLIP.includes(ch)?15:11,0,Math.PI*2);disp.ctx.fill();
       disp.ctx.fillStyle=active?'#fff':'#33465c';disp.ctx.font='bold 15px Arial';disp.ctx.textAlign='center';disp.ctx.textBaseline='middle';disp.ctx.fillText(String(i+1),labelX,y);
       if(shared)line(disp.ctx,[[x,y+12],[labelX,y+12]],1,'#788aa0');
     });
