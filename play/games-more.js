@@ -332,3 +332,51 @@ registerGame({
  const game=GAMES.find(g=>g.id==='cause'),old=game.play;
  game.play=function(){const render=window.quiz;try{window.quiz=(g,q)=>{const before=q.onRender;q={...q,cls:(q.cls||'')+' sents',onRender(){if(before)before();for(const el of document.querySelectorAll('.show>div')){el.style.fontSize='clamp(16px,2.65dvh,20px)';el.style.lineHeight='1.15';}}};render(g,q);};return old.call(this);}finally{window.quiz=render;}};
 })();
+
+// 2026-10-29 (picture-first, S5 bundle): cause shows the thing and the action as pictures and the answers are result pictures with names.
+// Distractors stay about the same object (it stays the same / the opposite change). L2 follows two actions on one object as 3-box strips.
+(() => {
+ const game=GAMES.find(g=>g.id==='cause');
+ const big=e=>`<span style="font-size:1.25em">${e}</span>`,small=e=>`<span style="font-size:.6em">${e}</span>`;
+ const stack=n=>`<svg viewBox="0 0 22 46" style="height:clamp(30px,6.5dvh,52px);width:auto" aria-hidden="true">${Array.from({length:n},(_,i)=>`<rect x="2" y="${37-i*9}" width="18" height="8" rx="1.5" fill="#c9773e" stroke="#7a4524"/>`).join('')}</svg>`;
+ const ON='👆🔛',OFF='👆📴';
+ // [before, action, sentence, [result pic, name] correct first]
+ const rows=[
+  ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['⚽💨',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')]]],
+  ['⬛',ON,B('The room is dark. The light is switched on.','방이 어두워요. 불을 켜요.'),[['🔆',B('Bright','밝아져요')],['⬛',B('Still dark','그대로 어두워요')]]],
+  ['🚰',ON,B('A tap is closed. It is turned on.','수도꼭지가 잠겨 있어요. 틀어요.'),[['🚰💧',B('Water comes out','물이 나와요')],['🚰',B('No water','물이 안 나와요')]]],
+  [small('🎈'),'🫁💨',B('A small balloon. Air is blown in.','작은 풍선이에요. 바람을 불어 넣어요.'),[[big('🎈'),B('Bigger','커져요')],[small('🎈'),B('Same size','그대로예요')]]],
+  [stack(4),'✋⬆️',B('Four blocks. One is taken off the top.','블록 네 개예요. 맨 위 하나를 빼요.'),[[stack(3),B('Shorter','낮아져요')],[stack(5),B('Taller','높아져요')],[stack(4),B('Same height','그대로예요')]]],
+  ['🔕','👋',B('A bell is quiet. You shake it.','종이 조용해요. 흔들어요.'),[['🔔🎵',B('It rings','소리가 나요')],['🔕',B('Still quiet','조용해요')]]],
+  ['🧊','☀️',B('An ice cube sits in the hot sun.','얼음이 뜨거운 햇볕에 있어요.'),[['💧',B('It melts','녹아요')],['🧊',B('Stays ice','그대로 얼음')]]],
+  ['🌱','💧☀️',B('A sprout gets water and sun.','새싹이 물과 햇빛을 받아요.'),[['🌻',B('It grows','자라요')],['🥀',B('It wilts','시들어요')],['🌱',B('Stays small','그대로예요')]]],
+  ['🧽','💧',B('A dry sponge goes into water.','마른 스펀지를 물에 넣어요.'),[['🧽💦',B('Wet','젖어요')],['🧽',B('Still dry','그대로 말라 있어요')]]],
+  ['🌽','🔥',B('Corn kernels are heated.','옥수수 알을 뜨겁게 데워요.'),[['🍿',B('Popcorn','팝콘이 돼요')],['🌽',B('Stays corn','그대로예요')]]],
+  ['🌧️','⏳',B('It rains for a long time.','비가 오래 와요.'),[['💦',B('Puddles','물웅덩이')],['🏜️',B('Dry ground','땅이 말라요')]]],
+  ['🥚','🍳🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
+ ];
+ // [state A, state B, action A→B, action B→A, names]
+ const two=[
+  ['⚽','⚽💨','🤚➡️','✋',B('push','밀기'),B('stop','멈추기'),B('still','멈춤'),B('rolling','굴러감')],
+  ['⬛','🔆',ON,OFF,B('switch on','켜기'),B('switch off','끄기'),B('dark','어두움'),B('bright','밝음')],
+  ['🚰','🚰💧',ON,OFF,B('turn on','틀기'),B('turn off','잠그기'),B('no water','물 없음'),B('water','물 나옴')],
+  ['🧊','💧','☀️','❄️',B('warm it in the sun','햇볕에 두기'),B('put it in the freezer','얼리기'),B('ice','얼음'),B('water','물')],
+  ['🧽','🧽💦','💧','✊',B('dip in water','물에 담그기'),B('squeeze','꼭 짜기'),B('dry','마름'),B('wet','젖음')],
+  ['🔕','🔔🎵','👋','✋',B('shake','흔들기'),B('hold still','잡기'),B('quiet','조용함'),B('ringing','소리 남')]
+ ];
+ const pic=(e,label,ok)=>({html:/^</.test(e)?e:`<span class="emo" style="white-space:nowrap;font-size:clamp(20px,min(${[...e].length>2?'6.5vw':'9vw'},5.5dvh),44px)">${e}</span>`,label,ok});
+ const box=e=>`<span style="display:inline-grid;place-items:center;min-width:clamp(20px,min(6vw,5dvh),40px);height:clamp(28px,min(8vw,6dvh),46px);padding:0 1px;border:2px solid #b9a27f;border-radius:6px;background:#fff;font-size:clamp(10px,min(3.3vw,3dvh),22px);letter-spacing:-2px;white-space:nowrap">${e}</span>`;
+ const strip=s=>`<span style="display:inline-flex;gap:1px;align-items:center">${s.map(box).join('')}</span>`;
+ const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.join('<span class="op">➜</span>')}</div>`;
+ const line=t=>`<div style="font-size:clamp(15px,2.5dvh,19px);line-height:1.2;margin-top:4px">${L(t)}</div>`;
+ game.play=function(){
+  if(lvl(this.id)!==2){const r=pick(rows);
+   quiz(this,{ask:B('What happens next?','그다음에는 어떻게 될까요?'),askSay:B(`${r[2].en} What happens next?`,`${r[2].ko} 그다음에는 어떻게 될까요?`),show:scene([r[0],r[1],'<span class="qbox">?</span>'])+line(r[2]),quietShow:true,
+    opts:r[3].map((x,i)=>pic(x[0],x[1],i===0)),cls:'shapes',after:B(`${r[2].en} ${r[3][0][1].en}!`,`${r[2].ko} ${r[3][0][1].ko}!`)});return;}
+  const t=pick(two),flip=rnd(2),[a,b,go,back]=flip?[t[1],t[0],t[3],t[2]]:[t[0],t[1],t[2],t[3]],[n1,n2]=flip?[t[5],t[4]]:[t[4],t[5]],[sa,sb]=flip?[t[7],t[6]]:[t[6],t[7]];
+  const seqs=[[a,b,a],[a,a,b],[b,a,b]];
+  quiz(this,{ask:B('Which picture row shows both changes?','두 번 바뀌는 순서에 맞는 그림 줄은?'),askSay:B(`First ${n1.en}, then ${n2.en}. Which picture row shows the changes, in order?`,`먼저 ${n1.ko}, 그다음 ${n2.ko}. 바뀌는 순서에 맞는 그림 줄은?`),
+   show:scene([a,go,back,'<span class="qbox">?</span>'])+line(B(`${n1.en} → ${n2.en}`,`${n1.ko} → ${n2.ko}`)),quietShow:true,
+   opts:seqs.map((s,i)=>({html:strip(s),ok:i===0})),cls:'shapes',after:B(`${sa.en} → ${sb.en} → ${sa.en}`,`${sa.ko} → ${sb.ko} → ${sa.ko}`)});
+ };
+})();
