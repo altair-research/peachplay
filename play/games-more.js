@@ -380,3 +380,30 @@ registerGame({
    opts:seqs.map((s,i)=>({html:strip(s),ok:i===0})),cls:'shapes',after:B(`${sa.en} → ${sb.en} → ${sa.en}`,`${sa.ko} → ${sb.ko} → ${sa.ko}`)});
  };
 })();
+
+// 2026-10-29 (picture-first PF3: one unknown per screen): colors L2 no longer shows two blanks.
+// Kind A asks for the pair of paints behind one mixed color (the pair is the single unknown; wrong pairs share one paint or come from another recipe).
+// Kind B chains two mixes: the first is solved on screen, its result is mixed with white, and only the last color is blank.
+(() => {
+ const game=GAMES.find(g=>g.id==='colors'),old=game.play;
+ const dot=c=>CDOT(c).replace('style="','style="width:min(8vw,5dvh);height:min(8vw,5dvh);');
+ const R='margin:2px auto;gap:6px;font-size:min(7vw,4.5dvh)';
+ const W=['#ffffff',B('white','하양')],K2=['#222222',B('black','검정')];
+ const extra=[[K2[0],W[0],'#9a9a9a',K2[1],W[1],B('gray','회색')],['#ffd166',W[0],'#fff1b0',B('yellow','노랑'),W[1],B('light yellow','연노랑')],['#8338ec',W[0],'#cdb4f0',B('purple','보라'),W[1],B('light purple','연보라')]];
+ const ALL=[...MIX,...extra];
+ const chains=[[MIX[0],'#ffc59a',B('light orange','연주황')],[MIX[1],'#a8e6b8',B('light green','연초록')],[MIX[2],'#cdb4f0',B('light purple','연보라')]];
+ game.play=function(){if(lvl(this.id)!==2)return old.call(this);
+  if(!rnd(3)){const [m,light,name]=pick(chains),others=shuffle(ALL.filter(x=>x[2]!==light&&x[2]!==m[2])).slice(0,2);
+   const o=(c,n,ok)=>({html:CDOT(c),label:n,ok});
+   quiz(this,{ask:B('Mix again with white. Which color comes out?','그 색에 하양을 또 섞으면 무슨 색?'),askSay:B(`${m[3].en} and ${m[4].en} make ${m[5].en}. Then add white. Which color comes out?`,`${m[3].ko}과 ${m[4].ko}을 섞으면 ${m[5].ko}. 여기에 하양을 섞으면 무슨 색?`),
+    show:`<div class="mixrow" style="${R}">${dot(m[0])}<span class="op">+</span>${dot(m[1])}<span class="op">=</span>${dot(m[2])}</div><div class="mixrow" style="${R}">${dot(m[2])}<span class="op">+</span>${dot(W[0])}<span class="op">=</span><span class="qbox" style="width:min(9vw,6dvh);height:min(9vw,6dvh);font-size:min(6vw,4dvh)">?</span></div>`,
+    opts:[o(light,name,true),o(m[2],m[5],false),o(others[0][2],others[0][5],false)],cls:'shapes',after:B(`${m[5].en} and white make ${name.en}!`,`${m[5].ko}과 하양을 섞으면 ${name.ko}!`)});return;}
+  const t=pick(ALL),paints=[...new Map(ALL.flatMap(m=>[[m[0],m[3]],[m[1],m[4]]])).entries()],flip=rnd(2);
+  const keep=rnd(2),swap=pick(paints.filter(p=>p[0]!==t[0]&&p[0]!==t[1])),near=keep?[t[0],t[3],swap[0],swap[1]]:[swap[0],swap[1],t[1],t[4]];
+  const far=pick(ALL.filter(m=>m[2]!==t[2]&&!(m[0]===near[0]&&m[1]===near[2])&&!(m[0]===near[2]&&m[1]===near[0])));
+  const opt=([c1,n1,c2,n2],ok)=>({html:`<span style="white-space:nowrap">${dot(c1)}+${dot(c2)}</span>`,label:B(`${n1.en} + ${n2.en}`,`${n1.ko} + ${n2.ko}`),ok});
+  quiz(this,{ask:B('Which two paints make this color?','이 색은 어떤 두 물감을 섞었을까요?'),askSay:B(`Look at the color. Which two paints mix to make ${t[5].en}?`,`이 색을 보세요. 어떤 두 물감을 섞으면 ${t[5].ko}이 될까요?`),
+   show:`<div class="mixrow"><span class="qbox">?</span><span class="op">=</span>${CDOT(t[2])}</div>`,
+   opts:[opt(flip?[t[1],t[4],t[0],t[3]]:[t[0],t[3],t[1],t[4]],true),opt(near,false),opt([far[0],far[3],far[1],far[4]],false)],cls:'shapes',after:B(`${t[3].en} and ${t[4].en} make ${t[5].en}!`,`${t[3].ko}과 ${t[4].ko}을 섞으면 ${t[5].ko}!`)});
+ };
+})();
