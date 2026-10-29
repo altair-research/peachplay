@@ -64,3 +64,7 @@
 .vp-row{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin:.3rem 0}
 .vp-row select{flex:1;min-width:12rem;max-width:100%;font-size:1rem;padding:.3rem}
 .hb-today-row{margin-top:0}.hb-today-row .big.hb-today{padding-top:.3em;padding-bottom:.3em;min-height:0}
+
+/* D6 book list (2026-10-29) */
+.fc-books{margin-top:10px;text-align:left}.fc-books>summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+.fc-bh{font-size:16px;margin:10px 0 4px}.fc-blist{margin:0 0 4px 18px;padding:0}.fc-blist li{margin:2px 0;line-height:1.35}.fc-blist small{color:var(--muted,#7a675c)}

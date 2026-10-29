@@ -87,6 +87,22 @@
     const max = Math.max(...rows.map(r => r.n), 1);
     return `<ul class="fc-hist">${rows.map(r => `<li><span>${md(r.d)}</span><i style="width:${Math.max(4, Math.round(100 * r.n / max))}%"></i><b>${r.n}${r.sec < 60 ? `<small>${r.sec}s</small>` : ''}</b></li>`).join('')}</ul>`;
   }
+  // ---- D6 books to look for (P-d6book, 2026-10-29): titles only, no links or covers. Bands are rough (estimate) — the library has the real levels.
+  const BOOKS = [
+    [B('Read together (K start)', '같이 읽기 (유치원 초반)'), [['Brown Bear, Brown Bear, What Do You See?', 'Bill Martin Jr. · Eric Carle'], ['Chicka Chicka Boom Boom', 'Bill Martin Jr. · John Archambault'], ['Pete the Cat: I Love My White Shoes', 'Eric Litwin'], ["Don't Let the Pigeon Drive the Bus!", 'Mo Willems']]],
+    [B('First books to read alone (K end)', '처음 혼자 읽기 (유치원 후반)'), [['Bob Books, Set 1', 'Bobby Lynn Maslen'], ['Elephant & Piggie (series)', 'Mo Willems'], ['Biscuit (series)', 'Alyssa Satin Capucilli'], ['Go, Dog. Go!', 'P. D. Eastman']]],
+    [B('Early readers (grade 1)', '초기 읽기책 (1학년)'), [['Hop on Pop', 'Dr. Seuss'], ['Fly Guy (series)', 'Tedd Arnold'], ['Danny and the Dinosaur', 'Syd Hoff'], ['Little Bear', 'Else Holmelund Minarik']]],
+    [B('Short chapters (grade 1 end–2)', '짧은 챕터 (1학년 후반~2학년)'), [['Frog and Toad Are Friends', 'Arnold Lobel'], ['Henry and Mudge (series)', 'Cynthia Rylant'], ['Mercy Watson (series)', 'Kate DiCamillo'], ['Nate the Great (series)', 'Marjorie Weinman Sharmat']]]
+  ];
+  function booksHtml() {
+    const g = kidGrade(), at = g === 'K' ? 0 : g === '1' ? 2 : g === '2' ? 3 : -1;
+    if (at < 0) return '';
+    const bands = BOOKS.map((b, i) => [b, i]).filter(([, i]) => i >= at - 1 && i <= at + 1);
+    return `<details class="fc-books"><summary>📚 ${L(B('Books to look for at the library', '도서관에서 찾아볼 책'))}</summary>
+      <p class="note2">${L(B('Titles only — no links, no ads. Levels are rough; a librarian can help pick. If a page has more than 5 unknown words, try an easier one.', '제목만 적었어요(링크·광고 없음). 수준은 대략이라 사서에게 물어보면 좋아요. 한 쪽에 모르는 낱말이 5개 넘으면 더 쉬운 책으로.'))}</p>
+      ${bands.map(([b, i]) => `<h3 class="fc-bh">${i === at ? '⭐ ' : ''}${L(b[0])}</h3><ul class="fc-blist">${b[1].map(x => `<li lang="en"><b>${x[0]}</b> <small>${x[1]}</small></li>`).join('')}</ul>`).join('')}
+    </details>`;
+  }
   // ---- grown-ups panel section (app.js grownups())
   function html() {
     if (kidGrade() === 'P') return '';
@@ -94,7 +110,7 @@
       const rows = list().filter(r => r.k === k && (k !== 'passage' || (r.p || '').slice(0, 2) === band())), last = rows[rows.length - 1], before = rows[rows.length - 2];
       return last ? `<li>${L(TX[k])}: <b>${last.n}</b> ${k === 'passage' ? L(TX.words) : L(TX.right)} · ${md(last.d)}${before ? ` (${last.n - before.n > 0 ? '+' : ''}${last.n - before.n})` : ''}</li>` : '';
     }).join('');
-    return `<section class="fc-sec"><h2>⏱️ ${L(TX.title)}</h2><p class="note2">${L(TX.notTest)}</p>${parts ? `<ul class="fc-mini">${parts}</ul>` : ''}<button class="pill" id="fcOpen">${L(TX.open)}</button></section>`;
+    return `<section class="fc-sec"><h2>⏱️ ${L(TX.title)}</h2><p class="note2">${L(TX.notTest)}</p>${parts ? `<ul class="fc-mini">${parts}</ul>` : ''}<button class="pill" id="fcOpen">${L(TX.open)}</button>${booksHtml()}</section>`;
   }
   function bind() { const b = document.getElementById('fcOpen'); if (b) b.onclick = open; }
   // ---- choose screen
