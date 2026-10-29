@@ -263,6 +263,17 @@ const SOLIDS = {
   cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')]] },
   cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('can', '캔')], ['🔋', B('battery', '건전지')]] }
 };
+// Plain line drawings of the four solids (no real object), used where the answer is the shape itself.
+function solidSvg(k) {
+  const s = 'fill="#ffd9b8" stroke="#8a4b2a" stroke-width="3" stroke-linejoin="round"';
+  const d = {
+    sphere: `<circle cx="40" cy="40" r="30" ${s}/><ellipse cx="40" cy="40" rx="30" ry="9" fill="none" stroke="#8a4b2a" stroke-width="2" stroke-dasharray="4 4"/><circle cx="30" cy="28" r="6" fill="#fff" opacity=".7"/>`,
+    cube: `<path d="M14 26L40 14L66 26L66 56L40 68L14 56Z" ${s}/><path d="M14 26L40 38L66 26M40 38V68" fill="none" stroke="#8a4b2a" stroke-width="3"/>`,
+    cone: `<path d="M40 8L66 60Q40 76 14 60Z" ${s}/><ellipse cx="40" cy="60" rx="26" ry="8" fill="none" stroke="#8a4b2a" stroke-width="2"/>`,
+    cylinder: `<path d="M16 18V62Q40 76 64 62V18" ${s}/><ellipse cx="40" cy="18" rx="24" ry="8" ${s}/>`
+  }[k];
+  return `<svg viewBox="0 0 80 80" style="width:clamp(56px,11dvh,84px);height:auto" role="img" aria-label="${L(SOLIDS[k].n)}">${d}</svg>`;
+}
 registerGame({
   id: 'shapes3d', subject: 'math', icon: '🧊', title: B('Shapes Around Me', '내 주변의 모양'), sub: B('Spheres, cubes, cones...', '공, 상자, 원뿔...'),
   area: AREA_MATH('3-D shapes'),
@@ -326,7 +337,8 @@ registerGame({
   game.play = function () {
     if (!rnd(2)) return original.call(this);
     const keys = Object.keys(SOLIDS), t = pick(keys), [e, name] = pick(SOLIDS[t].things);
-    quiz(this, { ask: B('What solid shape does this look like?', '어떤 입체 모양과 닮았을까요?'), askExtra: { t: L(name) }, show: '<span class="emo">' + e + '</span><div style="font-size:clamp(16px,3dvh,22px)">' + L(name) + '</div>', opts: [t, ...others(keys, t, 2)].map(k => ({ html: '<span class="word">' + L(SOLIDS[k].n) + '</span>', ok: k === t })), cls: 'words', after: name, vocab: name.en });
+    // 2026-10-28 (sample S5 verdict): K cannot read shape names, so each answer is a drawn solid with its name under it.
+    quiz(this, { ask: B('What solid shape does this look like?', '어떤 입체 모양과 닮았을까요?'), askExtra: { t: L(name) }, show: '<span class="emo">' + e + '</span><div style="font-size:clamp(16px,3dvh,22px)">' + L(name) + '</div>', opts: [t, ...others(keys, t, 2)].map(k => ({ html: solidSvg(k), label: SOLIDS[k].n, ok: k === t })), cls: 'shapes', after: name, vocab: name.en });
   };
 })();
 

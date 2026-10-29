@@ -133,7 +133,9 @@ registerGame({
   if(lvl(this.id)===1)return old.call(this);
   const a=pick(SENSE_Q),b=pick(SENSE_Q.filter(x=>x[2]!==a[2])),keys=[a[2],b[2]],wrong=Object.keys(SENSES).filter(k=>!keys.includes(k));
   const pair=(x,y)=>B(`${SENSES[x][1].en} + ${SENSES[y][1].en}`,`${SENSES[x][1].ko} + ${SENSES[y][1].ko}`);
-  quiz(this,{ask:B('Which pair helps with BOTH clues?','두 단서에 맞는 짝은?'),askSay:B(`${a[1].en}; ${b[1].en}. Which pair?`,`${a[1].ko}, ${b[1].ko}. 어떤 짝일까요?`),show:`<div class="storytext">${L(a[1])}<br>${L(b[1])}</div>`,opts:opts([pair(...keys),pair(keys[0],wrong[0]),pair(wrong[0],wrong[1])]),cls:'words'});
+  // 2026-10-28 (sample S5 verdict): the two clues are pictures and each answer is a pair of sense pictures with names under it.
+  const pic=(x,y,ok)=>({html:`<span class="emo" style="white-space:nowrap">${SENSES[x][0]}${SENSES[y][0]}</span>`,label:pair(x,y),ok});
+  quiz(this,{ask:B('Which pair helps with BOTH clues?','두 단서에 맞는 짝은?'),askSay:B(`${a[1].en}; ${b[1].en}. Which pair?`,`${a[1].ko}, ${b[1].ko}. 어떤 짝일까요?`),show:`<div style="font-size:clamp(36px,7dvh,52px)">${a[0]} + ${b[0]}</div>`,quietShow:true,opts:shuffle([pic(...keys,true),pic(keys[0],wrong[0],false),pic(wrong[0],wrong[1],false)]),cls:'shapes'});
  };
  const needs=GAMES.find(g=>g.id==='needs');
  const species=[[B('rabbit','토끼'),'🐇'],[B('dog','강아지'),'🐕'],[B('cat','고양이'),'🐈'],[B('hamster','햄스터'),'🐹']];

@@ -314,7 +314,8 @@ registerGame({
  const game=GAMES.find(g=>g.id==='colors'),old=game.play;
  game.play=function(){if(lvl(this.id)===1)return old.call(this);const [a,b]=shuffle(MIX),ia=rnd(2),ib=rnd(2),other=pick(MIX.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.en} → ${y.en}`,`${x.ko} → ${y.ko}`);
  const row=(t,i)=>`${CDOT(t[1-i])} + ? = ${CDOT(t[2])}`;
- quiz(this,{ask:B('Which two colors fill the blanks?','두 빈칸에 차례로 들어갈 색은?'),askSay:B('Look at paint mix 1, then paint mix 2. Which two colors fill the blanks, in order?','물감 섞기 1과 2를 차례로 보세요. 두 빈칸에 들어갈 색은?'),show:`<div class="mixrow">1: ${row(a,ia)}</div><div class="mixrow">2: ${row(b,ib)}</div>`,opts:[pair(a[ia+3],b[ib+3]),pair(a[ia+3],other[5]),pair(other[5],b[ib+3])].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words'});};
+ quiz(this,{ask:B('Which two colors fill the blanks?','두 빈칸에 차례로 들어갈 색은?'),askSay:B('Look at paint mix 1, then paint mix 2. Which two colors fill the blanks, in order?','물감 섞기 1과 2를 차례로 보세요. 두 빈칸에 들어갈 색은?'),show:`<div class="mixrow">1: ${row(a,ia)}</div><div class="mixrow">2: ${row(b,ib)}</div>`,opts:[[a[ia],a[ia+3],b[ib],b[ib+3]],[a[ia],a[ia+3],other[2],other[5]],[other[2],other[5],b[ib],b[ib+3]]].map(([c1,n1,c2,n2],i)=>({html:`<span style="white-space:nowrap">${CDOT(c1).replace('style="','style="width:min(8vw,5dvh);height:min(8vw,5dvh);')}→${CDOT(c2).replace('style="','style="width:min(8vw,5dvh);height:min(8vw,5dvh);')}</span>`,label:pair(n1,n2),ok:i===0})),cls:'shapes'});};
+ // 2026-10-28 (sample S5 verdict): the answers are paint dots with names under them, not words to read.
  const cause=GAMES.find(g=>g.id==='cause'),prior=cause.play;
  const rows=[
   [B('An uninflated balloon gets air from a pump.','부풀지 않은 풍선에 펌프로 공기를 넣어요.'),B('The air is let out again.','공기를 다시 빼요.'),B('Flat','납작함'),B('Inflated','부풀음'),B('Flat again','다시 납작함')],
