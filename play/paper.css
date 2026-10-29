@@ -1,7 +1,8 @@
 /* P-paper: grown-ups screens (app) + the printable worksheet (iframe document). Prefix pw-. */
 .pw-make { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
-.pw-chk { font-size: 15px; display: inline-flex; gap: 6px; align-items: center; }
-.pw-chk input { width: 22px; height: 22px; }
+.pw-make { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pw-chk { font-size: 15px; display: inline-flex; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; }
+.pw-chk input { flex: none; width: 24px !important; height: 24px; margin: 0; }
 .pw-msg { font-weight: 700; color: #2f6b3a; }
 .pw-rows { list-style: none; padding: 0; margin: 6px 0 14px; }
 .pw-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; padding: 10px 4px; border-bottom: 1px solid #0001; }

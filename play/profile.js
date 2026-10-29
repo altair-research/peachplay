@@ -129,7 +129,7 @@ function importScreen() {
   S.introSeen = true; save();
   view().innerHTML = `<h1>📄 ${T().importTitle}</h1>
     <p class="note2">${T().importHelp}</p>
-    <div class="form"><input type="file" id="file" accept=".pdf,.txt,application/pdf,text/plain"></div>
+    <div class="form"><label class="pill filepick">📄 ${L(B('Choose a file', '파일 고르기'))}<input type="file" id="file" accept=".pdf,.txt,application/pdf,text/plain"></label> <span class="filename" id="fileName"></span></div>
     <p class="note2">${T().orPaste}</p>
     <textarea id="paste" rows="6" placeholder="${T().pastePh}"></textarea>
     <div><button class="next" id="go">${T().readIt}</button></div>
@@ -139,6 +139,7 @@ function importScreen() {
     <button class="link" id="b">${T().back}</button>`;
   $('#b').onclick = intro;
   if (window.SchoolResults) { $('#srIr').onclick = () => window.SchoolResults.irScreen(); $('#srCk').onclick = () => window.SchoolResults.checkScreen(); }
+  $('#file').onchange = () => { const f = $('#file').files[0]; $('#fileName').textContent = f ? f.name : ''; };
   $('#go').onclick = async () => {
     const out = $('#result'); out.textContent = '…';
     try {

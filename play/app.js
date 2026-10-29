@@ -238,7 +238,7 @@ function grownups() {
     ${window.Learner.stylePanel()}
     ${window.Fluency ? window.Fluency.html() : ''}${window.Ladder ? window.Ladder.html() : ''}${window.Spacing ? window.Spacing.summary() : ''}${window.Today ? window.Today.grownHtml() : ''}
     <p class="focus"><b>${T().focus}</b> ${weak.length ? weak.map(x => `${x.g.icon} ${L(x.g.title)}`).join(' · ') : T().focusNone}</p>
-    <div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div>
+    <details class="gi gi-games"><summary>📊 ${L(B('Records by game', '게임별 기록'))} (${visibleGames().length})</summary><div class="tablewrap"><table><tr><th>${T().colGame}</th><th>${T().colArea}</th><th>${T().colRight}</th><th>${T().colMiss}</th><th>${T().colLevel}</th></tr>${rows}</table></div></details>
     <h2>${T().challengeTitle}</h2>
     <div class="tablewrap">${challengeTable()}</div>
     <details class="gi"><summary>${T().giftedInfoTitle}</summary><p>${T().giftedInfo}</p></details>

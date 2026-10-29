@@ -592,3 +592,13 @@ body.calm .trace-start-hint{animation:none}
 .grades input{width:22px !important;height:22px;min-width:0;padding:0;margin:0;flex:none}
 .grades label{display:flex;align-items:center;justify-content:center;gap:6px;width:auto !important;margin:0;font-size:16px;line-height:1.2;min-height:44px;padding:6px 8px;white-space:nowrap;border:2px solid #ffd2bf;border-radius:14px;background:#fff;cursor:pointer}
 .grades label:has(input:checked){border-color:#ff7a59;background:#fff1ea;font-weight:800}
+
+/* 2026-10-28 night phone sweep (375/360 wide): tap targets reach 44px (header and speakers already do through a11y.css). */
+input[type=checkbox],input[type=radio],input[type=file],input[type=range]{min-width:0}  /* the 240px text-box rule stretched checkboxes (paper row broke) */
+select{min-height:44px;font-size:16px;border-radius:10px;padding:4px 8px}
+.rp-word{min-height:44px}
+.filepick{display:inline-flex;align-items:center;gap:6px;min-height:48px;cursor:pointer}
+.filepick input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.filename{font-size:15px;color:var(--muted,#7a675c);word-break:break-all}
+.gi-games>summary{min-height:44px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
+@media (orientation:landscape) and (max-height:430px){#view{padding-bottom:6px}#fact:empty,#cheer:empty{display:none}}  /* "play anyway" landscape: the game fits one screen */
