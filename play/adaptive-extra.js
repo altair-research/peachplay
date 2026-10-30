@@ -71,7 +71,7 @@
     if(lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
     const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:['never','between','these','Many','during','between','until','difference','Despite','nobody']};
     const alternatives=lv===2?[t[1],(contextWrong[grade]||[])[index]||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
-    return { ask: B('Which spelling is right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
+    return { ask: B('Which word fits and is spelled right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
       askExtra: { t: sentence.replace('___', 'blank'), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], alternatives), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
   });
