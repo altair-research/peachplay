@@ -124,7 +124,7 @@ G1({
   id: 'partition', icon: '🍕', title: B('Halves and Fourths', '반과 4분의 1'), sub: B('Equal shares', '똑같이 나누기'), u: 'Equal shares',
   play() {
     const lv = lvl('partition'), shape = pick(['circle', 'rect']), kind = pick(lv === 1 ? ['which2', 'which2', 'count', 'name'] : ['which4', 'which2', 'count', 'name', 'size', 'whole']), v = rnd(3);
-    const word = (n) => (n === 2 ? B('halves', '반(2등분)') : B('fourths (quarters)', '4분의 1(4등분)'));
+    const word = (n) => (n === 2 ? B('halves', '반(2등분)') : B('fourths', '4분의 1(4등분)'));
     if (kind === 'which2' || kind === 'which4') {
       const n = kind === 'which2' ? 2 : 4, opts = [{ html: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), ok: true }, { html: partSvg(shape, n, false), ok: false }, { html: partSvg(shape, n === 2 ? 3 : 2, true), ok: false }];
       quiz(this, { ask: n === 2 ? B('Which shows HALVES (2 equal shares)?', '똑같은 2조각(반)으로 나눈 것은?') : B('Which shows FOURTHS (4 equal shares)?', '똑같은 4조각(4분의 1)으로 나눈 것은?'), askSay: n === 2 ? B('Which shows halves, 2 equal shares?', '똑같은 2조각으로 나눈 것은?') : B('Which shows fourths, 4 equal shares?', '똑같은 4조각으로 나눈 것은?'), opts, cls: 'shapes', after: B('Equal shares are exactly the same size.', '똑같은 조각은 크기가 정확히 같아요.') });

@@ -184,8 +184,8 @@ const LANGUAGE_LEGACY = {
       "네, 맞아요"
     ],
     [
-      "No",
-      "아니요"
+      "No, they do not match",
+      "아니요, 안 맞아요"
     ]
   ],
   "fractions2": [

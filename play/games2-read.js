@@ -39,7 +39,7 @@ const SYLT = [
   ['carpet', 'car-pet', 'rcontrolled', '🟥'], ['market', 'mar-ket', 'rcontrolled', '🏪'], ['corner', 'cor-ner', 'rcontrolled', '📐'], ['turkey', 'tur-key', 'rcontrolled', '🦃'],
   ['table', 'ta-ble', 'cle', '🪑'], ['candle', 'can-dle', 'cle', '🕯️'], ['puzzle', 'puz-zle', 'cle', '🧩'], ['bubble', 'bub-ble', 'cle', '🫧']
 ];
-const SYLN = { closed: B('closed (ends in a consonant)', '닫힌 음절(자음으로 끝남)'), open: B('open (ends in a vowel)', '열린 음절(모음으로 끝남)'), vce: B('vowel-consonant-e (magic e)', '모음-자음-e (마법의 e)'), vowelteam: B('vowel team', '모음 짝꿍'), rcontrolled: B('r-controlled', 'R 모음'), cle: B('consonant-le', '자음+le') };
+const SYLN = { closed: B('closed (ends in a consonant)', '닫힌 음절(자음으로 끝남)'), open: B('open (ends in a vowel)', '열린 음절(모음으로 끝남)'), vce: B('vowel-consonant-e (magic e)', '모음-자음-e (마법의 e)'), vowelteam: B('vowel team (two vowels, one sound)', '모음 짝꿍(모음 둘, 소리 하나)'), rcontrolled: B('r-controlled (vowel + r)', 'R 모음(모음 + r)'), cle: B('consonant-le (ends in -le)', '자음+le(-le로 끝남)') };
 G2R({
   id: 'syllables2', icon: '🧩', title: B('Syllable Types', '음절의 종류'), sub: B('Split, sort and read two-syllable words', '두 음절 낱말을 나누고 읽어요'), u: 'Syllables',
   play() {

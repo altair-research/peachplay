@@ -499,7 +499,7 @@ function quiz(game, item, ctx = {}) {
   if (!ctx.step) addPrevButton();
   const root = view().firstElementChild, still = () => view().firstElementChild === root;
   view().languageRefresh = { root: view().firstElementChild,
-    legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No', '아니요']]) : null,
+    legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No, they do not match', '아니요, 안 맞아요']]) : null,
     update: () => {
     const prompt = $('#sp').parentElement;
     const text = (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask);
