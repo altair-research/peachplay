@@ -90,7 +90,7 @@ G1S({
 });
 
 // ---------- 4. Magnet power ----------
-const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron bolt', '쇠 볼트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')]];
+const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron bolt', '쇠 볼트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')], ['🧷', B('steel safety pin', '철제 옷핀')], ['🪛', B('steel screwdriver', '철제 드라이버')]];
 const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🖍️', B('crayon', '크레용')]];
 const barMagnet = (dir, x) => `<g transform="translate(${x} 0)"><rect x="0" y="0" width="38" height="22" fill="${dir ? '#ef476f' : '#118ab2'}"/><rect x="38" y="0" width="38" height="22" fill="${dir ? '#118ab2' : '#ef476f'}"/><rect x="0" y="0" width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/></g>`;
 G1S({
@@ -98,7 +98,7 @@ G1S({
   play() {
     const lv = lvl('magnets1'), kind = pick(lv === 1 ? ['pick', 'pick', 'uses'] : ['pick', 'poles', 'poles', 'uses', 'iron']);
     if (rnd(3) === 0) {
-      const material = pick([B('wood', '나무'), B('paper', '종이'), B('plastic', '플라스틱')]);
+      const material = pick([B('wood', '나무'), B('paper', '종이'), B('plastic', '플라스틱'), B('glass', '유리'), B('rubber', '고무')]);
       quiz(this, { ask: B(`Which material will a magnet pull on: iron or ${material.en}?`, `철과 ${material.ko} 중 자석이 끌어당기는 재료는 무엇일까요?`), opts: sOpts(B('iron', '철'), [material]), cls: 'words', after: B('A magnet attracts iron.', '자석은 철을 끌어당겨요.') }); return;
     }
     if (kind === 'pick') {

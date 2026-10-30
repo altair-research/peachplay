@@ -142,7 +142,9 @@ G2S({
     const lv = lvl('matterchange2'), kind = pick(lv === 1 ? ['melt', 'prop', 'melt'] : ['melt', 'prop', 'rev', 'rev', 'evap']);
     if (kind === 'melt') {
       const q = pick([[B('What makes an ice cube melt into water?', '얼음이 녹아 물이 되게 하는 것은?'), B('Heating it (making it warmer)', '따뜻하게 하기(열을 주기)'), [B('Cooling it more', '더 차갑게 하기'), B('Nothing changes it', '아무것도 바꾸지 못해요')], B('Heat melts a solid into a liquid.', '열을 주면 고체가 녹아 액체가 돼요.')],
-        [B('What makes water freeze into ice?', '물이 얼어 얼음이 되게 하는 것은?'), B('Cooling it (taking heat away)', '차갑게 하기(열을 빼앗기)'), [B('Heating it', '뜨겁게 하기'), B('Stirring it a little', '조금 젓기')], B('Cooling turns a liquid into a solid.', '차갑게 하면 액체가 고체로 변해요.')]]);
+        [B('What makes water freeze into ice?', '물이 얼어 얼음이 되게 하는 것은?'), B('Cooling it (taking heat away)', '차갑게 하기(열을 빼앗기)'), [B('Heating it', '뜨겁게 하기'), B('Stirring it a little', '조금 젓기')], B('Cooling turns a liquid into a solid.', '차갑게 하면 액체가 고체로 변해요.')],
+        [B('What makes solid butter in a pan turn runny?', '프라이팬의 딱딱한 버터가 묽게 흐르게 되는 것은?'), B('Warming it on the stove', '불 위에서 데우기'), [B('Putting it in the freezer', '냉동실에 넣기'), B('Leaving it in the dark', '어두운 곳에 두기')], B('Heat melts solid butter into a liquid.', '열을 주면 고체 버터가 녹아 액체가 돼요.')],
+        [B('What makes juice turn into an ice pop?', '주스가 얼음과자가 되게 하는 것은?'), B('Cooling it in the freezer', '냉동실에서 차갑게 하기'), [B('Warming it on the stove', '불 위에서 데우기'), B('Pouring it into a cup', '컵에 따르기')], B('Cooling turns liquid juice into a solid.', '차갑게 하면 액체 주스가 고체가 돼요.')]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[3] });
     } else if (kind === 'evap') {
       const q = pick([[B('A puddle slowly disappears on a sunny day. What happened to the water?', '맑은 날 웅덩이가 서서히 사라져요. 물은 어떻게 됐을까요?'), B('It evaporated into the air as vapor.', '증발해서 공기 속 수증기(기체)가 됐어요.'), [B('It turned into a rock.', '돌이 됐어요.'), B('It was destroyed.', '완전히 없어졌어요.')]],
