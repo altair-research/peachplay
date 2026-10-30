@@ -91,7 +91,7 @@ G1S({
 
 // ---------- 4. Magnet power ----------
 const MAG_YES = [['📎', B('steel paper clip', '철제 클립')], ['🔩', B('iron bolt', '쇠 볼트')], ['🥫', B('steel can', '철제 캔')], ['🔧', B('steel wrench', '철제 렌치')], ['🔩',B('iron nail','쇠못')], ['🧷', B('steel safety pin', '철제 옷핀')], ['🪛', B('steel screwdriver', '철제 드라이버')]];
-const MAG_NO = [['🪵', B('wood', '나무')], ['📄', B('paper', '종이')], ['🧸', B('teddy bear', '곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('apple', '사과')], ['🧦', B('sock', '양말')], ['🖍️', B('crayon', '크레용')]];
+const MAG_NO = [['🪵', B('wooden log', '나무 통나무')], ['📄', B('paper sheet', '종이 한 장')], ['🧸', B('cloth teddy bear', '천 곰 인형')], ['🥤', B('plastic cup', '플라스틱 컵')], ['🍎', B('red apple', '빨간 사과')], ['🧦', B('cotton sock', '면 양말')], ['🖍️', B('wax crayon', '밀랍 크레용')]];   // material names too, so 'steel/iron' on the answer is not a length cue (O2)
 const barMagnet = (dir, x) => `<g transform="translate(${x} 0)"><rect x="0" y="0" width="38" height="22" fill="${dir ? '#ef476f' : '#118ab2'}"/><rect x="38" y="0" width="38" height="22" fill="${dir ? '#118ab2' : '#ef476f'}"/><rect x="0" y="0" width="76" height="22" fill="none" stroke="#1d3557" stroke-width="2"/></g>`;
 G1S({
   id: 'magnets1', icon: '🧲', title: B('Magnet Power', '자석의 힘'), sub: B('Attract and repel', '끌어당기고 밀어내요'), u: 'Magnets',
