@@ -339,12 +339,12 @@ registerGame({
  const game=GAMES.find(g=>g.id==='cause');
  const big=e=>`<span style="font-size:1.25em">${e}</span>`,small=e=>`<span style="font-size:.6em">${e}</span>`;
  const stack=n=>`<svg viewBox="0 0 22 46" style="height:clamp(30px,6.5dvh,52px);width:auto" aria-hidden="true">${Array.from({length:n},(_,i)=>`<rect x="2" y="${37-i*9}" width="18" height="8" rx="1.5" fill="#c9773e" stroke="#7a4524"/>`).join('')}</svg>`;
- const ON='👆🔛',OFF='👆📴';
+ const ON='👆⬆️',OFF='👆⬇️',TAPON='🤚↪️',TAPOFF='🤚↩️';
  // [before, action, sentence, [result pic, name] correct first]
  const rows=[
   ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['⚽💨',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')]]],
   ['⬛',ON,B('The room is dark. The light is switched on.','방이 어두워요. 불을 켜요.'),[['🔆',B('Bright','밝아져요')],['⬛',B('Still dark','그대로 어두워요')]]],
-  ['🚰',ON,B('A tap is closed. It is turned on.','수도꼭지가 잠겨 있어요. 틀어요.'),[['🚰💧',B('Water comes out','물이 나와요')],['🚰',B('No water','물이 안 나와요')]]],
+  ['🚰',TAPON,B('A tap is closed. It is turned on.','수도꼭지가 잠겨 있어요. 틀어요.'),[['🚰💧',B('Water comes out','물이 나와요')],['🚰',B('No water','물이 안 나와요')]]],
   [small('🎈'),'🫁💨',B('A small balloon. Air is blown in.','작은 풍선이에요. 바람을 불어 넣어요.'),[[big('🎈'),B('Bigger','커져요')],[small('🎈'),B('Same size','그대로예요')]]],
   [stack(4),'✋⬆️',B('Four blocks. One is taken off the top.','블록 네 개예요. 맨 위 하나를 빼요.'),[[stack(3),B('Shorter','낮아져요')],[stack(5),B('Taller','높아져요')],[stack(4),B('Same height','그대로예요')]]],
   ['🔕','👋',B('A bell is quiet. You shake it.','종이 조용해요. 흔들어요.'),[['🔔🎵',B('It rings','소리가 나요')],['🔕',B('Still quiet','조용해요')]]],
@@ -359,7 +359,7 @@ registerGame({
  const two=[
   ['⚽','⚽💨','🤚➡️','✋',B('push','밀기'),B('stop','멈추기'),B('still','멈춤'),B('rolling','굴러감')],
   ['⬛','🔆',ON,OFF,B('switch on','켜기'),B('switch off','끄기'),B('dark','어두움'),B('bright','밝음')],
-  ['🚰','🚰💧',ON,OFF,B('turn on','틀기'),B('turn off','잠그기'),B('no water','물 없음'),B('water','물 나옴')],
+  ['🚰','🚰💧',TAPON,TAPOFF,B('turn on','틀기'),B('turn off','잠그기'),B('no water','물 없음'),B('water','물 나옴')],
   ['🧊','💧','☀️','❄️',B('warm it in the sun','햇볕에 두기'),B('put it in the freezer','얼리기'),B('ice','얼음'),B('water','물')],
   ['🧽','🧽💦','💧','✊',B('dip in water','물에 담그기'),B('squeeze','꼭 짜기'),B('dry','마름'),B('wet','젖음')],
   ['🔕','🔔🎵','👋','✋',B('shake','흔들기'),B('hold still','잡기'),B('quiet','조용함'),B('ringing','소리 남')]
