@@ -20,12 +20,12 @@ const figCard = (f) => `<span class="fig" style="--c:${f.c}"><b>${f.ini}</b><i>$
 // Keep these separate from FIGS, which is also used by placetime.
 // Sources and the all-pairs distractor review: docs/review/codex-done-1.md.
 const FIGURE1_FACTS = [
-  { id: 'franklin', who: B('Who invented a lightning rod to help protect buildings?', '건물을 보호하는 피뢰침을 발명한 사람은?'), deed: B('Invented a lightning rod', '피뢰침을 발명했어요'), after: B('Benjamin Franklin designed a lightning rod to help protect buildings from lightning.', '벤저민 프랭클린은 번개로부터 건물을 보호하는 피뢰침을 발명했어요.') },
-  { id: 'jefferson', who: B('Who was the main writer of the Declaration of Independence?', '미국 독립선언서의 초안을 주로 쓴 사람은?'), deed: B('Wrote the main draft of the Declaration of Independence', '미국 독립선언서의 초안을 주로 썼어요'), after: B('Thomas Jefferson wrote the main draft. Other people helped revise it.', '토머스 제퍼슨이 초안을 주로 썼고, 다른 사람들이 함께 다듬었어요.') },
-  { id: 'lewis', who: B('Which group traveled west to the Pacific Ocean in 1805?', '1805년에 서쪽으로 여행해 태평양에 도착한 탐험대는?'), deed: B('Traveled west to the Pacific in 1805', '1805년에 서쪽으로 여행해 태평양에 도착했어요'), after: B('Lewis and Clark reached the Pacific in 1805. Sacagawea and many Native peoples helped the expedition.', '루이스와 클라크는 1805년에 태평양에 도착했어요. 사카가웨아와 여러 원주민이 탐험대를 도왔어요.') },
-  { id: 'roosevelt', who: B('Which president established five national parks?', '국립공원 다섯 곳을 세운 대통령은?'), deed: B('Established five national parks as president', '대통령으로서 국립공원 다섯 곳을 세웠어요'), after: B('Theodore Roosevelt signed laws establishing five national parks while he was president.', '시어도어 루스벨트는 대통령일 때 국립공원 다섯 곳을 세우는 법에 서명했어요.') },
-  { id: 'carver', who: B('Who studied uses for peanuts at Tuskegee?', '터스키기에서 땅콩의 여러 쓰임새를 연구한 사람은?'), deed: B('Studied uses for peanuts at Tuskegee', '터스키기에서 땅콩의 쓰임새를 연구했어요'), after: B('George Washington Carver studied many uses for peanuts and helped farmers.', '조지 워싱턴 카버는 땅콩의 여러 쓰임새를 연구하고 농부들을 도왔어요.') },
-  { id: 'bridges', who: B('Who became the first Black child at William Frantz School in 1960?', '1960년에 윌리엄 프랜츠 학교에 다닌 첫 흑인 어린이는?'), deed: B('Entered William Frantz School in 1960', '1960년에 윌리엄 프랜츠 학교에 입학했어요'), after: B('At six, Ruby Bridges entered a school that had only allowed white children. She helped end unfair school segregation.', '여섯 살 루비 브리지스는 백인 아이들만 받던 학교에 입학했어요. 피부색으로 학생을 나누는 차별을 없애는 데 힘을 보탰어요.') }
+  { id: 'franklin', who: B('Who invented a lightning rod to help protect buildings?', '건물을 보호하는 피뢰침을 발명한 사람은?'), deed: B('⚡ Invented a lightning rod', '⚡ 피뢰침을 발명했어요'), after: B('Benjamin Franklin designed a lightning rod to help protect buildings from lightning.', '벤저민 프랭클린은 번개로부터 건물을 보호하는 피뢰침을 발명했어요.') },
+  { id: 'jefferson', who: B('Who was the main writer of the Declaration of Independence?', '미국 독립선언서의 초안을 주로 쓴 사람은?'), deed: B('📜 Wrote the Declaration', '📜 독립선언서 초안을 썼어요'), after: B('Thomas Jefferson wrote the main draft. Other people helped revise it.', '토머스 제퍼슨이 초안을 주로 썼고, 다른 사람들이 함께 다듬었어요.') },
+  { id: 'lewis', who: B('Which group traveled west to the Pacific Ocean in 1805?', '1805년에 서쪽으로 여행해 태평양에 도착한 탐험대는?'), deed: B('🧭 Explored to the Pacific', '🧭 태평양까지 탐험했어요'), after: B('Lewis and Clark reached the Pacific in 1805. Sacagawea and many Native peoples helped the expedition.', '루이스와 클라크는 1805년에 태평양에 도착했어요. 사카가웨아와 여러 원주민이 탐험대를 도왔어요.') },
+  { id: 'roosevelt', who: B('Which president established five national parks?', '국립공원 다섯 곳을 세운 대통령은?'), deed: B('🏞️ Started national parks', '🏞️ 국립공원을 세웠어요'), after: B('Theodore Roosevelt signed laws establishing five national parks while he was president.', '시어도어 루스벨트는 대통령일 때 국립공원 다섯 곳을 세우는 법에 서명했어요.') },
+  { id: 'carver', who: B('Who studied uses for peanuts at Tuskegee?', '터스키기에서 땅콩의 여러 쓰임새를 연구한 사람은?'), deed: B('🥜 Studied peanuts', '🥜 땅콩을 연구했어요'), after: B('George Washington Carver studied many uses for peanuts and helped farmers.', '조지 워싱턴 카버는 땅콩의 여러 쓰임새를 연구하고 농부들을 도왔어요.') },
+  { id: 'bridges', who: B('Who was the first Black child at William Frantz School?', '윌리엄 프랜츠 학교에 다닌 첫 흑인 어린이는?'), deed: B('🏫 Joined an all-white school', '🏫 백인만 다니던 학교에 갔어요'), after: B('At six, Ruby Bridges entered a school that had only allowed white children. She helped end unfair school segregation.', '여섯 살 루비 브리지스는 백인 아이들만 받던 학교에 입학했어요. 피부색으로 학생을 나누는 차별을 없애는 데 힘을 보탰어요.') }
 ];
 G1T({
   id: 'figures1', icon: '🦸', title: B('Heroes of America', '미국의 인물들'), sub: B('Match people with what they did', '인물과 그 사람이 한 일 연결하기'), u: 'Historical figures',
@@ -273,12 +273,12 @@ G1T({
  const place=GAMES.find(g=>g.id==='placetime'),prior=place.play;
  // New dates checked against National Archives and NPS; see banks2.md.
  const dates=[
- [1752,B('Franklin carries out the kite experiment','프랭클린이 연 실험을 함')],
+ [1752,B('Franklin flies a kite','프랭클린의 연 실험')],
  [1776,B('Jefferson drafts the Declaration','제퍼슨이 독립선언서 초안을 씀')],
- [1805,B('The expedition reaches the Pacific','탐험대가 태평양에 도착함')],
+ [1805,B('Explorers reach the Pacific','탐험대가 태평양에 닿음')],
  [1896,B('Carver arrives at Tuskegee','카버가 터스키기에 옴')],
  [1901,B('Roosevelt becomes President','루스벨트가 대통령이 됨')],
- [1960,B('Bridges enters William Frantz School','브리지스가 윌리엄 프랜츠 학교에 입학함')]
+ [1960,B('Ruby Bridges starts school','루비 브리지스가 학교에 감')]
  ];
  place.play=function(){if(lvl(this.id)===1&&rnd(2))return prior.call(this);const two=lvl(this.id)===2,chosen=shuffle(dates).slice(0,3),sorted=[...chosen].sort((a,b)=>a[0]-b[0]),last=rnd(2)===0,right=two?sorted[1]:sorted[last?2:0];
  quiz(this,{ask:two?B('Which event is between the other two in time?','시간 순서에서 다른 두 일 사이에 일어난 일은?'):last?B('Which event came later?','더 나중에 일어난 일은?'):B('Which event came earlier?','더 먼저 일어난 일은?'),show:`<div class="storytext" style="font-size:clamp(16px,2.8dvh,21px)">${chosen.map(x=>`${x[0]}: ${L(x[1])}`).join('<br>')}</div>`,opts:tOpts(right[1],chosen.filter(x=>x!==right).map(x=>x[1])),cls:'words sents'});};
