@@ -80,7 +80,7 @@ G1S({
     if (kind === 'feature') { const t = pick(SEAS), ds = others(SEAS, t, 2); quiz(this, { ask: B(`Which season is this? ${L(t[3])}`, `어느 계절일까요? ${t[3].ko}`), opts: [t, ...ds].map(s => ({ html: `<span class="emo">${s[2]}</span>`, label: B(s[0], s[1]), ok: s === t })), cls: 'shapes', after: B(`It is ${t[0]}!`, `${t[1]}이에요!`), vocab: t[0] }); }
     else if (kind === 'after') { const i = rnd(4), ans = SEAS[(i + 1) % 4], pool = SEAS.filter(x => x !== ans && x !== SEAS[i]); quiz(this, { ask: B(`Which season comes after ${SEAS[i][0]}?`, `${SEAS[i][1]} 다음 계절은?`), opts: [ans, ...shuffle(pool).slice(0, 2)].map(x => ({ html: `<span class="emo">${x[2]}</span>`, label: B(x[0], x[1]), ok: x === ans })), cls: 'shapes', after: B(`${ans[0]} comes after ${SEAS[i][0]}.`, `${SEAS[i][1]} 다음은 ${ans[1]}이에요.`) }); }
     else if (kind === 'ga') {
-      const facts = [[B('In Georgia, which season is usually the hottest?', '조지아에서 가장 더운 계절은?'), SEAS[2]], [B('In which season do many trees lose their leaves?', '많은 나무가 잎을 떨구는 계절은?'), SEAS[3]], [B('In which season do the peach trees bloom with pink flowers?', '복숭아나무에 분홍 꽃이 피는 계절은?'), SEAS[1]], [B('Which season is the coldest?', '가장 추운 계절은?'), SEAS[0]]], f = pick(facts), ds = others(SEAS, f[1], 2);
+      const facts = [[B('In Georgia, which season is usually the hottest?', '조지아에서 가장 더운 계절은?'), SEAS[2]], [B('In which season do many trees lose their leaves?', '많은 나무가 잎을 떨구는 계절은?'), SEAS[3]], [B('When do peach trees bloom with pink flowers?', '복숭아나무에 분홍 꽃이 피는 계절은?'), SEAS[1]], [B('Which season is the coldest?', '가장 추운 계절은?'), SEAS[0]]], f = pick(facts), ds = others(SEAS, f[1], 2);
       quiz(this, { ask: f[0], opts: [f[1], ...ds].map(s => ({ html: `<span class="emo">${s[2]}</span>`, label: B(s[0], s[1]), ok: s === f[1] })), cls: 'shapes', after: B(`${f[1][0]}!`, `${f[1][1]}!`) });
     } else {
       const m = [[B('December, January, February', '12월, 1월, 2월'), SEAS[0]], [B('March, April, May', '3월, 4월, 5월'), SEAS[1]], [B('June, July, August', '6월, 7월, 8월'), SEAS[2]], [B('September, October, November', '9월, 10월, 11월'), SEAS[3]]], t = pick(m), ds = others(SEAS, t[1], 2);
@@ -207,7 +207,7 @@ G1S({
 // 63a: care choices address the observed condition, not toys versus essentials.
 (() => {
  const bank=[
-  [B('The soil feels dry.','흙이 말랐어요.'),B('The soil is dry; the plant already gets light.','빛을 받는 식물의 흙이 말랐어요.'),[B('Water the soil','흙에 물을 줘요'),B('Move it to more light','더 밝은 곳으로 옮겨요'),B('Add more soil','흙을 더 넣어요')]],
+  [B('The soil feels dry.','흙이 말랐어요.'),B('The soil is dry; the plant already gets light.','빛을 받는 식물의 흙이 말랐어요.'),[B('Water the soil','흙에 물을 줘요'),B('Move it to light','더 밝은 곳으로 옮겨요'),B('Add more soil','흙을 더 넣어요')]],
   [B('The plant is in a dark cupboard.','식물이 어두운 찬장 안에 있어요.'),B('The soil is damp; the plant is in a dark cupboard.','흙이 촉촉한 식물이 어두운 찬장 안에 있어요.'),[B('Move it into daylight','빛이 드는 곳으로 옮겨요'),B('Water the soil again','흙에 물을 더 줘요'),B('Add more soil','흙을 더 넣어요')]]
  ];
  const animals=[
@@ -236,7 +236,7 @@ G1S({
  quiz(this,{ask:B(`What part is marked ${letter}?`,`${letter}로 표시한 부분은?`),show:plantSvg(),opts:sOpts(PLANT_PARTS[letter],others(names,PLANT_PARTS[letter],2)),cls:'words'});};
  // Independent conditions: identifying the missing provision is different from a toy foil.
  const care=[
- [B('A seedling has light and damp soil, but its roots have outgrown a tiny pot.','빛과 촉촉한 흙이 있지만 새싹 뿌리가 작은 화분을 꽉 채웠어요.'),B('Give the roots more room','뿌리 자리를 넓혀 줘요'),[B('Add more water','물을 더 줘요'),B('Move it into shade','그늘로 옮겨요')]],
+ [B('A seedling has light and damp soil, but its roots have outgrown a tiny pot.','빛과 촉촉한 흙이 있지만 새싹 뿌리가 작은 화분을 꽉 채웠어요.'),B('Give roots more room','뿌리 자리를 넓혀 줘요'),[B('Add more water','물을 더 줘요'),B('Move it into shade','그늘로 옮겨요')]],
  [B('A plant has damp soil and room, but a cover blocks the daylight.','흙이 촉촉하고 자리도 있지만 덮개가 빛을 막아요.'),B('Remove the cover','덮개를 치워요'),[B('Add more water','물을 더 줘요'),B('Use a larger pot','큰 화분으로 옮겨요')]],
  [B('A plant has daylight and room, but no water has reached its dry roots.','빛과 자리는 있지만 마른 뿌리에 물이 닿지 않았어요.'),B('Water the roots','뿌리에 물을 줘요'),[B('Use a larger pot','큰 화분으로 옮겨요'),B('Add a cover','덮개를 씌워요')]],
 

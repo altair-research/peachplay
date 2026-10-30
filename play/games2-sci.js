@@ -29,7 +29,7 @@ G2S({
         [B('Why does the Moon look different shapes?', '달은 왜 모양이 달라 보일까요?'), B('We see part of its sunlit side.', '해가 비추는 쪽이 보이는 정도가 달라요.'), [B('The Moon gets bigger and smaller.', '달이 커졌다 작아졌다 해요.'), B('Clouds eat the Moon.', '구름이 달을 먹어요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
-      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`Each night the lit part of the Moon grows bigger. Which shape comes after the ${MOON_NAME[order[i]].en}?`, `밤마다 달의 밝은 부분이 커져요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
+      const order = [0, 1, 2, 3, 4], i = pick([0, 1, 2, 3]), ask = B(`The lit part grows each night. What comes after the ${MOON_NAME[order[i]].en}?`, `밤마다 달의 밝은 부분이 커져요. ${MOON_NAME[order[i]].ko} 다음 모양은?`);
       const right = order[i + 1], wr = others([0, 1, 2, 3, 4], right, 4).filter(x => x !== order[i]).slice(0, 2);
       quiz(this, { ask, opts: [right, ...wr].map((p, k) => ({ html: moonSvg(p), label: MOON_NAME[p], ok: k === 0 })), after: B('The Moon changes shape in a pattern that repeats about every month.', '달 모양은 한 달쯤마다 되풀이되는 규칙으로 바뀌어요.') });
     }
@@ -71,7 +71,7 @@ G2S({
         [B('Stars are in the sky during the day too. Why can we not see them?', '낮에도 별은 하늘에 있어요. 왜 안 보일까요?'), B('Sunlight is too bright.', '햇빛이 너무 밝아서요.'), [B('The stars go away.', '별이 사라져서요.'), B('Clouds always cover them.', '구름이 늘 가려서요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
-      const q = pick([[B('What is a constellation?', '별자리란 무엇일까요?'), B('A pattern of stars that people gave a name', '사람들이 이름을 붙인 별의 무늬'), [B('A very big planet', '아주 큰 행성'), B('A kind of moon', '달의 한 종류')]],
+      const q = pick([[B('What is a constellation?', '별자리란 무엇일까요?'), B('A named star picture', '사람들이 이름을 붙인 별 그림'), [B('A very big planet', '아주 큰 행성'), B('A kind of moon', '달의 한 종류')]],
         [B('Which one is a pattern of stars?', '별의 무늬는 어느 것일까요?'), B('The Big Dipper', '북두칠성(큰 국자 모양)'), [B('The Sun', '해'), B('A cloud', '구름')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     }
