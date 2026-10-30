@@ -57,3 +57,23 @@
 .m-play:has(.m-robot-board) .m-feedback{min-height:40px;font-size:14px}
 .m-play:has(.m-robot-board) .m-heading{font-size:18px}
 @media(min-height:740px){.m-play{gap:10px}.m-play .m-work{gap:12px}.m-play .m-prompt{min-height:52px}.m-play .m-feedback{min-height:44px}}
+/* Short landscape phones: the stacked workbench was 220-260px taller than the screen.
+   Put the model, pieces and tools on the left and the heading, modes, prompt, feedback and footer on the right. */
+@media(orientation:landscape) and (max-height:430px){
+ #view:has(> .m-play){max-width:none;padding:0 8px}
+ .m-play{display:grid;max-width:none;grid-template-columns:minmax(0,1fr) minmax(210px,36%);grid-template-areas:"work head" "work modes" "work prompt" "work feedback" "work footer";grid-template-rows:auto auto auto 1fr auto;column-gap:12px;row-gap:4px;align-items:start;margin:0}
+ .m-play .m-heading{grid-area:head;font-size:17px}
+ .m-play .m-modes{grid-area:modes}
+ .m-play .m-prompt{grid-area:prompt;font-size:16px}
+ .m-play .m-work{grid-area:work;align-self:center;gap:2px}
+ .m-play .m-feedback{grid-area:feedback;font-size:14px;min-height:44px}
+ .m-play .m-footer{grid-area:footer}
+ .m-play .m-meter{font-size:16px;line-height:20px;min-height:20px}
+ .m-play .m-modes>.m-btn,.m-play .m-footer>.m-btn{font-size:15px;padding:4px;word-break:keep-all}
+ .m-play .m-prompt,.m-play .m-feedback{word-break:keep-all}
+}
+/* 360px-tall landscape: cubes, base-ten and coding were still 3-9px too tall. */
+@media(orientation:landscape) and (max-height:370px){
+ .m-play .m-work{gap:0}
+ .m-play .m-cubes{gap:3px}
+}
