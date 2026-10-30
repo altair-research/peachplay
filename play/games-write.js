@@ -18,7 +18,7 @@ function tileRound(game, cfg) {
   let pos = 0, missed = false;
   if (DIAG.active) DIAG.decorate(game);
   $$('.tile').forEach(b => b.onclick = () => {
-    if (b.disabled) return;
+    if (b.disabled || pos >= cfg.target.length || b.classList.contains('no')) return;
     const tok = tokens[+b.dataset.i];
     if (tok === cfg.target[pos]) {
       $$('.slot')[pos].textContent = tok; $$('.slot')[pos].classList.add('filled');

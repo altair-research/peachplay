@@ -563,6 +563,7 @@ function quiz(game, item, ctx = {}) {
   const practice = pk && item.pkSound;
   if (DIAG.active) DIAG.decorate(game);
   $$('.opt').forEach(btn => btn.onclick = () => {
+    if (btn.disabled || !still() || btn.classList.contains('no')) return;
     if (DIAG.active) { DIAG.answer(game, !!opts[+btn.dataset.i].ok, btn); return; }
     if (ctx.step) {                                  // the smaller step: feedback only, then back to the question
       if (!opts[+btn.dataset.i].ok) { btn.classList.add('no'); $('#cheer').textContent = T().again; say(T().again); setTimeout(() => btn.classList.remove('no'), 400); return; }

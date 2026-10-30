@@ -219,7 +219,7 @@ function challengeTable() {
 function gate(next) {
   const x = 6 + rnd(4), y = 6 + rnd(4);
   view().innerHTML = `<h1>🔒 ${T().grownups}</h1><p class="tag">${L(B(`Grown-ups only. What is ${x} × ${y}?`, `어른용 화면이에요. ${x} × ${y} = ?`))}</p>
-    <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">OK</button> <span id="gmsg" role="status"></span></div>
+    <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">${L(B('OK', '확인'))}</button> <span id="gmsg" role="status"></span></div>
     <div><button class="next" id="b">${T().back}</button></div>`;
   const check = () => { if (+$('#gans').value.trim() === x * y) next(); else { $('#gmsg').textContent = L(B('Not quite. Try again!', '다시 해 보세요!')); $('#gans').value = ''; } };
   $('#gok').onclick = check; $('#gans').onkeydown = (e) => { if (e.key === 'Enter') check(); }; $('#b').onclick = home;

@@ -62,3 +62,76 @@ body.calm .opt.no,body.calm .peachy{animation:none!important}
 @media(prefers-reduced-motion:reduce){.opt.no,.peachy{animation:none!important}}
 /* shared read-aloud buttons do nothing without sound, so hide them when sound or voice is off */
 body:is(.muted,.voice-off) .say.auto-say{display:none}
+
+/* UX74: minimum real targets for expandable parent/help rows and done. */
+summary{min-height:44px;align-content:center;cursor:pointer}
+.rp-done{min-height:44px;min-width:44px}
+.scatter button.obj{min-height:44px;min-width:44px}
+.graderow{gap:8px}
+#view .opts.sents .opt{min-height:44px}
+#view .z-options{gap:8px!important}
+#view .opts.imagine{gap:8px}
+#view .opts.imagine .opt{flex-basis:calc(33.3% - 8px)}
+#view .opts.tiles{gap:8px}
+/* Seven 44px letters plus six 8px gaps need 356px on a 360px phone. */
+#view .opts.tiles.onerow{width:min(460px,calc(100vw - 4px));position:relative;left:50%;transform:translateX(-50%);align-self:flex-start;flex-shrink:0;margin-left:0;margin-right:0}
+.bpsk,#bpdaily,#bpend{min-width:44px;min-height:44px}
+.stkb{width:44px;height:44px;min-width:44px;min-height:44px}
+.pal{gap:8px}
+@media(max-height:700px){
+ #view .bpmap{padding:0 8px}
+ #view .bpworlds{margin:0;gap:8px}
+ #view .bpskins{display:grid;grid-template-columns:repeat(7,44px);width:356px;position:relative;left:50%;transform:translateX(-50%);margin-top:0;gap:8px}
+ #view .bpskins>span{grid-column:1/-1;line-height:16px}
+ #view .bpworlds .bpwc{min-height:52px}
+}
+select:focus-visible,.filepick:focus-within{outline:4px solid #1d4ed8;outline-offset:3px}
+button:not(:disabled):active{filter:brightness(.88)}
+/* Preserve the green feedback, with readable text at both gradient stops. */
+body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .opt.ok{color:#08251f}
+body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5b}
+.gchip.on,#profBtn .pgr{color:#512414}
+
+/* Pair pictures had touching 44px targets. Space the L1 centres by 52px. */
+.pair-token[data-token="0"]{--ux-pair-i:0}.pair-token[data-token="1"]{--ux-pair-i:1}
+.pair-token[data-token="2"]{--ux-pair-i:2}.pair-token[data-token="3"]{--ux-pair-i:3}
+.pair-token[data-token="4"]{--ux-pair-i:4}
+.pair-board[data-level="1"] .pair-token{margin-left:calc((var(--ux-pair-i) - 2)*8px)}
+
+/* Short landscape: shrink pictures/whitespace, keep controls >=44px. */
+@media(orientation:landscape) and (max-height:430px){
+ #view:has(>.prompt){padding-bottom:0}
+ #view:has(>.prompt)>.prompt{font-size:19px;line-height:1.1;margin:2px 0}
+ #view:has(>.prompt)>.show{padding:0;margin:2px 0}
+ #view:has(>.prompt) .scatter .obj{font-size:30px}
+ #view:has(>.prompt)>.cheer{font-size:18px;min-height:24px;margin:2px 0}
+ #view:has(>.prompt)>.fact{font-size:15px;min-height:0;line-height:1.1;margin:0}
+ #view:has(>.prompt)>.opts{margin:2px 0}
+ #view:has(>.prompt)>.opts .opt{min-height:44px;padding:4px}
+ #view:has(>.prompt)>.opts .num{font-size:30px}
+ #view:has(#tdone) .canvaswrap canvas{height:min(38dvh,160px)!important;width:auto!important;max-width:100%}
+ #view:has(#tdone)>.canvaswrap{margin:2px auto}
+ #view:has(#tdone)>.trace-tools{min-height:44px}
+ #view:has(.pair-board) .pair-instruction{font-size:16px;line-height:20px}
+ #view:has(.pair-board[data-level="1"]) .pair-group{height:52px;margin-bottom:4px}
+ #view:has(.pair-board[data-level="1"]) .pair-token{top:4px!important}
+ #view .pair-answers .opt{min-height:60px;font-size:16px}
+ #view .pair-answers svg{width:44px;height:31px}
+ #view:has(.pair-board) .pair-answers svg{height:27px}
+ #view .pair-answers .ol{font-size:14px;line-height:1.05;margin:0}
+ #view:has(>.round-title) .round-title{font-size:22px;line-height:1.1;margin:2px}
+ #view:has(>.round-title) .round-title .peachy{width:44px;height:44px}
+ #view:has(>.round-title) .round-rewards{margin:4px auto}
+ #view:has(>.round-title) .newsticker .stk{font-size:28px;width:36px;height:36px}
+ #view:has(>.round-title) .round-actions{margin-top:6px}
+ #view:has(.rp-tools.rp-finished) .fact{margin-bottom:50px}
+ #view .slots.onerow .slot{height:34px;font-size:24px}
+ #view .rgrid{--rcs:24px}
+ #view .rgrid .rc{font-size:20px}
+ #view .rprog{min-height:24px;font-size:22px;line-height:1.1;margin:2px auto}
+ #view .rkeys{margin:2px auto}
+ #view .rkeys .pill{min-height:44px;padding:4px 12px;font-size:24px;line-height:1}
+ #view .pads{width:min(360px,50dvh);gap:8px;margin:4px auto}
+}
+/* UX74 follow-up: 44px stickers with 8px gaps made the sticker scene 4px too tall on 360x640; give the picture 2dvh less. */
+@media(max-height:700px){.scene{width:min(100%,440px,calc(28dvh * 1.25))}}
