@@ -141,6 +141,8 @@ const PUNCT = [
   [1, 'The cat\'s bed is soft.', 'The cats bed is soft.', 'The cat\'s\' bed is soft.'],
   [1, 'I got a cup, a pen, and a hat.', 'I got a cup a pen and a hat.', 'I got, a cup a pen and a hat.'],
   [1, 'It is June 8, 2026.', 'It is June 8 2026.', 'It is, June 8 2026.'],
+  [1, 'Where is my shoe?', 'Where is my shoe.', 'Where is my shoe,'], [1, 'We can\'t find the ball.', 'We cant find the ball.', 'We ca\'nt find the ball.'],
+  [1, 'Sam\'s kite is red.', 'Sams kite is red.', 'Sam\'s\' kite is red.'], [1, 'I see a frog, a fish, and a duck.', 'I see a frog a fish and a duck.', 'I see, a frog a fish and a duck.'],
   [2, '"Come here," said Mom.', 'Come here, said Mom.', '"Come here" said Mom.'], [2, 'Dear Grandma,', 'Dear Grandma.', 'Dear, Grandma'], [2, 'Love, Mia', 'Love Mia.', 'Love; Mia'], [2, 'We live at 12 Oak Street, Lawrenceville, Georgia.', 'We live at 12 Oak Street Lawrenceville Georgia.', 'We live at, 12 Oak Street Lawrenceville, Georgia.'],
   [2, 'The dog\'s bone is big.', 'The dogs bone is big.', 'The dog\'s\' bone is big.'], [2, '"I am happy!" said Lily.', '"I am happy" said Lily.', 'I am happy! said Lily.'], [2, 'We packed shoes, socks, and a hat.', 'We packed shoes socks, and a hat.', 'We packed, shoes, socks and a hat.']
 ];
