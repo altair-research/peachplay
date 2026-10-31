@@ -55,7 +55,7 @@ h2{font-size:26px;text-align:left;margin:22px 0 10px}
 .frame.mini .cell{font-size:26px;border-width:2px;border-radius:8px}
 .cell{aspect-ratio:1;background:#eef;border-radius:16px;font-size:clamp(32px,7vw,56px);display:flex;align-items:center;justify-content:center;border:3px dashed #99a}
 .cell.on{background:#ffeccf;border:3px solid var(--peach)}
-.cell.empty{cursor:pointer}
+/* Empty ten-frame cells are not buttons; no pointer cursor (Chromebook mouse users read it as clickable). */
 .scatter{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:620px;margin:0 auto}
 .obj{background:none;font-size:56px;padding:4px;position:relative;line-height:1}
 .obj.counted{opacity:.45}
