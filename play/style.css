@@ -121,3 +121,8 @@ canvas.draw{background:#fff;border-radius:18px;box-shadow:0 5px 0 #0002;touch-ac
 
 .map.n4{grid-template-columns:repeat(4,64px);grid-template-rows:repeat(4,64px)}
 .map.n4 .mc{font-size:38px}
+/* Flags level 2: two small feature pictures per choice (stripes, star layout, star count, gold circle). */
+.fpair{display:flex;gap:6px;align-items:center;justify-content:center}
+.fpair{max-width:100%}
+.ffeat{width:clamp(30px,6dvh,44px);flex:0 1 auto;min-width:0;height:auto;border:1px solid #0003;border-radius:4px}
+.ffeat.fnum{width:auto;border:0;font-size:clamp(15px,3dvh,22px);white-space:nowrap;font-weight:800;line-height:1}
