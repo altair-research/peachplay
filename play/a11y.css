@@ -139,15 +139,15 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
    Quizzes with a picture: picture left; question, choices and other controls right; Peachy and the fact under the picture.
    Think games: canvas and block board on the left; smaller cards, signal stage, pattern pieces and big words. */
 @media(orientation:landscape) and (max-height:430px){
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles)){display:grid;max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:12px;row-gap:2px;align-content:start}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>*{grid-column:2;min-width:0}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.show{grid-column:1;grid-row:1/span 2;align-self:center;margin:0}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.cheer{grid-column:1;grid-row:3}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.fact{grid-column:1;grid-row:4}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage)){display:grid;max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:12px;row-gap:2px;align-content:start}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>*{grid-column:2;min-width:0}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show{grid-column:1;grid-row:1/span 2;align-self:center;margin:0}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.cheer{grid-column:1;grid-row:3}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.fact{grid-column:1;grid-row:4}
  #view:has(>.prompt)>.cheer .peachy{width:30px;height:30px}
  #view:has(>.prompt)>.cheer{min-height:0;line-height:1.1}
  #view:has(>.prompt)>.fact{font-size:14px}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.opts.words .opt,#view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.opts.words .word{font-size:18px;line-height:1.15}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.opts.words .opt,#view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.opts.words .word{font-size:18px;line-height:1.15}
  #view:has(>.canvaswrap):not(:has(#tdone)){display:grid;max-width:none;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-content:start}
  #view:has(>.canvaswrap):not(:has(#tdone))>*{grid-column:2;min-width:0}
  #view:has(>.canvaswrap):not(:has(#tdone))>.canvaswrap{grid-column:1;grid-row:1/span 8;margin:0}
@@ -165,13 +165,22 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
  #view:has(>.prompt)>.show .pat .pc{width:36px;height:36px;font-size:22px;border-width:2px;border-radius:9px}
  #view:has(>.prompt)>.show .bigword{font-size:clamp(20px,7dvh,30px);line-height:1.15}
  #view:has(>.prompt):has(>.show)>.opts.words:has(>.opt:nth-child(4)){display:grid;grid-template-columns:1fr 1fr;gap:6px}
- #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.prompt{font-size:17px}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.prompt{font-size:17px}
  #view:has(>.prompt)>.opts.words .opt{padding:3px 6px}
  #view:has(>.prompt)>.opts.sents .opt,#view:has(>.prompt)>.opts.sents .word{font-size:16px;line-height:1.15}
  /* After an answer: Peachy and the fact share one row (quizzes without a picture become a full-width grid). */
- #view:has(>.prompt):has(>.show):has(>.opts+.cheer):not(:has(>.opts.tiles))>.fact{grid-column:2;grid-row:3;align-self:center}
+ #view:has(>.prompt):has(>.show):has(>.opts+.cheer):not(:has(>.opts.tiles,.g3e-stage))>.fact{grid-column:2;grid-row:3;align-self:center}
  #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles)){display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;align-content:start;justify-items:center}
  #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>*{grid-column:1/-1;max-width:100%}
  #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.cheer{grid-column:1}
  #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.fact{grid-column:2;align-self:center;justify-self:start}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show svg{max-height:calc(100dvh - 120px)}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show .real-map{width:100%;left:auto;transform:none}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show .real-map svg{max-height:calc(100dvh - 165px)}
+ /* Wide pictures (number line, bar graph, world map, ten-frame, picture pairs): the picture column grows to fit; the question column keeps 260px. */
+ #view:has(>.prompt):has(>.show :is(.nlsvg,.worldsvg,.bargraph,.g3k-pair,.frame.big10,.pict,.hchart)):not(:has(>.opts.tiles,.g3e-stage)){grid-template-columns:minmax(0,max-content) minmax(260px,1fr)}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show svg:not(.peachy){max-width:100%;height:auto}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show :is(.bargraph,.g3k-pair,.pict,.hchart){max-width:100%}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show .g3k-card{min-width:0;width:auto;flex:1 1 0}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show.sparkrow{flex-wrap:wrap}
 }
