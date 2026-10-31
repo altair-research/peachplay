@@ -168,4 +168,10 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.prompt{font-size:17px}
  #view:has(>.prompt)>.opts.words .opt{padding:3px 6px}
  #view:has(>.prompt)>.opts.sents .opt,#view:has(>.prompt)>.opts.sents .word{font-size:16px;line-height:1.15}
+ /* After an answer: Peachy and the fact share one row (quizzes without a picture become a full-width grid). */
+ #view:has(>.prompt):has(>.show):has(>.opts+.cheer):not(:has(>.opts.tiles))>.fact{grid-column:2;grid-row:3;align-self:center}
+ #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles)){display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;align-content:start;justify-items:center}
+ #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>*{grid-column:1/-1;max-width:100%}
+ #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.cheer{grid-column:1}
+ #view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.fact{grid-column:2;align-self:center;justify-self:start}
 }
