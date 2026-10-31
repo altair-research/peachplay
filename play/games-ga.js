@@ -207,6 +207,7 @@ registerGame({
     const kinds = ['state', 'country', 'nick', 'capital', 'big'];
     if (S.addr.city) kinds.push('city', 'city'); if (S.addr.street) kinds.push('street', 'street');
     const kind = pick(kinds), txt = (v) => `<span class="word">${v}</span>`;
+    const ADDR_KO = { Georgia: '조지아', Florida: '플로리다', Alabama: '앨라배마', Texas: '텍사스', 'United States': '미국', Canada: '캐나다', Mexico: '멕시코', Peach: '복숭아', Apple: '사과', Orange: '오렌지', Atlanta: '애틀랜타', Savannah: '서배너', Macon: '메이컨', Country: '나라', City: '도시', State: '주' };
     let ask, ok, ds, after;
     if (kind === 'state') { ask = B('What STATE do you live in?', '우리는 어느 주에 살까요?'); ok = 'Georgia'; ds = ['Florida', 'Alabama', 'Texas'].slice(0, 2); after = B('I live in the state of Georgia.', '우리는 조지아 주에 살아요.'); }
     else if (kind === 'country') { ask = B('What COUNTRY do you live in?', '우리는 어느 나라에 살까요?'); ok = 'United States'; ds = ['Canada', 'Mexico']; after = B('I live in the United States of America.', '우리는 미국에 살아요.'); }
@@ -216,7 +217,7 @@ registerGame({
     else if (kind === 'city') { ask = B('What CITY do you live in?', '우리는 어느 도시에 살까요?'); ok = S.addr.city; ds = others(GWINNETT_CITIES.filter(c => c.toLowerCase() !== ok.toLowerCase()), '', 2); after = B(`I live in ${ok}.`, `우리는 ${ok}에 살아요.`); }
     else { ask = B('What is your STREET address?', '우리 집 주소(번지/도로)는 무엇일까요?'); ok = S.addr.street; ds = ['100 Peachtree Street', '25 Maple Lane'].filter(x => x !== ok); after = B(`I live at ${ok}.`, `우리 집은 ${ok}예요.`); }
     const hint = (!S.addr.city && !S.addr.street && kind === 'state') ? `<div class="hint">👨‍👩‍👦 ${T().grownups} → ${T().addrTitle}</div>` : '';
-    quiz(this, { ask, show: (kind === 'nick' ? '🍑' : '🏠') + hint, opts: [ok, ...ds].map(v => ({ html: txt(v), ok: v === ok })), cls: 'words', after, vocab: ok });
+    quiz(this, { ask, show: (kind === 'nick' ? '🍑' : '🏠') + hint, opts: [ok, ...ds].map(v => ({ html: txt(ADDR_KO[v] ? L(B(v, ADDR_KO[v])) : v), ok: v === ok })), cls: 'words', after, vocab: ok });
   }
 });
 

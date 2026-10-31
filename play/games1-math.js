@@ -93,7 +93,7 @@ G1({
       quiz(this, { ask: B(`${k} ones is the same as how many tens?`, `낱개 ${k}개는 10개씩 묶음 몇 개와 같을까요?`), show: '', opts: numO(k / 10, [k, k / 10 + 1, k / 10 - 1], 1, 20), after: B(`${k} ones = ${k / 10} ${k / 10 === 1 ? 'ten' : 'tens'}.`, `낱개 ${k}개 = 10개씩 묶음 ${k / 10}개.`) });
     } else {
       const right = `${t} tens ${o} ones`, mk = (a, b) => `${a} tens ${b} ones`, ds = [...new Set([mk(o, t), mk(t + 1, o), mk(t, o + 1), mk(t - 1, o)])].filter(x => x !== right && !/-/.test(x)).slice(0, 2);
-      quiz(this, { ask: B(`${n} is the same as...`, `${n}, 이 수와 같은 것은?`), show: '', opts: [right, ...ds].map(v => ({ html: `<span class="word">${v}</span>`, label: S.lang === 'ko' ? B('', '').ko : null, ok: v === right })), cls: 'words', after: B(`${n} is ${t} tens and ${o} ones.`, `${n}: 10개씩 묶음 ${t}개, 낱개 ${o}개.`) });
+      quiz(this, { ask: B(`${n} is the same as...`, `${n}, 이 수와 같은 것은?`), show: '', opts: [right, ...ds].map(v => { const [a, b] = v.match(/\d+/g); return { html: `<span class="word">${L(B(v, `10개씩 ${a}묶음, 낱개 ${b}`))}</span>`, ok: v === right }; }), cls: 'words', after: B(`${n} is ${t} tens and ${o} ones.`, `${n}: 10개씩 묶음 ${t}개, 낱개 ${o}개.`) });
     }
   }
 });
@@ -141,7 +141,7 @@ G1({
     } else if (kind === 'three') {
       const p = pick([1, 2, 3, 4, 6, 7, 8, 9]), q = 10 - p, r = pick([1, 2, 3, 4, 5, 6, 7, 8, 9].filter(x => x !== p && x !== q)), order = shuffle([p, q, r]), right = `${p} and ${q}`;
       const cand = [right, `${p} and ${r}`, `${q} and ${r}`];
-      quiz(this, { ask: B(`${order.join(' + ')}: which two numbers make ten?`, `${order.join(' + ')}: 더해서 10이 되는 두 수는?`), show: bigEq(`${order.join(' + ')} = ?`), opts: cand.slice(0, 3).map(v => ({ html: `<span class="num eq">${v}</span>`, ok: v === right })), cls: 'words', after: B(`${p} + ${q} = 10, and 10 + ${r} = ${10 + r}.`, `${p} + ${q} = 10, 그리고 10 + ${r} = ${10 + r}.`) });
+      quiz(this, { ask: B(`${order.join(' + ')}: which two numbers make ten?`, `${order.join(' + ')}: 더해서 10이 되는 두 수는?`), show: bigEq(`${order.join(' + ')} = ?`), opts: cand.slice(0, 3).map(v => ({ html: `<span class="num eq">${L(B(v, v.replace(' and ', ' 그리고 ')))}</span>`, ok: v === right })), cls: 'words', after: B(`${p} + ${q} = 10, and 10 + ${r} = ${10 + r}.`, `${p} + ${q} = 10, 그리고 10 + ${r} = ${10 + r}.`) });
     } else {
       quiz(this, { ask: B('How many in all?', '모두 몇 개일까요?'), show: `<div class="story">${frame10(a, e)}<span class="op">+</span>${frame10(Math.min(10, b), e)}${b > 10 ? '' : ''}</div>`, opts: numO(s, [s - 1, s + 1, s + 10], 11, 20), after: B(`${a} + ${b} = ${s}`, `${a} + ${b} = ${s}`) });
     }

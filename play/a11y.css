@@ -135,3 +135,37 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
 }
 /* UX74 follow-up: 44px stickers with 8px gaps made the sticker scene 4px too tall on 360x640; give the picture 2dvh less. */
 @media(max-height:700px){.scene{width:min(100%,440px,calc(28dvh * 1.25))}}
+/* Short landscape phones ("play anyway"): 120 of 249 K~2 games overflowed 667x375 (scripts/qa/landscape-fit.js).
+   Quizzes with a picture: picture left; question, choices and other controls right; Peachy and the fact under the picture.
+   Think games: canvas and block board on the left; smaller cards, signal stage, pattern pieces and big words. */
+@media(orientation:landscape) and (max-height:430px){
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles)){display:grid;max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:12px;row-gap:2px;align-content:start}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>*{grid-column:2;min-width:0}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.show{grid-column:1;grid-row:1/span 2;align-self:center;margin:0}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.cheer{grid-column:1;grid-row:3}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.fact{grid-column:1;grid-row:4}
+ #view:has(>.prompt)>.cheer .peachy{width:30px;height:30px}
+ #view:has(>.prompt)>.cheer{min-height:0;line-height:1.1}
+ #view:has(>.prompt)>.fact{font-size:14px}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.opts.words .opt,#view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.opts.words .word{font-size:18px;line-height:1.15}
+ #view:has(>.canvaswrap):not(:has(#tdone)){display:grid;max-width:none;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-content:start}
+ #view:has(>.canvaswrap):not(:has(#tdone))>*{grid-column:2;min-width:0}
+ #view:has(>.canvaswrap):not(:has(#tdone))>.canvaswrap{grid-column:1;grid-row:1/span 8;margin:0}
+ #view:has(>.canvaswrap):not(:has(#tdone))>.canvaswrap canvas{height:calc(100dvh - 104px)!important;width:auto!important;max-width:58vw}
+ #view .gstage{width:min(46dvh,180px);height:min(46dvh,180px);margin:4px auto}
+ #view:has(>.bboard){display:grid;max-width:none;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-content:start}
+ #view:has(>.bboard)>*{grid-column:2;min-width:0}
+ #view:has(>.bboard)>.bboard{grid-column:1;grid-row:1/span 8;--cs:max(16px,min(46px,calc((100dvh - 100px) / var(--h)),calc((55vw - 20px) / var(--w))));margin:0}
+ #view .cardstage{min-height:80px;margin:2px 0}
+ #view .boxes{margin:2px 0}
+ #view .cbox{width:min(34dvh,120px);height:min(34dvh,120px)}
+ #view:has(>.canvaswrap):not(:has(#tdone))>.palette{margin:2px 0;gap:4px}
+ #view:has(>.prompt)>.opts.shapes .emo{font-size:min(11dvh,44px);white-space:nowrap;line-height:1.1}
+ #view:has(>.prompt)>.show .train{gap:3px;margin:2px 0;flex-wrap:wrap}
+ #view:has(>.prompt)>.show .pat .pc{width:36px;height:36px;font-size:22px;border-width:2px;border-radius:9px}
+ #view:has(>.prompt)>.show .bigword{font-size:clamp(20px,7dvh,30px);line-height:1.15}
+ #view:has(>.prompt):has(>.show)>.opts.words:has(>.opt:nth-child(4)){display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles))>.prompt{font-size:17px}
+ #view:has(>.prompt)>.opts.words .opt{padding:3px 6px}
+ #view:has(>.prompt)>.opts.sents .opt,#view:has(>.prompt)>.opts.sents .word{font-size:16px;line-height:1.15}
+}
