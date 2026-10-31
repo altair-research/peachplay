@@ -416,6 +416,8 @@ function nextButton(fn, opts = {}) {
     const cheer = $('#cheer'); if (!cheer || tok !== NEXT_TOK) return;
     cheer.insertAdjacentHTML('afterend', `<button class="next" id="nx">${T().next}</button>`);
     const btn = $('#nx');
+    // Keyboard play (Chromebook): focus was on the answer, so hand it to Next instead of making the child Tab to it.
+    if (document.activeElement?.closest?.('#view')) btn.focus({ preventScroll: true });
     const go = () => {
       if (tok !== NEXT_TOK || !document.body.contains(btn)) return;
       NEXT_TOK++; SESSION.n++; updateBar();
