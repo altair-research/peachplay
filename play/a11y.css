@@ -183,4 +183,6 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show :is(.bargraph,.g3k-pair,.pict,.hchart){max-width:100%}
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show .g3k-card{min-width:0;width:auto;flex:1 1 0}
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show.sparkrow{flex-wrap:wrap}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show:has(svg:not(.peachy)~svg:not(.peachy)) svg:not(.peachy){max-height:calc((100dvh - 150px) / 2)}
+ #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show:has(svg:not(.peachy)~svg:not(.peachy)~svg:not(.peachy)) svg:not(.peachy){max-height:calc((100dvh - 160px) / 3)}
 }
