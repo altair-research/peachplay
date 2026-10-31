@@ -30,12 +30,12 @@ G2SS({
 
 // ---------- 2. Creek and Cherokee peoples ----------
 const NATIONS = [
-  { q: B('Which statement about Creek and Cherokee people is true today?', '오늘날 크리크족과 체로키족에 대해 맞는 말은?'), r: B('They have communities today.', '오늘날에도 공동체를 이루며 살아요.'), w: [B('They lived only long ago.', '아주 먼 옛날에만 살았어요.'), B('They are imaginary people.', '이야기 속 상상의 사람들이에요.')] },
+  { q: B('Which statement about Creek and Cherokee people is true today?', '오늘날 크리크족과 체로키족에 대해 맞는 말은?'), r: B('They have communities today.', '오늘날에도 공동체를 이루며 살아요.'), w: [B('They lived long ago, not today.', '옛날에 살았고 지금은 없어요.'), B('They moved away to Europe.', '유럽으로 이사 갔어요.')] },
   { q: B('Which Native American people lived in the mountains of north Georgia?', '조지아 북쪽 산이 많은 곳에 살았던 아메리카 원주민은 누구일까요?'), r: B('The Cherokee', '체로키족'), w: [B('The Creek', '크리크족'), B('The Seminole', '세미놀족')] },
   { q: B('Who made a writing system for the Cherokee language?', '체로키 말을 적는 글자를 만든 사람은?'), r: B('Sequoyah', '세쿼이아'), w: [B('Tomochichi', '토모치치'), B('Oglethorpe', '오글소프')] },
   { q: B('Tomochichi was a leader of which people?', '토모치치는 어느 민족의 지도자였나요?'), r: B('The Creek (Yamacraw)', '크리크족(야마크로)'), w: [B('The Cherokee', '체로키족'), B('The Seminole', '세미놀족')] },
   { q: B('Which three crops did many Creek and Cherokee farmers grow together?', '크리크족과 체로키족 농부들이 함께 키운 세 가지 작물은?'), r: B('Corn, beans and squash', '옥수수, 콩, 호박'), w: [B('Wheat, rice and oats', '밀, 쌀, 귀리'), B('Cotton, tobacco and sugar', '목화, 담배, 설탕')] },
-  { q: B('Long ago, the Creek and Cherokee people got their food and built their homes using what?', '옛날 크리크족과 체로키족은 먹을 것을 얻고 집을 지을 때 무엇을 이용했나요?'), r: B('Trees, animals, and plants around them', '주변의 나무, 동물, 식물'), w: [B('Materials shipped from European factories', '유럽 공장에서 실어 온 재료'), B('Only imported building stone', '수입한 건축용 돌만')] },
+  { q: B('Long ago, the Creek and Cherokee people got their food and built their homes using what?', '옛날 크리크족과 체로키족은 먹을 것을 얻고 집을 지을 때 무엇을 이용했나요?'), r: B('Trees, animals, and plants around them', '주변의 나무, 동물, 식물'), w: [B('Materials shipped from European factories', '유럽 공장에서 실어 온 재료'), B('Stone bought from far-away cities', '먼 도시에서 사 온 돌')] },
   { q: B('In the 1830s, the Cherokee were forced to leave Georgia. What is that sad journey called?', '1830년대 체로키족은 조지아에서 강제로 떠나야 했어요. 이 슬픈 여정의 이름은?'), r: B('The Trail of Tears', '눈물의 길'), w: [B('The Gold Rush', '골드러시'), B('The Great Migration', '대이동')] },
   { q: B('Who was a Creek and English interpreter who helped the two groups talk?', '크리크 말과 영어를 통역해 두 쪽이 대화하도록 도운 사람은?'), r: B('Mary Musgrove', '메리 머스그로브'), w: [B('Jackie Robinson', '재키 로빈슨'), B('Juliette Gordon Low', '줄리엣 고든 로')] }
 ];
@@ -98,11 +98,11 @@ const GOV = [
   { q: B('Who is the leader of the state of Georgia?', '조지아주의 지도자는 누구일까요?'), r: B('The governor', '주지사'), w: [B('The mayor', '시장'), B('The President', '대통령')] },
   { q: B('Who is the leader of the whole United States?', '미국 전체의 지도자는 누구일까요?'), r: B('The President', '대통령'), w: [B('The mayor', '시장'), B('The governor', '주지사')] },
   { q: B('What is the capital city of Georgia, where state leaders work?', '주 지도자들이 일하는 조지아의 주도(주 정부가 있는 도시)는?'), r: B('Atlanta', '애틀랜타'), w: [B('Savannah', '서배너'), B('Macon', '메이컨')] },
-  { q: B('Why do we have laws?', '우리에게 법이 있는 까닭은?'), r: B('To keep people safe and treated fairly', '사람들을 안전하게 지키고 공정하게 대하려고'), w: [B('To make life boring', '생활을 지루하게 하려고'), B('To help only one person', '한 사람만 돕기 위해')] },
+  { q: B('Why do we have laws?', '우리에게 법이 있는 까닭은?'), r: B('To keep people safe and treated fairly', '사람들을 안전하게 지키고 공정하게 대하려고'), w: [B('So leaders can do what they want', '지도자가 마음대로 하려고'), B('To choose the next president', '다음 대통령을 뽑으려고')] },
   { q: B('Which one is a RESPONSIBILITY of a good citizen?', '좋은 시민의 책임은 무엇일까요?'), r: B('Obey the laws and respect other people', '법을 지키고 다른 사람을 존중하기'), w: [B('Break rules when no one is looking', '몰래 규칙 어기기'), B('Take things that are not yours', '내 것이 아닌 물건 가져가기')] },
-  { q: B('Which one is a RIGHT that citizens in the United States have?', '미국 시민이 가진 권리는 무엇일까요?'), r: B('Speak freely and share your ideas', '자유롭게 말하고 생각을 나눌 권리'), w: [B('Ignore every rule', '모든 규칙 무시하기'), B('Never go to school', '학교에 가지 않기')] },
+  { q: B('Which one is a RIGHT that citizens in the United States have?', '미국 시민이 가진 권리는 무엇일까요?'), r: B('Speak and share ideas freely', '자유롭게 말하고 생각 나누기'), w: [B('Pay taxes to the government', '정부에 세금 내기'), B('Follow traffic laws when driving', '운전할 때 교통 법 지키기')] },
   { q: B('Which one is how adult citizens help choose their leaders?', '어른 시민이 지도자를 뽑는 방법은?'), r: B('Voting', '투표'), w: [B('Appointment without an election', '선거 없이 임명하기'), B('Inheriting a parent’s office', '부모의 자리를 물려받기')] },
-  { q: B('Who makes the rules in a classroom or at home so everyone is safe?', '교실이나 집에서 모두가 안전하도록 규칙을 정하는 사람은?'), r: B('Teachers and parents (with the group)', '선생님과 부모님(함께 의논해서)'), w: [B('Nobody', '아무도 없어요')] }
+  { q: B('Who makes the rules in a classroom or at home so everyone is safe?', '교실이나 집에서 모두가 안전하도록 규칙을 정하는 사람은?'), r: B('Teachers and parents (with the group)', '선생님과 부모님(함께 의논해서)'), w: [B('The mayor of the town', '마을의 시장'), B('The governor of the state', '주의 주지사')] }
 ];
 G2SS({
   id: 'gov2', icon: '🏛️', title: B('Leaders and Citizens', '지도자와 시민'), sub: B('Mayor, governor, President, laws, rights, responsibilities', '시장, 주지사, 대통령, 법, 권리와 책임'), u: 'Government',
@@ -146,7 +146,7 @@ G2SS({
       quiz(this, { ask: B(`You have $${saved} and want a $${price} toy. How many more dollars do you need?`, `${price}달러짜리 장난감을 사려고 ${saved}달러를 모았어요. 몇 달러를 더 모아야 할까요?`), opts: numO(need, [need-1,need+1,price], 0, 12), after: B(`${price} − ${saved} = ${need} more dollars.`, `${price} − ${saved} = ${need}. ${need}달러를 더 모아요.`) }); return;
     }
     const quizOf = (q) => quiz(this, { ask: q[0], opts: sw(q[1], q[2]), cls: 'words sents', after: q[3] || B(`${q[1].en}.`, `${q[1].ko}.`) });
-    if (kind === 'scar') quizOf(pick([[B('You want a toy and a snack but can buy only one. What is this called?', '장난감과 간식을 사고 싶지만 하나만 살 수 있어요. 이것을 무엇이라 할까요?'), B('Scarcity (not enough for everything)', '부족함(모든 것을 가질 수 없음)'), [B('A gift', '선물'), B('A holiday', '휴일')], B('Scarcity means we cannot have everything we want, so we must choose.', '부족하다는 것은 원하는 것을 모두 가질 수 없어서 골라야 한다는 뜻이에요.')],
+    if (kind === 'scar') quizOf(pick([[B('You want a toy and a snack but can buy only one. What is this called?', '장난감과 간식을 사고 싶지만 하나만 살 수 있어요. 이것을 무엇이라 할까요?'), B('Scarcity (not enough for everything)', '부족함(모든 것을 가질 수 없음)'), [B('Saving (keeping money for later)', '저축(돈을 나중을 위해 모으기)'), B('Trading (swapping one thing for another)', '교환(물건을 서로 바꾸기)')], B('Scarcity means we cannot have everything we want, so we must choose.', '부족하다는 것은 원하는 것을 모두 가질 수 없어서 골라야 한다는 뜻이에요.')],
       [B('Why must people make choices?', '사람들은 왜 선택을 해야 할까요?'), B('Because resources and money are limited', '자원과 돈이 한정되어 있어서'), [B('Because choices are fun', '선택이 재미있어서'), B('Because stores are closed', '가게가 닫혀 있어서')]]]));
     else if (kind === 'trade') {
       const t = pick([[B('You choose a sticker book instead of a ball. What did you give up?', '공 대신 스티커 책을 골랐어요. 포기한 것은?'), B('The ball', '공'), [B('The sticker book', '스티커 책'), B('Nothing', '아무것도 없어요')]],
@@ -155,7 +155,7 @@ G2SS({
     } else if (kind === 'save') quizOf(pick([[B('What does it mean to save money?', '돈을 저축한다는 것은 무슨 뜻일까요?'), B('To keep it to use later', '나중에 쓰려고 모아 두는 것'), [B('To spend it all today', '오늘 다 쓰는 것'), B('To lose it', '잃어버리는 것')]],
       [B('You want a $20 toy and have $5. What is a smart plan?', '20달러짜리 장난감을 사고 싶은데 5달러가 있어요. 어떤 계획을 세우면 좋을까요?'), B('Save a little each week', '매주 조금씩 모으기'), [B('Spend the $5 on candy right now', '지금 사탕에 5달러 쓰기'), B('Forget the toy and the money', '장난감도 돈도 잊기')]]]));
     else quizOf(pick([[B('Which one is a way to earn money?', '돈을 버는 방법은 무엇일까요?'), B('Working at a job', '일해서 돈 받기'), [B('Wishing for money', '돈이 생기길 바라기'), B('Spending money', '돈 쓰기')]],
-      [B('People earn money by ...', '사람들은 무엇을 해서 돈을 벌까요?'), B('doing work or selling goods and services', '일하거나 물건·서비스를 팔기'), [B('only going shopping', '쇼핑만 하기'), B('sleeping', '잠자기')]]]));
+      [B('People earn money by ...', '사람들은 무엇을 해서 돈을 벌까요?'), B('doing work or selling goods and services', '일하거나 물건·서비스를 팔기'), [B('buying things they want at a store', '가게에서 원하는 물건 사기'), B('putting coins in a piggy bank', '저금통에 동전 넣기')]]]));
   }
 });
 
@@ -256,6 +256,8 @@ const actions=[
  [B('Martin Luther King Jr. worked for fair laws using nonviolent protest.','마틴 루서 킹 주니어는 비폭력 시위로 공정한 법에 힘썼어요.'),B('Civility: seeking change without violence','예의: 폭력 없이 바꾸려 하기')],
  [B('Jimmy Carter worked for human rights and peace.','지미 카터는 인권과 평화를 위해 노력했어요.'),B('Compassion: caring about other people','연민: 다른 사람을 배려하기')]
 ];
+// Wrong traits per action: other actions' traits that this action does not show.
+const wrongTraits=[[5,4],[4,5],[3,5],[0,5],[0,5],[0,2],[2,4],[3,2]];
 const environments=[
  [B('Cherokee Nation gardeners grow traditional plants today. Plants need suitable soil and water.','체로키 네이션은 오늘날에도 전통 식물을 길러요. 식물에는 알맞은 흙과 물이 필요해요.'),B('Soil and water support growing plants','흙과 물이 식물 재배를 도와요')],
  [B('Historically, Muscogee towns farmed river valleys. Today Muscogee communities continue in many places.','옛 머스코기 마을은 강 계곡에서 농사를 지었어요. 오늘날에도 여러 곳에서 공동체가 이어져요.'),B('River-valley land supported farming','강 계곡 땅이 농사를 도왔어요')],
@@ -263,12 +265,12 @@ const environments=[
  [B('Oglethorpe, Tomochichi and Mary Musgrove met near the Savannah River. Rivers offered routes for travel and trade.','오글소프, 토모치치, 메리 머스그로브는 서배너강 근처에서 만났어요. 강은 이동과 교역의 길이 됐어요.'),B('A river could connect travel and trade','강이 이동과 교역을 이어 줬어요')]
 ];
 for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const t=turns[id]||0;turns[id]=t+1;if(t%2)return old.call(this);const lv=lvl(id),i=Math.floor(t/2);
- if(id==='heroes2') {const r=actions[i%actions.length];quiz(this,lv===1?make('citizenship',B('Which trait is supported by this action?','이 행동이 보여 주는 시민의 태도는?'),r[0],r[1],[B('Ignoring other people','다른 사람을 무시하기'),B('Refusing every effort','아무 노력도 하지 않기')]):make('citizenship-evidence',B(`Which action by ${HEROES2[i%actions.length].n.en} supports this trait? ${r[1].en}`,`${HEROES2[i%actions.length].n.ko}: 이 태도를 보여 준 행동은? ${r[1].ko}`),B('Choose the action that best supports the trait.','이 태도를 가장 잘 보여 주는 행동을 골라요.'),B(r[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),r[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')),actions.filter(x=>x!==r).slice(0,2).map(x=>B(x[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),x[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')))));return;}
+ if(id==='heroes2') {const r=actions[i%actions.length];quiz(this,lv===1?make('citizenship',B('Which trait is supported by this action?','이 행동이 보여 주는 시민의 태도는?'),r[0],r[1],wrongTraits[i%actions.length].map(k=>actions[k][1])):make('citizenship-evidence',B(`Which action by ${HEROES2[i%actions.length].n.en} supports this trait? ${r[1].en}`,`${HEROES2[i%actions.length].n.ko}: 이 태도를 보여 준 행동은? ${r[1].ko}`),B('Choose the action that best supports the trait.','이 태도를 가장 잘 보여 주는 행동을 골라요.'),B(r[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),r[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')),wrongTraits[i%actions.length].map(k=>actions[k]).map(x=>B(x[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),x[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')))));return;}
  const r=environments[i%environments.length];
- if(lv===1){quiz(this,make('environment',B('How did this environment help people?','이 환경은 사람들에게 어떤 도움이 됐나요?'),r[0],r[1],[B('Every region has identical resources','모든 지역의 자원이 같아요'),B('The environment never affects life','환경은 생활에 영향을 안 줘요')]));return;}
+ if(lv===1){quiz(this,make('environment',B('How did this environment help people?','이 환경은 사람들에게 어떤 도움이 됐나요?'),r[0],r[1],[B('Ice and snow kept food cold','얼음과 눈이 음식을 차갑게 지켜 줬어요'),B('Tall mountains kept towns safe','높은 산이 마을을 지켜 줬어요')]));return;}
  // Comparison cards are optional-location examples: never infer or collect a child's home.
  const local=i%2===0;
- quiz(this,make('region-compare',B('Compare the historical place with the practice community.','역사 속 장소와 가상 공동체를 비교해요.'),B(`${r[0].en} Practice community today: ${local?'a garden uses soil and water.':'trucks use roads for trade.'} Families live in many different ways.`,`${r[0].ko} 오늘날 가상 공동체: ${local?'텃밭에서 흙과 물을 이용해요.':'트럭이 도로로 물건을 운반해요.'} 가족마다 생활 모습은 다양해요.`),local?B('Both can use natural resources','두 곳 모두 자원을 써요'):B('People use different routes and tools','서로 다른 길과 도구를 이용해요'),[B('Every family must live the same way','모든 가족은 똑같이 살아야 해요'),B('Native peoples exist only in the past','원주민은 과거에만 있었어요')]));
+ quiz(this,make('region-compare',B('Compare the historical place with the practice community.','역사 속 장소와 가상 공동체를 비교해요.'),B(`${r[0].en} Practice community today: ${local?'a garden uses soil and water.':'trucks use roads for trade.'} Families live in many different ways.`,`${r[0].ko} 오늘날 가상 공동체: ${local?'텃밭에서 흙과 물을 이용해요.':'트럭이 도로로 물건을 운반해요.'} 가족마다 생활 모습은 다양해요.`),local?B('Both can use natural resources','두 곳 모두 자원을 써요'):B('People use different routes and tools','서로 다른 길과 도구를 이용해요'),local?[B('Both places trade by truck','두 곳 모두 트럭으로 교역해요'),B('Long ago, people grew no plants','옛날에는 식물을 기르지 않았어요')]:[B('Both places farm the same field','두 곳은 같은 들판에서 농사지어요'),B('Long ago, people used trucks','옛날에도 트럭을 썼어요')]));
  };}
 })();
 
