@@ -20,3 +20,5 @@
 .hc-mini[open] .hc-pop{position:absolute;left:0;right:0;bottom:calc(100% + 6px);max-height:55dvh;overflow:auto;background:var(--card);border-radius:14px;box-shadow:0 3px 10px #0003;padding:8px 14px;text-align:left;font-size:15px}
 .hc-mini p{margin:4px 0}
 body:is(.skin-explorer,.theme-dark,.theme-system) :is(.hc-why,.hc-time,.hc-days){color:var(--theme-shell)}
+/* Weekly summary (weekly.js) reuses .hc-card */
+.wk-card p{margin:4px 0}.wk-todo{margin:4px 0 8px;padding-left:22px}.wk-todo li{margin:4px 0}

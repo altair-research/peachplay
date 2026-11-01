@@ -133,7 +133,7 @@
   }
 
   // ---- screens ----
-  const CSS = `.sr-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:4px 0 8px}.sr-tabs .pill[aria-pressed=true]{outline:3px solid #f28b54}
+  const CSS = `.sr-today{background:#fff4d6;border-radius:12px;padding:8px 12px;margin:0 0 8px}.sr-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:4px 0 8px}.sr-tabs .pill[aria-pressed=true]{outline:3px solid #f28b54}
 .sr-row{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;margin:2px auto;max-width:720px;text-align:left}.sr-row b{flex:1 1 200px;font-size:16px}.sr-row span{display:flex;gap:4px}
 .sr-row button,.sr-chips button{font-size:15px;padding:6px 9px;border-radius:12px;border:2px solid #ffe4d3;background:#fff;min-height:44px}
 .sr-row button[aria-pressed=true],.sr-chips button[aria-pressed=true]{background:#ffe1cc;border-color:#f28b54;font-weight:700}
@@ -215,6 +215,7 @@
       : `<p>${L(B('Nothing entered shows a weak spot. Play what your child enjoys, and enter the next school result when it comes.', '입력한 결과에서 약한 곳이 보이지 않아요. 아이가 좋아하는 게임을 하고, 다음 학교 결과가 오면 넣어 주세요.'))}</p>`;
     view().innerHTML = `<h1>🗂️ ${L(B('Result card', '결과 풀이 카드'))}</h1>${tabs('card')}${gradeNote()}
       <div class="sr-card">
+        ${(() => { const g0 = games.length && gameById(games[0].id); return g0 ? `<p class="sr-today">⏱️ <b>${L(B('Today, 10 minutes:', '오늘 10분:'))}</b> ${L(B(`${g0.icon} ${L(g0.title)} for 5 minutes, then the home activity in 3 for 5 minutes.`, `${g0.icon} ${L(g0.title)} 5분, 그다음 3번 "집에서 할 것" 5분.`))}</p>` : ''; })()}
         <h2>1. ${L(B('What this result means', '이 결과가 뜻하는 것'))}</h2>${meaning}
         <h2>2. ${L(B('This week: 15 minutes of games', '이번 주 15분에 할 게임'))}</h2>
         <p class="note2">${L(B('About 5 minutes each. Start at level 1 if it feels hard.', '하나에 약 5분. 어려우면 레벨 1부터 해요.'))}</p>

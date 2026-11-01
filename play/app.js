@@ -232,6 +232,7 @@ function grownups() {
   const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
+    ${window.Weekly ? window.Weekly.html() : ''}
     <div id="learnReport">${window.SessionReport.html(window.SessionReport.range)}</div>
     ${window.HomeCard ? window.HomeCard.html() : ''}
     ${window.Learner.panel()}
@@ -255,6 +256,7 @@ function grownups() {
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   window.SessionReport.bind();
+  if (window.Weekly) window.Weekly.bind();
   if (window.HomeCard) window.HomeCard.bind();
   window.Learner.bind();
   window.Learner.bindStyle();
