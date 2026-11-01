@@ -436,7 +436,14 @@ function nextButton(fn, opts = {}) {
       window.LearnLog.finish(); if (SESSION.mix) window.Learner.complete(); return SESSION.mix ? surprise() : sessionEnd(g);
     };
     btn.onclick = go;
-    if (opts.auto !== false && !DIAG.active) { const f = $('#fact'); setTimeout(go, opts.auto || Math.min(4200, 1300 + 45 * (f ? f.textContent.length : 0))); }
+    // Auto-advance waits for Peachy to finish talking (e.g. "40, 50, 60, 70" after a count-by-tens answer was cut off, 2026-11-01),
+    // then 600 ms more; capped at 15 s so a stuck speech engine never freezes the round. Next still works at any time.
+    if (opts.auto !== false && !DIAG.active) {
+      const f = $('#fact'), t0 = Date.now(); let waited = false;
+      const talking = () => { try { return speechSynthesis.speaking || speechSynthesis.pending; } catch (e) { return false; } };
+      const wait = () => { if (tok !== NEXT_TOK) return; if (talking() && Date.now() - t0 < 15000) { waited = true; return setTimeout(wait, 250); } setTimeout(go, waited && !talking() ? 600 : 0); };
+      setTimeout(wait, opts.auto || Math.min(4200, 1300 + 45 * (f ? f.textContent.length : 0)));
+    }
   }, 450);
 }
 
