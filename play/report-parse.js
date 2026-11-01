@@ -4,6 +4,8 @@
 // Output: assignments with grades, mapped to game ids by keyword rules (see docs/curriculum-analysis.md).
 
 const GRADE_POINTS = { U: 3, N: 2, S: 0.3, E: 0 };        // need score: higher = needs more practice (S = satisfactory, small nudge)
+// K-2 math and reading come first (scope decision 2026-10-28); science and social studies count half, so a math U is not pushed out by flag lines.
+const SUBJECT_WEIGHT = { math: 1, read: 1, write: 1, sci: 0.5, ss: 0.5 };
 const SUBJECT_RULES = [                                       // detected from the course header line
   ['math', /MATHEMATICS/i], ['read', /READING/i], ['write', /WRITING/i], ['sci', /SCIENCE/i],
   ['ss', /SOCIAL STUDIES/i], ['health', /HEALTH/i], ['conduct', /CONDUCT/i]
@@ -97,7 +99,7 @@ function scoreReport(parsed) {
   const score = {}, reasons = {}, unmapped = [];
   for (const it of parsed.items) {
     const p = GRADE_POINTS[it.grade]; if (!p) continue;      // E or unknown grades add nothing
-    const w = p * (it.kind === 'Mastery' ? 1.5 : 1);
+    const w = p * (it.kind === 'Mastery' ? 1.5 : 1) * (SUBJECT_WEIGHT[it.subject] ?? 1);
     const { games, specific } = gamesFor(it);
     if (!games.length) { unmapped.push(`${it.name} (${it.grade})`); continue; }
     games.forEach((id, i) => {

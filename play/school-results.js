@@ -206,22 +206,36 @@
     return out;
   }
 
+  // One home activity that fits a game, so "today, 10 minutes" is one topic: its i-Ready domain, a test-question kind,
+  // its home-card domain, then its subject (checked with a real K report card 2026-11-01: flags + a math finger game did not match).
+  const SUBJ_HOME = { math: 'num', read: 'ph', sci: 'sci_physical', ss: 'ss_civics' };
+  function homeFor(id) {
+    const gr = kidGrade(), dom = window.Learner && window.Learner.domainFor(id), ir = dom && IR.find(d => d.k === dom.k);
+    if (ir) return L(ir.home);
+    const c = CK.find(x => ckGames(x, gr).includes(id)); if (c) return L(c.home);
+    const g = typeof gameById === 'function' && gameById(id); if (g && g.subject === 'write') return L(CK.find(x => x.k === 'sentence').home);
+    const H = window.HomeCard; if (!H) return '';
+    if (dom && H.ACT[dom.k]) return H.homeText(dom.k);
+    return g && SUBJ_HOME[g.subject] ? H.homeText(SUBJ_HOME[g.subject]) : '';
+  }
+
   function cardScreen() {
     style();
     if (kidGrade() === 'P') return home();
     const sig = signals(), games = typeof currentPicks === 'function' ? currentPicks(3) : [];
-    const homeAct = sig.find(x => x.home), nexts = sig.slice(0, 2);
+    const today = games.find(p => !(p.why || []).includes('__warm__')) || games[0];    // a warm-up review is not today's focus
+    const homeAct = { home: (today && homeFor(today.id)) || (sig.find(x => x.home) || {}).home }, nexts = sig.slice(0, 2);
     const meaning = sig.length ? `<ul>${sig.slice(0, 4).map(x => `<li><b>${x.label}</b><br>${x.mean}</li>`).join('')}</ul>`
       : `<p>${L(B('Nothing entered shows a weak spot. Play what your child enjoys, and enter the next school result when it comes.', '입력한 결과에서 약한 곳이 보이지 않아요. 아이가 좋아하는 게임을 하고, 다음 학교 결과가 오면 넣어 주세요.'))}</p>`;
     view().innerHTML = `<h1>🗂️ ${L(B('Result card', '결과 풀이 카드'))}</h1>${tabs('card')}${gradeNote()}
       <div class="sr-card">
-        ${(() => { const g0 = games.length && gameById(games[0].id); return g0 ? `<p class="sr-today">⏱️ <b>${L(B('Today, 10 minutes:', '오늘 10분:'))}</b> ${L(B(`${g0.icon} ${L(g0.title)} for 5 minutes, then the home activity in 3 for 5 minutes.`, `${g0.icon} ${L(g0.title)} 5분, 그다음 3번 "집에서 할 것" 5분.`))}</p>` : ''; })()}
+        ${(() => { const g0 = today && gameById(today.id); return g0 ? `<p class="sr-today">⏱️ <b>${L(B('Today, 10 minutes:', '오늘 10분:'))}</b> ${L(B(`${g0.icon} ${L(g0.title)} for 5 minutes, then the home activity in 3 for 5 minutes.`, `${g0.icon} ${L(g0.title)} 5분, 그다음 3번 "집에서 할 것" 5분.`))}</p>` : ''; })()}
         <h2>1. ${L(B('What this result means', '이 결과가 뜻하는 것'))}</h2>${meaning}
         <h2>2. ${L(B('This week: 15 minutes of games', '이번 주 15분에 할 게임'))}</h2>
         <p class="note2">${L(B('About 5 minutes each. Start at level 1 if it feels hard.', '하나에 약 5분. 어려우면 레벨 1부터 해요.'))}</p>
         <div class="menu">${games.map(p => { const g = gameById(p.id); return g ? `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText ? whyText(p) : ''}</small></button>` : ''; }).join('') || `<p>${T().noPicks}</p>`}</div>
         <h2>3. ${L(B('One thing to do at home', '집에서 할 것 1개'))}</h2>
-        <p>${homeAct ? homeAct.home : (window.HomeCard && window.HomeCard.homeText(window.HomeCard.dayPick().k)) || L(B('Read a picture book together and talk about it for 5 minutes.', '그림책을 함께 읽고 5분 동안 이야기해요.'))}</p>
+        <p>${homeAct.home ? homeAct.home : (window.HomeCard && window.HomeCard.homeText(window.HomeCard.dayPick().k)) || L(B('Read a picture book together and talk about it for 5 minutes.', '그림책을 함께 읽고 5분 동안 이야기해요.'))}</p>
         <h2>4. ${L(B('What to look at on the next school result', '다음 결과지에서 볼 것'))}</h2>
         ${nexts.length ? `<ul>${nexts.map(x => `<li>${x.next}</li>`).join('')}</ul>` : `<p>${L(B('Whether anything new is marked as needing practice.', '새로 연습이 필요하다고 표시된 것이 있는지.'))}</p>`}
         <p class="note2">✍️ ${L(B('Your eyes matter most: you know how your child learns. Change anything here that does not fit.', '아이를 가장 잘 아는 건 보호자예요. 맞지 않는 부분은 언제든 바꿔 주세요.'))}</p>
