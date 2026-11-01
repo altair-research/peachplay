@@ -320,8 +320,9 @@ function reviewStep() {
   if (SESSION.n >= SESSION.rounds) {
     window.LearnLog.finish();
     SESSION.review = null;
+    const kbFocus = document.activeElement?.closest?.('#view');
     view().innerHTML = `<h1>🎉 ${T().roundDone}</h1><p class="tag">${kidGrade() === 'P' ? T().prekDone : T().gotRight(SESSION.done, SESSION.rounds)}</p><button class="next" id="reviewHome">🏠 ${T().pickAnother}</button>`;
-    $('#reviewHome').onclick = home; say(T().roundDone); if (window.Today) window.Today.afterReview(); return;
+    $('#reviewHome').onclick = home; if (kbFocus) $('#reviewHome').focus({ preventScroll: true }); say(T().roundDone); if (window.Today) window.Today.afterReview(); return;
   }
   const it = SESSION.review[SESSION.n]; SESSION.id = it.id; SESSION.reviewAnswered = false;
   MISS[it.id] = false; updateBar(); gameById(it.id).play();
@@ -372,11 +373,13 @@ function sessionEnd(game) {
   const reward = sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : '';
   const peaches = Math.max(0, S.peaches - (SESSION.startPeaches ?? S.peaches));
   confetti.clear?.();
+  const kbFocus = document.activeElement?.closest?.('#view');   // keyboard play: keep focus on the end screen instead of losing it to the page
   view().innerHTML = `${pk ? `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.prekDone}</p>${reward}` : `<h1 class="round-title">${PEACH_SVG('yay')}${L(B('Round complete! Nice work!', '한 판 끝! 멋져요!'))}</h1><div class="round-rewards"><div class="round-reward" aria-label="${L(B(`${peaches} peaches this round`, `이번 판에 받은 복숭아 ${peaches}개`))}">🍑 +${peaches}</div>${reward}</div>${goalHtml(true)}${document.body.classList.contains('skin-explorer') ? roundBadgeHtml(game.subject, newly) : ''}`}
     <div class="menu intro${pk ? '' : ' round-actions'}"><button class="big math${pk ? '' : ' round-primary'}" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
     <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>
     <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}<small>${t.anotherSub}</small></button></div>`;
   $('#again').onclick = () => launch(game); $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
+  if (kbFocus) $('#again').focus({ preventScroll: true });
   say(t.roundDone); sfx('win'); confetti(150);
   if (window.Today) window.Today.afterRound(game);
 }

@@ -186,3 +186,10 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show:has(svg:not(.peachy)~svg:not(.peachy)) svg:not(.peachy){max-height:calc((100dvh - 150px) / 2)}
  #view:has(>.prompt):has(>.show):not(:has(>.opts.tiles,.g3e-stage))>.show:has(svg:not(.peachy)~svg:not(.peachy)~svg:not(.peachy)) svg:not(.peachy){max-height:calc((100dvh - 160px) / 3)}
 }
+/* v4.68 — poems (poemK/poem1) in landscape: compact "adult can read" note, hidden once answered; Peachy's cheer sits at the bottom of the poem column and the fact under it. */
+@media(orientation:landscape) and (max-height:430px){
+#view>.g3p-note{font-size:13px;gap:4px;margin:0}#view>.g3p-note .g3p-button{min-height:34px;padding:2px 10px;font-size:15px}#view:has(>#nx)>.g3p-note{display:none}
+#view:has(>.prompt):has(>.show):has(>.g3p-options):not(:has(>.opts.tiles,.g3e-stage))>.show{align-self:start}
+#view:has(>.prompt):has(>.show):has(>.g3p-options):not(:has(>.opts.tiles,.g3e-stage))>.cheer{grid-row:2;align-self:end}
+#view:has(>.prompt):has(>.show):has(>.g3p-options):not(:has(>.opts.tiles,.g3e-stage))>.fact{grid-column:1;grid-row:3}
+}

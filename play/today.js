@@ -134,8 +134,10 @@
   function swapButtons() {
     const box = document.querySelector('#view .round-actions') || document.getElementById('reviewHome');
     const html = `<div class="menu intro round-actions hb-after"><button class="big math round-primary" id="hbNext"><span class="gi">⏱️</span>${L(TX.next)}<small>${STEPS.length > st().step ? `${Math.min(st().step + 1, STEPS.length)}/${STEPS.length}` : '🎉'}</small></button><button class="big ss" id="hbStop"><span class="gi">🏠</span>${L(TX.stop)}</button></div>`;
+    const kbFocus = document.activeElement?.closest?.('#view');   // keyboard play: the focused end button is replaced, so focus its successor
     if (box) box.outerHTML = html; else view().insertAdjacentHTML('beforeend', html);
     $('#hbNext').onclick = stepScreen; $('#hbStop').onclick = home;
+    if (kbFocus) $('#hbNext').focus({ preventScroll: true });
   }
   function finish() {
     const t = st(); active = false;
