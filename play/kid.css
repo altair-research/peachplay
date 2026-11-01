@@ -1,0 +1,40 @@
+/* G: default light palette. Opt-in night, explorer and high contrast stay in theme.css/a11y.css. */
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast){
+ --bg:#fff4ee;--card:#fff;--ink:#4a3530;--peach:#ff7a52;--good:#176b50;
+ background:linear-gradient(180deg,#fff4ee,#f6eefc) fixed;min-height:100dvh;
+
+}
+.shell-icon{width:1.25em;height:1.25em;vertical-align:middle;flex:none;display:inline-block}
+.gi .shell-icon{width:1em;height:1em}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) :is(.big,.opt,.icon,.pill,.bubble,.stk,.round-reward){border-radius:22px;box-shadow:0 7px 18px #9a63521c,0 2px 5px #9a635210}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) :is(.next,.round-primary){background:#c94420;color:#fff;box-shadow:0 7px 18px #c9442026}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) #view :is(.home-primary .cont,.controw > .cont, #primarySurprise){background:#c94420;color:#fff;border-color:#ff7a52;text-shadow:none}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) #view :is(.home-primary .cont,.controw > .cont, #primarySurprise) small{color:#fff;text-shadow:none;font-weight:600}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) .stile{border-top-color:transparent;background:#fff;color:#4a3530}
+body:not(.grown) .stile .gi .shell-icon{padding:8px;box-sizing:content-box;border-radius:16px;background:#fff0e3;color:#93441b}
+body:not(.grown) .stile.read .shell-icon{background:#eee8ff;color:#6546a1}
+body:not(.grown) .stile.write .shell-icon{background:#def4ee;color:#256b5e}
+body:not(.grown) .stile.ss .shell-icon{background:#ffe6ed;color:#9a3757}
+body:not(.grown) .stile.sci .shell-icon{background:#e6f5df;color:#386e2b}
+body:not(.grown) .stile.life .shell-icon{background:#fff3ce;color:#785b19}
+body:not(.grown) .stile:is(.brain,.gifted,.create) .shell-icon{background:#e4efff;color:#365f97}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) #view .opt.ok{background:#e6f7ef;color:#18523c;border-color:#23845b;box-shadow:inset 0 0 0 3px #23845b,0 7px 16px #23845b20}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) .round-dot{border-color:#a53c20}
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system):not(.high-contrast) .round-dot.done{background:#a53c20}
+body:not(.grown) :is(button,input,select,summary):focus-visible{outline:3px solid #2454aa;outline-offset:3px}
+/* Icon badges fit the existing tile box even on a small phone. */
+body:not(.grown) .stile .gi{line-height:1}
+@media(prefers-reduced-motion:reduce){.shell-icon{animation:none;transition:none}}
+
+/* Keep the established system font metrics; rounded cards provide the soft feel. */
+
+body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system) .ver{color:#66554b}
+
+/* Keep navigation SVGs inside the original emoji's line box. */
+header .icon .shell-icon{width:1em;height:1em;display:block;margin:auto}
+
+body:is(.skin-explorer,.theme-dark,.theme-system) .gchip{background:var(--card);color:var(--ink);border-color:var(--theme-edge)}
+body:is(.skin-explorer,.theme-dark,.theme-system) .gchip.on{background:var(--theme-selected);border-color:var(--theme-accent);color:var(--ink)}
+
+body.grade-prek:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system) #surprise{background:#c94420;color:#fff;border-color:#ff7a52}
+body.grade-prek:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system) #surprise small{color:#fff}

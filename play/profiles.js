@@ -109,11 +109,11 @@ function progressScreen() {
   const a = subjectTotals(w), b = subjectTotals(p), pc = (x) => (x && x[0] + x[1] >= 5 ? Math.round(100 * x[0] / (x[0] + x[1])) : null);
   const rows = SUBJECT_ORDER.filter(s => a[s] || b[s]).map(s => {
     const n = pc(a[s]), o = pc(b[s]), tr = n == null || o == null ? '–' : n - o >= 5 ? '▲' : o - n >= 5 ? '▼' : '＝';
-    return `<tr><td>${SUBJECT_ICON[s]} ${T().subjects[s]}</td><td>${a[s] ? `${n == null ? '-' : n + '%'} <small>(${a[s][0] + a[s][1]})</small>` : '-'}</td><td>${b[s] ? `${o == null ? '-' : o + '%'} <small>(${b[s][0] + b[s][1]})</small>` : '-'}</td><td class="tr ${tr === '▲' ? 'up' : tr === '▼' ? 'dn' : ''}">${tr}</td></tr>`;
+    return `<tr><td>${SUBJECT_ICON[s]} ${T().subjects[s]}</td><td>${a[s] ? `${n == null ? '-' : `<span class="grown-meter" aria-hidden="true"><i style="width:${n}%"></i></span>${n}% <span class="grown-status ${n >= 80 ? '' : 'practice'}">${L(n >= 80 ? B('Steady', '안정') : B('Practising', '연습 중'))}</span>`} <small>(${a[s][0] + a[s][1]})</small>` : '-'}</td><td>${b[s] ? `${o == null ? '-' : o + '%'} <small>(${b[s][0] + b[s][1]})</small>` : '-'}</td><td class="tr ${tr === '▲' ? 'up' : tr === '▼' ? 'dn' : ''}">${tr}</td></tr>`;
   }).join('');
   view().innerHTML = `<h1>${k.avatar} ${kidLabel(k)} · ${L(PT.prog)}</h1>
     <p class="tag">${st ? L(PT.cheerN(st)) : L(PT.cheer0)}</p>
-    <div class="tiles"><div class="tile"><b>${t.r + t.w}</b><span>${L(PT.today)}</span></div><div class="tile"><b>${wt}</b><span>${L(PT.week)}</span></div><div class="tile"><b>${st}</b><span>${L(PT.streak)}</span></div><div class="tile"><b>${acc == null ? '-' : acc + '%'}</b><span>${L(PT.acc)}</span></div></div>
+    <div class="tiles"><div class="tile"><b>${wt}</b><span>${L(PT.week)}</span><small>${L(PT.today)} ${t.r + t.w}</small></div><div class="tile"><b>${st}</b><span>${L(PT.streak)}</span></div><div class="tile"><b>${acc == null ? '-' : acc + '%'}</b><span>${L(PT.acc)}</span></div></div>
     <h2>${L(PT.chart)}</h2>${wt || p.r + p.w ? chartSvg() : `<p class="note2">${L(PT.none)}</p>`}
     <div class="legend"><span><i style="background:#06d6a0"></i>${L(PT.right)}</span><span><i style="background:#ffb4a2"></i>${L(PT.miss)}</span></div>
     ${rows ? `<h2>${L(PT.bySubj)}</h2><div class="tablewrap"><table><tr><th>${L(PT.colSubj)}</th><th>${L(PT.colNow)}</th><th>${L(PT.colPrev)}</th><th>${L(PT.colTrend)}</th></tr>${rows}</table></div>` : ''}

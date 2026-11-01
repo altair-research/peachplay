@@ -47,7 +47,7 @@ function home() {
     <div class="tag sr-only">${T().tagline}</div>
     ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}
     ${window.Today ? window.Today.homeHtml() : ''}
-    <div id="subjtiles">${SUBJECT_GROUPS.map(group => `<section class="subject-group" data-group="${group.id}" aria-labelledby="group-${group.id}"><h2 id="group-${group.id}">${group.icon} ${T().subjectGroups[group.id]}<button class="home-say group-say" data-say-group="${group.id}" aria-label="${T().listen}: ${T().subjectGroups[group.id]}">🔊</button></h2>${group.id === 'think' ? `<p class="group-description">${T().thinkDescription}</p>` : ''}<div class="menu home-subjects">${group.subjects.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div></section>`).join('')}</div>
+    <div id="subjtiles">${SUBJECT_GROUPS.map(group => `<section class="subject-group" data-group="${group.id}" aria-labelledby="group-${group.id}"><h2 id="group-${group.id}">${shellIcon(group.id)} ${T().subjectGroups[group.id]}<button class="home-say group-say" data-say-group="${group.id}" aria-label="${T().listen}: ${T().subjectGroups[group.id]}">🔊</button></h2>${group.id === 'think' ? `<p class="group-description">${T().thinkDescription}</p>` : ''}<div class="menu home-subjects">${group.subjects.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div></section>`).join('')}</div>
     ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) || (window.Spacing && window.Spacing.dueCount() > 0) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
     ${goalHtml()}
     ${favHtml()}
@@ -94,12 +94,12 @@ const isFav = (id) => (S.fav || []).includes(id);
 const gameBtn = (g) => `<div class="gwrap"><button class="big ${g.subject}" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${L(g.sub)}</small></button><button class="fav${isFav(g.id) ? ' on' : ''}" data-fav="${g.id}" aria-pressed="${isFav(g.id)}" aria-label="${L(B('Favorite', '즐겨찾기')) + ': ' + L(g.title).replace(/"/g, '&quot;')}">${isFav(g.id) ? '★' : '☆'}</button></div>`;
 const subjTile = (sub) => {
   const games = visibleGames().filter(g => g.subject === sub), n = games.length;
-  if (kidGrade() === 'P') return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`;
+  if (kidGrade() === 'P') return `<button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${shellIcon(sub)}</span>${T().subjects[sub]}<small>${L(B(`${n} games`, `게임 ${n}개`))}</small></button>`;
   const explorer = document.body.classList.contains('skin-explorer');
   const current = games.filter(g => gradeOf(g) === kidGrade() || gradeOf(g) === 'both');
   const tried = current.filter(g => { const v = stat(g.id); return v.right + v.wrong > 0; }).length;
   const info = explorer ? L(B(`Tried ${tried}/${current.length}`, `해 본 게임 ${tried}/${current.length}`)) : L(B(`${n} games`, `게임 ${n}개`));
-  return `<div class="subject-wrap"><button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${SUBJECT_ICON[sub]}</span><span class="tile-name">${T().subjects[sub]}</span><small>${info}</small>${explorer ? `<span class="tried-track" aria-hidden="true"><i style="width:${current.length ? 100 * tried / current.length : 0}%"></i></span>` : ''}</button><button class="home-say subject-say" data-say-sub="${sub}" aria-label="${L(B('Say the name', '이름 듣기'))}: ${T().subjects[sub]}">🔊</button></div>`;
+  return `<div class="subject-wrap"><button class="big ${sub} stile" data-sub="${sub}"><span class="gi">${shellIcon(sub)}</span><span class="tile-name">${T().subjects[sub]}</span><small>${info}</small>${explorer ? `<span class="tried-track" aria-hidden="true"><i style="width:${current.length ? 100 * tried / current.length : 0}%"></i></span>` : ''}</button><button class="home-say subject-say" data-say-sub="${sub}" aria-label="${L(B('Say the name', '이름 듣기'))}: ${T().subjects[sub]}">🔊</button></div>`;
 };
 const wireGames = () => {
   $$('.big[data-id]').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
@@ -110,7 +110,7 @@ const wireGames = () => {
 };
 function favHtml() {
   const gs = (S.fav || []).map(id => visibleGames().find(g => g.id === id)).filter(Boolean); if (!gs.length) return '';
-  return `<section class="subj favs"><h2>⭐ ${L(B('My favorites', '즐겨찾기'))}</h2><div class="menu">${gs.map(gameBtn).join('')}</div></section>`;
+  return `<section class="subj favs"><h2>${shellIcon('star')} ${L(B('My favorites', '즐겨찾기'))}</h2><div class="menu">${gs.map(gameBtn).join('')}</div></section>`;
 }
 const GOAL = 20;                                   // answers per day (a gentle target, not a timer)
 function goalHtml(compact = false) {
@@ -163,11 +163,11 @@ function gradeRowHtml() {
 }
 function continueHtml() {
   const g = S.last && visibleGames().find(x => x.id === S.last); if (!g) return '';
-  return `<div class="controw${kidGrade() === 'P' ? '' : ' home-primary'}"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">▶️</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
+  return `<div class="controw${kidGrade() === 'P' ? '' : ' home-primary'}"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">${shellIcon('play')}</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
 }
 function subjectScreen(sub) {
   const games = visibleGames().filter(g => g.subject === sub);
-  view().innerHTML = `<h1>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</h1>
+  view().innerHTML = `<h1>${shellIcon(sub)} ${T().subjects[sub]}</h1>
     ${(kidGrade() === 'P' || sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
     <div class="menu">${games.map(gameBtn).join('')}</div>
     <div><button class="next" id="b">${T().back}</button></div>`;
@@ -192,14 +192,14 @@ function roundBadgeHtml(subject, newly = false) {
   return `<section class="round-badge"><strong>${label}</strong>${newly ? `<span class="new-badge">${before ? before[1] : ''} ${L(B('New badge!', '새 배지!'))}</span>` : ''}<span class="badge-progress" role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuenow="${done}" aria-valuemax="${max}"><i style="width:${100 * done / max}%"></i></span></section>`;
 }
 function roundBadgeBookHtml() {
-  return `<section class="badge-book"><h2>${L(B('Round badges', '판 수 배지'))}</h2>${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub) || (S.rounds || {})[sub]).map(sub => `<div class="subject-badges" data-sub="${sub}"><strong>${SUBJECT_ICON[sub]} ${T().subjects[sub]}</strong><span>${ROUND_BADGES.map(([at, icon]) => { const earned = ((S.rounds || {})[sub] || 0) >= at; return `<span class="badge-mark ${earned ? 'earned' : 'outlined'}" aria-label="${L(B(`${T().subjects[sub]}: ${at} rounds${earned ? ', earned' : ''}`, `${T().subjects[sub]} ${at}판${earned ? ' 달성' : ''}`))}">${earned ? icon : `○ ${at}`}</span>`; }).join('')}</span></div>`).join('')}</section>`;
+  return `<section class="badge-book"><h2>${L(B('Round badges', '판 수 배지'))}</h2>${SUBJECT_ORDER.filter(sub => visibleGames().some(g => g.subject === sub) || (S.rounds || {})[sub]).map(sub => `<div class="subject-badges" data-sub="${sub}"><strong>${shellIcon(sub)} ${T().subjects[sub]}</strong><span>${ROUND_BADGES.map(([at, icon]) => { const earned = ((S.rounds || {})[sub] || 0) >= at; return `<span class="badge-mark ${earned ? 'earned' : 'outlined'}" aria-label="${L(B(`${T().subjects[sub]}: ${at} rounds${earned ? ', earned' : ''}`, `${T().subjects[sub]} ${at}판${earned ? ' 달성' : ''}`))}">${earned ? icon : `○ ${at}`}</span>`; }).join('')}</span></div>`).join('')}</section>`;
 }
 
 function picksHtml() {
   const picks = currentPicks(3);
   window.Learner.offer(picks);
   if (!picks.length) return '';
-  return `<section class="subj picks"><h2>⭐ ${T().picks}</h2><div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('')}</div></section>`;
+  return `<section class="subj picks"><h2>${shellIcon('star')} ${T().picks}</h2><div class="menu">${picks.map(p => { const g = gameById(p.id); return `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText(p)}</small></button>`; }).join('')}</div></section>`;
 }
 
 const gradeTag = (g) => (g === 'P' ? L(PT.gP) : g === 'K' ? 'K' : S.lang === 'ko' ? g + '학년' : g + ({ 1: 'st', 2: 'nd', 3: 'rd' }[g] || 'th') + ' grade');
@@ -217,6 +217,7 @@ function challengeTable() {
 
 // A small question for grown-ups before the settings page (keeps the reset and backup buttons away from small children).
 function gate(next) {
+  document.body.classList.add('grown');
   const x = 6 + rnd(4), y = 6 + rnd(4);
   view().innerHTML = `<h1>🔒 ${T().grownups}</h1><p class="tag">${L(B(`Grown-ups only. What is ${x} × ${y}?`, `어른용 화면이에요. ${x} × ${y} = ?`))}</p>
     <div class="form"><input id="gans" inputmode="numeric" autocomplete="off" aria-label="${x} × ${y}"><button class="next" id="gok">${L(B('OK', '확인'))}</button> <span id="gmsg" role="status"></span></div>
@@ -296,7 +297,7 @@ $('#langBtn').onclick = () => {
     window.scrollTo(0, y);
   } else translateLiveScreen(from);
   $('#langBtn').textContent = T().switchTo;
-  renderNav(); renderProfBtn();
+  renderNav(); renderProfBtn(); refreshShellUI();
   document.documentElement.lang = S.lang;
 };
 let LANGUAGE_SCREEN = null;
@@ -306,7 +307,9 @@ for (const name of ['home', 'subjectScreen', 'grownups', 'stickerBook', 'setting
   const original = window[name];
   window[name] = function (...args) {
     LANGUAGE_PAIRS.clear();
+    document.body.classList.toggle('grown', ['grownups', 'prekGrownups', 'progressScreen', 'profilesScreen', 'faqScreen'].includes(name));
     const result = original.apply(this, args);
+    refreshShellUI();
     LANGUAGE_SCREEN = { root: view().firstElementChild, draw: () => window[name](...args) };
     return result;
   };

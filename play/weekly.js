@@ -47,7 +47,7 @@
       more = window.SchoolResults.weakKeys().map(k => doms.find(d => d.k === k)).filter(Boolean).slice(0, 2).map(dom => ({ k: dom.k, dom, rows: [] }));
       fromSchool = more.length > 0;
     }
-    return { week, prev, days, good, more, fromSchool };
+    return { week, prev, days, good, more, fromSchool, areas: list };
   }
   // The game in this area missed most this week, if any.
   const missedGame = rows => {
@@ -77,12 +77,16 @@
   function html() {
     if (typeof kidGrade !== 'function' || kidGrade() === 'P' || !window.LearnLog || !window.Learner) return '';
     const d = data(), x = lines(d);
+    const kpis = `<div class="grown-kpis"><div class="grown-kpi"><b>${d.days}</b><span>${L(PT.days)}</span></div><div class="grown-kpi"><b>${d.week.length}</b><span>${L(PT.answers)}</span></div><div class="grown-kpi"><b>${d.week.length ? pct(acc(d.week)) + '%' : '–'}</b><span>${L(PT.acc)}</span></div></div>`;
+    const steady = a => a.week.length >= 8 && (a.now >= 0.8 || (a.then !== null && a.now - a.then >= 0.1));
+    const areaRows = d.areas.filter(a => a.week.length >= 5).map(a => `<tr><td>${L(a.dom.n)}</td><td><span class="grown-meter" aria-hidden="true"><i style="width:${pct(a.now)}%"></i></span>${pct(a.now)}%</td><td><span class="grown-status ${steady(a) ? '' : 'practice'}">${L(steady(a) ? B('Steady', '안정') : B('Practising', '연습 중'))}</span></td></tr>`).join('');
+    const areaTable = areaRows ? `<div class="tablewrap"><table><thead><tr><th>${L(B('School area', '학교 영역'))}</th><th>${L(PT.acc)}</th><th>${L(B('Practice', '연습'))}</th></tr></thead><tbody>${areaRows}</tbody></table></div>` : '';
     const body = !x ? `<p>${L(TX.none)}</p>` : `${x.head.map(t => `<p>${t}</p>`).join('')}
       ${x.good.length ? `<p class="wk-good">✅ <b>${L(TX.good)}</b> ${x.good.join(' · ')}</p>` : ''}
       ${x.more.length ? `<p class="wk-more">🌱 <b>${L(TX.more)}</b> ${x.more.join(' · ')}${d.fromSchool ? ` <span class="note2">(${L(TX.school)})</span>` : ''}</p>` : ''}
       ${x.todo.length ? `<h3>📌 ${L(TX.next)}</h3><ol class="wk-todo">${x.todo.map(t => `<li>${t}</li>`).join('')}</ol>` : ''}
       <p class="hc-row"><button class="pill" id="wkCopy">📋 ${L(TX.copy)}</button> <span id="wkCopied"></span></p>`;
-    return `<section class="hc-card wk-card" id="weekly"><h2>📅 ${L(TX.title)}</h2>${body}<p class="note2">${L(TX.note)}</p></section>`;
+    return `<section class="hc-card wk-card" id="weekly"><h2>📅 ${L(TX.title)}</h2>${kpis}${areaTable}${body}<p class="note2">${L(TX.note)}</p></section>`;
   }
   function text() {
     const x = lines(data()); if (!x) return L(TX.none);

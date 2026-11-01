@@ -1,0 +1,62 @@
+/* E: every rule is scoped to grown-up screens; print reports keep their own stylesheet. */
+body.grown{--good:#176b50;--grown-bg:#fbf6f2;--grown-card:#fff;--grown-ink:#332a26;--grown-muted:#66554b;--grown-line:#efe2d9;--grown-accent:#c94a1f;--grown-link:#843418;--grown-control:#bda89a;--grown-soft:#fcf8f4;--bg:var(--grown-bg);--card:var(--grown-card);--ink:var(--grown-ink);--peach:var(--grown-accent);--theme-shell:var(--grown-ink);--theme-muted:var(--grown-muted);--theme-edge:var(--grown-line);--theme-heading:var(--grown-accent);--theme-mode:light;background:var(--grown-bg);color:var(--grown-ink);color-scheme:light;font-family:'Segoe UI','Malgun Gothic',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+body.grown header{background:var(--grown-bg);border-bottom:1px solid var(--grown-line)}
+body.grown main{text-align:left;max-width:960px}
+body.grown .grown-meta{font-size:14px;color:var(--grown-muted);border-bottom:1px solid var(--grown-line);padding:12px 0;margin-bottom:16px}
+body.grown h1{font-family:Georgia,'Batang','AppleMyungjo',serif;font-size:clamp(24px,4vw,34px);line-height:1.3;color:var(--grown-ink);margin-bottom:20px}
+body.grown h2{font-size:20px;color:var(--grown-ink);margin:20px 0 12px}
+body.grown h3{font-size:17px}
+body.grown :is(.hc-card,.pref,.scorebox,.bpcard,details.gi,details.faq,.tile,.car,.sbar2){background:var(--grown-card);color:var(--grown-ink);border:1px solid var(--grown-line);border-radius:8px;box-shadow:none}
+body.grown :is(.hc-card,.scorebox,details.gi,details.faq){padding:16px;margin-block:14px}
+body.grown :is(.pill,.icon,.big,.chip,.next,.pref,button){border-radius:6px;box-shadow:none;text-shadow:none}
+body.grown :is(.pill,.big,.chip,.icon){background:var(--grown-card);color:var(--grown-link);border:1px solid var(--grown-control);font-size:16px;min-height:44px}
+body.grown :is(.next,#gschool){background:var(--grown-accent);color:#fff;border:1px solid var(--grown-accent);font-size:17px;min-height:44px;padding:10px 18px}
+body.grown :is(.tag,.note,.note2,.hint,.fact,.ver,.focus,.hc-row,.big small,.pref .ps,details.faq p){font-size:14px;line-height:1.6;color:var(--grown-muted);text-align:left}
+body.grown :is(table,.tablewrap){max-width:100%}
+body.grown table{width:100%;border-collapse:collapse;border-radius:6px;font-size:14px;padding:0;background:var(--grown-card);color:var(--grown-ink);box-shadow:none}
+body.grown :is(td,th){border-bottom:1px solid var(--grown-line);padding:10px 8px;vertical-align:top}
+body.grown th{font-weight:600;background:var(--grown-soft)}
+body.grown :is(input,textarea,select){background:var(--grown-card);color:var(--grown-ink);border:1px solid var(--grown-control);border-radius:6px;font-size:16px;min-height:44px;max-width:100%}
+body.grown :is(input,textarea)::placeholder{color:var(--grown-muted);opacity:1}
+body.grown :is(.tiles,.grown-kpis){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;background:var(--grown-card);border:1px solid var(--grown-line);border-radius:8px;margin:14px 0}
+body.grown :is(.tile,.grown-kpi){padding:12px 8px;text-align:center;border:0;border-right:1px solid var(--grown-line);min-width:0}
+body.grown :is(.tile b,.grown-kpi b){display:block;font-size:26px;color:var(--grown-accent)}
+body.grown :is(.tile span,.grown-kpi span){font-size:12px;color:var(--grown-muted)}
+body.grown .grown-meter{display:inline-block;width:56px;height:6px;background:var(--grown-line);border-radius:3px;overflow:hidden;margin-right:6px;vertical-align:middle}
+body.grown .grown-meter i{display:block;height:100%;background:#347658}
+body.grown .grown-status{display:inline-block;font-size:12px;border:1px solid #cbdcd0;border-radius:4px;padding:2px 5px;color:#28573f;background:#f0f7f2}
+body.grown .grown-status.practice{background:#fff2e9;color:var(--grown-link);border-color:#e2c9b6}
+body.grown summary{min-height:44px;cursor:pointer;align-content:center;font-size:16px}
+body.grown :is(button,input,textarea,select,summary):focus-visible{outline:3px solid #2454aa;outline-offset:3px}
+body.grown .form{justify-content:flex-start}
+body.grown .link{color:var(--grown-link);min-height:44px}
+body.grown .hero{display:none}
+body.grown .pref.on{border-color:var(--grown-accent)}
+@media(max-width:480px){body.grown main{padding-inline:12px}body.grown h1{font-size:25px}body.grown .hc-card{padding:12px}body.grown .pill{padding:10px}body.grown :is(td,th){padding:8px 5px}}
+@media(prefers-reduced-motion:reduce){body.grown *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+body.grown.theme-dark{--good:#9de1da;--grown-bg:#101c2b;--grown-card:#203247;--grown-ink:#f0f5fa;--grown-muted:#c0cedc;--grown-line:#688298;--grown-accent:#ffbe9f;--grown-link:#ffbe9f;--grown-control:#688298;--grown-soft:#283d54;color-scheme:dark}
+body.grown.theme-dark :is(.next,#gschool){background:#ffbe9f;color:#332a26}
+@media(prefers-color-scheme:dark){body.grown.theme-system{--good:#9de1da;--grown-bg:#101c2b;--grown-card:#203247;--grown-ink:#f0f5fa;--grown-muted:#c0cedc;--grown-line:#688298;--grown-accent:#ffbe9f;--grown-link:#ffbe9f;--grown-control:#688298;--grown-soft:#283d54;color-scheme:dark}body.grown.theme-system :is(.next,#gschool){background:#ffbe9f;color:#332a26}}
+
+body.grown .tile small{display:block;font-size:12px;color:var(--grown-muted);margin-top:4px}
+
+body.grown .hchart text{fill:var(--grown-muted)}
+body.grown .kid{background:var(--grown-card);border:1px solid var(--grown-line);border-radius:8px;box-shadow:none}
+
+/* Text-bearing management controls must follow the paper/night surface too. */
+body.grown .grades label{background:var(--grown-card);color:var(--grown-ink);border-color:var(--grown-control);border-radius:6px}
+body.grown .grades label:has(input:checked){background:var(--grown-soft);border-color:var(--grown-accent)}
+body.grown .pw-num{background:var(--grown-card);color:var(--grown-ink);border-radius:6px}
+body.grown .pw-num.wrong{background:#fdecea;color:#843418}
+/* School results inject their styles when opened; scoped specificity keeps every tab in the report palette. */
+body.grown .sr-card{background:var(--grown-card);color:var(--grown-ink);border:1px solid var(--grown-line);border-radius:8px;box-shadow:none}
+body.grown :is(.sr-row,.sr-chips) button{background:var(--grown-card);color:var(--grown-ink);border-color:var(--grown-control);border-radius:6px}
+body.grown :is(.sr-row,.sr-chips) button[aria-pressed=true]{background:var(--grown-soft);border-color:var(--grown-accent)}
+body.grown .sr-today{background:var(--grown-soft);color:var(--grown-ink);border-radius:6px}
+body.grown .kn small{color:var(--grown-muted)}
+
+body.grown .fc-blist small{color:var(--grown-muted)}
+
+/* v4.72: pick star overlapped game names in narrow parent cards (results card); parent screens drop decorative emoji */
+body.grown .big.pick::before{content:none}

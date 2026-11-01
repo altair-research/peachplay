@@ -335,6 +335,7 @@ function dup(game, key) {
   game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
 }
 function launch(game, mix) {
+  document.body.classList.remove('grown');
   window.LearnLog.leave();
   window.Learner.choose(game);
   SESSION.pkMixed=false;
