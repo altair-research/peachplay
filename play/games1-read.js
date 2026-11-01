@@ -349,7 +349,7 @@ G1W({
     if (slots) { slots.style.gap = '4px'; slots.style.margin = '2px 0'; }
     panel.querySelectorAll('.slot').forEach(el => { el.style.fontSize = '18px'; el.style.height = '28px'; el.style.minHeight = '28px'; el.style.minWidth = '28px'; el.style.padding = '0 3px'; el.style.borderBottomWidth = '3px'; });
     const tiles = panel.querySelector('.tiles');
-    if (tiles) { tiles.style.display = 'grid'; tiles.style.gridTemplateColumns = 'repeat(3,minmax(0,1fr))'; tiles.style.gap = '6px'; tiles.style.marginTop = '6px'; }
+    if (tiles) { tiles.classList.add('ws-tiles'); tiles.style.display = 'grid'; tiles.style.gridTemplateColumns = 'repeat(3,minmax(0,1fr))'; tiles.style.gap = '6px'; tiles.style.marginTop = '6px'; }
     panel.querySelectorAll('.tile').forEach(el => { el.style.fontSize = '18px'; el.style.minHeight = '44px'; el.style.padding = '4px'; el.style.width = '100%'; el.style.setProperty('min-width','0','important'); });
     if (feedback) feedback.style.marginBottom = '76px';
   }

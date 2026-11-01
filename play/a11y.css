@@ -193,3 +193,12 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
 #view:has(>.prompt):has(>.show):has(>.g3p-options):not(:has(>.opts.tiles,.g3e-stage))>.cheer{grid-row:2;align-self:end}
 #view:has(>.prompt):has(>.show):has(>.g3p-options):not(:has(>.opts.tiles,.g3e-stage))>.fact{grid-column:1;grid-row:3}
 }
+/* v4.70 — landscape K~2 leftovers: pair1to1 group gap and instruction; up to 3 word options side by side (days); writestarter tiles in 4 columns (inline style, so !important); coin pictures smaller (coins1 level 2). */
+@media(orientation:landscape) and (max-height:430px){
+#view .pair-board .pair-group{margin-bottom:14px}
+#view .pair-board .pair-instruction{font-size:17px;line-height:20px}
+#view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.opts.words:not(:has(>:nth-child(4))){flex-direction:row;flex-wrap:nowrap;justify-content:center;width:100%;gap:8px}
+#view:has(>.prompt):not(:has(>.show,>.canvaswrap,>.bboard,>.opts.tiles))>.opts.words:not(:has(>:nth-child(4)))>button{width:auto;flex:1 1 0;min-width:0}
+#view>.opts.tiles.ws-tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#view>.show .coinsvg{width:min(64px,12dvh);height:auto}
+}
