@@ -13,32 +13,56 @@ const DOT_SHAPES = {
   hexagon: { pts: polyPts(6, 38), e: '🐝', n: B('a honeycomb', '벌집') },
   sun: { pts: polyPts(10, 38), e: '☀️', n: B('the sun', '해') },
   star: { pts: starPts(), e: '⭐', n: B('a star', '별') },
-  heart: { pts: heartPts(), e: '❤️', n: B('a heart', '하트') }
+  heart: { pts: heartPts(), e: '❤️', n: B('a heart', '하트') },
+  kite: { pts: [[50, 12], [78, 45], [50, 90], [22, 45]], e: '🪁', n: B('a kite', '연') },
+  tree: { pts: [[50, 10], [78, 48], [62, 48], [82, 80], [18, 80], [38, 48], [22, 48]], e: '🎄', n: B('a tree', '나무') }
 };
 registerGame({
   id: 'dots', subject: 'brain', icon: '🔗', title: B('Connect the Dots', '점 잇기'), sub: B('Follow the numbers', '숫자 순서대로'),
   area: AREA_BRAIN('Number order'),
   play() {
-    const key = pick(lvl('dots') === 1 ? ['house', 'crown', 'hexagon'] : ['star', 'heart', 'sun', 'crown']);
-    if (dup(this, key)) return this.play();
+    // Skip the last 2 shapes, so the same shape never comes twice in a row and the order still varies
+    // (2026-11-01 user: crown came twice in a row; dup() gave up because level 1 had only 3 shapes).
+    const pool = lvl('dots') === 1 ? ['house', 'crown', 'hexagon', 'kite', 'tree'] : ['star', 'heart', 'sun', 'crown'];
+    const seen = (this._seen = this._seen || []), key = pick(pool.filter(k => !seen.slice(-2).includes(k)));
+    seen.push(key); if (seen.length > 8) seen.shift();
     const sh = DOT_SHAPES[key], n = sh.pts.length, ask = B('Connect the dots in order. What is it?', '숫자 순서대로 점을 이어요. 무엇이 될까요?');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
-      <svg id="dsvg" class="dotsvg" viewBox="0 0 100 100"><polygon id="dfill" points="" fill="#ffd166" fill-opacity="0"/><polyline id="dline" points="" fill="none" stroke="#ef476f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg id="dsvg" class="dotsvg" viewBox="0 0 100 100"><polygon id="dfill" points="" fill="#ffd166" fill-opacity="0"/><polyline id="dline" points="" fill="none" stroke="#ef476f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line id="ddrag" x1="0" y1="0" x2="0" y2="0" stroke="#ef476f" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 2" opacity="0" pointer-events="none"/>
       ${sh.pts.map((p, i) => `<g class="dg" data-i="${i}"><circle cx="${p[0]}" cy="${p[1]}" r="4.6" class="dc"/><text x="${p[0]}" y="${p[1] + 1.9}" class="dt">${i + 1}</text><circle cx="${p[0]}" cy="${p[1]}" r="8" fill="transparent"/></g>`).join('')}</svg>
       <pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
-    let next = 0, missed = false, pts = [];
-    $$('.dg').forEach(g => g.onclick = () => {
-      const i = +g.dataset.i; if (next >= n) return;
-      if (i === next) {
+    let next = 0, missed = false, pts = [], drawing = false;
+    // Drawing (2026-11-01 user): besides tapping each number, the child can drag a finger from dot to dot and the line follows.
+    // Passing over a wrong dot while drawing is not a miss; only a wrong tap is.
+    const svg = $('#dsvg'), drag = $('#ddrag');
+    const at = (e) => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [q.x, q.y]; };
+    const near = (p, i) => Math.hypot(sh.pts[i][0] - p[0], sh.pts[i][1] - p[1]) < 7.5;
+    const rubber = (p) => { if (!next || next >= n || !p) { drag.setAttribute('opacity', '0'); return; } const a = sh.pts[next - 1]; drag.setAttribute('x1', a[0]); drag.setAttribute('y1', a[1]); drag.setAttribute('x2', p[0]); drag.setAttribute('y2', p[1]); drag.setAttribute('opacity', '.7'); };
+    svg.addEventListener('pointerdown', e => {
+      if (next >= n) return; const p = at(e);
+      if (near(p, next)) connect(next); else if (!(next && near(p, next - 1))) return;
+      drawing = true; try { svg.setPointerCapture(e.pointerId); } catch (x) {}
+    });
+    svg.addEventListener('pointermove', e => { if (!drawing) return; const p = at(e); if (next < n && near(p, next)) connect(next); rubber(drawing && next < n ? p : null); });
+    const stop = () => { drawing = false; rubber(null); };
+    svg.addEventListener('pointerup', stop); svg.addEventListener('pointercancel', stop);
+    const connect = (i) => {
+      const g = $(`.dg[data-i="${i}"]`);
+      {
         pts.push(sh.pts[i].join(',')); $('#dline').setAttribute('points', pts.join(' ')); g.classList.add('done'); say(String(i + 1)); next++;
         if (next === n) {
           $('#dline').setAttribute('points', [...pts, pts[0]].join(' ')); $('#dfill').setAttribute('points', pts.join(' ')); $('#dfill').setAttribute('fill-opacity', '.55');
           recordFinal('dots', missed); if (!missed) addPeach();
           $('#cheer').textContent = `${sh.e} ${pick(T().right)} ${L(B('It is ', '이것은 '))}${L(sh.n)}!`; say(`${L(B('It is ', '이것은 '))}${L(sh.n)}!`);
-          nextButton(() => this.play());
+          stop(); nextButton(() => this.play());
         }
-      } else if (!g.classList.contains('done')) { g.classList.add('no'); setTimeout(() => g.classList.remove('no'), 400); if (!missed) { missed = true; record('dots', false); } }
+      }
+    };
+    $$('.dg').forEach(g => g.onclick = () => {
+      const i = +g.dataset.i; if (next >= n) return;
+      if (i === next) connect(i);
+      else if (!g.classList.contains('done')) { g.classList.add('no'); setTimeout(() => g.classList.remove('no'), 400); if (!missed) { missed = true; record('dots', false); } }
     });
   }
 });
