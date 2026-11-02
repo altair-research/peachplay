@@ -109,7 +109,7 @@
     const dates = [p.school?.at, p.report?.at].filter(v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number.isFinite(Date.parse(v))).sort();
     const at = dates.at(-1), old = !!at && Date.now() - new Date(at + 'T00:00:00').getTime() >= 56 * 86400000;
     const date = at ? new Intl.DateTimeFormat(L(B('en-US', 'ko-KR')), {month:'long', day:'numeric'}).format(new Date(at + 'T00:00:00')) : '';
-    return { has, old, text: has ? L(B('When the next school result (report card or i-Ready) arrives, add it again.', '다음 학교 결과(성적표·i-Ready)가 나오면 다시 넣어 주세요.')) + (date ? ' · ' + L(B('Last added: ', '마지막으로 넣은 날: ')) + date : '') : L(B('Add school results for more tailored picks.', '학교 결과를 넣으면 더 맞춰 골라 드려요.')) };
+    return { has, old, text: has ? L(B('When the next school result (report card or i-Ready) arrives, add it again', '다음 학교 결과(성적표·i-Ready)가 나오면 다시 넣어 주세요')) + (date ? ' · ' + L(B('Last added: ', '마지막으로 넣은 날: ')) + date : '.') : L(B('Add school results for more tailored picks.', '학교 결과를 넣으면 더 맞춰 골라 드려요.')) };
   }
   function reminderHtml(source, translate = L) { const L = translate; const r = reminder(source, translate); return `<p class="wk-reminder${r.old ? ' wk-overdue' : ''}">${r.text}${!r.has ? ` <button class="pill" id="wkResults">${L(B('Add school results', '학교 결과 넣기'))}</button>` : ''}</p>`; }
   window.Weekly = { html, bind, text, data, reminder };
