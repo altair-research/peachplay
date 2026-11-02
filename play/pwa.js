@@ -57,7 +57,7 @@
 
   // 2) Storage warning: shown once if localStorage is unavailable or a write fails.
   const warn = () => { const d = bar('storbar', `<span>${TXT.store[lang()]}</span><button class="pill" id="storOk">OK</button>`); if (d) d.querySelector('#storOk').onclick = () => d.remove(); };
-  try { localStorage.setItem('sag.probe', '1'); localStorage.removeItem('sag.probe'); } catch (e) { console.warn('[peachy] storage unavailable', e); setTimeout(warn, 800); }
+  try { if (new URLSearchParams(location.search).get('example') !== '1') { localStorage.setItem('sag.probe', '1'); localStorage.removeItem('sag.probe'); } } catch (e) { console.warn('[peachy] storage unavailable', e); setTimeout(warn, 800); }
   try {
     const orig = Storage.prototype.setItem;
     Storage.prototype.setItem = function (k, v) { try { return orig.call(this, k, v); } catch (e) { console.warn('[peachy] storage write failed', k, e); warn(); throw e; } };

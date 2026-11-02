@@ -43,7 +43,7 @@ function refreshShellUI() {
  }
  {
   const period=v.querySelector('#weekly,.tiles,.hchart') ? L(PT.week) : new Intl.DateTimeFormat(S.lang === 'ko' ? 'ko-KR' : 'en-US').format(new Date());
-  const label=`${curKid().name || L(B('Me', '나'))} · ${gradeLabel(kidGrade())} · ${period}`;
+  const label=v.querySelector('#example') ? Example.label() : `${curKid().name || L(B('Me', '나'))} · ${gradeLabel(kidGrade())} · ${period}`;
   if(bar.textContent!==label)bar.textContent=label;
  }
  // Strip decorative pictographs from report text, preserving numbers, labels, IDs and controls.

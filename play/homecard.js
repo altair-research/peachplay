@@ -336,12 +336,13 @@
     const u = document.getElementById('hcUndo');
     if (u) u.onclick = () => { const h = st(); h.done = h.done.filter(r => r[0] !== dayNow()); save(); redraw(); };
   }
-  // Small folded chip for the end of "Today's 15 minutes" (kid screen; no buttons). It is fixed at the bottom so the
+  // Small folded chip for the end of "Today's 10 minutes" (kid screen; no buttons). It is fixed at the bottom so the
   // end screen keeps its one-screen layout; opening it shows a small pop-up above the chip.
-  function miniHtml() {
+  function miniHtml(id) {
     if (typeof kidGrade !== 'function' || kidGrade() === 'P') return '';
     const p = dayPick(), c = card(p.k, p.d, p.g);
-    return `<details class="hc-mini"><summary>🏠 ${L(TX.mini)}</summary><div class="hc-pop"><p><b>${L(TX.title)}</b> · ${domName(p.k)}</p><p>${L(c.home.t)}</p><p>💬 ${L(c.talk.q)}</p></div></details>`;
+    const activity = id && window.SchoolResults ? window.SchoolResults.homeFor(id) : L(c.home.t);
+    return `<details class="hc-mini"><summary>🏠 ${L(TX.mini)}</summary><div class="hc-pop"><p><b>${L(TX.title)}</b> · ${id && gameById(id) ? L(gameById(id).title) : domName(p.k)}</p><p>${activity}</p>${id ? '' : `<p>💬 ${L(c.talk.q)}</p>`}</div></details>`;
   }
   // Home activity text for one area key (for the school-results card); '' when the key is unknown.
   const homeText = (k, g = kidGrade()) => ACT[k] ? L(card(k, dayNow(), g).home.t) : '';

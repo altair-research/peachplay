@@ -145,21 +145,26 @@
   const goBack = () => (backTo || home)();
   const disclaimer = () => `<p class="note2">${L(B('PeachPlay is not affiliated with i-Ready or Curriculum Associates. These are starting suggestions from what you entered, not a score, a prediction or a promise of results. Nothing leaves this device.', 'PeachPlay는 i-Ready·Curriculum Associates와 관련이 없어요. 입력하신 내용으로 고른 시작 제안일 뿐, 점수·예측·효과 보장이 아니에요. 아무것도 이 기기 밖으로 나가지 않아요.'))}</p>`;
   const tabs = (on) => `<div class="sr-tabs" role="group">${[['ir', '📊 i-Ready'], ['ck', `✏️ ${L(B('Missed test questions', '틀린 문항 체크'))}`], ['rep', `📄 ${T().importCard}`], ['card', `🗂️ ${L(B('Result card', '결과 풀이 카드'))}`]].map(([k, t]) => `<button class="pill" data-tab="${k}" aria-pressed="${k === on}">${t}</button>`).join('')}</div>`;
-  const wireTabs = () => $$('[data-tab]').forEach(b => b.onclick = () => ({ ir: irScreen, ck: checkScreen, rep: importScreen, card: cardScreen })[b.dataset.tab]());
+  const wireTabs = () => {
+    $$('[data-tab]').forEach(b => b.onclick = () => ({ ir: irScreen, ck: checkScreen, rep: importScreen, card: cardScreen })[b.dataset.tab]());
+    if (!$('#srExample')) $('.sr-tabs').insertAdjacentHTML('afterend', `<button class="pill" id="srExample">${L(B('Explore example results', '예시 결과로 둘러보기'))}</button>`);
+    $('#srExample').onclick = () => Example.open();
+  };
   const gradeNote = () => { const s = read(); return s && s.grade !== kidGrade() ? `<p class="warn">${L(B(`Saved results are for ${s.grade === 'K' ? 'kindergarten' : 'grade ' + s.grade}, so they are not used now. Enter this grade's results.`, `저장된 결과는 ${s.grade === 'K' ? '유치원' : s.grade + '학년'} 것이라 지금은 쓰지 않아요. 이번 학년 결과를 넣어 주세요.`))}</p>` : ''; };
 
-  function open(back) {
+  function open(back, input = false) {
     if (typeof back === 'function') backTo = back;
     if (kidGrade() === 'P') { S.introSeen = true; return home(); }
     const s = current();
-    return s && (Object.keys(s.ir).length || s.miss.length) ? cardScreen() : irScreen();
+    document.body.classList.add('grown');
+    return !input && s && (Object.keys(s.ir).length || s.miss.length) ? cardScreen() : irScreen();
   }
 
   function irScreen() {
     style();
     const s = current() || { ir: {} }, sel = Object.assign({}, s.ir);
     const row = (d) => `<div class="sr-row"><b>${L(d.n)}</b><span>${LEVELS.map(l => `<button data-k="${d.k}" data-v="${l.v}" aria-pressed="${sel[d.k] === l.v}" title="${esc(L(l.n))}" aria-label="${esc(L(d.n) + ': ' + L(l.n))}">${l.dot} ${L(l.sn)}</button>`).join('')}</span></div>`;
-    view().innerHTML = `<h1>🏫 ${L(B('School results', '학교 결과'))}</h1>${tabs('ir')}
+    view().innerHTML = `<h1>🏫 ${L(B('School results', '학교 결과'))}</h1>${tabs('ir')}<button class="pill" id="srExample">${L(B('Explore example results', '예시 결과로 둘러보기'))}</button>
       <p class="note2">${L(B('From the i-Ready Diagnostic family report, choose the placement for each domain. Skip any you do not have (tap again to clear).', 'i-Ready 진단 가정 통신 보고서에서 영역마다 배치 수준을 고르세요. 없는 영역은 비워 두세요(다시 누르면 지워져요).'))}<br>${LEVELS.map(l => `${l.dot} ${L(l.n)}`).join(' · ')}</p>${gradeNote()}
       <h2 class="sr-sub">📖 ${T().subjects.read}</h2>${IR.filter(d => d.s === 'read').map(row).join('')}
       <h2 class="sr-sub">🔢 ${T().subjects.math}</h2>${IR.filter(d => d.s === 'math').map(row).join('')}
@@ -170,7 +175,7 @@
       $$(`.sr-row button[data-k="${k}"]`).forEach(x => x.setAttribute('aria-pressed', String(sel[k] === x.dataset.v)));
     });
     $('#srSave').onclick = () => { store({ ir: sel }); cardScreen(); };
-    $('#b').onclick = goBack; wireTabs(); window.scrollTo(0, 0);
+    $('#b').onclick = goBack; if ($('#srExample')) $('#srExample').onclick = () => Example.open(); wireTabs(); window.scrollTo(0, 0);
   }
 
   function checkScreen() {
@@ -187,7 +192,7 @@
       ${disclaimer()}<button class="link" id="b">${T().back}</button>`;
     $$('[data-ck]').forEach(b => b.onclick = () => { const k = b.dataset.ck; sel.has(k) ? sel.delete(k) : sel.add(k); b.setAttribute('aria-pressed', String(sel.has(k))); });
     $('#srSave').onclick = () => { store({ miss: [...sel] }); cardScreen(); };
-    $('#b').onclick = goBack; wireTabs(); window.scrollTo(0, 0);
+    $('#b').onclick = goBack; if ($('#srExample')) $('#srExample').onclick = () => Example.open(); wireTabs(); window.scrollTo(0, 0);
   }
 
   // signals in priority order: i-Ready below, missed questions, report N/U, i-Ready early
@@ -209,8 +214,8 @@
   // One home activity that fits a game, so "today, 10 minutes" is one topic: its i-Ready domain, a test-question kind,
   // its home-card domain, then its subject (checked with a real K report card 2026-11-01: flags + a math finger game did not match).
   const SUBJ_HOME = { math: 'num', read: 'ph', sci: 'sci_physical', ss: 'ss_civics' };
-  function homeFor(id) {
-    const gr = kidGrade(), dom = window.Learner && window.Learner.domainFor(id), ir = dom && IR.find(d => d.k === dom.k);
+  function homeFor(id, grade = kidGrade()) {
+    const gr = grade, dom = window.Learner && window.Learner.domainFor(id), ir = dom && IR.find(d => d.k === dom.k);
     if (ir) return L(ir.home);
     const c = CK.find(x => ckGames(x, gr).includes(id)); if (c) return L(c.home);
     const g = typeof gameById === 'function' && gameById(id); if (g && g.subject === 'write') return L(CK.find(x => x.k === 'sentence').home);
@@ -229,9 +234,9 @@
       : `<p>${L(B('Nothing entered shows a weak spot. Play what your child enjoys, and enter the next school result when it comes.', '입력한 결과에서 약한 곳이 보이지 않아요. 아이가 좋아하는 게임을 하고, 다음 학교 결과가 오면 넣어 주세요.'))}</p>`;
     view().innerHTML = `<h1>🗂️ ${L(B('Result card', '결과 풀이 카드'))}</h1>${tabs('card')}${gradeNote()}
       <div class="sr-card">
-        ${(() => { const g0 = today && gameById(today.id); return g0 ? `<p class="sr-today">⏱️ <b>${L(B('Today, 10 minutes:', '오늘 10분:'))}</b> ${L(B(`${g0.icon} ${L(g0.title)} for 5 minutes, then the home activity in 3 for 5 minutes.`, `${g0.icon} ${L(g0.title)} 5분, 그다음 3번 "집에서 할 것" 5분.`))}</p>` : ''; })()}
+        ${(() => { const g0 = today && gameById(today.id); return g0 ? `<p class="sr-today">⏱️ <b>${L(B("Today's 10 minutes:", '오늘 10분:'))}</b> ${L(B(`${g0.icon} ${L(g0.title)} for 5 minutes, then the home activity in 3 for 5 minutes.`, `${g0.icon} ${L(g0.title)} 5분, 그다음 3번 "집에서 할 것" 5분.`))}</p>` : ''; })()}
         <h2>1. ${L(B('What this result means', '이 결과가 뜻하는 것'))}</h2>${meaning}
-        <h2>2. ${L(B('This week: 15 minutes of games', '이번 주 15분에 할 게임'))}</h2>
+        <h2>2. ${L(B("Today's 10 minutes: choose one game", '오늘 10분: 게임 하나 고르기'))}</h2>
         <p class="note2">${L(B('About 5 minutes each. Start at level 1 if it feels hard.', '하나에 약 5분. 어려우면 레벨 1부터 해요.'))}</p>
         <div class="menu">${games.map(p => { const g = gameById(p.id); return g ? `<button class="big ${g.subject} pick" data-id="${g.id}"><span class="gi">${g.icon}</span>${L(g.title)}<small>${whyText ? whyText(p) : ''}</small></button>` : ''; }).join('') || `<p>${T().noPicks}</p>`}</div>
         <h2>3. ${L(B('One thing to do at home', '집에서 할 것 1개'))}</h2>
@@ -242,10 +247,10 @@
       </div>
       ${disclaimer()}<div><button class="next" id="play">${T().letsPlay}</button></div><button class="link" id="b">${T().back}</button>`;
     $$('.sr-card .pick').forEach(b => b.onclick = () => launch(gameById(b.dataset.id)));
-    $('#play').onclick = home; $('#b').onclick = goBack; wireTabs(); window.scrollTo(0, 0);
+    $('#play').onclick = home; $('#b').onclick = goBack; if ($('#srExample')) $('#srExample').onclick = () => Example.open(); wireTabs(); window.scrollTo(0, 0);
   }
 
-  const api = { LEVELS, IR, CK, clean, read, current, picks, whyLabel, weakKeys, irGames, ckGames, open, irScreen, checkScreen, cardScreen };
+  const api = { LEVELS, IR, CK, clean, read, current, picks, whyLabel, weakKeys, irGames, ckGames, homeFor, open, irScreen, checkScreen, cardScreen };
   if (typeof window !== 'undefined') window.SchoolResults = api;
   if (typeof module !== 'undefined') module.exports = api;
 })();

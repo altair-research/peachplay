@@ -1,35 +1,35 @@
 (() => {
   'use strict';
-  // "Today's 15 minutes" (2026-10-28): one home button runs a short, fixed routine
+  // "Today's 10 minutes" (2026-10-28): one home button runs a short, fixed routine
   //   warm-up (counting + syllable claps, ~30 s, no wrong answers) -> 1 round of a practice game (weaker area)
-  //   -> 1 round of a game the child does well -> spaced-review questions (review-spacing.js) -> celebration.
+  //   -> spaced-review questions if due -> celebration + matching home activity; the strong game is optional.
   // The amount is counted in rounds, not minutes; no clock is shown to the child.
-  // A "slow" learner style (learner-style.js) plays the confident game first, like Learner.arrange.
   // Progress for today is kept in S.today, so leaving and coming back continues from the same step.
   // Loaded before core.js (cleanState uses clean()); everything else runs after the app is ready.
   const B = (en, ko) => ({ en, ko });
   const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
   const okDate = d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && Number.isFinite(Date.parse(d + 'T00:00:00Z')) && new Date(d + 'T00:00:00Z').toISOString().slice(0, 10) === d;
   const okId = v => typeof v === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(v);
-  const STEPS = ['warm', 'a', 'b', 'review'];
-  // S.today = { d: day of the current plan, step: 0..4, a, b: game ids, done: [days finished] (last 60) }
+  const STEPS = ['warm', 'a', 'review'];
+  // v2: step 0..3; migrate old optional-game step 2 to review, old completion 4 to 3.
   const clean = (t) => {
     if (!isObj(t)) return null;
-    const o = { d: okDate(t.d) ? t.d : '', step: Number.isInteger(t.step) && t.step >= 0 && t.step <= STEPS.length ? t.step : 0, a: okId(t.a) ? t.a : '', b: okId(t.b) ? t.b : '' };
+    const step = t.v === 2 ? t.step : ([0, 1, 2, 2, 3][t.step] ?? 0);
+    const o = { v: 2, d: okDate(t.d) ? t.d : '', step: Number.isInteger(step) && step >= 0 && step <= STEPS.length ? step : 0, a: okId(t.a) ? t.a : '', b: okId(t.b) ? t.b : '' };
     o.done = [...new Set((Array.isArray(t.done) ? t.done : []).filter(okDate))].sort().slice(-60);
     return o;
   };
   const TX = {
-    title: B("Today's 15 minutes", '오늘의 15분'),
-    sub: B('Warm-up → 2 games → review', '준비 운동 → 게임 2판 → 복습'),
+    title: B("Today's 10 minutes", '오늘 10분'),
+    sub: B('Warm-up → 1 game → review', '준비 운동 → 게임 1판 → 복습'),
     cont: (n) => B(`Keep going (${n}/${STEPS.length})`, `이어서 하기 (${n}/${STEPS.length})`),
     doneSub: B('All done today! Play again?', '오늘 다 했어요! 또 할까요?'),
     warm: B('Warm-up', '준비 운동'), practice: B('Practice game', '힘 기르기 게임'), fav: B('Game you do well', '잘하는 게임'), review: B('Look again', '다시 보기'), party: B('Done!', '끝!'),
-    go: B('Start', '시작'), next: B("Next: Today's 15", '다음: 오늘의 15분'), stop: B('Stop for now', '여기까지 할래요'),
+    go: B('Start', '시작'), next: B("Next: Today's 10 minutes", '다음: 오늘 10분'), stop: B('Stop for now', '여기까지 할래요'),
     count: B('Tap each one to count!', '하나씩 눌러 세어 봐요!'), skipCount: (n) => B(`Count by ${n}s! Tap each group.`, `${n}씩 세어 봐요! 묶음을 하나씩 눌러요.`),
     clap: B('Tap the drum for each part of the word!', '낱말 조각마다 북을 쳐요!'),
     skip: B('Skip warm-up', '준비 운동 건너뛰기'),
-    finish: B("You finished today's 15 minutes!", '오늘의 15분을 다 했어요!'),
+    finish: B("You finished today's 10 minutes!", '오늘 10분을 다 했어요!'),
     days: (n) => B(`Days finished in the last 2 weeks: ${n}`, `최근 2주 동안 끝낸 날: ${n}일`),
     noReview: B('No review waiting today.', '오늘은 다시 볼 문제가 없어요.'),
     home: B('Home', '처음으로'),
@@ -70,14 +70,13 @@
     if (!games.length) return null;
     if (t.d !== dayNow() || t.step >= STEPS.length || !gameById(t.a) || !gameById(t.b)) {
       const weak = pickWeak(games), strong = pickStrong(games, weak);
-      const slow = window.Learner && window.Learner.style && window.Learner.style() === 'slow';
-      Object.assign(t, { d: dayNow(), step: 0, a: slow ? strong : weak, b: slow ? weak : strong });
+      Object.assign(t, { d: dayNow(), step: 0, a: weak, b: strong });
       save();
     }
     return t;
   }
   const doneToday = () => st().done.includes(dayNow());
-  const icons = () => { const t = st(), slow = window.Learner && window.Learner.style && window.Learner.style() === 'slow'; return [['🤸', TX.warm], [slow ? '⭐' : '💪', slow ? TX.fav : TX.practice, t.a], [slow ? '💪' : '⭐', slow ? TX.practice : TX.fav, t.b], ['🔁', TX.review], ['🎉', TX.party]]; };
+  const icons = () => { const t = st(), slow = window.Learner && window.Learner.style && window.Learner.style() === 'slow'; return [['🤸', TX.warm], ['💪', TX.practice, t.a], ['🔁', TX.review], ['🎉', TX.party]]; };
   // ---- home button
   function homeHtml() {
     if (kidGrade() === 'P' || !pool().length) return '';
@@ -87,6 +86,7 @@
   function bind() { const b = document.getElementById('today15'); if (b) b.onclick = start; }
   function start() {
     if (kidGrade() === 'P') return;
+    document.body.classList.remove('grown', 'example-mode');
     const t = st();
     if (doneToday() && t.d === dayNow() && t.step >= STEPS.length) t.step = 0;
     if (!plan()) return home();
@@ -95,6 +95,7 @@
   // Path screen between steps: where we are, one big button.
   function stepScreen() {
     const t = st(); active = false;
+    if (STEPS[t.step] === 'review' && (!window.Spacing || !window.Spacing.dueCount())) { t.step++; save(); }
     if (t.step >= STEPS.length) return finish();
     const list = icons();
     const path = list.map(([ic, label, id], i) => `<li class="hb-stop${i < t.step ? ' done' : i === t.step ? ' now' : ''}" aria-current="${i === t.step ? 'step' : 'false'}"><span class="hb-ic">${i < t.step ? '✔️' : ic}</span><span class="hb-lb">${L(label)}${id && gameById(id) ? `<small>${gameById(id).icon} ${L(gameById(id).title)}</small>` : ''}</span></li>`).join('');
@@ -146,8 +147,8 @@
     t.step = STEPS.length; save();
     view().innerHTML = `<div class="hb-wrap"><h1 class="round-title">${PEACH_SVG('yay')}${L(TX.finish)}</h1>
       <p class="hb-row" aria-hidden="true">${icons().map(([ic]) => `<span>${ic}</span>`).join('<i>✔️</i>')}</p>
-      <p class="tag">${first ? '🍑 +1 · ' : ''}${L(TX.days(recentDays()))}</p><button class="next" id="hbHome">🏠 ${L(TX.home)}</button>${window.HomeCard ? window.HomeCard.miniHtml() : ''}</div>`;
-    $('#hbHome').onclick = home; say(L(TX.finish)); sfx('win'); confetti(150);
+      <p class="tag">${first ? '🍑 +1 · ' : ''}${L(TX.days(recentDays()))}</p><button class="next" id="hbHome">🏠 ${L(TX.home)}</button><button class="pill" id="hbMore">${L(B('Play more', '게임 더 하기'))}</button>${window.HomeCard ? window.HomeCard.miniHtml(t.a) : ''}</div>`;
+    $('#hbHome').onclick = home; $('#hbMore').onclick = () => { const g = gameById(t.b); if (g) launch(g); }; say(L(TX.finish)); sfx('win'); confetti(150);
   }
   const recentDays = () => { const from = window.Spacing ? window.Spacing.addDays(-13) : ''; return st().done.filter(d => d >= from).length; };
   // Grown-ups line: count of finished days, no scores.

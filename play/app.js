@@ -84,6 +84,7 @@ function home() {
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
+  const schoolLink = document.createElement('button'); schoolLink.className = 'link'; schoolLink.id = 'homeSchool'; schoolLink.textContent = L(B('Grown-ups · Add school results', '보호자 · 학교 결과 넣기')); $('#parent').parentElement.append(schoolLink); schoolLink.onclick = () => gate(() => SchoolResults.open(grownups));
   $('#parent').onclick = () => gate(grownups); $('#settings').onclick = settings; $('#dict').onclick = () => window.openDictionary && window.openDictionary(); if ($('#adapt')) $('#adapt').onclick = adaptIntro; if ($('#find')) $('#find').onclick = intro;
   $('#surprise').onclick = surprise; $('#stickers').onclick = stickerBook;
   window.scrollTo(0, 0);
@@ -233,7 +234,7 @@ function grownups() {
   const rows = visibleGames().map(g => { const s = stat(g.id); return `<tr><td>${g.icon} ${L(g.title)}</td><td>${L(g.area)}</td><td>${s.right}</td><td>${s.wrong}</td><td>${s.level}</td></tr>`; }).join('');
   const weak = visibleGames().map(g => ({ g, s: stat(g.id) })).filter(x => x.s.right + x.s.wrong >= 5).sort((a, b) => a.s.right / (a.s.right + a.s.wrong) - b.s.right / (b.s.right + b.s.wrong)).slice(0, 3);
   view().innerHTML = `<h1>${T().grownups}</h1>
-    ${window.Weekly ? window.Weekly.html() : ''}
+    <button class="pill" id="gExample">${L(B('Explore example results', '예시 결과로 둘러보기'))}</button>${window.Weekly ? window.Weekly.html() : ''}
     <div id="learnReport">${window.SessionReport.html(window.SessionReport.range)}</div>
     ${window.HomeCard ? window.HomeCard.html() : ''}
     ${window.Learner.panel()}
@@ -257,6 +258,7 @@ function grownups() {
     <div><button class="next" id="b">${T().back}</button></div><p class="ver">${verText()}</p>`;
   $('#saveAddr').onclick = () => { S.addr = { street: $('#street').value.trim(), city: $('#city').value.trim() }; save(); $('#savedMsg').textContent = T().saved; };
   window.SessionReport.bind();
+  if ($('#gExample')) $('#gExample').onclick = () => Example.open();
   if (window.Weekly) window.Weekly.bind();
   if (window.HomeCard) window.HomeCard.bind();
   window.Learner.bind();
@@ -318,8 +320,10 @@ renderPeaches(); renderProfBtn();
 // Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language.
 (() => {
   const q = new URLSearchParams(location.search), g = q.get('game') && gameById(q.get('game')), lg = q.get('lang');
+  if (q.get('example') === '1') { Example.open(0, lg); return; }
   if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
   // &lv=1|2 (sample review links): start that game at the given level so a reviewer sees the exact screen being judged.
   const lv = +q.get('lv'); if (g && (lv === 1 || lv === 2)) { stat(g.id).level = lv; save(); }
+  if (q.get('results') === '1') { gate(() => SchoolResults.open(grownups, true)); return; }
   if (g) { home(); launch(g); } else if (S.introSeen) home(); else intro();
 })();

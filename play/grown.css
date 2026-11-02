@@ -25,7 +25,7 @@ body.grown :is(.tile span,.grown-kpi span){font-size:12px;color:var(--grown-mute
 body.grown .grown-meter{display:inline-block;width:56px;height:6px;background:var(--grown-line);border-radius:3px;overflow:hidden;margin-right:6px;vertical-align:middle}
 body.grown .grown-meter i{display:block;height:100%;background:#347658}
 body.grown .grown-status{display:inline-block;font-size:12px;border:1px solid #cbdcd0;border-radius:4px;padding:2px 5px;color:#28573f;background:#f0f7f2}
-body.grown .grown-status.practice{background:#fff2e9;color:var(--grown-link);border-color:#e2c9b6}
+body.grown .grown-status.practice{background:#fff2e9;color:#843418;border-color:#e2c9b6}
 body.grown summary{min-height:44px;cursor:pointer;align-content:center;font-size:16px}
 body.grown :is(button,input,textarea,select,summary):focus-visible{outline:3px solid #2454aa;outline-offset:3px}
 body.grown .form{justify-content:flex-start}
@@ -60,3 +60,16 @@ body.grown .fc-blist small{color:var(--grown-muted)}
 
 /* v4.72: pick star overlapped game names in narrow parent cards (results card); parent screens drop decorative emoji */
 body.grown .big.pick::before{content:none}
+
+/* Request 76: example path and next-result reminder. */
+body.example-mode header,body.example-mode #quickNav,body.example-mode .topnav{display:none}
+body.example-mode #sbar{visibility:hidden!important}
+body.example-mode #view{max-width:780px;margin:auto}
+.example-banner{position:sticky;top:0;z-index:5;background:#fff0dc;color:#593a25;border:1px solid #b87b45;padding:12px;border-radius:12px;font-weight:700;font-size:15px;line-height:1.5}
+#example .sr-card{padding:18px;margin:14px 0;background:var(--grown-card);border:1px solid var(--grown-control);border-radius:16px;text-align:left}
+#example h1{margin:18px 0 12px}#example h2{font-size:22px}#example table{width:100%}
+.example-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:20px 0}
+#example .sr-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#example .sr-tabs [aria-pressed=true]{outline:2px solid var(--grown-accent);outline-offset:1px;background:var(--grown-soft);font-weight:700}
+body.grown .wk-reminder{padding:14px;background:var(--grown-soft);border-left:4px solid var(--grown-control);line-height:1.6}
+body.grown .wk-overdue{background:#fff0dc;border-color:#955122;color:#593a25;font-weight:700}
