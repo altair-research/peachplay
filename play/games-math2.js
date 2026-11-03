@@ -43,17 +43,45 @@ registerGame({
   }
 });
 
-const DAYTIME = [['⏰', B('Waking up', '잠에서 깨요'), 'morning'], ['🥞', B('Eating breakfast', '아침밥을 먹어요'), 'morning'], ['🚌', B('Riding the bus to school', '학교 버스를 타요'), 'morning'],
+const DAYTIME = [['⏰', B('Waking up', '잠에서 깨요'), 'morning'], ['🥞', B('Eating breakfast', '팬케이크를 먹어요'), 'morning'], ['🚌', B('Riding the bus to school', '학교 버스를 타요'), 'morning'],
   ['🥪', B('Eating lunch', '점심을 먹어요'), 'afternoon'], ['⚽', B('Playing outside after school', '방과 후에 밖에서 놀아요'), 'afternoon'],
-  ['🛁', B('Taking a bath before bed', '자기 전에 목욕해요'), 'night'], ['📖', B('Reading a bedtime story', '잠자리 동화를 읽어요'), 'night'], ['😴', B('Going to sleep', '잠을 자요'), 'night'], ['🌌', B('Seeing stars in a dark night sky', '깜깜한 밤하늘에서 별을 봐요'), 'night'], ['🪥', B('Brushing teeth after breakfast', '아침밥을 먹고 이를 닦아요'), 'morning'], ['🎒', B('Packing a bag before morning school', '아침에 학교 가기 전 가방을 챙겨요'), 'morning'], ['🖍️', B('Drawing after lunch, before dinner', '점심 먹고 저녁 먹기 전에 그림을 그려요'), 'afternoon']];
+  ['🛁', B('Taking a bath before bed', '자기 전에 목욕해요'), 'night'], ['📖', B('Reading a bedtime story', '잠자리 동화를 읽어요'), 'night'], ['😴', B('Going to sleep', '잠을 자요'), 'night'], ['🌌', B('Seeing stars in a dark sky', '깜깜한 하늘에서 별을 봐요'), 'night'], ['🪥', B('Brushing teeth after breakfast', '잠에서 깬 뒤 이를 닦아요'), 'morning'], ['🎒', B('Packing a bag before the first bus', '첫 버스를 타기 전 가방을 챙겨요'), 'morning'], ['🖍️', B('Drawing after lunch, before dinner', '점심 먹고 저녁 먹기 전에 그림을 그려요'), 'afternoon']];
+// Each activity is tied to a clue in the child's pictured day.
+for (const [part, prefix, koPrefix, events] of [
+  ['morning', 'At sunrise', '해 뜰 때', [
+    ['🥛','drink milk','우유를 마셔요'], ['🧦','put on socks','양말을 신어요'],
+    ['🍎','pack a snack','간식을 챙겨요'], ['💧','water a plant','화분에 물을 줘요'],
+    ['🪮','brush your hair','머리를 빗어요'], ['🐕','walk the dog','강아지와 걸어요'],
+    ['🥣','eat cereal','시리얼을 먹어요'], ['🧥','put on a coat','겉옷을 입어요'],
+    ['📘','open a book','책을 펼쳐요'], ['👟','tie your shoes','신발 끈을 묶어요'],
+    ['🧇','eat a waffle','와플을 먹어요'], ['🐦','hear the birds','새 소리를 들어요']]],
+  ['afternoon', 'After lunch, before dinner', '점심 뒤, 저녁 전', [
+    ['🪁','fly a kite','연을 날려요'], ['🚲','ride a bike','자전거를 타요'],
+    ['🧩','do a puzzle','퍼즐을 맞춰요'], ['🎨','paint a picture','그림을 그려요'],
+    ['📚','visit the library','도서관에 가요'], ['🏀','play ball','공놀이를 해요'],
+    ['🍐','eat a pear','배를 먹어요'], ['🛝','go down the slide','미끄럼틀을 타요'],
+    ['🧱','build a tower','탑을 쌓아요'], ['🧸','play with a bear','곰 인형과 놀아요'],
+    ['🥁','play a drum','북을 쳐요'], ['🫧','blow bubbles','비눗방울을 불어요']]],
+  ['night', 'Under the stars', '별이 뜬 뒤', [
+    ['🏕️','sit by a tent','텐트 옆에 앉아요'], ['🔦','turn on a flashlight','손전등을 켜요'],
+    ['🦉','hear an owl','올빼미 소리를 들어요'], ['🪟','look out the window','창밖을 봐요'],
+    ['🛏️','get in bed','침대에 들어가요'], ['🧸','hug a teddy bear','곰 인형을 안아요'],
+    ['🧺','put away clothes','옷을 정리해요'], ['🚪','close the door','문을 닫아요'],
+    ['🎵','sing a soft song','조용히 노래해요'], ['⛺','get into a tent','텐트에 들어가요'],
+    ['🐈','watch the cat','고양이를 봐요'], ['🫗','pour some water','물을 따라요']]]
+]) {
+  for (const [icon, en, ko] of events) DAYTIME.push([icon, B(prefix + ', ' + en + '.', koPrefix + ' ' + ko), part]);
+}
 registerGame({
   id: 'daytime', subject: 'math', icon: '🕐', title: B('My Day', '나의 하루'), sub: B('Morning, afternoon, night', '아침, 오후, 밤'),
   area: AREA_MATH('Time patterns'),
   play() {
     const t = pick(DAYTIME), P = { morning: ['🌅', B('Morning', '아침')], afternoon: ['☀️', B('Afternoon', '오후')], night: ['🌙', B('Night', '밤')] };
+    const sky = { morning: '🌄', afternoon: '🌤️', night: '🌌' };
     quiz(this, {
-      ask: B('When do you do this?', '언제 하는 일일까요?'),
-      show: `<div class="bigword"><span class="emo">${t[0]}</span> ${L(t[1])}</div>`,
+      ask: B('What part of the day?', '하루 중 언제일까요?'),
+      askSay: B(t[1].en + ' What part of the day?', t[1].ko + ' 하루 중 언제일까요?'),
+      show: `<div class="bigword" style="font-size:clamp(17px,3dvh,24px)"><span style="display:block;font-size:clamp(30px,6dvh,52px)">${sky[t[2]]} ${t[0]}</span>${L(t[1])}</div>`,
       opts: Object.keys(P).map(k => ({ html: `<span class="emo">${P[k][0]}</span>`, label: P[k][1], ok: k === t[2] })), cls: 'shapes',
       after: B(`That is in the ${P[t[2]][1].en.toLowerCase()}.`, `${P[t[2]][1].ko}에 해요.`), vocab: P[t[2]][1].en
     });

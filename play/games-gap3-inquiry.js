@@ -60,6 +60,32 @@
     [2,b('Which picture shows where apples grow?','사과가 자라는 곳을 알려 주는 그림은?'),b('apples','사과'),'🍎',[['🍎🌳','tree','나무'],['🍎🧺','basket','바구니'],['🍎🥧','pie','파이']]],
     [2,b('Which picture shows what bees make?','벌이 만드는 것을 알려 주는 그림은?'),b('bees','벌'),'🐝',[['🐝🍯','honey','꿀'],['🐝🌸','flower','꽃'],['🐝🌳','tree','나무']]]
   ];
+  const kExtra = [[0,"Where does a bee go for nectar?","벌은 꽃꿀을 찾으러 어디로 갈까요?","🐝",["🌼","flower","꽃"],["🍃","leaf","잎"],["🪵","log","통나무"]],
+    [0,"What helps a duck swim?","오리가 헤엄치는 데 도움이 되는 것은?","🦆",["🦶","feet","발"],["🪶","feather","깃털"],["👁️","eye","눈"]],
+    [0,"What can carry a snail’s soft body?","달팽이의 부드러운 몸을 감싸는 것은?","🐌",["🐚","shell","껍데기"],["🍃","leaf","잎"],["🪨","rock","돌"]],
+    [0,"What can a bird use to build a nest?","새가 둥지를 만드는 데 쓸 것은?","🐦",["🪵","twigs","나뭇가지"],["🧊","ice","얼음"],["🧼","soap","비누"]],
+    [0,"Where can a frog swim?","개구리가 헤엄칠 수 있는 곳은?","🐸",["💧","pond","연못"],["🌳","tree","나무"],["🪨","rock","돌"]],
+    [0,"Which picture shows something a squirrel can eat?","다람쥐가 먹을 수 있는 것은?","🐿️",["🌰","nut","열매"],["🍂","leaf","잎"],["🪵","log","통나무"]],
+    [0,"What animal could leave hoofprints?","발굽 자국을 남길 수 있는 동물은?","🐾",["🐴","horse","말"],["🐱","cat","고양이"],["🐶","dog","강아지"]],
+    [0,"Which baby hatches from a hen’s egg?","암탉이 낳은 알에서 나오는 아기는?","🥚",["🐤","chick","병아리"],["🐱","kitten","새끼 고양이"],["🐶","puppy","강아지"]],
+    [1,"What can keep your head dry in rain?","비가 올 때 머리가 젖지 않게 해 주는 것은?","🌧️",["☂️","umbrella","우산"],["🧤","mittens","장갑"],["👟","shoes","신발"]],
+    [1,"What can slide down a snowy hill?","눈 덮인 언덕에서 타고 내려오는 것은?","❄️",["🛷","sled","썰매"],["🛴","scooter","킥보드"],["🚲","bike","자전거"]],
+    [1,"What helps you see on a dark walk?","어두운 길에서 앞을 보는 데 도움이 되는 것은?","🌌",["🔦","flashlight","손전등"],["🔔","bell","방울"],["🧭","compass","나침반"]],
+    [1,"What can float on a puddle?","물웅덩이에 띄울 수 있는 것은?","💧",["⛵","boat","배"],["🔑","key","열쇠"],["🪙","coin","동전"]],
+    [1,"What shows that it rained?","비가 왔다는 단서가 되는 것은?","❔",["💧","puddle","물웅덩이"],["🍂","dry leaf","마른 잎"],["🌵","cactus","선인장"]],
+    [1,"What forms on cold glass?","아주 추운 날 창문에 생길 수 있는 것은?","🪟",["❄️","frost","서리"],["🌱","sprout","새싹"],["🕸️","web","거미줄"]],
+    [1,"What lights up the sky during a storm?","폭풍이 칠 때 하늘을 번쩍 밝히는 것은?","⛈️",["⚡","lightning","번개"],["🌧️","rain","비"],["🌬️","wind","바람"]],
+    [1,"Which tool shows how warm it is outside?","밖이 얼마나 따뜻한지 알려 주는 도구는?","☀️",["🌡️","thermometer","온도계"],["📏","ruler","자"],["🧭","compass","나침반"]],
+    [2,"What can you peel and eat?","껍질을 벗겨 먹을 수 있는 것은?","🍽️",["🍌","banana","바나나"],["🍞","bread","빵"],["🍚","rice","밥"]],
+    [2,"Which food grows under the soil?","흙 아래에서 자라는 것은?","🌱",["🥕","carrot","당근"],["🍎","apple","사과"],["🍇","grape","포도"]],
+    [2,"What can you use to eat soup?","국을 떠먹을 때 쓰는 것은?","🍲",["🥄","spoon","숟가락"],["🍴","fork","포크"],["🥢","chopsticks","젓가락"]],
+    [2,"Which food can you slice for toast?","얇게 잘라 토스트를 만드는 것은?","🍽️",["🍞","bread","빵"],["🥚","egg","달걀"],["🥛","milk","우유"]],
+    [2,"Which food grows in bunches on vines?","덩굴에 송이로 자라는 것은?","🌿",["🍇","grapes","포도"],["🍎","apple","사과"],["🍐","pear","배"]],
+    [2,"What is used to make lemonade?","레모네이드를 만드는 데 쓰는 것은?","🥤",["🍋","lemon","레몬"],["🍑","peach","복숭아"],["🍌","banana","바나나"]],
+    [2,"What can go in a bowl with cereal?","시리얼 그릇에 부을 수 있는 것은?","🥣",["🥛","milk","우유"],["🍞","bread","빵"],["🧀","cheese","치즈"]],
+    [2,"What can keep a drink cold?","음료를 차게 해 주는 것은?","🥤",["🧊","ice","얼음"],["🍯","honey","꿀"],["🧂","salt","소금"]]];
+  // Keep the open-activity menu short; these cards are for scored practice.
+  const kPractice = [...kItems, ...kExtra.map(([topic, en, ko, icon, ...opts]) => [topic, b(en, ko), b(en, ko), icon, opts])];
   // K level 2: two pictures differ in exactly one feature (0 number, 1 color, 2 size).
   const hue = (e, deg) => `<span style="filter:hue-rotate(${deg}deg)">${e}</span>`, sized = (e, em) => `<span style="font-size:${em}em">${e}</span>`;
   const kChanges = [
@@ -83,13 +109,17 @@
   function makeK(level) {
     let ask,show,opts,after,notes;
     if(level===1) {
-      const r=pick(kItems);
+      const r=pick(kPractice);
       ask=r[1];notes=[r[1]];
       show=`<div class="g3a-material g3k"><button type="button" class="g3a-note g3k-wonder" data-g3a-note="0" aria-label="${esc(t(b('Hear our question','우리 질문 듣기')))}"><span class="g3k-pic" aria-hidden="true">${r[3]}❓</span> 🔊</button></div>`;
       opts=r[4].map((o,i)=>({html:kOpt(o[0],b(o[1],o[2])),ok:i===0,category:'picture'}));
       after=b('This picture answers our question.','이 그림이 우리 질문에 답해 줘요.');
     } else {
-      const r=pick(kChanges),pre=[b('Picture 1: ','그림 1: '),b('Picture 2: ','그림 2: ')];
+      const variation = rnd(3);
+      const countables = [['🍊','oranges','귤','개'],['🦆','ducks','오리','마리'],['⭐','stars','별','개'],['🍐','pears','배','개'],['🐞','ladybugs','무당벌레','마리']];
+      const [icon,en,ko,unit] = pick(countables), before = 1 + rnd(5);
+      const next = 1 + (before + rnd(4)) % 5;
+      const r = variation === 0 ? [0,icon.repeat(before),icon.repeat(next),b(before+' '+en,ko+' '+before+unit),b(next+' '+en,ko+' '+next+unit)] : pick(kChanges),pre=[b('Picture 1: ','그림 1: '),b('Picture 2: ','그림 2: ')];
       ask=b('What changed between the two pictures?','두 그림에서 무엇이 바뀌었나요?');
       notes=[r[3],r[4]].map((x,i)=>b(pre[i].en+x.en+'.',pre[i].ko+x.ko+'.'));
       const card=(i,pic)=>`<button type="button" class="g3a-note g3k-card" data-g3a-note="${i}" aria-label="${esc(t(notes[i]))}"><span class="g3k-pic" aria-hidden="true">${pic}</span><span>${i+1} 🔊</span></button>`;
@@ -167,9 +197,11 @@
       after=b('This note is about our question.','이 기록은 조사 질문과 관련 있어요.');
       if(g==='2')names=labels.map(x=>b(`${prefix.en} · ${x.en}`,`${prefix.ko} · ${x.ko}`));
     } else {
-      const kind=index%3;
-      const a=kind===0?b(`Monday: ${index+2} ${r[5].en}.`,`월요일: ${r[5].ko} ${index+2}개.`):kind===1?b(`${r[5].en}: red on Monday.`,`${r[5].ko}: 월요일에는 빨간색.`):b(`${r[5].en}: small on Monday.`,`${r[5].ko}: 월요일에는 작았어요.`);
-      const z=kind===0?b(`Friday: ${index+5} ${r[5].en}.`,`금요일: ${r[5].ko} ${index+5}개.`):kind===1?b(`${r[5].en}: blue on Friday.`,`${r[5].ko}: 금요일에는 파란색.`):b(`${r[5].en}: large on Friday.`,`${r[5].ko}: 금요일에는 컸어요.`);
+      const kind=g==='1'?rnd(3):index%3;
+      const quantity = g === '1' ? 1 + rnd(8) : index + 2;
+      const change = g === '1' ? 1 + rnd(3) : 3;
+      const a=kind===0?b(`Monday: ${quantity} ${r[5].en}.`,`월요일: ${r[5].ko} ${quantity}개.`):kind===1?b(`${r[5].en}: red on Monday.`,`${r[5].ko}: 월요일에는 빨간색.`):b(`${r[5].en}: small on Monday.`,`${r[5].ko}: 월요일에는 작았어요.`);
+      const z=kind===0?b(`Friday: ${quantity+change} ${r[5].en}.`,`금요일: ${r[5].ko} ${quantity+change}개.`):kind===1?b(`${r[5].en}: blue on Friday.`,`${r[5].ko}: 금요일에는 파란색.`):b(`${r[5].en}: large on Friday.`,`${r[5].ko}: 금요일에는 컸어요.`);
       notes=[a,z];names=[b('A · observation','A · 관찰'),b('B · observation','B · 관찰')];
       ask=b('Which question can both records answer?','두 기록으로 답할 수 있는 질문은?');
       opts=attrs.map((x,i)=>({html:esc(t(x)),ok:i===kind,category:'question'}));

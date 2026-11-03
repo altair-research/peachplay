@@ -1,7 +1,7 @@
 'use strict';
 // Represent a number with a picture (K math; school check "Draw a picture to represent 8" answered with the numeral only).
 // CPA ladder inside the app's two levels (core.js caps levels at 2):
-//   level 1, first half of the round  -> step 1a: tap dots onto a mat, 1-5
+//   level 1, first half of the round  -> step 1a: tap dots onto a mat, 1-10 with an optional starter
 //   level 1, second half              -> step 1b: same mat, 6-10
 //   level 2, first half               -> step 2: choose the picture (incl. ten and some more) / fill a ten frame, alternating
 //   level 2, second half              -> step 3: draw your own marks in an empty box (scored by the number of marks)
@@ -77,8 +77,9 @@
   // ---------- steps 1, 2 (ten frame), 3: build the picture, then press Done ----------
   const buildItem = step => {
     if (step === 'place1' || step === 'place2') {
-      const n = step === 'place1' ? between(1, 5) : between(6, 10);
-      return { step, n, ask: B(`Represent ${n}. Tap to put ${n} dot${n > 1 ? 's' : ''}.`, `${eul(n)} 그림으로 나타내요. 점 ${n}개를 놓아요.`), english: `Represent ${n}.`,
+      const n = step === 'place1' ? between(1, 10) : between(6, 10);
+      const start = n > 1 ? rnd(n) : 0;
+      return { step, n, start, ask: start ? B(`Make ${n} dots in all.`, `점이 모두 ${n}개가 되게 놓아요.`) : B(`Represent ${n}. Tap to put ${n} dot${n > 1 ? 's' : ''}.`, `${eul(n)} 그림으로 나타내요. 점 ${n}개를 놓아요.`), english: `Represent ${n}.`,
         after: B(`${n} dot${n > 1 ? 's' : ''} represent${n > 1 ? '' : 's'} ${n}.`, `점 ${n}개가 ${eul(n)} 나타내요.`) };
     }
     if (step === 'frame') {
@@ -96,11 +97,13 @@
 
   // Each board returns { html, wire(root, changed) -> { count(), label(on), lock(), clear(), undo?() } }.
   const placeBoard = (it, color) => {
-    const spots = Array.from({ length: 12 }, (_, i) => `<button class="rp-spot" data-i="${i}" aria-pressed="false" aria-label="${L(B('Spot', '자리'))} ${i + 1}" style="transform:translate(${rnd(13) - 6}px,${rnd(13) - 6}px)"></button>`).join('');
+    const spots = Array.from({ length: 12 }, (_, i) => `<button class="rp-spot" data-i="${i}" aria-pressed="${i < it.start}" ${i < it.start ? 'data-start disabled' : ''} aria-label="${L(B('Spot', '자리'))} ${i + 1}" style="transform:translate(${rnd(13) - 6}px,${rnd(13) - 6}px)"></button>`).join('');
     return {
       html: `<div class="rp-mat" style="--rp-c:${color}">${spots}</div>`,
       wire(root, changed) {
-        const all = [...root.querySelectorAll('.rp-spot,.rp-cell')]; let order = [];
+        const all = [...root.querySelectorAll('.rp-spot,.rp-cell')];
+        const starter = all.filter(b => b.hasAttribute('data-start'));
+        let order = starter.slice();
         all.forEach(b => b.onclick = () => {
           if (b.disabled) return;
           const on = b.getAttribute('aria-pressed') !== 'true';
@@ -112,7 +115,7 @@
           count: () => order.length,
           label: on => all.forEach(b => { b.textContent = on && order.includes(b) ? order.indexOf(b) + 1 : ''; }),
           lock: () => all.forEach(b => { b.disabled = true; }),
-          clear: () => { order = []; all.forEach(b => { b.setAttribute('aria-pressed', 'false'); b.textContent = ''; }); }
+          clear: () => { order = starter.slice(); all.forEach(b => { b.setAttribute('aria-pressed', String(starter.includes(b))); b.textContent = ''; }); }
         };
       }
     };
@@ -232,7 +235,7 @@
       const step = stepFor(lvl(this.id));
       let it = make(step);
       // quiz() and the K wrapper (adaptive-extra.js) check repeats of choice items; built rounds check here, without re-entering play().
-      if (step !== 'choose') { for (let k = 0; k < 9 && dup(this, step + ':' + it.n); k++) it = make(step); return buildRound(this, it); }
+      if (step !== 'choose') { for (let k = 0; k < 9 && dup(this, step + ':' + it.n + ':' + (it.start || 0)); k++) it = make(step); return buildRound(this, it); }
       quiz(this, {
         ask: it.ask, askExtra: { t: it.english, lang: 'en-US' }, show: it.show, quietShow: true, opts: it.opts, cls: it.cls, after: it.after,
         onRender() { const sp = $('#sp'); if (sp && !$('#rpWord')) { sp.insertAdjacentHTML('afterend', wordButton()); $('#rpWord').onclick = wordSay; } }

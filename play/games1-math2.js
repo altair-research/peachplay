@@ -105,7 +105,7 @@ G1({
 });
 
 // ---------- 17. Halves and fourths ----------
-const partSvg = (shape, n, equal, v = 0) => {
+const partSvg = (shape, n, equal, v = 0, angle = 0) => {
   const st = 'stroke="#1d3557" stroke-width="3" fill="#ffd166"';
   if (shape === 'circle') {
     let lines = '';
@@ -118,24 +118,24 @@ const partSvg = (shape, n, equal, v = 0) => {
   if (n === 2) lines = equal ? (v === 0 ? '<line x1="50" y1="14" x2="50" y2="86"/>' : v === 1 ? '<line x1="10" y1="50" x2="90" y2="50"/>' : '<line x1="10" y1="14" x2="90" y2="86"/>') : '<line x1="30" y1="14" x2="30" y2="86"/>';
   else if (n === 4) lines = equal ? (v === 0 ? '<line x1="50" y1="14" x2="50" y2="86"/><line x1="10" y1="50" x2="90" y2="50"/>' : '<line x1="30" y1="14" x2="30" y2="86"/><line x1="50" y1="14" x2="50" y2="86"/><line x1="70" y1="14" x2="70" y2="86"/>') : '<line x1="22" y1="14" x2="22" y2="86"/><line x1="40" y1="14" x2="40" y2="86"/><line x1="72" y1="14" x2="72" y2="86"/>';
   else lines = '<line x1="37" y1="14" x2="37" y2="86"/><line x1="63" y1="14" x2="63" y2="86"/>';
-  return `<svg viewBox="0 0 100 100" class="shape"><rect x="10" y="14" width="80" height="72" rx="3" ${st}/><g stroke="#1d3557" stroke-width="3">${lines}</g></svg>`;
+  return `<svg viewBox="0 0 100 100" class="shape"><g transform="translate(50 50) scale(${v === 1 ? 1 : .55 + angle / 400} ${v === 1 ? .55 + angle / 400 : 1}) translate(-50 -50)"><rect x="10" y="14" width="80" height="72" rx="3" ${st}/><g stroke="#1d3557" stroke-width="3">${lines}</g></g></svg>`;
 };
 G1({
   id: 'partition', icon: '🍕', title: B('Halves and Fourths', '반과 4분의 1'), sub: B('Equal shares', '똑같이 나누기'), u: 'Equal shares',
   play() {
-    const lv = lvl('partition'), shape = pick(['circle', 'rect']), kind = pick(lv === 1 ? ['which2', 'which2', 'count', 'name'] : ['which4', 'which2', 'count', 'name', 'size', 'whole']), v = rnd(3);
+    const lv = lvl('partition'), shape = pick(['circle', 'rect']), kind = pick(lv === 1 ? ['which2', 'which2', 'count', 'name'] : ['which4', 'which2', 'count', 'name', 'size', 'whole']), v = rnd(3), angle = 5 * rnd(36);
     const word = (n) => (n === 2 ? B('halves', '반(2등분)') : B('fourths', '4분의 1(4등분)'));
     if (kind === 'which2' || kind === 'which4') {
-      const n = kind === 'which2' ? 2 : 4, opts = [{ html: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), ok: true }, { html: partSvg(shape, n, false), ok: false }, { html: partSvg(shape, n === 2 ? 3 : 2, true), ok: false }];
+      const n = kind === 'which2' ? 2 : 4, opts = [{ html: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0, angle), ok: true }, { html: partSvg(shape, n, false, v % 2, angle), ok: false }, { html: partSvg(shape, n === 2 ? 3 : 2, true, v % 2, angle), ok: false }];
       quiz(this, { ask: n === 2 ? B('Which shows HALVES (2 equal shares)?', '똑같은 2조각(반)으로 나눈 것은?') : B('Which shows FOURTHS (4 equal shares)?', '똑같은 4조각(4분의 1)으로 나눈 것은?'), askSay: n === 2 ? B('Which shows halves, 2 equal shares?', '똑같은 2조각으로 나눈 것은?') : B('Which shows fourths, 4 equal shares?', '똑같은 4조각으로 나눈 것은?'), opts, cls: 'shapes', after: B('Equal shares are exactly the same size.', '똑같은 조각은 크기가 정확히 같아요.') });
     } else if (kind === 'count') {
-      const n = pick([2, 4]); quiz(this, { ask: B('How many equal shares?', '똑같은 조각이 몇 개일까요?'), show: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), opts: numO(n, [2, 3, 4].filter(x => x !== n), 1, 6), after: B(`${n} equal shares.`, `똑같은 조각 ${n}개.`) });
+      const n = pick([2, 4]); quiz(this, { ask: B('How many equal shares?', '똑같은 조각이 몇 개일까요?'), show: partSvg(shape, n, true, v % 2, angle), opts: numO(n, [2, 3, 4].filter(x => x !== n), 1, 6), after: B(`${n} equal shares.`, `똑같은 조각 ${n}개.`) });
     } else if (kind === 'name') {
-      const n = pick([2, 4]); quiz(this, { ask: B('These equal shares are called...', '이 똑같은 조각을 무엇이라고 부를까요?'), show: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), opts: [2, 4].map(k => ({ html: `<span class="word">${L(word(k))}</span>`, ok: k === n })), cls: 'words', after: B(n === 2 ? 'Two equal shares are halves.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.'), vocab: n === 2 ? 'halves' : 'fourths' });
+      const n = pick([2, 4]); quiz(this, { ask: B('These equal shares are called...', '이 똑같은 조각을 무엇이라고 부를까요?'), show: partSvg(shape, n, true, v % 2, angle), opts: [2, 4].map(k => ({ html: `<span class="word">${L(word(k))}</span>`, ok: k === n })), cls: 'words', after: B(n === 2 ? 'Two equal shares are halves.' : 'Four equal shares are fourths, or quarters.', n === 2 ? '똑같은 2조각은 반(halves)이에요.' : '똑같은 4조각은 4분의 1(fourths, quarters)이에요.'), vocab: n === 2 ? 'halves' : 'fourths' });
     } else if (kind === 'size') {
       quiz(this, { ask: B('Which shares are bigger?', '어느 조각이 더 클까요?'), show: `<div class="storytext">${L(B('Two same-size pizzas: one cut in halves, one in fourths.', '크기가 같은 피자 두 판: 하나는 반으로, 하나는 4조각으로.'))}</div><div class="story">${partSvg('circle', 2, true)}<span class="op">vs</span>${partSvg('circle', 4, true)}</div>`, opts: [{ html: `<span class="word">${L(B('Halves (2 shares)', '반 (2조각)'))}</span>`, ok: true }, { html: `<span class="word">${L(B('Fourths (4 shares)', '4분의 1 (4조각)'))}</span>`, ok: false }, { html: `<span class="word">${L(B('The same', '같아요'))}</span>`, ok: false }], cls: 'words', after: B('More equal shares means smaller shares.', '조각 수가 많을수록 한 조각은 작아져요.') });
     } else {
-      const n = pick([2, 4]); quiz(this, { ask: B(`How many ${n === 2 ? 'halves' : 'fourths'} make the whole?`, `${n === 2 ? '반' : '4분의 1'}이 몇 개 모여야 전체가 될까요?`), show: partSvg(shape, n, true, shape === 'rect' ? v % 2 : 0), opts: numO(n, [2, 3, 4, 1].filter(x => x !== n), 1, 6), after: B(`${n} ${n === 2 ? 'halves' : 'fourths'} make 1 whole.`, `${n === 2 ? '반' : '4분의 1'}이 ${n}개 모이면 전체가 돼요.`) });
+      const n = pick([2, 4]); quiz(this, { ask: B(`How many ${n === 2 ? 'halves' : 'fourths'} make the whole?`, `${n === 2 ? '반' : '4분의 1'}이 몇 개 모여야 전체가 될까요?`), show: partSvg(shape, n, true, v % 2, angle), opts: numO(n, [2, 3, 4, 1].filter(x => x !== n), 1, 6), after: B(`${n} ${n === 2 ? 'halves' : 'fourths'} make 1 whole.`, `${n === 2 ? '반' : '4분의 1'}이 ${n}개 모이면 전체가 돼요.`) });
     }
   }
 });
@@ -210,8 +210,8 @@ const coinTotal = (list) => list.reduce((s, k) => s + COINS[k].v, 0);
 G1({
   id: 'coins1', icon: '🪙', title: B('Coins and Quarters', '동전과 쿼터'), sub: B('Which is worth more?', '어느 쪽 값이 더 클까?'), u: 'Money',
   play() {
-    const lv = lvl('coins1'), kind = pick(lv === 1 ? ['quarter', 'size', 'worth', 'compare'] : ['compare', 'compare', 'size', 'worth', 'equal']);
-    if (rnd(3) === 0) {
+    const lv = lvl('coins1'), kind = pick(lv === 1 ? ['quarter', 'worth', 'compare', 'compare', 'compare', 'compare', 'compare', 'compare'] : ['compare', 'compare', 'size', 'worth', 'equal']);
+    if (rnd(lv === 1 ? 8 : 3) === 0) {
       const k = pick(['penny','nickel','dime','quarter']);
       quiz(this, { ask: B(`Which coin is worth ${COINS[k].v} cents?`, `${COINS[k].v}센트인 동전은 무엇일까요?`), opts: ['penny','nickel','dime','quarter'].map(c => ({ html: coinSvg(c), label: COINS[c].n, ok: c === k })), cls: 'shapes', after: B(`A ${COINS[k].n.en} is worth ${COINS[k].v} cents.`, `${COINS[k].n.ko}의 값은 ${COINS[k].v}센트예요.`) }); return;
     }
@@ -228,7 +228,8 @@ G1({
       const sets = [[['nickel', 'nickel', 'nickel', 'nickel', 'nickel'], ['quarter']], [['dime', 'dime', 'nickel'], ['quarter']], [['penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny'], ['dime']], [['dime', 'dime'], ['nickel', 'nickel', 'nickel', 'nickel']], [['dime', 'dime', 'dime'], ['quarter']], [['nickel', 'nickel', 'nickel', 'nickel'], ['quarter']], [['penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny', 'penny'], ['dime']], [['dime', 'nickel'], ['dime', 'dime']]], [a, b] = pick(sets), same = coinTotal(a) === coinTotal(b);
       quiz(this, { ask: B('Are these worth the SAME amount?', '이 둘은 값이 같을까요?'), show: `<div class="story">${coinRow(a)}<span class="op">=?</span>${coinRow(b)}</div>`, opts: [{ html: `<span class="word">${S.lang === 'ko' ? '네, 같아요' : 'Yes, the same'}</span>`, ok: same }, { html: `<span class="word">${S.lang === 'ko' ? '아니요, 달라요' : 'No, different'}</span>`, ok: !same }], cls: 'words', after: B(`${coinTotal(a)}¢ ${same ? '=' : '≠'} ${coinTotal(b)}¢`, `${coinTotal(a)}¢ ${same ? '=' : '≠'} ${coinTotal(b)}¢`) });
     } else {
-      const mk = () => { const pool = ['penny', 'nickel', 'dime', 'quarter'], n = 1 + rnd(3), l = []; for (let i = 0; i < n; i++) l.push(pick(pool)); return l; };
+      const size = 2;
+      const mk = () => { const pool = ['penny', 'nickel', 'dime', 'quarter'], n = lv === 1 ? size : 1 + rnd(3), l = []; for (let i = 0; i < n; i++) l.push(pick(pool)); return l; };
       let a = mk(), b = mk(), g = 0; while ((coinTotal(a) === coinTotal(b) || coinTotal(a) > 60 || coinTotal(b) > 60) && g++ < 60) { a = mk(); b = mk(); }
       if (coinTotal(a) === coinTotal(b)) { a = ['quarter']; b = ['dime', 'dime']; }
       const ta = coinTotal(a), tb = coinTotal(b);

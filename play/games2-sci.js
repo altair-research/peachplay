@@ -68,10 +68,10 @@ G2S({
       }
     } else if (kind === 'night') {
       const q = pick([[B('When can we see most stars in the sky?', '별은 언제 가장 잘 보일까요?'), B('At night, when the sky is dark', '하늘이 어두운 밤'), [B('At noon', '한낮'), B('In the morning sunshine', '아침 햇살 속')]],
-        [B('Stars are in the sky during the day too. Why can we not see them?', '낮에도 별은 하늘에 있어요. 왜 안 보일까요?'), B('Sunlight is too bright.', '햇빛이 너무 밝아서요.'), [B('The stars go away.', '별이 사라져서요.'), B('Clouds always cover them.', '구름이 늘 가려서요.')]]]);
+        [B('Stars are in the sky during the day too. Why can we not see them?', '낮에도 별은 하늘에 있어요. 왜 안 보일까요?'), B('Sunlight is too bright.', '햇빛이 너무 밝아서요.'), [B('The stars go away.', '별이 사라져서요.'), B('High clouds hide them.', '구름이 늘 가려서요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else {
-      const q = pick([[B('What is a constellation?', '별자리란 무엇일까요?'), B('A named star picture', '사람들이 이름을 붙인 별 그림'), [B('A very big planet', '아주 큰 행성'), B('A kind of moon', '달의 한 종류')]],
+      const q = pick([[B('What is a constellation?', '별자리란 무엇일까요?'), B('A named star picture', '이름 붙인 별 무늬'), [B('A very big planet', '아주 큰 행성'), B('A kind of moon', '달의 한 종류')]],
         [B('Which one is a pattern of stars?', '별의 무늬는 어느 것일까요?'), B('The Big Dipper', '북두칠성(큰 국자 모양)'), [B('The Sun', '해'), B('A cloud', '구름')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     }
@@ -85,6 +85,22 @@ const EARTH_CH = [
   { e: '🏞️', n: B('a river carves a canyon over many years', '강이 오랜 세월 협곡을 깎아요'), fast: false }, { e: '🪨', n: B('wind and rain wear down a rock over many years', '여러 해 동안 바람과 비가 바위를 닳게 해요'), fast: false },
   { e: '🧊', n: B('a glacier reshapes land over hundreds of years', '수백 년 동안 빙하가 땅 위를 밀고 가요'), fast: false }, { e: '🏖️', n: B('ocean waves reshape a beach over many years', '여러 해 동안 바닷물결이 해변을 깎아요'), fast: false }
 ];
+EARTH_CH.push(
+  { e: "🌋", n: B("Lava covers a field in one afternoon", "오후 한나절 사이 용암이 들판을 덮어요"), fast: true },
+  { e: "🌧️", n: B("A cloudburst cuts a ditch in a hillside", "한차례 폭우에 언덕이 파여요"), fast: true },
+  { e: "🪨", n: B("A rockfall blocks a trail in seconds", "바위가 떨어져 순식간에 길을 막아요"), fast: true },
+  { e: "🌊", n: B("Storm waves wash away a dune overnight", "하룻밤 사이 폭풍 파도가 모래 언덕을 깎아요"), fast: true },
+  { e: "🌱", n: B("Tree roots widen a crack over many years", "여러 해에 걸쳐 나무뿌리가 바위 틈을 벌려요"), fast: false },
+  { e: "🏝️", n: B("A river leaves layers of sand over decades", "수십 년 동안 강이 모래를 층층이 쌓아요"), fast: false },
+  { e: "🏜️", n: B("Wind wears down a desert rock over centuries", "수백 년 동안 바람이 사막의 바위를 닳게 해요"), fast: false },
+  { e: "🧊", n: B("Freezing water widens a crack over many winters", "여러 겨울 동안 물이 얼면서 바위 틈이 벌어져요"), fast: false },
+  { e: "🌊", n: B("Waves round pebbles over many years", "여러 해 동안 파도가 자갈을 둥글게 만들어요"), fast: false },
+  { e: "🏔️", n: B("A slope collapses after heavy rain", "폭우 뒤 비탈이 한꺼번에 무너져요"), fast: true },
+  { e: "🌋", n: B("Ash covers a hillside during an eruption", "화산이 터질 때 재가 언덕을 덮어요"), fast: true },
+  { e: "🏞️", n: B("A stream wears a channel deeper over decades", "수십 년 동안 시냇물이 물길을 더 깊이 파요"), fast: false },
+  { e: "🏖️", n: B("A storm cuts a gap through a sandbar", "폭풍이 모래 둑을 한꺼번에 끊어 놓아요"), fast: true },
+  { e: "🪨", n: B("Rain slowly dissolves limestone over centuries", "수백 년 동안 빗물이 석회암을 녹여요"), fast: false }
+);
 G2S({
   id: 'earthchange2', icon: '🌋', title: B('Changing Land', '변하는 땅'), sub: B('Fast changes and slow changes', '빠른 변화와 느린 변화'), u: 'Earth Changes',
   play() {
@@ -106,6 +122,24 @@ const MATTER = [
   { e: '🥛', n: B('milk', '우유'), s: 1 }, { e: '💧', n: B('water', '물'), s: 1 }, { e: '🧃', n: B('juice', '주스'), s: 1 }, { e: '🍯', n: B('honey', '꿀'), s: 1 },
   { e: '🎈', n: B('the helium in a balloon', '풍선 속 헬륨'), s: 2 }, { e: '♨️', n: B('steam (water vapor)', '수증기'), s: 2 }, { e: '💨', n: B('the air you blow out', '내가 내쉬는 공기'), s: 2 }
 ];
+MATTER.push(
+  { e: "🥄", n: B("a steel spoon", "쇠 숟가락"), s: 0 },
+  { e: "🪙", n: B("a coin", "동전"), s: 0 },
+  { e: "🧩", n: B("a puzzle piece", "퍼즐 조각"), s: 0 },
+  { e: "🧽", n: B("a dry sponge", "마른 스펀지"), s: 0 },
+  { e: "🍽️", n: B("a ceramic plate", "도자기 접시"), s: 0 },
+  { e: "🧴", n: B("liquid soap", "물비누"), s: 1 },
+  { e: "🍶", n: B("vinegar", "식초"), s: 1 },
+  { e: "🫗", n: B("cooking oil", "식용유"), s: 1 },
+  { e: "🥤", n: B("the carbon dioxide inside a soda bubble", "탄산음료 거품 속 이산화탄소"), s: 2 },
+  { e: "🛞", n: B("the air inside a tire", "타이어 안의 공기"), s: 2 },
+  { e: "🤿", n: B("the air inside a diving tank", "잠수용 통 속의 공기"), s: 2 },
+  { e: "🏀", n: B("the air inside a basketball", "농구공 안의 공기"), s: 2 },
+  { e: "🫖", n: B("warm tea", "따뜻한 차"), s: 1 },
+  { e: "🖍️", n: B("a crayon", "크레용"), s: 0 },
+  { e: "🧷", n: B("a safety pin", "옷핀"), s: 0 },
+  { e: "🥣", n: B("clear broth", "맑은 국물"), s: 1 }
+);
 const STATE = [B('solid', '고체'), B('liquid', '액체'), B('gas', '기체')];
 G2S({
   id: 'matter2', icon: '🧊', title: B('Solid, Liquid or Gas?', '고체, 액체, 기체'), sub: B('Sort matter by how it behaves', '물질의 성질에 따라 나누어요'), u: 'Matter',
@@ -147,7 +181,7 @@ G2S({
         [B('What makes juice turn into an ice pop?', '주스가 얼음과자가 되게 하는 것은?'), B('Cooling it in the freezer', '냉동실에서 차갑게 하기'), [B('Warming it on the stove', '불 위에서 데우기'), B('Pouring it into a cup', '컵에 따르기')], B('Cooling turns liquid juice into a solid.', '차갑게 하면 액체 주스가 고체가 돼요.')]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[3] });
     } else if (kind === 'evap') {
-      const q = pick([[B('A puddle slowly disappears on a sunny day. What happened to the water?', '맑은 날 웅덩이가 서서히 사라져요. 물은 어떻게 됐을까요?'), B('It evaporated into the air as vapor.', '증발해서 공기 속 수증기(기체)가 됐어요.'), [B('It turned into a rock.', '돌이 됐어요.'), B('It was destroyed.', '완전히 없어졌어요.')]],
+      const q = pick([[B('A puddle slowly disappears on a sunny day. What happened to the water?', '맑은 날 웅덩이가 서서히 사라져요. 물은 어떻게 됐을까요?'), B('It evaporated into the air as vapor.', '공기 중 수증기가 됐어요.'), [B('It turned into a rock.', '돌이 됐어요.'), B('It was destroyed.', '땅속으로 스며들었어요.')]],
         [B('Water drops form on the outside of a cold glass. Where did they come from?', '찬 컵 바깥에 물방울이 맺혀요. 어디에서 왔을까요?'), B('Water vapor in air cooled into drops.', '공기 속 수증기가 차가워져 액체가 됐어요.'), [B('The water leaked through the glass.', '물이 유리를 통과해 샜어요.'), B('The glass made the water.', '컵이 물을 만들었어요.')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words sents', after: q[1] });
     } else if (kind === 'rev') {
@@ -177,7 +211,7 @@ G2S({
         [B('Which surface lets a sled slide the farthest?', '어느 바닥에서 썰매가 가장 멀리 미끄러질까요?'), B('Smooth, slippery ice', '매끄럽고 미끄러운 얼음'), [B('Rough sand', '거친 모래'), B('Thick grass', '풀이 빽빽한 풀밭')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words', after: B('Rough surfaces rub more (friction), so things slow down faster.', '거친 바닥은 마찰(서로 문지르는 힘)이 커서 물체가 더 빨리 느려져요.') });
     } else {
-      const q = pick([[B('Which one changes the DIRECTION of a moving ball?', '굴러가는 공의 방향을 바꾸는 것은?'), B('Hitting it from the side', '옆에서 치기'), [B('Looking at it', '쳐다보기'), B('Waiting', '기다리기')]],
+      const q = pick([[B('Which one changes the DIRECTION of a moving ball?', '굴러가는 공의 방향을 바꾸는 것은?'), B('Hitting it from the side', '옆에서 치기'), [B('Pushing it straight ahead', '앞으로 똑바로 밀기'), B('Rolling beside it', '공 옆에서 함께 굴러가기')]],
         [B('A force can change an object\'s ...', '힘은 물체의 무엇을 바꿀 수 있을까요?'), B('speed and direction', '빠르기와 방향'), [B('name and color', '이름과 색깔'), B('age', '나이')]]]);
       quiz(this, { ask: q[0], opts: wOpts(q[1], q[2]), cls: 'words', after: q[1] });
     }
@@ -217,13 +251,22 @@ const SEEDS = [
   { e: '🐕', n: B('a burr with tiny hooks', '작은 갈고리가 달린 도깨비바늘 씨'), how: B('animals', '동물'), why: B('Its hooks stick to fur and clothes.', '갈고리로 털과 옷에 붙어 가요.') },
   { e: '🍓', n: B('a berry that birds eat', '새가 먹는 열매'), how: B('animals', '동물'), why: B('Birds eat it and drop seeds elsewhere.', '새가 먹고 씨를 멀리 떨궈요.') }
 ];
+SEEDS.push(
+  { e: "🌲", n: B("a winged pine seed", "날개 달린 소나무 씨"), how: B("wind", "바람"), why: B("Its wing slows its fall.", "날개 덕분에 천천히 떨어져요.") },
+  { e: "🌾", n: B("a fluffy cattail seed", "솜털 달린 부들 씨"), how: B("wind", "바람"), why: B("Its fluff catches moving air.", "솜털이 공기의 흐름을 타요.") },
+  { e: "🪷", n: B("a floating lotus seed", "떠다니는 연꽃 씨"), how: B("water", "물"), why: B("It floats across a pond.", "연못 위에 떠서 건너가요.") },
+  { e: "🌰", n: B("a chestnut carried by a squirrel", "다람쥐가 옮기는 밤"), how: B("animals", "동물"), why: B("A squirrel carries it away and buries it.", "다람쥐가 멀리 옮겨 묻어요.") },
+  { e: "🫐", n: B("a blueberry eaten by a bird", "새가 먹는 블루베리"), how: B("animals", "동물"), why: B("A bird drops its seeds away from the bush.", "새가 덤불에서 멀리 씨를 떨궈요.") },
+  { e: "🌿", n: B("a hooked burdock fruit", "갈고리가 달린 우엉 열매"), how: B("animals", "동물"), why: B("It catches on passing animals’ fur.", "지나가는 동물의 털에 걸려요.") },
+  { e: "🌱", n: B("a willow seed with silky hairs", "가는 털이 달린 버드나무 씨"), how: B("wind", "바람"), why: B("Silky hairs help it float in the air.", "가는 털 덕분에 공중에 떠요.") }
+);
 const HOWS = [B('wind', '바람'), B('water', '물'), B('animals', '동물')];
 const SEED_CLUES65=[B('Light fluffy hairs catch moving air.','가벼운 솜털이 움직이는 공기를 받아요.'),B('A wing spins through moving air.','날개가 움직이는 공기를 타며 돌아요.'),B('A thick husk keeps it floating across a river.','두꺼운 껍질 덕분에 강 위에 떠 있어요.'),B('A squirrel buries it away from its tree.','다람쥐가 나무에서 떨어진 곳에 묻어요.'),B('Tiny hooks catch on a dog’s fur.','작은 갈고리가 개의 털에 걸려요.'),B('A bird eats the fruit and carries its seeds away.','새가 열매를 먹고 씨를 멀리 옮겨요.')];
 G2S({
   id: 'pollen2', icon: '🐝', title: B('Bees and Seeds', '벌과 씨앗'), sub: B('Pollination and how seeds travel', '꽃가루받이와 씨앗이 퍼지는 방법'), u: 'Plants',
   play() {
     const lv = lvl('pollen2'), kind = pick(lv === 1 ? ['seed', 'clue', 'bee'] : ['seed', 'seed', 'bee', 'why']);
-    if(kind==='clue'){const i=rnd(SEEDS.length);quiz(this,{ask:B('What carries this seed?','무엇이 이 씨앗을 옮길까요?'),show:`<div class="storytext">${L(SEED_CLUES65[i])}</div>`,opts:wOpts(SEEDS[i].how,HOWS.filter(x=>x.en!==SEEDS[i].how.en)),cls:'words'});return;}
+    if(kind==='clue'){const i=rnd(SEEDS.length);quiz(this,{ask:B('What carries this seed?','무엇이 이 씨앗을 옮길까요?'),show:`<div class="storytext">${L(SEED_CLUES65[i] ?? SEEDS[i].why)}</div>`,opts:wOpts(SEEDS[i].how,HOWS.filter(x=>x.en!==SEEDS[i].how.en)),cls:'words'});return;}
     if (kind === 'seed') {
       const s = pick(SEEDS);
       quiz(this, { ask: B(`How does ${s.n.en} mostly travel to a new place?`, `${s.n.ko}: 주로 무엇의 도움으로 새로운 곳에 갈까요?`), show: `<span class="emo">${s.e}</span>`, opts: HOWS.map(h => ({ html: `<span class="word">${L(h)}</span>`, ok: h.en === s.how.en })), cls: 'words', after: s.why });
@@ -251,7 +294,7 @@ const modes = {
    const summer=B('June 21 · summer','6월 21일 · 여름'), winter=B('December 21 · winter','12월 21일 · 겨울');
    const caption=B('Practice daylight table · hours','가상 낮 길이 표 · 시간');
    const missing=lv===2&&i%4===0, target=i%4===0?summer:winter;
-   const day=13+Math.floor(i/4)%3;
+   const day=13+(Math.floor(i/4)%12)/4;
    const rows=[[summer,day,missing?'?':24-day],[winter,24-day,day]];
    const show=table(caption,[B('Date','날짜'),B('Day','낮'),B('Night','밤')],rows);
    if(missing)return item('daynight',B('Complete the table: June night = ? hours.','표를 완성해요. 6월의 밤은 몇 시간일까요?'),show,B(`${24-day} hours`,`${24-day}시간`),[B(`${day} hours`,`${day}시간`),B('24 hours','24시간')],B('Day + night = 24 hours. These are invented practice measurements.','낮과 밤을 합하면 24시간이에요. 만든 연습 측정값이에요.'));
@@ -262,8 +305,8 @@ const modes = {
   return lv===1?item('star-evidence',B('Why does the Sun look so large and bright?','해가 아주 크고 밝게 보이는 까닭은?'),show,B('It is much closer to Earth','지구에 훨씬 가까워요'),[B('It is the biggest star','가장 큰 별이라서'),B('It is made of fire','불로 만들어져서')]):item('star-evidence',B('Which evidence puts the Sun between smaller and larger stars?','해가 작은 별과 큰 별 사이임을 뒷받침하는 근거는?'),show,B('Some stars are smaller, some larger','작은 별도 큰 별도 있어요'),[B('Looking biggest proves it is biggest','커 보이면 실제로도 가장 커요'),B('Distance cannot change its appearance','거리는 보이는 모습과 상관없어요')],B('The Sun is between smaller, dimmer stars and larger, brighter stars. Looking brightest does not prove it is biggest.','해보다 작고 어두운 별도, 크고 밝은 별도 있어요. 가장 밝게 보인다고 실제로 가장 큰 별은 아니에요.'));
  },
  matterchange2(lv,i) {
-  const n=lv===1?4:6;
-  const shape=(kind)=>{const points=kind===2?Array.from({length:n},(_,j)=>[j*1.15,j%2*2]):kind===0?Array.from({length:n},(_,j)=>[j,1]):Array.from({length:n},(_,j)=>[j%2,Math.floor(j/2)]);return `<svg viewBox="0 0 180 72" aria-label="${L(B(`${n} blocks, ${kind===2?'loose pieces':kind===0?'a row':'a tower'}`,`${n}개 블록, ${kind===2?'낱개 조각':kind===0?'가로줄':'탑'}`))}" role="img">${points.map(([x,y])=>`<rect x="${10+x*24}" y="${4+y*20}" width="22" height="18" rx="2" fill="#4385b5" stroke="#163d5b"/>`).join('')}</svg>`;};
+  const n=(lv===1?3:4)+Math.floor(i/2)%5;
+  const shape=(kind)=>{const points=kind===2?Array.from({length:n},(_,j)=>[j%5,j<5?0:2]):kind===0?Array.from({length:n},(_,j)=>[j%5,Math.floor(j/5)+1]):Array.from({length:n},(_,j)=>[j%3,Math.floor(j/3)]);return `<svg viewBox="0 0 180 72" aria-label="${L(B(`${n} blocks, ${kind===2?'loose pieces':kind===0?'a row':'a tower'}`,`${n}개 블록, ${kind===2?'낱개 조각':kind===0?'가로줄':'탑'}`))}" role="img">${points.map(([x,y])=>`<rect x="${10+x*24}" y="${4+y*20}" width="22" height="18" rx="2" fill="#4385b5" stroke="#163d5b"/>`).join('')}</svg>`;};
   const start=i%2,end=1-start;
   const it=item('rebuild',B(`Use the same ${n} blocks. Take apart, rebuild, then explain.`,`같은 블록 ${n}개를 분해하고 다시 만든 뒤 설명해요.`),`<div class="gap58-build"><div id="gap58-shape">${shape(start)}</div><button id="gap58-step" type="button">${L(B('Take apart','분해하기'))}</button><div id="gap58-count" aria-live="polite">${L(B(`${n} blocks in the structure`, `구조물에 블록 ${n}개`))}</div></div>`,B('Same pieces, different arrangement','같은 조각을 다르게 배치했어요'),[B('New pieces had to appear','새 조각이 생겨야 해요'),B('The pieces disappeared','조각이 사라졌어요')]);
   it.onRender=()=>{let step=0;const options=$$('.opt'),button=$('#gap58-step');options.forEach(b=>b.disabled=true);button.onclick=()=>{step++;if(step===1){$('#gap58-shape').innerHTML=shape(2);$('#gap58-count').textContent=L(B(`${n} loose blocks; none added or lost`, `낱개 블록 ${n}개, 더하거나 뺀 것 없음`));button.textContent=L(B('Rebuild differently','다르게 조립하기'));}else{$('#gap58-shape').innerHTML=shape(end);$('#gap58-count').textContent=L(B(`${n} blocks in the new structure`, `새 구조물에 블록 ${n}개`));button.disabled=true;options.forEach(b=>b.disabled=false);}};};
@@ -279,7 +322,7 @@ const modes = {
   return lv===1?item('community-question',B('Which question helps investigate this local change?','이 지역 변화를 조사하는 데 도움이 되는 질문은?'),card(r[0]),r[2],[B('What rock is deep underground here?','땅속 깊이 어떤 돌이 있나요?'),B('How tall is a hill elsewhere?','다른 공원의 언덕은 얼마나 높나요?')]):item('community-evidence',B('Which cause and effect fits the observations?','관찰에 맞는 원인과 결과는?'),card(r[0]),r[1],[[B('Wind carried the soil downhill','바람이 흙을 아래로 옮겼어요'),B('Tree roots pushed soil downhill','나무뿌리가 흙을 아래로 밀었어요')],[B('Extra rain reduced shade and nests','비 때문에 그늘과 둥지가 줄었어요'),B('Wind alone removed the nesting trees','바람만으로 둥지 나무가 없어졌어요')],[B('Rain alone made water pool','비만으로 물이 고였어요'),B('Removing the dam made water pool','댐을 없애서 물이 고였어요')],[B('A new dam stopped the flow','새 댐이 흐름을 막았어요'),B('The flow stayed the same','흐름이 그대로였어요')]][i%rows.length]);
  },
  force2(lv,i) {
-  const a=2+i%8,b=a+2,seconds=2;
+  const a=2+i%24,b=a+2,seconds=2;
   const direction=lv===2&&i%2===1;
   const show=direction?table(B('Practice cart · same push, 3 trials','가상 수레 · 같은 밀기, 3회 실험'),[B('Guide','가이드'),B('Turned left','왼쪽 회전')],[[B('Without','없음'),'0 / 3'],[B('With','있음'),'3 / 3']]):table(B(`Practice cart · same push, ${seconds} seconds each`,`가상 수레 · 같은 밀기, 각 ${seconds}초`),[B('Trial','실험'),B('No ramp (cm)','경사로 없음(cm)'),B('Ramp (cm)','경사로 있음(cm)')],[[1,a,b],[2,a+1,b+1]]);
   return item('design-data',direction?B('Goal: turn left. Did the guide work in these trials?','목표는 왼쪽 회전이에요. 가이드가 효과가 있었나요?'):lv===1?B('Which setup went farther in both trials?','두 실험 모두에서 더 멀리 간 장치는?'):B('Goal: move faster. Which evidence supports using the ramp?','목표는 더 빠르게 이동하기예요. 경사로 사용을 뒷받침하는 근거는?'),show,direction?B('Yes: left turns increased from 0 to 3','네, 왼쪽 회전이 0회→3회로 늘었어요'):lv===1?B('With the ramp, both times','경사로가 있을 때, 두 번 다'):B('Farther in the same time, both trials','같은 시간에 더 멀리 갔어요'),direction?[B('No: left turns fell from 3 to 0','아니요, 왼쪽 회전이 3회→0회로 줄었어요'),B('Yes: the cart went faster','네, 수레가 더 빨라졌어요')]:lv===1?[B('Without the ramp, both times','경사로가 없을 때, 두 번 다'),B('They went the same distance','둘 다 같은 거리를 갔어요')]:[B('Farther without the ramp, both trials','경사로 없이 두 번 다 더 멀리 갔어요'),B('The same distance in both trials','두 실험에서 같은 거리를 갔어요')],B('These are invented practice measurements, not a promise about every device.','만든 연습 측정값이에요. 모든 장치에서 같은 결과를 보장하지 않아요.'));

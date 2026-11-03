@@ -43,6 +43,43 @@
   ];
   const glossary=new Map();
   pairs.forEach((p,n)=>p.slice(0,3).forEach((line,i)=>glossary.set(line,meanings[n][i])));
+  const kPoems = [["The bees hum low.","See the river flow.","low","flow","벌이 낮게 윙윙대요.","강물이 흘러요."],
+    ["A pig wears a wig.","A duck finds a fig.","wig","fig","돼지가 가발을 써요.","오리가 무화과를 찾아요."],
+    ["A red sled.","Snow on my head.","sled","head","빨간 썰매.","머리에 눈이 내려요."],
+    ["A boat in the bay.","We laugh and play.","bay","play","만에 배가 있어요.","우리는 웃으며 놀아요."],
+    ["The sun is bright.","The snow is white.","bright","white","해가 밝아요.","눈이 하얘요."],
+    ["The fox has a sock.","It sits on a rock.","sock","rock","여우에게 양말이 있어요.","여우가 돌에 앉아요."],
+    ["A hat on a hook.","A pup with a book.","hook","book","고리에 걸린 모자.","책을 든 강아지."],
+    ["A sheep in a jeep.","It takes a big leap.","jeep","leap","지프를 탄 양.","양이 크게 뛰어요."],
+    ["A snail on a log.","A hop from a frog.","log","frog","통나무 위의 달팽이.","개구리가 폴짝 뛰어요."],
+    ["A bell goes ding.","The children sing.","ding","sing","방울이 딩 울려요.","아이들이 노래해요."],
+    ["A cup of tea.","A buzzing bee.","tea","bee","차 한 잔.","윙윙대는 벌."],
+    ["I touch my toes.","A rose by my nose.","toes","nose","발가락을 만져요.","코 옆에 장미가 있어요."],
+    ["A duck in a truck.","It rolls through muck.","truck","muck","트럭을 탄 오리.","트럭이 진흙을 지나가요."],
+    ["The wind blows by.","A kite climbs high.","by","high","바람이 스쳐요.","연이 높이 올라가요."],
+    ["The little light glows.","The cold wind blows.","glows","blows","작은 불빛이 빛나요.","찬 바람이 불어요."],
+    ["A round brown bun.","A warm gold sun.","bun","sun","동그란 갈색 빵.","따뜻한 금빛 해."],
+    ["Sand in my shoe.","The sea is blue.","shoe","blue","신발에 모래가 있어요.","바다가 파래요."],
+    ["A wet red rose.","It tickles my nose.","rose","nose","젖은 빨간 장미.","장미가 코를 간질여요."],
+    ["A shell in the sand.","A shell in my hand.","sand","hand","모래 속 조개.","내 손의 조개."],
+    ["A leaf in the air.","A leaf on my chair.","air","chair","공중의 나뭇잎.","내 의자 위 나뭇잎."],
+    ["I see the moon.","I hum a tune.","moon","tune","달이 보여요.","가락을 흥얼거려요."],
+    ["A bee finds a flower.","It rains for an hour.","flower","hour","벌이 꽃을 찾아요.","한 시간 비가 와요."],
+    ["An ant has a crumb.","It climbs on my thumb.","crumb","thumb","개미에게 빵 부스러기가 있어요.","개미가 엄지에 올라와요."],
+    ["The bird lands near.","Its song is clear.","near","clear","새가 가까이에 내려앉아요.","새소리가 또렷해요."],
+    ["A child pulls a cart.","She draws a heart.","cart","heart","아이가 손수레를 끌어요.","아이가 하트를 그려요."],
+    ["A small green pea.","A bird in a tree.","pea","tree","작은 초록 완두콩.","나무 위의 새."],
+    ["A spider spins thread.","The sun turns red.","thread","red","거미가 실을 뽑아요.","해가 붉어져요."],
+    ["A bug on the floor.","It crawls to the door.","floor","door","바닥 위 벌레.","벌레가 문으로 기어요."],
+    ["I have a blue cap.","I keep it on my lap.","cap","lap","파란 모자가 있어요.","모자를 무릎 위에 올려요."],
+    ["A snail hides in its shell.","I hear a school bell.","shell","bell","달팽이가 껍데기 속에 숨어요.","학교 종이 들려요."]];
+  const kDistractor = ['I pat a pet.', 'pet'];
+  glossary.set(kDistractor[0], '반려동물을 쓰다듬어요.');
+  for (const [first, second, , , koFirst, koSecond] of kPoems) {
+    glossary.set(first, koFirst);
+    glossary.set(first.replace(/\.$/, '') + ' with me.', koFirst + ' 나와 함께요.');
+    glossary.set(second, koSecond);
+  }
   const repeatMeanings=['작은 잎들이 떨어져요.','발끝을 톡톡 두드려요.','구름이 흘러가요.','손을 흔들어 인사해요.','보드라운 씨앗이 내려앉아요.','집에서 흥얼거려요.','비가 톡톡 내려요.','내 배가 천천히 흔들려요.','작은 별들이 빛나요.','함께 걸어요.','새가 부드럽게 노래해요.','손뼉을 쳐요.'];
   repeats.forEach((line,i)=>{glossary.set(line,repeatMeanings[i]);glossary.set(line.replace(/\.$/,'')+' with me.',repeatMeanings[i]+' 나와 함께요.');});
   const startMeanings=[['바쁜 벌들이 윙윙거려요.','파란 새들이 까딱거려요.'],['작은 거북들이 살금살금 걸어요.','키 큰 나무들이 돌아요.'],['보드라운 씨앗이 내려앉아요.','작은 달팽이들이 미끄러져요.'],['작은 잎들이 뛰어요.','긴 통나무들이 누워 있어요.'],['즐거운 생쥐들이 행진해요.','작은 나방들이 움직여요.'],['분홍 돼지들이 놀아요.','통통한 강아지들이 잠깐 멈춰요.'],['재미있는 여우들이 털썩 누워요.','개구리 다섯이 떠 있어요.'],['춤추는 오리들이 몸을 담가요.','젖은 개들이 땅을 파요.'],['붉은 토끼들이 달려요.','둥근 돌들이 굴러요.'],['즐거운 암탉들이 뛰어요.','커다란 말들이 숨어요.'],['젖은 벌레들이 꿈틀거려요.','하얀 파도가 밀려와요.'],['착한 고양이들이 몸을 웅크려요.','멋진 새끼 곰들이 기어올라요.']];
@@ -60,7 +97,8 @@
     });
   }
   function build(grade, level, n) {
-    const p = pairs[n], r = repeats[n];
+    const p = n < pairs.length ? pairs[n] : [...kPoems[n - pairs.length].slice(0, 2), kDistractor[0], ...kPoems[n - pairs.length].slice(2, 4), kDistractor[1], 'dog'];
+    const r = n < pairs.length ? repeats[n] : p[0];
     if (grade==='K' && level===2) {
       // Rotate the unrelated ending through all three positions.
       const lines=[p[0],p[1]]; lines.splice(n%3,0,p[2]);
@@ -75,13 +113,13 @@
       return {poems:[a,b],lines:[...a,...b],ask:B('Which poem repeats a whole line?','행 전체를 되풀이한 시는 무엇일까요?'),choices:only.map(L),right:n%3,
         after:B('A repeated line uses the same words again.','반복행은 같은 행을 다시 써요.')};
     }
-    if (grade==='1' && n%3===1) {
+    if (grade==='1' && n < pairs.length && n%3===1) {
       return {lines:[r,r],ask:B('What repeats in this poem?','이 시에서 무엇이 되풀이될까요?'),
         choices:[L(B('A whole line','행 전체')),L(B('Just the first word','첫 낱말만')),L(B('Just the last word','끝 낱말만'))],right:0,
         after:B('The same whole line comes again.','같은 행 전체가 다시 나와요.')};
     }
-    if (grade==='1' && n%3===2) {
-      const s=starts[n], words=s[0].replace(/\.$/,'').split(' ');
+    if (grade==='1' && n < pairs.length && n%3===2) {
+      const s=starts[n % starts.length], words=s[0].replace(/\.$/,'').split(' ');
       return {lines:s.slice(0,2),ask:B('Which pair starts with the same sound?','첫소리가 같은 짝은 무엇일까요?'),
         choices:[`${words[0]} – ${words[1]}`,`${words[0]} – owl`,`${words[1]} – egg`],choiceLang:'en-US',right:0,
         after:B('These words start with the same sound.','이 낱말들은 같은 소리로 시작해요.')};
@@ -125,7 +163,7 @@
     title:B('Little Poems','짧은 시'),sub:B('Listen, notice, and make','듣고 찾고 만들어요'),
     area:B('Reading · Poetry','읽기 · 시'),
     play(){
-      const item=build(grade,lvl(this.id),rnd(12)), game=this;
+      const item=build(grade,lvl(this.id),rnd(pairs.length + kPoems.length)), game=this;
       const canMake=!DIAG.active&&!SESSION.review;
       quiz(this,{ask:item.ask,askExtra:{t:item.lines.join(' '),lang:'en-US'},
         show:`<div class="g3p-material">${item.poems?item.poems.map((lines,i)=>poem(lines,['A','B'][i])).join(''):poem(item.lines)}</div>`,

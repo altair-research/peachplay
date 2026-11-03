@@ -54,13 +54,18 @@
     const other=feature==='color'?colors[(ci+1)%3][0]:c[0],body=rock(c[0],big,dots)+rock(other,feature==='size'?!big:big,feature==='dots'?!dots:dots);
     return {ask:B('Which property is different?','두 모형의 어떤 특징이 다를까요?'),show:body,opts:pics(feature==='size'?B('Size','크기'):feature==='color'?B('Color','색'):B('Spots','점'),[...(feature!=='size'?[B('Size','크기')]:[]),...(feature!=='color'?[B('Color','색')]:[]),...(feature!=='dots'?[B('Spots','점')]:[])],x=>({Size:'↔️',Color:'🎨',Spots:'⚫'})[x.en]),cls:'shapes'};
   });
-  const animals=[['🐕','dog','개','fur','털'],['🐈','cat','고양이','fur','털'],['🐇','rabbit','토끼','fur','털'],['🐻','bear','곰','fur','털'],['🐦','bird','새','feathers','깃털'],['🦆','duck','오리','feathers','깃털']];
+  const animals=[['🐕','dog','개','fur','털'],['🐈','cat','고양이','fur','털'],['🐇','rabbit','토끼','fur','털'],['🐻','bear','곰','fur','털'],['🐦','bird','새','feathers','깃털'],['🦆','duck','오리','feathers','깃털'],
+    ['🐑','sheep','양','fur','털'],['🦊','fox','여우','fur','털'],['🐿️','squirrel','다람쥐','fur','털'],
+    ['🦁','lion','사자','fur','털'],['🐺','wolf','늑대','fur','털'],['🐧','penguin','펭귄','feathers','깃털'],
+    ['🦉','owl','올빼미','feathers','깃털'],['🦜','parrot','앵무새','feathers','깃털'],
+    ['🦩','flamingo','홍학','feathers','깃털'],['🦃','turkey','칠면조','feathers','깃털'],
+    ['🦚','peacock','공작','feathers','깃털'],['🦢','swan','백조','feathers','깃털']];
   const leaf=(n,round)=>`<svg viewBox="0 0 120 70" style="width:120px;height:70px" role="img" aria-label="${L(B('Plant model','식물 모형'))}"><path d="M60 65V8" stroke="#256b34" stroke-width="3"/>${Array.from({length:n},(_,i)=>`<ellipse cx="${i%2?75:45}" cy="${15+i*10}" rx="${round?12:19}" ry="${round?11:5}" fill="#479e53"/>`).join('')}</svg>`;
   add('lifeclues',B('Living Thing Clues','생물의 특징'),'🐾',lv=>{
     if(rnd(3)===0){const n=2+rnd(4),round=!!rnd(2);return {ask:lv===1?B('How many leaves in this model?','식물 모형의 잎은 몇 개일까요?'):B('What is different in the two plants?','두 식물 모형에서 다른 것은?'),show:leaf(n,round)+(lv===2?leaf(n,!round):''),opts:lv===1?opts(String(n),[String(n+1),String(n-1)]):pics(B('Leaf shape','잎 모양'),[B('Leaf count','잎 수'),B('Leaf color','잎 색')],x=>({'Leaf shape':'🍃','Leaf count':'🔢','Leaf color':'🎨'})[x.en]),cls:lv===1?'words':'shapes'};}
     const a=pick(animals);
     if(lv===1)return {ask:B(`What covers the ${a[1]}'s body?`,`${a[2]}의 몸을 덮고 있는 것은?`),show:card(a[0]),opts:pics(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')],x=>({fur:'🧸',feathers:'🪶',scales:'🐟'})[x.en]),cls:'shapes'};
-    return {ask:B(`What do both ${a[1]}s have?`,`두 ${a[2]} 모두 가진 것은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:pics(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')],x=>({fur:'🧸',feathers:'🪶',scales:'🐟'})[x.en]),cls:'shapes',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
+    return {ask:B(`What do both animals have?`,`두 ${a[2]} 모두 가진 것은?`),show:card(`<span style="font-size:48px">${a[0]}</span> <span style="font-size:28px">${a[0]}</span>`),opts:pics(B(a[3],a[4]),[a[3]==='fur'?B('feathers','깃털'):B('fur','털'),B('scales','비늘')],x=>({fur:'🧸',feathers:'🪶',scales:'🐟'})[x.en]),cls:'shapes',after:B('A model compares a parent and young of the same kind.','같은 종류의 어른과 새끼를 비교하는 모형이에요.')};
   });
 })();
 // Science extension: five senses, what living things need.
@@ -79,7 +84,7 @@
     const middle=night?6:56;
     return {ask:B('Which picture matches the later view?','나중 하늘과 같은 그림은?'),show:`<div style="font-size:16px">${L(firstName)}　→　${L(lastName)}<br>${frame(first,night?a:0)}${frame(last,night?b:0)}</div>`,opts:[{html:frame(last,night?b:0),label:B('View A','그림 A'),ok:true},{html:frame(night?last:(last===12?20:12),night?(b===1?2:1):0),label:B('View B','그림 B'),ok:false},{html:frame(middle,night?middle:0),label:B('View C','그림 C'),ok:false}],after:B('The last picture is evidence of the later view.','마지막 그림이 나중 하늘의 관찰 근거예요.'),onRender(){const b=document.createElement('button');b.className='say';b.textContent='🔉';b.onclick=()=>$$('.opt .ol').forEach((e,i)=>say(e.textContent,undefined,i>0));$('#sp').after(b);}};
   });
-  const objects=[[B('ball','공을'),true],[B('wheel','바퀴를'),true],[B('orange','오렌지를'),true],[B('block','블록을'),false],[B('box','상자를'),false],[B('book','책을'),false]];
+  const objects=[[B('ball','공을'),true],[B('wheel','바퀴를'),true],[B('orange','오렌지를'),true],[B('block','블록을'),false],[B('box','상자를'),false],[B('book','책을'),false],[B('marble','구슬을'),true],[B('bead','구슬 장식을'),true],[B('tennis ball','테니스공을'),true],[B('brick','벽돌을'),false],[B('eraser','지우개를'),false],[B('notebook','공책을'),false]];
   add('moveplan',B('Plan a Move','움직임 계획'),'↔️',B('Science · Motion plans','과학 · 움직임 계획'),lv=>{
     const [obj,round]=pick(objects),right=!!rnd(2);
     const svg=`<svg viewBox="0 0 180 65" style="width:180px;height:65px"><path d="M5 55H175" stroke="#435269" stroke-width="3"/>${round?'<circle class="moveplan-obj" cx="90" cy="40" r="14" fill="#f3b65d" stroke="#435269" stroke-width="2"/>':'<rect class="moveplan-obj" x="76" y="27" width="28" height="28" fill="#76bec7" stroke="#435269" stroke-width="2"/>'}<text x="${right?148:12}" y="48" font-size="24" fill="#e0a800">★</text></svg>`;
@@ -138,7 +143,7 @@ registerGame({
   quiz(this,{ask:B('Which pair helps with BOTH clues?','두 단서에 맞는 짝은?'),askSay:B(`${a[1].en}; ${b[1].en}. Which pair?`,`${a[1].ko}, ${b[1].ko}. 어떤 짝일까요?`),show:`<div style="font-size:clamp(36px,7dvh,52px)">${a[0]} + ${b[0]}</div>`,quietShow:true,opts:shuffle([pic(...keys,true),pic(keys[0],wrong[0],false),pic(wrong[0],wrong[1],false)]),cls:'shapes'});
  };
  const needs=GAMES.find(g=>g.id==='needs');
- const species=[[B('rabbit','토끼'),'🐇'],[B('dog','강아지'),'🐕'],[B('cat','고양이'),'🐈'],[B('hamster','햄스터'),'🐹']];
+ const species=[[B('rabbit','토끼'),'🐇'],[B('dog','강아지'),'🐕'],[B('cat','고양이'),'🐈'],[B('hamster','햄스터'),'🐹'],[B('guinea pig','기니피그'),'🐾'],[B('chicken','닭'),'🐔'],[B('duck','오리'),'🦆'],[B('goat','염소'),'🐐'],[B('sheep','양'),'🐑'],[B('horse','말'),'🐴']];
  // 70a: care choices are a picture plus a two-word name.
  const W=['💧',B('water bowl','물그릇')],F=['🥣',B('food bowl','먹이 그릇')],R=['🏠',B('safe bed','쉴 곳')];
  const needCases=[

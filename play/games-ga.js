@@ -18,7 +18,7 @@
   const goods=[['🍎',B('apple','사과')],['📖',B('book','책')],['🧢',B('hat','모자')],['🖍️',B('crayon','크레용')],['⚽',B('ball','공')],['🧸',B('toy','장난감')]];
   add('workmoney',B('Work, Money, Choices','일과 돈과 선택'),'🛍️',lv=>{
     const a=pick(goods),b=pick(goods.filter(x=>x!==a)),price=1+rnd(4);
-    if(lv===1){const service=!!rnd(2),repair=pick([['🚲',B('fixes a bike','자전거를 고쳐 줘요')],['👞',B('mends a shoe','신발을 고쳐 줘요')],['⌚',B('fixes a watch','시계를 고쳐 줘요')],['👜',B('mends a bag','가방을 고쳐 줘요')],['💡',B('fixes a lamp','전등을 고쳐 줘요')],['👕',B('mends a shirt','옷을 고쳐 줘요')]]),story=service?B(`A worker ${repair[1].en}.`,repair[1].ko):B(`You buy a ${a[1].en}.`,`${a[1].ko} 구입이에요.`);return {ask:B('A thing or work for someone?','물건일까요, 해 주는 일일까요?'),show:text((service?repair[0]:a[0])+' '+L(story)),askExtra:{t:L(story)},opts:[[true,'🛠️',B('service','서비스')],[false,'📦',B('goods','재화')]].map(([v,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:v===service})),cls:'groups',after:B('Money buys goods and services.','돈으로 물건과 서비스를 사요.')};}
+    if(lv===1){const service=!!rnd(2),repair=pick([['🚲',B('fixes a bike','자전거를 고쳐 줘요')],['👞',B('mends a shoe','신발을 고쳐 줘요')],['⌚',B('fixes a watch','시계를 고쳐 줘요')],['👜',B('mends a bag','가방을 고쳐 줘요')],['💡',B('fixes a lamp','전등을 고쳐 줘요')],['👕',B('mends a shirt','옷을 고쳐 줘요')],['🦷',B('checks your teeth','이를 살펴 줘요')],['🚌',B('drives you to school','학교까지 태워 줘요')],['✂️',B('cuts your hair','머리를 잘라 줘요')],['📦',B('delivers a package','소포를 배달해요')],['🎹',B('teaches piano','피아노를 가르쳐요')],['🧹',B('cleans a room','방을 청소해 줘요')],['🪟',B('washes your window','창문을 닦아 줘요')],['🪴',B('waters your plants','화분에 물을 줘요')],['🐕',B('walks your dog','개를 산책시켜요')],['🧺',B('washes your clothes','빨래를 해 줘요')]]),story=service?B(`A worker ${repair[1].en}.`,repair[1].ko):B(`You buy a ${a[1].en}.`,`${a[1].ko} 구입이에요.`);return {ask:B('A thing or work for someone?','물건일까요, 해 주는 일일까요?'),show:text((service?repair[0]:a[0])+' '+L(story)),askExtra:{t:L(story)},opts:[[true,'🛠️',B('service','서비스')],[false,'📦',B('goods','재화')]].map(([v,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:v===service})),cls:'groups',after:B('Money buys goods and services.','돈으로 물건과 서비스를 사요.')};}
     // Picture-first (2026-10-26): the money and the price are both drawn as bills, the answers are pictures of 1-3 items.
     const each=1+rnd(2),k=1+rnd(3),money=each*k,row=(e,n)=>e.repeat(n);
     return {ask:B(`How many ${a[1].en}s can you buy?`,`${a[1].ko}을(를) 몇 개 살 수 있을까요?`),askSay:B(`You have ${money} dollars. One ${a[1].en} costs ${each}. How many can you buy?`,`${money}달러가 있어요. ${a[1].ko} 하나는 ${each}달러예요. 몇 개 살 수 있을까요?`),
@@ -434,3 +434,25 @@ const FLAG_FEATURE_PIC = {
   nogold: '<svg viewBox="0 0 20 20" class="ffeat"><rect width="20" height="20" fill="#3c3b6e"/><circle cx="10" cy="10" r="5" fill="none" stroke="#e5b92b" stroke-width="1" stroke-dasharray="1.5 1.2"/><line x1="4" y1="16" x2="16" y2="4" stroke="#d62828" stroke-width="2"/></svg>'
 };
 (() => {const g=GAMES.find(g=>g.id==='flags'),old=g.play;g.play=function(){if(lvl(this.id)===1)return old.call(this);const ga=!!rnd(2);quiz(this,{ask:B('Which two pictures BOTH match this flag?','이 깃발에 둘 다 맞는 그림 짝은?'),show:(ga?flagGA():flagUS()).replace('<svg ','<svg style="width:min(55vw,28dvh);height:auto" '),opts:(()=>{const GA=[['s3',B('3 stripes','줄 3개')],['ring',B('stars in a ring','별은 고리 모양')],['n13',B('13 stars','별 13개')],['gold',B('a gold circle','금색 동그라미')]],US=[['s13',B('13 stripes','줄 13개')],['rows',B('stars in rows','별은 여러 줄')],['n50',B('50 stars','별 50개')],['nogold',B('no gold circle','금색 동그라미 없음')]],facts=ga?GA:US,wrong=ga?US:GA,a=rnd(4),b=pick([0,1,2,3].filter(x=>x!==a)),pair=(x,y)=>({html:`<span class="fpair">${FLAG_FEATURE_PIC[x[0]]}${FLAG_FEATURE_PIC[y[0]]}</span><span class="ol">${L(x[1])}<br>${L(y[1])}</span>`});return [pair(facts[a],facts[b]),pair(wrong[a],facts[b]),pair(facts[a],wrong[b])];})().map((x,i)=>({...x,ok:i===0})),cls:'shapes'});};})();
+
+(() => {
+  const g = GAMES.find(g => g.id === 'flags'), prior = g.play;
+  const features = [
+    ['s3','s13'], ['ring','rows'], ['n13','n50'], ['gold','nogold']
+  ];
+  const labels = {
+    s3:B('Three stripes','줄 세 개'),s13:B('Thirteen stripes','줄 열세 개'),
+    ring:B('Stars in a ring','고리 모양의 별'),rows:B('Stars in rows','여러 줄의 별'),
+    n13:B('Thirteen stars','별 열세 개'),n50:B('Fifty stars','별 쉰 개'),
+    gold:B('Gold emblem','금색 문장'),nogold:B('No gold emblem','금색 문장 없음')
+  };
+  let turn = 0;
+  g.play = function () {
+    if (lvl(this.id) === 2 || turn++ % 2) return prior.call(this);
+    const [ga,us] = pick(features), side = rnd(2);
+    const opts = [ga,us].map((key,i)=>({html:FLAG_FEATURE_PIC[key],label:labels[key],ok:i===side}));
+    quiz(this,{ask:B('Which detail belongs to this flag?','이 깃발에는 어느 무늬가 있을까요?'),
+      show:(side?flagUS():flagGA()).replace('<svg ','<svg style="width:min(55vw,28dvh);height:auto" '),
+      opts,cls:'shapes'});
+  };
+})();

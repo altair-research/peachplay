@@ -123,28 +123,87 @@ registerGame({
 const OPP = [[['hot', '뜨거워요', '🔥'], ['cold', '차가워요', '🧊']], [['up', '위', '⬆️'], ['down', '아래', '⬇️']], [['day', '낮', '☀️'], ['night', '밤', '🌙']], [['happy', '기뻐요', '😀'], ['sad', '슬퍼요', '😢']],
   [['big', '커요', '🐘'], ['small', '작아요', '🐭']], [['fast', '빨라요', '🐇'], ['slow', '느려요', '🐢']], [['wet', '젖었어요', '💧'], ['dry', '말랐어요', '🏜️']], [['old', '나이 들었어요', '👴'], ['young', '어려요', '👶']],
   [['tall', '키가 커요', '🦒'], ['short', '키가 작아요', '🐁']], [['open', '열려 있어요', '📖'], ['closed', '닫혀 있어요', '📕']]];
+const K_OPPOSITE_SCENES = [["hot","cold","🔥","🧊","cool","🌡️","The soup boiled on the stove.","수프가 냄비에서 끓었어요.","The soup sat in the fridge.","수프를 냉장고에 뒀어요."],
+  ["big","small","🐘","🐜","tiny","🐞","We filled a tiny balloon with air.","작은 풍선에 바람을 불어 넣었어요.","We let air out of a big balloon.","큰 풍선에서 바람을 뺐어요."],
+  ["up","down","⬆️","⬇️","across","➡️","The kite rose from the ground.","연이 땅에서 높이 올라갔어요.","The kite fell to the ground.","연이 땅으로 떨어졌어요."],
+  ["wet","dry","💧","☀️","damp","🌦️","I dipped a dry towel in water.","마른 수건을 물에 담갔어요.","I left the wet towel in the sun all day.","젖은 수건을 온종일 햇볕에 뒀어요."],
+  ["fast","slow","🐇","🐌","steady","🐢","The runner sped past everyone.","달리는 아이가 모두를 앞질렀어요.","The runner took tiny steps on ice.","달리던 아이가 얼음 위에선 살금살금 걸었어요."],
+  ["open","closed","📖","📕","wide","↔️","I lifted the lid off the box.","상자의 뚜껑을 들어 올렸어요.","I put the lid back on the box.","뚜껑을 다시 상자에 덮었어요."],
+  ["tall","short","🦒","🐁","long","🐍","The little plant grew past the fence.","작던 풀이 울타리보다 높게 자랐어요.","I cut the plant down to my knee.","풀을 무릎 높이로 잘랐어요."],
+  ["full","empty","🪣","🕳️","half","🌗","I poured water all the way to the rim.","컵 끝까지 물을 부었어요.","I poured out every drop.","물을 한 방울도 남기지 않고 쏟았어요."],
+  ["heavy","light","🏋️","🪶","thick","📚","I put many bricks into my bag.","가방에 벽돌을 많이 넣었어요.","I took every brick out of my bag.","가방에서 벽돌을 모두 뺐어요."],
+  ["loud","quiet","📢","🤫","soft","🪶","The drum boomed and shook the room.","북이 크게 울려 방이 흔들렸어요.","We stopped playing and sat without a sound.","연주를 멈추고 소리 없이 앉았어요."],
+  ["near","far","📍","🏔️","behind","↩️","I walked right up to the tree.","나무 바로 앞까지 걸어갔어요.","I walked until the tree looked tiny.","나무가 작게 보일 때까지 걸었어요."],
+  ["inside","outside","🏠","🌳","beside","↔️","I went through the door into the room.","문을 지나 방에 들어갔어요.","I went through the door into the yard.","문을 지나 마당에 나갔어요."],
+  ["day","night","🌞","🌙","dawn","🌅","The sun lit up the playground.","해가 놀이터를 환하게 비췄어요.","Stars shone in the dark sky.","깜깜한 하늘에 별이 빛났어요."],
+  ["on","off","💡","⚫","dim","🕯️","I flipped the switch and the lamp lit up.","스위치를 눌렀더니 등불이 켜졌어요.","I flipped the switch and the room went dark.","스위치를 눌렀더니 방이 어두워졌어요."],
+  ["clean","dirty","✨","🟫","muddy","🐾","I washed every spot off my boots.","장화에 묻은 얼룩을 다 씻었어요.","I walked through mud in my boots.","장화를 신고 진흙을 밟았어요."],
+  ["happy","sad","😊","😢","calm","😌","I smiled when my friend came back.","친구가 돌아와서 웃었어요.","I cried when my friend went away.","친구가 떠나서 울었어요."],
+  ["awake","asleep","👀","😴","tired","🥱","I opened my eyes and got up.","눈을 뜨고 일어났어요.","I closed my eyes and began to dream.","눈을 감고 꿈을 꾸기 시작했어요."],
+  ["smooth","rough","🪞","🪨","flat","⬜","I rubbed the wood until the bumps were gone.","울퉁불퉁한 곳이 없어질 때까지 나무를 문질렀어요.","I felt bumps all over the bark.","나무 껍질 여기저기에 울퉁불퉁한 곳이 느껴졌어요."],
+  ["straight","bent","📏","🪝","round","⭕","I pulled the string tight.","실을 팽팽하게 당겼어요.","I folded the wire into a hook.","철사를 고리 모양으로 접었어요."],
+  ["young","old","🐣","🐔","grown","🐓","The bird had just hatched.","새가 알에서 막 나왔어요.","The bird had lived many years.","새가 여러 해를 살았어요."],
+  ["hard","soft","🪨","🧸","smooth","🪞","The clay dried until it would not bend.","찰흙이 말라서 구부러지지 않아요.","I added water so I could squeeze the clay.","찰흙에 물을 넣으니 손으로 눌러져요."],
+  ["light","dark","🔆","🌑","dim","🌘","I opened the curtains and sunlight filled the room.","커튼을 열자 방에 햇빛이 가득했어요.","I shut out every bit of light.","빛이 하나도 들어오지 않게 막았어요."],
+  ["long","short","🐍","🪱","tall","🦒","I tied on more yarn so it reached across the room.","실을 더 이으니 방 건너까지 닿았어요.","I cut the yarn to fit in my palm.","실을 손바닥에 들어가게 잘랐어요."],
+  ["deep","shallow","🌊","💧","flat","⬜","The water went well over my head.","물이 머리보다 한참 높았어요.","The water barely covered my toes.","물이 발가락만 겨우 덮었어요."],
+  ["thick","thin","📚","📄","wide","↔️","The book had a thousand pages.","책에 천 쪽이나 있었어요.","The booklet had just one folded page.","작은 책에 접은 종이 한 장만 있었어요."],
+  ["wide","narrow","↔️","🚪","long","📏","Four kids could walk side by side.","아이 넷이 나란히 걸을 수 있었어요.","Only one kid could fit through.","아이 한 명만 지나갈 수 있었어요."],
+  ["high","low","🎈","🐜","far","🏔️","The kite was above the tallest tree.","연이 가장 키 큰 나무보다 위에 있었어요.","The kite hung just off the ground.","연이 땅에서 조금 떨어진 곳에 걸렸어요."]];
+const K_OPPOSITE_CLUES = [["🍲♨️","🍲❄️"],
+  ["🎈💨","🎈📉"],
+  ["🪁🌤️","🪁🌱"],
+  ["🧺🚿","🧺🌤️"],
+  ["🏃💨","🚶⛸️"],
+  ["📦🙌","📦🔒"],
+  ["🌱📈","🌿✂️"],
+  ["🥛🚰","🥤↘️"],
+  ["🎒🧱","🎒➖"],
+  ["🥁💥","🥁🛑"],
+  ["🧍🌳","🚶🌲"],
+  ["🚪🛋️","🚪🌿"],
+  ["☀️🛝","🌌✨"],
+  ["🔘🔆","🔘🌑"],
+  ["👢🧼","👢🐾"],
+  ["🧒🎉","🧒💧"],
+  ["🛏️🌤️","🛏️💤"],
+  ["🪵🧽","🌳🖐️"],
+  ["🧵↔️","🧵🔁"],
+  ["🥚🐥","🪶📅📅"],
+  ["🏺🌤️","🏺💧"],
+  ["🪟☀️","🪟🌃"],
+  ["🧶➕","🧶✂️"],
+  ["🏊📏","🦶🫧"],
+  ["📖📃📃","📖📃"],
+  ["🚶🚶🚶🚶","🚶"],
+  ["🪁🌳","🪁🌱"]];
+function kOppositeItem(level, inContext) {
+  const index = rnd(K_OPPOSITE_SCENES.length);
+  const [a, b, iconA, iconB, middle, iconMiddle, enA, koA, enB, koB] = K_OPPOSITE_SCENES[index];
+  const flip = rnd(2) === 0;
+  const [target, other, targetIcon, otherIcon] = flip ? [a, b, iconA, iconB] : [b, a, iconB, iconA];
+  const context = B(flip ? enA : enB, flip ? koA : koB);
+  const options = [[target, targetIcon], [other, otherIcon], [middle, iconMiddle]];
+  if (level === 1) return {
+    ask: B('Find the opposite.', '반대말을 골라요.'),
+    askExtra: { t: other, lang: 'en-US' },
+    show: '<span class="emo">' + otherIcon + '</span><span class="word">' + other + '</span>',
+    opts: options.map(([word, icon], i) => ({ html: '<span class="emo">' + icon + '</span>', label: word, ok: i === 0 })),
+    cls: 'shapes'
+  };
+  const ask = inContext ? B('How did it change?', '어떻게 달라졌을까요?') : B('Which word fits the scene?', '장면에 맞는 낱말은?');
+  return {
+    ask, askSay: B(context.en + ' ' + ask.en, context.ko + ' ' + ask.ko),
+    show: '<div class="bigword" style="font-size:clamp(18px,3dvh,24px)"><span aria-hidden="true">' + K_OPPOSITE_CLUES[index][flip ? 0 : 1] + '</span> ' + L(context) + '</div>',
+    opts: options.map(([word, icon], i) => ({ html: '<span class="emo">' + icon + '</span>', label: word, ok: i === 0 })),
+    cls: 'shapes', after: B(other + ' ↔ ' + target, other + ' ↔ ' + target)
+  };
+}
+
 registerGame({
   id: 'opposites', subject: 'read', icon: '↔️', title: B('Opposites', '반대말'), sub: B('Hot and cold, up and down', '뜨겁다와 차갑다'),
   area: AREA_READ('Vocabulary'),
-  play() {
-    // [word, opposite, look-alike for L1, picture, story where the opposite is the missing word (L2), other-pair word for L2]
-    const rows=[
-     ['hot','cold','warm','🔥',B('The cold soup was heated. Now it is ___.','차가운 수프를 데웠어요. 이제 수프는 ___.'),'slow'],
-     ['big','small','huge','🐘',B('The small balloon got more air. Now it is ___.','작은 풍선에 바람을 더 넣었어요. 이제 ___.'),'quiet'],
-     ['up','down','high','⬆️',B('The kite was down. The wind lifted it ___.','연이 아래에 있었어요. 바람이 연을 ___ 올렸어요.'),'small'],
-     ['wet','dry','rainy','💧',B('The dry towel fell in the bath. Now it is ___.','마른 수건이 욕조에 빠졌어요. 이제 ___.'),'tall'],
-     ['fast','slow','quick','🐇',B('The slow toy car got new wheels. Now it is ___.','느린 장난감 차에 새 바퀴를 달았어요. 이제 ___.'),'quiet'],
-     ['open','closed','wide','📖',B('I pushed the closed door. Now it is ___.','닫힌 문을 밀었어요. 이제 문이 ___.'),'full'],
-     ['tall','short','big','🦒',B('The short plant grew and grew. Now it is ___.','키 작은 식물이 쑥쑥 자랐어요. 이제 ___.'),'empty'],
-     ['full','empty','heavy','🥛',B('The empty cup got milk to the top. Now it is ___.','빈 컵에 우유를 가득 부었어요. 이제 컵이 ___.'),'slow'],
-     ['heavy','light','big','🎒',B('I put books in my light bag. Now it is ___.','가벼운 가방에 책을 넣었어요. 이제 가방이 ___.'),'short'],
-     ['loud','quiet','noisy','📢',B('I turned up the quiet music. Now it is ___.','조용한 음악 소리를 키웠어요. 이제 ___.'),'wet'],
-     ['near','far','close','🏠',B('We walked to the far park. Now it is ___.','먼 공원까지 걸어갔어요. 이제 공원이 ___.'),'tall'],
-     ['inside','outside','under','🏡',B('We were outside. Rain came, so we went ___.','밖에 있었어요. 비가 와서 ___ 들어갔어요.'),'empty']];
-    const r=pick(rows),lv=lvl('opposites');
-    if(lv===1){quiz(this,{ask:B(`Which word is opposite to ${r[0]}?`,`영어 낱말 ${r[0]}의 반대말은?`),askExtra:{t:r[0],lang:'en-US'},show:`<div class="bigword"><span class="emo" role="img" aria-label="${r[0]}">${r[3]}</span> ${r[0]}</div>`,opts:r.slice(0,3).map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===1})),cls:'words',vocab:`${r[0]} – ${r[1]}`});return;}
-    quiz(this,{ask:B('Which opposite word finishes the story?','이야기를 끝내는 반대말 영어 낱말은?'),askSay:B(`${r[4].en.replace('___','blank')} Which opposite word finishes the story?`,`${r[4].ko.replace('___','빈칸')} 이야기를 끝내는 반대말 영어 낱말은?`),show:`<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(r[4])}</div>`,opts:[r[0],r[1],r[5]].map((w,i)=>({html:`<span class="word">${w}</span>`,ok:i===0})),cls:'words'});
-  }
+  play() { quiz(this, kOppositeItem(lvl(this.id), true)); }
 });
 
 // ---------- 7. Ending sounds ----------

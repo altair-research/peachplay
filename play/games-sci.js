@@ -4,12 +4,24 @@ const AREA_SCI = (u) => B(`Science · ${u}`, `과학 · ${u}`);
 
 const LIVING = [['🐕', B('dog', '강아지'), true], ['🌱', B('seedling', '새싹'), true], ['🦋', B('butterfly', '나비'), true], ['🐟', B('fish', '물고기'), true], ['🌳', B('tree', '나무'), true],
   ['🚗', B('car', '자동차'), false], ['⚽', B('ball', '공'), false], ['🧸', B('teddy bear', '곰 인형'), false], ['📖', B('book', '책'), false], ['⛰️', B('mountain', '산'), false], ['🐈', B('cat', '고양이'), true], ['🌻', B('sunflower plant', '해바라기'), true], ['🪑', B('chair', '의자'), false], ['🚲', B('bicycle', '자전거'), false]];
+LIVING.push(
+  ['🐢', B('turtle', '거북이'), true],
+  ['🐘', B('elephant', '코끼리'), true],
+  ['🐧', B('penguin', '펭귄'), true],
+  ['🌵', B('cactus', '선인장'), true],
+  ['🌴', B('palm tree', '야자나무'), true],
+  ['🎈', B('balloon', '풍선'), false],
+  ['🛴', B('scooter', '킥보드'), false],
+  ['🥄', B('spoon', '숟가락'), false],
+  ['🚂', B('train', '기차'), false],
+  ['🪁', B('kite', '연'), false]
+);
 registerGame({
   id: 'living', subject: 'sci', icon: '🌱', title: B('Living or Not?', '살아 있을까?'), sub: B('Plants, animals, things', '식물, 동물, 물건'),
   area: AREA_SCI('Living things'),
   play() {
     if(lvl('living')===2){
-      const t=pick(LIVING), plant=['seedling','tree','sunflower plant'].includes(t[1].en), key=t[2]?(plant?'plant':'animal'):'thing';
+      const t=pick(LIVING), plant=['seedling','tree','sunflower plant','cactus','palm tree'].includes(t[1].en), key=t[2]?(plant?'plant':'animal'):'thing';
       quiz(this,{ask:B('Plant, animal, or nonliving thing?','식물, 동물, 무생물 중 무엇일까요?'),show:`<span class="emo">${t[0]}</span>`,opts:[['plant','🌿',B('Plant','식물')],['animal','🐾',B('Animal','동물')],['thing','🧱',B('Nonliving','무생물')]].map(([k,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:k===key})),cls:'groups',vocab:t[1].en});return;
     }
     const t = pick(LIVING);
@@ -17,7 +29,7 @@ registerGame({
       ask: B('Is it living or not living?', '살아 있는 것일까요, 아닐까요?'),
       show: `<div class="bigword"><span class="emo">${t[0]}</span></div>`,
       opts: [{ html: '<span class="emo">🌿</span>', label: B('Living', '살아 있어요'), ok: t[2] }, { html: '<span class="emo">🧱</span>', label: B('Not living', '아니에요'), ok: !t[2] }], cls: 'groups',
-      after: B(`A ${t[1].en} is ${t[2] ? 'living' : 'not living'}.`, `${t[1].ko}은(는) ${t[2] ? '살아 있어요' : '살아 있지 않아요'}.`), vocab: `${t[1].en}`
+      after: B(`This is ${t[2] ? 'living' : 'not living'}.`, t[2] ? '살아 있어요.' : '살아 있지 않아요.'), vocab: t[1].en
     });
   }
 });

@@ -13,16 +13,18 @@ const roundShell = (askText, svgHtml, extra = '') => `<div class="prompt">${askT
 // ---------- Cut it: draw the lines ----------
 const CUT_SHAPES = { circle: { cx: 50, cy: 50, r: 40 }, rect: { x: 10, y: 20, w: 80, h: 60 } };
 // Aspect ratio changes the positions of fair cuts; color alone is not a new task.
-CUT_SHAPES.randomRect = () => { const [w, h] = pick([[84,36],[84,48],[84,60],[84,72],[72,84],[60,84],[48,84],[36,84]]); return { x: (100-w)/2, y: (100-h)/2, w, h }; };
+CUT_SHAPES.randomRect = () => { const w = 40 + 4 * rnd(12), h = 40 + 4 * rnd(12); return { x: (100-w)/2, y: (100-h)/2, w, h }; };
 const distToLine = (p, a, b) => { const dx = b.x - a.x, dy = b.y - a.y, L2 = Math.hypot(dx, dy) || 1; return Math.abs(dy * (p.x - a.x) - dx * (p.y - a.y)) / L2; };
 const angleDeg = (a, b) => { let d = Math.abs(Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI) % 180; return d; };
 const angleBetween = (l1, l2) => { let d = Math.abs(angleDeg(l1[0], l1[1]) - angleDeg(l2[0], l2[1])); if (d > 90) d = 180 - d; return d; };
 G1({
   id: 'partitiondraw', icon: '✂️', title: B('Cut It Fairly', '똑같이 잘라요'), sub: B('Draw the cuts for halves and fourths', '선을 그어 반과 4분의 1'), u: 'Equal shares (draw)',
   play() {
-    const lv = lvl('partitiondraw'), shape = pick(['circle', 'rect']), n = lv === 1 ? 2 : pick([2, 4]), name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
+    const lv = lvl('partitiondraw'), shape = pick(['circle', 'rect']), n = lv === 1 ? 2 : 4, name = n === 2 ? B('halves (2 equal shares)', '반 (똑같은 2조각)') : B('fourths (4 equal shares)', '4분의 1 (똑같은 4조각)');
     const ask = B(`Cut the ${shape === 'circle' ? 'circle' : 'rectangle'} into ${name.en}. Drag your finger across it to draw a line.`, `${shape === 'circle' ? '동그라미(원)' : '직사각형'}을 ${name.ko}으로 잘라요. 손가락으로 쭉 끌어서 선을 그어요.`);
-    const sh = shape === 'circle' ? CUT_SHAPES.circle : CUT_SHAPES.randomRect(), center = shape === 'circle' ? { x: sh.cx, y: sh.cy } : { x: sh.x + sh.w / 2, y: sh.y + sh.h / 2 };
+    const sh = shape === 'circle' ? { ...CUT_SHAPES.circle, r: 27 + rnd(17) } : CUT_SHAPES.randomRect();
+    if (dup(this, JSON.stringify([shape, n, sh]))) return this.play();
+    const center = shape === 'circle' ? { x: sh.cx, y: sh.cy } : { x: sh.x + sh.w / 2, y: sh.y + sh.h / 2 };
     const body = shape === 'circle' ? `<circle cx="${sh.cx}" cy="${sh.cy}" r="${sh.r}" fill="#ffd166" stroke="#1d3557" stroke-width="3"/>` : `<rect x="${sh.x}" y="${sh.y}" width="${sh.w}" height="${sh.h}" rx="3" fill="#ffd166" stroke="#1d3557" stroke-width="3"/>`;
     view().innerHTML = roundShell(L(ask), `<svg id="cutsvg" viewBox="0 0 100 100" class="cutsvg">${body}<g id="cuts" stroke="#ef476f" stroke-width="3" stroke-linecap="round"></g></svg>`, `<div><button class="pill" id="clr">↺ ${L(B('Clear', '지우기'))}</button></div>`);
     const svg = $('#cutsvg'), cuts = $('#cuts'); let lines = [], missed = false, done = false, cur = null, tries = 0;
@@ -72,11 +74,26 @@ G1({
 // ---------- Build the shape: drag the pieces in ----------
 const partGeom = (p) => (p.pts ? `<polygon points="${p.pts}"` : `<path d="${p.d}"`);
 const relSig = (p, i) => (p.pts ? p.pts.split(' ').map(q => { const [x, y] = q.split(',').map(Number); return `${(x - p.c[0]).toFixed(0)},${(y - p.c[1]).toFixed(0)}`; }).join(' ') : 'd' + i);
+// Different outlines and internal joins, with the same drag-and-fit rules.
+function buildRectangle(level) {
+  const width = 64 + 4 * rnd(8), height = 32 + 4 * rnd(8);
+  const x = (100 - width) / 2, y = (100 - height) / 2;
+  const split = x + width * pick([0.35, 0.45, 0.55, 0.65]), middle = y + height / 2;
+  const piece = (a, b, c, d) => ({
+    pts: a + ',' + b + ' ' + c + ',' + b + ' ' + c + ',' + d + ' ' + a + ',' + d,
+    c: [(a + c) / 2, (b + d) / 2]
+  });
+  const parts = [piece(x, y, split, y + height)];
+  if (level === 1) parts.push(piece(split, y, x + width, y + height));
+  else parts.push(piece(split, y, x + width, middle), piece(split, middle, x + width, y + height));
+  return { n: B('rectangle', '직사각형'), parts, what: B(parts.length + ' rectangles', '직사각형 ' + parts.length + '개') };
+}
 G1({
   id: 'shapebuild', icon: '🧱', title: B('Build the Shape', '도형 만들기'), sub: B('Drag the pieces into place', '조각을 끌어다 맞춰요'), u: 'Composing shapes (build)',
   play() {
-    const lv = lvl('shapebuild'), cp = pick(lv === 1 ? COMPS.filter(c => c.parts.length <= 2) : COMPS), k = 0.8, tx = 40, ty = 4, n = cp.parts.length;
-    const ask = B(`Drag the pieces to build the ${L(cp.n)}. Fill the dotted outline!`, `조각을 끌어다 점선 안을 채워 ${cp.n.ko}을 만들어요!`);
+    const lv = lvl('shapebuild'), cp = rnd(4) ? buildRectangle(lv) : pick(COMPS.filter(c => lv === 1 ? c.parts.length === 2 : c.parts.length >= 3)), k = 0.8, tx = 40, ty = 4, n = cp.parts.length;
+    if (dup(this, JSON.stringify(cp.parts))) return this.play();
+    const ask = B(`Fill the outline to build a ${cp.n.en}.`, '조각을 끌어 점선 안을 채워요.');
     const cols = Math.min(n, 3), rows = Math.ceil(n / cols), cellW = 160 / cols, cellH = rows === 1 ? 70 : 46, homes = shuffle(cp.parts.map((_, i) => i)).map((pi, slot) => ({ pi, hx: cellW * (slot % cols) + cellW / 2, hy: 112 + cellH * Math.floor(slot / cols) + cellH / 2 }));
     const targets = cp.parts.map((p, i) => `<g transform="translate(${tx} ${ty}) scale(${k})">${partGeom(p)} fill="#f3eefc" stroke="#9a8ff0" stroke-width="2.5" stroke-dasharray="4 3" stroke-linejoin="round" data-slot="${i}"/></g>`).join('');
     const pieces = homes.map(h => { const p = cp.parts[h.pi], [cx, cy] = p.c; return `<g class="bpiece2" data-p="${h.pi}" style="cursor:grab" transform="translate(${h.hx} ${h.hy}) scale(${k}) translate(${-cx} ${-cy})">${partGeom(p)} fill="${COMP_COL[h.pi % 6]}" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></g>`; }).join('');

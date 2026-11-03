@@ -45,7 +45,15 @@ G1T({
 });
 
 // ---------- then and now ----------
-const THEN = [[B('light', '불빛'), ['🕯️', B('a candle', '촛불')], ['💡', B('an electric lamp', '전등')]], [B('travel', '이동'), ['🐴', B('a horse and wagon', '말과 마차')], ['🚗', B('a car', '자동차')]], [B('writing', '글쓰기'), ['🪶', B('a feather pen', '깃털 펜')], ['💻', B('a computer', '컴퓨터')]], [B('talking to someone far away', '멀리 있는 사람과 이야기하기'), ['✉️', B('a letter carried by a rider', '말 탄 사람이 전하는 편지')], ['📱', B('a phone', '휴대전화')]], [B('cooking', '요리'), ['🔥', B('a fire in a fireplace', '벽난로 불')], ['🍳', B('a stove', '스토브(가스레인지)')]], [B('keeping food cold', '음식을 차갑게 보관하기'), ['🧊', B('a cool cellar', '시원한 지하 저장실')], ['❄️', B('a refrigerator', '냉장고')]], [B('washing clothes', '빨래'), ['🪣', B('scrubbing by hand in a tub', '통에 담가 손으로 빨기')], ['🧺', B('a washing machine', '세탁기')]]];
+const THEN = [[B('light', '불빛'), ['🕯️', B('a candle', '촛불')], ['💡', B('an electric lamp', '전등')]], [B('travel', '이동'), ['🐴', B('a horse and wagon', '말과 마차')], ['🚗', B('motor car', '자동차')]], [B('writing', '글쓰기'), ['🪶', B('a feather pen', '깃털 펜')], ['💻', B('a computer', '컴퓨터')]], [B('send a message', '소식 전하기'), ['✉️', B('a carried letter', '배달 편지')], ['📱', B('mobile phone', '휴대전화')]], [B('cooking', '요리'), ['🔥', B('a hearth', '벽난로 불')], ['🍳', B('cooking stove', '조리용 스토브')]], [B('keep food cool', '음식 보관'), ['🧊', B('a cool cellar', '시원한 지하 저장실')], ['❄️', B('a refrigerator', '냉장고')]], [B('wash clothes', '빨래'), ['🪣', B('a wash tub', '빨래통')], ['🧺', B('a washing machine', '세탁기')]]];
+THEN.push(
+  [B("tell time", "시간 보기"), ["☀️", B("sundial", "해시계")], ["⌚", B("digital watch", "전자시계")]],
+  [B("take pictures", "사진 찍기"), ["📷", B("film camera", "필름 카메라")], ["📱", B("phone camera", "휴대전화 카메라")]],
+  [B("play music", "음악 듣기"), ["💿", B("record player", "레코드 재생기")], ["🎧", B("digital player", "디지털 재생기")]],
+  [B("copy pages", "문서 복사"), ["✍️", B("hand copying", "손으로 베껴 쓰기")], ["🖨️", B("copy machine", "복사기")]],
+  [B("find routes", "길 찾기"), ["🗺️", B("road map", "도로 지도")], ["📱", B("navigation app", "길 안내 앱")]],
+  [B("clean floors", "바닥 청소"), ["🧹", B("broom", "빗자루")], ["🤖", B("robot vacuum", "로봇 청소기")]]
+);
 G1T({
   id: 'thennow', icon: '⏳', title: B('Then and Now', '그때와 지금'), sub: B('Long ago and today', '옛날과 오늘날'), u: 'Past and present',
   play() {
@@ -79,6 +87,20 @@ const SCEN = [
   [B('Sam falls off his bike, gets up, and tries again.', '샘은 자전거에서 넘어졌지만 일어나 다시 해 봐요.'), 'perseverance'], [B('Lily helps a classmate who dropped his books.', '릴리는 책을 떨어뜨린 반 친구를 도와줘요.'), 'kindness'], [B('Leo plays with a classmate who speaks a different language.', '레오는 다른 언어를 쓰는 반 친구와 함께 놀아요.'), 'tolerance'],
   [B('Zoe keeps practicing piano every day until the song is perfect.', '조이는 곡이 완벽해질 때까지 매일 피아노를 연습해요.'), 'perseverance'], [B('Max feels nervous, but he stands up for a friend who is being teased.', '맥스는 떨리지만 놀림받는 친구의 편을 들어 줘요.'), 'courage'], [B('Ava splits the snacks equally for everyone.', '에이바는 간식을 모두에게 똑같이 나눠요.'), 'fairness'], [B('Noah leaves flowers growing and stays on the park path.', '노아는 꽃을 꺾지 않고 공원의 길로 다녀요.'), 'respect'], [B('Ana tries several ways to solve a tricky puzzle.', '아나는 어려운 퍼즐을 여러 방법으로 계속 풀어 봐요.'),'perseverance'], [B('Leo waits until his partner has finished speaking.', '레오는 짝이 말을 마칠 때까지 기다려요.'),'respect']
 ];
+SCEN.push(
+  [B("Both teams get equal field time.", "두 팀이 운동장을 같은 시간 동안 써요."), "fairness"],
+  [B("Jo deals each player four cards.", "조는 놀이 친구들에게 카드를 네 장씩 나눠요."), "fairness"],
+  [B("Kim asks before using a friend’s crayons.", "킴은 친구 크레용을 쓰기 전에 물어봐요."), "respect"],
+  [B("Jo turns down music while a friend speaks.", "조는 친구가 말할 때 음악 소리를 줄여요."), "respect"],
+  [B("Kim admits breaking a cup even though she is scared.", "킴은 무섭지만 컵을 깼다고 말해요."), "courage"],
+  [B("Jo speaks up when older kids tease a friend.", "조는 큰 아이들이 친구를 놀리자 용기를 내서 말해요."), "courage"],
+  [B("Kim retries the knot after it slips.", "킴은 매듭이 풀려도 다시 묶어요."), "perseverance"],
+  [B("Jo rebuilds after the tower falls.", "조는 탑이 무너져도 다시 쌓아요."), "perseverance"],
+  [B("Kim brings a tissue to a crying friend.", "킴은 우는 친구에게 휴지를 줘요."), "kindness"],
+  [B("Jo helps pick up spilled crayons.", "조는 친구가 쏟은 크레용을 주워 줘요."), "kindness"],
+  [B("Kim welcomes a friend who celebrates a different holiday.", "킴은 다른 명절을 지내는 친구를 반겨요."), "tolerance"],
+  [B("Jo asks a new classmate to teach a different family game.", "조는 새 친구가 집에서 하는 다른 놀이를 배워요."), "tolerance"]
+);
 G1T({
   id: 'character1', icon: '💛', title: B('Character Counts', '좋은 품성'), sub: B('Fairness, respect, courage, perseverance', '공정, 존중, 용기, 인내'), u: 'Character',
   play() {
@@ -151,8 +173,26 @@ G1T({
 });
 
 // ---------- goods and services ----------
-const GOODS = [['🍞', B('bread', '빵')], ['👟', B('shoes', '신발')], ['🧸', B('a toy', '장난감')], ['📚', B('a book', '책')], ['🍑', B('a peach', '복숭아')], ['🧢', B('a hat', '모자')]];
-const SERVICES = [['🩺', B('a doctor checking you', '진찰해 주는 의사')], ['🚌', B('a bus driver', '버스 기사')], ['💇', B('a barber cutting hair', '머리를 잘라 주는 이발사')], ['📮', B('a mail carrier', '우편 배달부')], ['🧑‍🚒', B('a firefighter', '소방관')], ['👩‍🏫', B('a teacher', '선생님')]];
+const GOODS = [['🍞', B('bread', '빵')], ['👟', B('shoes', '신발')], ['🧸', B('a toy', '장난감')], ['📚', B('a book', '책')], ['🍑', B('a peach', '복숭아')], ['🧢', B('a hat', '모자')],
+  ["🧤", B("gloves", "장갑")],
+  ["☂️", B("an umbrella", "우산")],
+  ["🧃", B("a carton of juice", "주스 한 팩")],
+  ["🪑", B("a chair", "의자")],
+  ["🖍️", B("a crayon", "크레용")],
+  ["🧦", B("socks", "양말")],
+  ["🍓", B("strawberries", "딸기")],
+  ["🧺", B("a basket", "바구니")]
+];
+const SERVICES = [['🩺', B('a doctor checking you', '진찰해 주는 의사')], ['🚌', B('a bus driver', '버스 기사')], ['💇', B('a barber cutting hair', '머리를 잘라 주는 이발사')], ['📮', B('a mail carrier', '우편 배달부')], ['🧑‍🚒', B('a firefighter', '소방관')], ['👩‍🏫', B('a teacher', '선생님')],
+  ["🪛", B("fixing a bicycle", "자전거 고쳐 주기")],
+  ["🧹", B("sweeping a classroom", "교실 쓸어 주기")],
+  ["🦷", B("checking a tooth", "이 살펴 주기")],
+  ["📦", B("delivering a package", "소포 배달하기")],
+  ["🐕", B("walking a neighbor’s dog", "이웃의 개 산책시키기")],
+  ["🧵", B("mending a torn shirt", "찢어진 셔츠 꿰매 주기")],
+  ["🛟", B("watching swimmers to keep them safe", "수영하는 사람들의 안전 지키기")],
+  ["🎹", B("teaching a piano lesson", "피아노 가르치기")]
+];
 G1T({
   id: 'goodsservices', icon: '🛍️', title: B('Goods and Services', '물건과 서비스'), sub: B('Things people make and jobs people do', '만든 물건과 해 주는 일'), u: 'Economics',
   play() {
@@ -167,10 +207,41 @@ G1T({
 function tx2(a, b) { return B(a, b); }
 
 // ---------- save or spend ----------
+const SAVE_GOALS = [
+  B("a notebook", "공책"),
+  B("a kite", "연"),
+  B("a puzzle", "퍼즐"),
+  B("a paint set", "물감 세트"),
+  B("a jump rope", "줄넘기"),
+  B("a comic book", "만화책"),
+  B("a lunch box", "도시락통"),
+  B("a water bottle", "물병"),
+  B("a soccer ball", "축구공"),
+  B("a flashlight", "손전등"),
+  B("a backpack", "책가방"),
+  B("a yo-yo", "요요"),
+  B("a raincoat", "비옷"),
+  B("a cap", "모자"),
+  B("a pack of crayons", "크레용")
+];
 G1T({
   id: 'savespend', icon: '🐷', title: B('Save or Spend?', '모을까 쓸까'), sub: B('Wants, needs, and saving', '원하는 것, 필요한 것, 저축'), u: 'Money choices',
   play() {
-    const lv = lvl('savespend'), qs = [
+    const lv = lvl('savespend');
+    if (lv === 1 && rnd(4) !== 0) {
+      const goal = pick(SAVE_GOALS);
+      const save = rnd(2) === 0;
+      const story = save ? B(`You put money aside for ${goal.en}.`, `${goal.ko} 살 돈을 따로 모아 둬요.`)
+        : B(`You pay for ${goal.en} today.`, `오늘 ${goal.ko} 값을 내요.`);
+      const actions = [B('Save for later', '나중을 위해 모으기'), B('Spend it now', '지금 물건 값 내기')];
+      quiz(this, {
+        ask: B('What are you doing with your money?', '지금 돈으로 무엇을 하나요?'),
+        show: `<div class="storytext">${L(story)}</div>`, askExtra: { t: L(story) },
+        opts: tOpts(actions[save ? 0 : 1], [actions[save ? 1 : 0]]), cls: 'words'
+      });
+      return;
+    }
+    const qs = [
       [1, B('You put a dollar in a jar for a future purchase. Are you saving or spending?', '나중에 물건을 사려고 저금통에 1달러를 넣어요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Saving', '모으기'), [tx2('Spending', '쓰기')]],
       [1, B('You pay for a pencil at a store. Are you saving or spending?', '가게에서 연필 값을 내요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Spending', '쓰기'), [tx2('Saving', '모으기')]],
       [1, B('There are three children but only two seats. What is limited?', '아이는 세 명인데 자리는 두 개예요. 무엇이 부족할까요?'), tx2('Seats', '자리'), [tx2('Children', '아이'), tx2('Choices of color', '고를 수 있는 색')]],
@@ -178,7 +249,7 @@ G1T({
       [1, B('People earn money by ___.', '사람들은 ___ 돈을 벌어요.'), tx2('working', '일해서'), [tx2('sleeping', '잠만 자서'), tx2('wishing', '소원을 빌어서')]],
       [1, B('Which one is a NEED?', '꼭 필요한 것은 어느 것일까요?'), tx2('food', '음식'), [tx2('a video game', '게임'), tx2('a new toy', '새 장난감')]],
       [1, B('Which one is a WANT?', '갖고 싶은 것(원하는 것)은 어느 것일까요?'), tx2('a new toy', '새 장난감'), [tx2('water', '물'), tx2('a home', '집')]],
-      [1, B('Saving money means ___.', '돈을 저축한다는 것은 ___ 뜻이에요.'), tx2('keeping it for later', '나중을 위해 모아 두는 것'), [tx2('spending it all now', '지금 다 쓰는 것'), tx2('giving it away', '남에게 주는 것')]],
+      [1, B('Saving money means ___.', '돈을 저축한다는 것은 ___ 뜻이에요.'), tx2('keeping it for later', '나중을 위해 모아 두는 것'), [tx2('spending it today', '오늘 바로 쓰는 것'), tx2('giving it away', '남에게 주는 것')]],
       [2, B('Ben wants a toy that costs $5. He has $3. What can he do?', '벤은 5달러짜리 장난감을 갖고 싶은데 3달러가 있어요. 어떻게 할 수 있을까요?'), tx2('Save more money', '돈을 더 모아요'), [tx2('Spend the $3 on candy', '3달러로 사탕을 사요'), tx2('Forget the toy forever', '장난감을 영영 잊어요')]],
       [2, B('Mia earned $4 helping her neighbor. She can save it or spend it. Who is making a choice?', '미아는 이웃을 도와 4달러를 벌었어요. 저축하거나 쓸 수 있어요. 선택하는 사람은 누구일까요?'), tx2('Mia', '미아'), [tx2('The neighbor', '이웃'), tx2('Nobody', '아무도 아니에요')]],
       [2, B('We cannot have everything we want because ___.', '원하는 것을 다 가질 수 없는 이유는 ___.'), tx2('wants are unlimited, but resources are limited', '원하는 것은 끝이 없지만 가진 것은 한정되어 있어서'), [tx2('stores are closed', '가게가 닫혀 있어서'), tx2('money is heavy', '돈이 무거워서')]]
@@ -264,12 +335,21 @@ G1T({
 // 65: reason about the functions of the existing artifacts, without claiming everyone used them.
 (() => {
  const game=GAMES.find(g=>g.id==='thennow');
- const purposes=[B('light','불빛'),B('travel','이동'),B('writing','글쓰기'),B('messages','소식 전하기'),B('cooking','요리'),B('food storage','음식 보관'),B('washing','빨래')];
- const tools=[[B('candle','촛불'),B('electric lamp','전등')],[B('horse and wagon','말과 마차'),B('motor car','자동차')],[B('feather pen','깃털 펜'),B('computer','컴퓨터')],[B('carried letter','배달 편지'),B('mobile phone','휴대전화')],[B('hearth fire','벽난로 불'),B('cooking stove','조리용 스토브')],[B('cool cellar','찬 지하 저장실'),B('refrigerator','냉장고')],[B('wash tub','빨래통'),B('washing machine','세탁기')]];
- game.play=function(){const t=pick(THEN),side=1+rnd(2),other=side===1?2:1,two=lvl(this.id)===2,index=THEN.indexOf(t);
- const purposeWrong=[[1,6],[2,6],[5,6],[5,6],[1,2],[1,2],[1,2]][index],toolWrong=[[5,6],[5,6],[5,6],[5,6],[2,5],[1,2],[2,5]][index];
- const right=two?tools[index][other-1]:purposes[index],wrong=(two?toolWrong:purposeWrong).map(i=>two?tools[i][other-1]:purposes[i]);
- quiz(this,{ask:two?B('Which tool can do the same job?','같은 일을 할 수 있는 도구는?'):B('Which job can this tool do?','이 도구로 어떤 일을 할까요?'),show:`<div class="storytext">${t[side][0]} ${L(tools[index][side-1])}</div>`,askExtra:{t:L(tools[index][side-1])},opts:tOpts(right,wrong),cls:'words'});};
+ game.play = function () {
+   const row = pick(THEN), side = 1 + rnd(2), otherSide = 3 - side;
+   const advanced = lvl(this.id) === 2, tool = row[side];
+   const foils = THEN.filter(x => x !== row && x[0].en !== row[0].en);
+   const start = (THEN.indexOf(row) + side) % foils.length;
+   const distractors = [foils[start], foils[(start + 4) % foils.length]];
+   const answer = advanced ? row[otherSide][1] : row[0];
+   const wrong = distractors.map(x => advanced ? x[otherSide][1] : x[0]);
+   quiz(this, {
+     ask: advanced ? B('Which other tool does the same job?', '같은 일을 하는 다른 도구는?')
+       : B('What can this tool help you do?', '이 도구로 무엇을 할 수 있을까요?'),
+     show: `<div class="storytext">${tool[0]} ${L(tool[1])}</div>`,
+     askExtra: { t: L(tool[1]) }, opts: tOpts(answer, wrong), cls: 'words'
+   });
+ };
  const place=GAMES.find(g=>g.id==='placetime'),prior=place.play;
  // New dates checked against National Archives and NPS; see banks2.md.
  const dates=[
@@ -301,9 +381,30 @@ G1T({
 
 // 65: one link in the displayed containment model; no saved home address.
 (() => {
- const g=GAMES.find(g=>g.id==='whereilive'),old=g.play;
- g.play=function(){if(lvl(this.id)===2||rnd(2))return old.call(this);const i=rnd(4),right=NEST[i+1][0];
- quiz(this,{ask:B(`Which place is just bigger than ${NEST[i][0].en}?`,`이 그림에서 ${NEST[i][0].ko} 바로 바깥의 장소 종류는?`),show:`<div class="storytext">${NEST.map(x=>L(x[0])).join(' → ')}</div>`,opts:tOpts(right,NEST.filter((_,j)=>j!==i+1&&j!==i).slice(0,2).map(x=>x[0])),cls:'words'});};
+ const g = GAMES.find(g => g.id === 'whereilive');
+ const regions = [
+   [B('Lawrenceville','로렌스빌'),B('Gwinnett','귀넷'),B('Georgia','조지아'),B('United States','미국'),B('North America','북아메리카')],
+   [B('Marietta','매리에타'),B('Cobb','코브'),B('Georgia','조지아'),B('United States','미국'),B('North America','북아메리카')],
+   [B('Decatur','디케이터'),B('DeKalb','디캘브'),B('Georgia','조지아'),B('United States','미국'),B('North America','북아메리카')],
+   [B('Orlando','올랜도'),B('Orange','오렌지'),B('Florida','플로리다'),B('United States','미국'),B('North America','북아메리카')],
+   [B('Raleigh','롤리'),B('Wake','웨이크'),B('North Carolina','노스캐롤라이나'),B('United States','미국'),B('North America','북아메리카')],
+   [B('Birmingham','버밍햄'),B('Jefferson','제퍼슨'),B('Alabama','앨라배마'),B('United States','미국'),B('North America','북아메리카')]
+ ];
+ const icons = ['🏙️','📍','🗺️','🇺🇸','🌎'];
+ g.play = function () {
+   const row = pick(regions), i = rnd(5), advanced = lvl(this.id) === 2;
+   const target = advanced ? (i === 4 ? 2 : i + 1) : i;
+   const clue = advanced ? (i === 4 ? B('Two steps out from the city','도시에서 바깥으로 두 칸') : B('One step out from the marked place','표시한 곳에서 바깥으로 한 칸')) : NEST[target][0];
+   const picture = row.map((name,j) => j === target ? '❔' : `${advanced && j === (i === 4 ? 0 : i) ? '★' : ''}${icons[j]} ${L(name)}`).join(' → ');
+   const sameLevel = target === 3 ? [B('Canada','캐나다'),B('Costa Rica','코스타리카')] :
+     target === 4 ? [B('South America','남아메리카'),B('Europe','유럽')] : regions.map(place => place[target]);
+   const pool = [...new Map(sameLevel.filter(name => name.en !== row[target].en).map(name => [name.en,name])).values()];
+   quiz(this,{ask:advanced ? B('Which name fills the missing step?','빈칸에 들어갈 곳은?') : B(`Which name is the ${clue.en}?`,`${clue.ko}의 이름은?`),
+     show:`<div class="storytext">${advanced ? L(clue)+'<br>' : ''}${picture}</div>`,
+     askExtra:{t:(advanced ? L(clue)+'. ' : '')+picture},
+     opts:tOpts(row[target],pool.slice(0,2)),cls:'words'});
+ };
+
 })();
 
 // 70a: grade-1 questions are one sentence. Extra clue sentences in a question move to the read-aloud
@@ -322,4 +423,38 @@ G1T({
   const game = GAMES.find(g => g.id === id), play = game.play;
   game.play = function () { const raw = window.quiz; window.quiz = (g, item) => { window.quiz = raw; return raw(g, split(item)); }; try { return play.apply(this, arguments); } finally { window.quiz = raw; } };
  }
+})();
+
+(() => {
+ const songWords = [
+  [B('mountains','mountains'),B('land rising high','높이 솟은 땅'),'⛰️'],
+  [B('sea','sea'),B('ocean water','넓은 바닷물'),'🌊'],
+  [B('sky','sky'),B('space above us','머리 위로 펼쳐진 곳'),'🌤️'],
+  [B('grain','grain'),B('edible crop seeds','먹는 곡식 씨앗'),'🌾'],
+  [B('plain','plain'),B('wide flat land','넓고 평평한 땅'),'🏞️'],
+  [B('hill','hill'),B('a rise in the land','땅이 솟은 작은 언덕'),'⛰️'],
+  [B('rock','rock'),B('a hard piece of stone','단단한 돌 조각'),'🪨'],
+  [B('woods','woods'),B('land with many trees','나무가 많은 곳'),'🌳'],
+  [B('gleam','gleam'),B('shine softly','은은하게 빛나다'),'✨'],
+  [B('breeze','breeze'),B('gentle moving air','살살 부는 바람'),'🍃'],
+  [B('rills','rills'),B('small streams','작은 시냇물'),'💧'],
+  [B('liberty','liberty'),B('freedom to make choices','스스로 고를 수 있는 자유'),'🕊️']
+ ];
+ const g = GAMES.find(g => g.id === 'patriot');
+ g.play = function () {
+   const i = rnd(songWords.length), row = songWords[i], advanced = lvl(this.id) === 2;
+   const direction = rnd(2), second = songWords[(i+1+rnd(songWords.length-1))%songWords.length];
+   const other = songWords[(i+3)%songWords.length];
+   const names = [row,second,other];
+   const pair = (a,b) => B(a.en+' → '+b.en,a.ko+' → '+b.ko);
+   const prompt = advanced ? B('Which meanings match these song words in order?','노래 낱말의 뜻을 순서대로 고르면?')
+     : direction ? B('Which song word fits this meaning?','이 뜻에 맞는 노래 낱말은?')
+       : B('What does this song word mean?','이 노래 낱말의 뜻은?');
+   const clue = advanced ? pair(row[0],second[0]) : row[direction];
+   const picture = !advanced && direction ? row[2]+' ' : '';
+   const options = advanced ? [pair(row[1],second[1]),pair(second[1],row[1]),pair(row[1],other===second?songWords[(i+4)%songWords.length][1]:other[1])]
+     : names.map(x=>x[1-direction]);
+   if(!advanced && second===other)options[2]=songWords[(i+4)%songWords.length][1-direction];
+   quiz(this,{ask:prompt,show:`<div class="storytext">${picture}${L(clue)}</div>`,askExtra:{t:L(clue)},opts:tOpts(options[0],options.slice(1)),cls:'words'});
+ };
 })();

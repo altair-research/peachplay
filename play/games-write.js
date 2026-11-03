@@ -13,7 +13,10 @@ function tileRound(game, cfg) {
     <div class="slots${cfg.oneRow ? ' onerow' : ''}">${cfg.target.map(() => '<div class="slot"></div>').join('')}</div>
     <div class="opts tiles${cfg.oneRow ? ' onerow' : ''}">${tokens.map((t, i) => `<button class="opt tile" data-i="${i}">${t}</button>`).join('')}</div>
     <pk-cheer class="cheer" id="cheer"></pk-cheer><div class="fact" id="fact"></div>`;
-  const ask = () => say(L(cfg.askSay || cfg.ask));
+  const ask = () => {
+    say(L(cfg.askSay || cfg.ask));
+    if (cfg.hearWord) say(cfg.hearWord, 'en-US', true);
+  };
   $('#sp').onclick = ask; ask();
   let pos = 0, missed = false;
   if (DIAG.active) DIAG.decorate(game);
@@ -42,33 +45,60 @@ const BIGGER = [['frog', '🐸', B('frog', '개구리')], ['fish', '🐟', B('fi
 const ALPHA = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 // ---------- 1. Label it (spell the word for the picture) ----------
+const LABEL_SHORT = [...CVC,
+  ['map','🗺️',B('map','지도')], ['jam','🍓🥄',B('jam','잼')], ['ham','🍖',B('ham','햄')],
+  ['bun','🍔',B('bun','빵')], ['gum','🫧',B('gum','껌')], ['nut','🥜',B('nut','견과')],
+  ['hut','🛖',B('hut','오두막')], ['jet','✈️',B('jet','제트기')], ['van','🚐',B('van','승합차')],
+  ['cab','🚕',B('cab','택시')], ['web','🕸️',B('web','거미줄')], ['net','🥅',B('net','그물')],
+  ['rod','🎣',B('rod','낚싯대')], ['log','🪵',B('log','통나무')], ['cap','🧢',B('cap','모자')],
+  ['bug','🐛',B('bug','벌레')], ['ram','🐏',B('ram','숫양')], ['rat','🐀',B('rat','쥐')],
+  ['pup','🐕',B('pup','강아지')], ['cub','🐻',B('cub','새끼 곰')], ['fan','🪭',B('fan','부채')],
+  ['pot','🪴',B('pot','화분')], ['lid','🫙',B('lid','뚜껑')],
+  ['top','🔝',B('top','맨 위')], ['zip','🤐',B('zip','지퍼를 잠그다')], ['rug','🟫',B('rug','깔개')],
+  ['leg','🦵',B('leg','다리')], ['lip','👄',B('lip','입술')], ['fin','🦈',B('fin','지느러미')],
+  ['paw','🐾',B('paw','발')], ['ear','👂',B('ear','귀')], ['jaw','🦷',B('jaw','턱')]
+];
+const LABEL_LONG = [...BIGGER, ...[
+  ['hand','✋','손'], ['foot','🦶','발'], ['nose','👃','코'], ['face','🙂','얼굴'],
+  ['book','📕','책'], ['bell','🔔','방울'], ['door','🚪','문'], ['chair','🪑','의자'],
+  ['sock','🧦','양말'], ['shoe','👟','신발'], ['coat','🧥','외투'], ['vest','🦺','조끼'],
+  ['glove','🧤','장갑'], ['scarf','🧣','목도리'], ['shirt','👕','셔츠'], ['dress','👗','원피스'],
+  ['boat','⛵','돛단배'], ['train','🚆','기차'], ['truck','🚚','트럭'], ['bike','🚲','자전거'],
+  ['wheel','🛞','바퀴'], ['leaf','🍃','잎'], ['seed','🌱','씨앗'], ['corn','🌽','옥수수'],
+  ['kite','🪁','연'], ['pear','🍐','배'], ['peach','🍑','복숭아'], ['grape','🍇','포도'],
+  ['toast','🍞','토스트'], ['plate','🍽️','접시'],
+  ['spoon','🥄','숟가락'], ['fork','🍴','포크'], ['bowl','🥣','그릇'], ['mug','☕','머그잔'],
+  ['clock','🕒','시계'], ['light','💡','등'], ['brush','🖌️','붓'], ['block','🧱','블록']
+  ].map(([word,icon,ko]) => [word,icon,B(word,ko)])];
 registerGame({
   id: 'label', subject: 'write', icon: '🏷️', title: B('Label It', '그림에 이름 붙이기'), sub: B('Spell the word', '글자를 순서대로'),
   area: AREA_WRITE('Labeling'),
   play() {
-    const w = pick(lvl('label') === 1 ? CVC : [...CVC, ...BIGGER]);
+    const w = pick(lvl('label') === 1 ? LABEL_SHORT : LABEL_LONG);
     const letters = w[0].split(''), extra = others(ALPHA.filter(c => !letters.includes(c)), '', 2);
     tileRound(this, {
       ask: B('Spell the word for the picture!', '그림의 이름을 글자로 만들어요!'), show: `<span class="emo">${w[1]}</span>`,
-      target: letters, extra, speakTiles: true, oneRow: true, after: B(`${w[0]}!`, `${w[0]} — ${w[2].ko}!`), vocab: w[0]
+      target: letters, extra, speakTiles: true, oneRow: true, hearWord: w[0], after: B(`${w[0]}!`, `${w[0]} — ${w[2].ko}!`), vocab: w[0]
     });
   }
 });
 
 // ---------- 2. Build a sentence ----------
-const SENTENCES = {
-  1: [['I see a cat.', '🐱'], ['I like my dog.', '🐶'], ['We can go up.', '⬆️'], ['The sun is hot.', '☀️'], ['I can run.', '🏃'], ['My hat is here.', '🧢'], ['I see a pig.', '🐷'], ['I see a bus.', '🚌'], ['I see a fox.', '🦊'], ['I see a hen.', '🐔'], ['I see a bat.', '🦇'], ['I see a pen.', '🖊️']],
-  2: [['I see a big dog.', '🐕'], ['We like to play.', '⚽'], ['The cat is on the bed.', '🐱'], ['I can see the moon.', '🌙'], ['The bird can fly up.', '🐦'], ['My mom and I read.', '📖'], ['I can see a fish.', '🐟'], ['I can see a star.', '⭐'], ['I can see a tree.', '🌳'], ['I can see a duck.', '🦆'], ['I can see a bear.', '🐻'], ['I can see a ship.', '🚢']]
-};
 registerGame({
   id: 'sentence', subject: 'write', icon: '📝', title: B('Build a Sentence', '문장 만들기'), sub: B('Put the words in order', '단어를 순서대로'),
   area: AREA_WRITE('Sentences'),
   play() {
-    const s = pick(SENTENCES[lvl('sentence')]), words = s[0].split(' ');
+    const level = lvl('sentence');
+    const [noun, icon] = pick([...CVC, ...BIGGER].filter(([word]) => word !== 'milk'));
+    const frame = level === 1
+      ? pick(['I see a', 'I like the', 'Look at the'])
+      : pick(['I can see the', 'Can you find the', 'I like to draw a']);
+    const ending = frame.startsWith('Can') ? '?' : '.';
+    const s = [frame + ' ' + noun + ending, icon], words = s[0].split(' ');
     const extraPool = ['to', 'the', 'is', 'we', 'run', 'big', 'and'].filter(x => !words.includes(x));
     tileRound(this, {
       ask: B('Put the words in order to make a sentence!', '단어를 순서대로 놓아 문장을 만들어요!'), show: `<span class="emo">${s[1]}</span>`,
-      target: words, extra: others(extraPool, '', 1), speakTiles: false, after: B(s[0], s[0]), vocab: s[0]
+      target: words, extra: others(extraPool, '', 1), speakTiles: false, hearWord: s[0], after: B(s[0], s[0]), vocab: s[0]
     });
   }
 });

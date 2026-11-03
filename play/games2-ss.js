@@ -288,3 +288,52 @@ for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.p
  const [a,b,c]=shuffle(SYMS),pair=(x,y)=>B(`${x.n.en} → ${y.n.en}`,`${x.n.ko} → ${y.n.ko}`);
  quiz(this,{ask:B('Which pair matches these roles in order?','차례로 역할에 맞는 상징의 짝은?'),show:`<div class="storytext" style="font-size:clamp(16px,2.8dvh,21px)">1: ${L(a.s)}<br>2: ${L(b.s)}</div>`,opts:sw(pair(a,b),[pair(b,a),pair(a,c)]),cls:'words sents'});};
 })();
+
+(() => {
+ const government = GAMES.find(g => g.id === 'gov2');
+ const roles = [B('Mayor','시장'),B('Governor','주지사'),B('President','대통령')];
+ const jobs = [
+  [B('a city park','시립 공원'),B('a city library','시립 도서관'),B('a city bus route','시내버스 노선'),B('a city street','시내 도로'),B('a city playground','시립 놀이터'),B('a city fire station','시립 소방서'),B('a city sidewalk','시내 보도'),B('a city community center','시립 주민 센터')],
+  [B('a state park','주립 공원'),B('a state highway','주 고속도로'),B('a state college','주립 대학'),B('a state budget','주 예산'),B('a state museum','주립 박물관'),B('a state office','주 정부 청사'),B('a state forest','주립 숲'),B('a state emergency plan','주 비상 대응 계획')],
+  [B('a U.S. embassy','미국 대사관'),B('a national park','국립 공원'),B('the U.S. armed forces','미군'),B('the federal budget','연방 예산'),B('a federal agency','연방 기관'),B('a treaty with another country','다른 나라와 맺는 조약'),B('a federal emergency plan','연방 비상 대응 계획'),B('a federal office','연방 정부 청사')]
+ ];
+ const show = text => `<div class="storytext">${L(text)}</div>`;
+ government.play=function(){
+   const i=rnd(3), job=pick(jobs[i]), advanced=lvl(this.id)===2;
+   const wrongRoles=roles.filter((_,j)=>j!==i);
+   const levels=[B('city','도시'),B('state','주'),B('national','나라')];
+   const pair=(r,l)=>B(r.en+' · '+l.en,r.ko+' · '+l.ko);
+   const right=advanced?pair(roles[i],levels[i]):roles[i];
+   const wrong=advanced?[pair(wrongRoles[0],levels[i]),pair(roles[i],levels[(i+1)%3])]:wrongRoles;
+   quiz(this,{ask:advanced?B('Which leader and level fit this public work?','이 일에 맞는 지도자와 정부의 짝은?'):B('Which leader serves at this level?','이 일을 맡은 정부의 지도자는?'),
+     show:show(job),askExtra:{t:L(job)},opts:sw(right,wrong),cls:'words'});
+ };
+ const nations = GAMES.find(g=>g.id==='nations2');
+ const prior=nations.play;
+ const sources=[
+  [B('Sequoyah made signs for the sounds in Cherokee.','세쿼이아는 체로키 말의 소리를 적는 기호를 만들었어요.'),B('Writing the language','말을 글로 적기'),B('Translating a meeting','회의 통역하기'),B('Growing food','먹을거리 기르기')],
+  [B('Mary Musgrove could speak Creek and English.','메리 머스그로브는 크리크 말과 영어를 할 수 있었어요.'),B('Interpreting a conversation','대화를 통역하기'),B('Making writing signs','글자 기호 만들기'),B('Choosing crops','키울 작물 고르기')],
+  [B('Many farmers grew corn, beans and squash.','많은 농부가 옥수수와 콩과 호박을 길렀어요.'),B('Growing several crops','여러 작물 기르기'),B('Building river boats','강에서 탈 배 만들기'),B('Making writing signs','글자 기호 만들기')],
+  [B('Cherokee communities exist today.','오늘날에도 체로키 공동체가 있어요.'),B('The people are still here','지금도 사람들이 살아요'),B('The people moved to Europe','사람들이 유럽으로 갔어요'),B('The people became another nation','사람들이 다른 민족이 되었어요')],
+  [B("Tomochichi led the Yamacraw community.", "토모치치는 야마크로 공동체를 이끌었어요."), B("Leading a community", "공동체 이끌기"), B("Writing a script", "글자 만들기"), B("Growing crops", "작물 기르기")],
+  [B("The Cherokee were made to leave their homes.", "체로키족은 살던 곳을 강제로 떠났어요."), B("Forced removal", "강제로 옮겨 감"), B("A trading trip", "물건을 팔러 떠남"), B("A visit to family", "가족을 만나러 떠남")],
+  [B("People used local trees to build homes.", "사람들은 집을 지으려고 주변의 나무를 썼어요."), B("Using nearby wood", "주변 나무 쓰기"), B("Buying factory bricks", "공장 벽돌 사기"), B("Bringing stone by ship", "배로 돌 나르기")],
+  [B("A farm grew corn, beans, and squash.", "농장에서 옥수수, 콩, 호박을 길렀어요."), B("Three food crops", "먹을 작물 세 가지"), B("Three kinds of trees", "나무 세 종류"), B("Three building tools", "집 짓는 도구 세 가지")],
+  [B("Creek communities exist today.", "오늘날에도 크리크족 공동체가 있어요."), B("Creek life continues", "크리크족은 지금도 살아요"), B("Creek life ended", "크리크족은 사라졌어요"), B("Creek life began in Europe", "크리크족은 유럽에서 시작했어요")],
+  [B("Long ago Cherokee towns stood in north Georgia’s mountains.", "옛날 조지아 북쪽 산에 체로키족 마을이 있었어요."), B("Mountain towns", "산에 있는 마을"), B("Island towns", "섬에 있는 마을"), B("Desert towns", "사막에 있는 마을")],
+  [B("Cherokee learners could use Sequoyah’s signs.", "체로키 사람들은 세쿼이아가 만든 기호를 배울 수 있었어요."), B("Read Cherokee", "체로키 말 읽기"), B("Read English", "영어 읽기"), B("Read Spanish", "스페인 말 읽기")],
+  [B("Musgrove helped two groups understand each other.", "머스그로브는 두 집단이 서로 말을 알아듣게 도왔어요."), B("Help people talk", "대화를 돕기"), B("Help people farm", "농사를 돕기"), B("Help people build", "집 짓기를 돕기")],
+  [B("A family grew plants and hunted nearby animals for food.", "한 가족은 식물을 기르고 주변 동물을 사냥해 먹을 것을 얻었어요."), B("Food from nearby land", "주변 땅에서 얻은 음식"), B("Food from a factory", "공장에서 만든 음식"), B("Food from a faraway ship", "멀리서 배로 온 음식")],
+  [B("A Cherokee family lives in its community now.", "한 체로키 가족이 지금도 자기 공동체에서 살아요."), B("A living community", "오늘날에도 있는 공동체"), B("An ancient tool", "아주 옛날의 도구"), B("A past event", "지나간 사건")]
+ ];
+ let turn=0;
+ nations.play=function(){
+   if(turn++%3===0)return prior.call(this);
+   const i=rnd(sources.length), [source,right,...wrong]=sources[i], advanced=lvl(this.id)===2;
+   const j=(i+1+rnd(sources.length-1))%sources.length, second=sources[j];
+   const pair=(a,b)=>B(a.en+' → '+b.en,a.ko+' → '+b.ko);
+   const clue=advanced?pair(source,second[0]):source;
+   quiz(this,{ask:advanced?B('Which two ideas fit the clues in order?','두 단서에 순서대로 맞는 생각은?'):B('What does this clue tell us?','이 단서에서 무엇을 알 수 있나요?'),
+    show:show(clue),askExtra:{t:L(clue)},opts:advanced?sw(pair(right,second[1]),[pair(second[1],right),pair(wrong[0],second[1])]):sw(right,wrong),cls:'words'});
+ };
+})();

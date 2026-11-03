@@ -21,7 +21,7 @@ G1R({
       const rev = b + a, ds = [rev, a + a].filter(x => x !== w);
       quiz(this, { ask: B(`Put the word parts together: ${a} + ${b}`, `낱말 조각을 합쳐요: ${a} + ${b}`), show: `<div class="bigword">${a} + ${b} = ?</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(`${a} and ${b} make ${w}!`, `${a} + ${b} = ${w}!`), vocab: w });
     } else {
-      const groups = { cake: ['cup', 'pan'], ball: ['foot', 'base', 'basket'], fish: ['star', 'gold', 'jelly'], house: ['dog', 'tree', 'doll'], time: ['bed', 'play', 'lunch'] }, key = pick(Object.keys(groups)), [p, q] = shuffle(groups[key]).slice(0, 2), from = p + key, to = q + key;
+      const groups = { cake: ['cup', 'pan', 'cheese'], ball: ['foot', 'base', 'basket', 'snow'], fish: ['star', 'gold', 'jelly', 'cat'], house: ['dog', 'tree', 'doll', 'bird'], time: ['bed', 'play', 'lunch', 'day'], book: ['note', 'cook', 'text', 'work'], light: ['sun', 'moon', 'flash', 'spot'], room: ['class', 'bed', 'bath', 'play'] }, key = pick(Object.keys(groups)), [p, q] = shuffle(groups[key]).slice(0, 2), from = p + key, to = q + key;
       quiz(this, { ask: B(`Change "${p}" in "${from}" to "${q}": what word?`, `"${from}"의 "${p}"를 "${q}"(으)로 바꾸면?`), show: `<div class="bigword">${p}·${key} → ?</div>`, opts: wordOpts(to, [key + q, p + q]), cls: 'words', after: B(`${to}!`, `${to}!`), vocab: to });
     }
   }
@@ -150,10 +150,28 @@ G1R({
 
 // ---------- 8. Tricky words ----------
 const TRICKY = [['said', 'My mom ___ hello.', '엄마가 안녕이라고 ___.', ['sed', 'sayd']], ['was', 'It ___ a fun day.', '재미있는 날이 ___.', ['wuz', 'woz']], ['they', '___ like to play.', '___ 놀기를 좋아해요.', ['thay', 'thea']], ['there', 'Put it over ___.', '저기에 놓아요: ___.', ['thier', 'ther']], ['where', '___ is my hat?', '내 모자가 ___ 있어요?', ['wear', 'wher']], ['what', '___ is that?', '그건 ___이에요?', ['wat', 'whut']], ['who', '___ is at the door?', '문 앞에 ___ 있어요?', ['hoo', 'whoo']], ['come', 'Please ___ here.', '여기로 ___.', ['cum', 'kum']], ['some', 'I want ___ milk.', '우유 ___ 주세요.', ['sum', 'soum']], ['one', 'I have ___ dog.', '강아지가 ___ 마리 있어요.', ['wun', 'won']], ['two', 'I see ___ birds.', '새가 ___ 마리 보여요.', ['too', 'tu']], ['because', 'I smile ___ I am happy.', '행복해서 웃어요: ___.', ['becuz', 'becaus']], ['again', 'Let us try ___!', '___ 해 봐요!', ['agen', 'agan']], ['friend', 'She is my ___.', '그 애는 내 ___예요.', ['frend', 'freind']], ['people', 'Many ___ came.', '많은 ___이 왔어요.', ['peple', 'peeple']], ['would', 'I ___ like a snack.', '간식을 ___ 좋겠어요.', ['wud', 'woud']], ['could', 'I ___ jump high.', '나는 높이 뛸 수 ___.', ['cud', 'coud']], ['very', 'It is ___ hot.', '___ 더워요.', ['verry', 'vary']], ['give', 'Please ___ me a pen.', '펜을 ___ 주세요.', ['giv', 'gif']], ['have', 'We ___ a cat.', '우리는 고양이를 ___.', ['hav', 'haf']], ['are', 'We ___ happy.', '우리는 행복___.', ['ar', 'arr']], ['your', 'Is this ___ coat?', '이것이 ___ 코트예요?', ['yor', 'youre']], ['of', 'A cup ___ milk.', '우유 한 컵 ___.', ['uv', 'ov']], ['do', 'What will you ___?', '무엇을 ___ 거예요?', ['doo', 'du']], ['from', 'A gift ___ Grandma.', '할머니___ 온 선물.', ['frum', 'frm']], ['want', 'I ___ a cookie.', '쿠키를 ___.', ['wont', 'wunt']], ['school', 'I go to ___.', '나는 ___에 가요.', ['skool', 'scool']], ['great', 'That was a ___ game!', '___ 경기였어요!', ['grait', 'greit']], ['away', 'The bird flew ___.', '새가 ___ 날아갔어요.', ['awey', 'awae']], ['love', 'I ___ my dog.', '나는 내 강아지를 ___.', ['luv', 'lov']], ['mother', 'My ___ is kind.', '내 ___는 친절해요.', ['mothur', 'muther']], ['father', 'My ___ reads to me.', '내 ___가 책을 읽어 줘요.', ['fathur', 'fahter']], ['together', 'We play ___.', '우리는 ___ 놀아요.', ['togethur', 'toegether']], ['around', 'Run ___ the tree.', '나무 ___를 달려요.', ['arownd', 'aroud']], ['their', 'That is ___ house.', '저것은 ___ 집이에요.', ['thare', 'thier']], ['many', 'I have ___ toys.', '장난감이 ___ 있어요.', ['meny', 'mani']], ['any', 'Do you have ___ gum?', '껌 ___ 있어요?', ['eny', 'ani']], ['laugh', 'The joke made me ___.', '그 농담에 ___.', ['laf', 'lauf']], ['move', 'Please ___ over.', '옆으로 ___.', ['moov', 'muve']], ['once', '___ I saw a bear.', '___ 곰을 본 적이 있어요.', ['wunce', 'onse']]];
+TRICKY.push(...[["does","Mom ___ the dishes.","엄마가 설거지를 ___.",["duz","dose"]],
+  ["were","We ___ at home.","우리는 집에 ___.",["wer","wurr"]],
+  ["only","I have ___ one.","하나___ 있어요.",["onlee","olny"]],
+  ["every","We read ___ day.","___ 책을 읽어요.",["evry","everry"]],
+  ["buy","We will ___ fruit.","과일을 ___ 거예요.",["bie","bui"]],
+  ["eight","Four plus four is ___.","4 더하기 4는 ___예요.",["ait","eigt"]],
+  ["light","Turn on the ___.","___을 켜요.",["lite","ligt"]],
+  ["right","Raise your ___ hand.","___ 손을 들어요.",["rite","rigt"]],
+  ["write","I can ___ my name.","내 이름을 ___ 수 있어요.",["writ","wryte"]],
+  ["know","I ___ the answer.","답을 ___.",["kno","knowe"]],
+  ["new","I have a ___ hat.","___ 모자가 있어요.",["newe","noo"]],
+  ["eye","I wink with one ___.","한쪽 ___으로 윙크해요.",["ie","eiy"]]]);
 G1R({
   id: 'tricky1', icon: '🪄', title: B('Tricky Words', '까다로운 낱말'), sub: B('Words you cannot sound out', '소리와 철자가 다른 낱말'), u: 'Sight words',
   play() {
-    const lv = lvl('tricky1'), t = pick(lv === 1 ? TRICKY.slice(0, 22) : TRICKY), [w, sent, ko, ds] = t, filled = sent.replace('___', `<span class="qbox">?</span>`);
+    const lv = lvl('tricky1'), t = pick(TRICKY), [w, sent, ko, ds] = t;
+    if (lv === 1) {
+      quiz(this, { ask: B('Spell it.', '듣고 맞는 철자를 골라요.'), askExtra: { t: w, lang: 'en-US' },
+        opts: wordOpts(w, ds), cls: 'words', after: B(w, w) });
+      return;
+    }
+    const filled = sent.replace('___', `<span class="qbox">?</span>`);
     quiz(this, { ask: B('Which correctly spelled word fits the sentence?', '문장에 맞고 철자가 바른 낱말은?'), askSay: B(sent.replace('___', 'blank'), ko.replace('___', '')), show: `<div class="bigword sent">${filled}</div>`, opts: wordOpts(w, ds), cls: 'words', after: B(sent.replace('___', w), ko.replace('___', w)), vocab: sent.replace('___', w) });
   }
 });
@@ -161,13 +179,138 @@ G1R({
 // ---------- 9. Spell it (tiles) ----------
 const SPELL1 = [[['sh', 'i', 'p'], '🚢', B('ship', '배')], [['ch', 'i', 'p'], '🍟', B('chip', '감자칩')], [['f', 'r', 'o', 'g'], '🐸', B('frog', '개구리')], [['f', 'l', 'a', 'g'], '🚩', B('flag', '깃발')], [['s', 't', 'ar'], '⭐', B('star', '별')], [['d', 'r', 'u', 'm'], '🥁', B('drum', '북')], [['c', 'r', 'a', 'b'], '🦀', B('crab', '게')], [['s', 'w', 'i', 'm'], '🏊', B('swim', '수영')], [['d', 'u', 'ck'], '🦆', B('duck', '오리')], [['t', 'r', 'ai', 'n'], '🚂', B('train', '기차')], [['c', 'a', 'k', 'e'], '🎂', B('cake', '케이크')], [['b', 'i', 'k', 'e'], '🚲', B('bike', '자전거')], [['r', 'ai', 'n'], '🌧️', B('rain', '비')], [['b', 'oa', 't'], '⛵', B('boat', '보트')], [['t', 'r', 'ee'], '🌳', B('tree', '나무')]];
 const SPELL2 = [[['rab', 'bit'], '🐰', B('rabbit', '토끼')], [['sun', 'set'], '🌅', B('sunset', '노을')], [['pen', 'cil'], '✏️', B('pencil', '연필')], [['but', 'ter'], '🧈', B('butter', '버터')], [['kit', 'ten'], '🐱', B('kitten', '새끼 고양이')], [['pic', 'nic'], '🧺', B('picnic', '소풍')], [['bas', 'ket'], '🧺', B('basket', '바구니')], [['mag', 'net'], '🧲', B('magnet', '자석')], [['pump', 'kin'], '🎃', B('pumpkin', '호박')], [['win', 'dow'], '🪟', B('window', '창문')]];
+const moreSpellings = rows => rows.map(([chunks, icon, ko]) => {
+  const parts = chunks.split(' '), word = parts.join('');
+  return [parts, icon, B(word, ko)];
+});
+SPELL1.push(...moreSpellings([["bl o ck","🧱","블록"],
+  ["cl o ck","🕒","시계"],
+  ["s p oo n","🥄","숟가락"],
+  ["s n ai l","🐌","달팽이"],
+  ["th u mb","👍","엄지"],
+  ["ch i ck","🐥","병아리"],
+  ["sh ee p","🐑","양"],
+  ["sh e ll","🐚","조개"],
+  ["b r u sh","🖌️","붓"],
+  ["t r u ck","🚚","트럭"],
+  ["s k u nk","🦨","스컹크"],
+  ["sh o p","🏪","가게"],
+  ["f l a t","⬜","평평한"],
+  ["p l u m","🟣","자두"],
+  ["g r a p e","🍇","포도"],
+  ["b r ea d","🍞","빵"],
+  ["s t o n e","🪨","돌"],
+  ["ch ee s e","🧀","치즈"],
+  ["f l ow er","🌼","꽃"],
+  ["th r ee","3️⃣","셋"],
+  ["c r ow n","👑","왕관"],
+  ["s n ow","❄️","눈"],
+  ["s l i d e","🛝","미끄럼틀"],
+  ["p l a n t","🪴","식물"],
+  ["d r e ss","👗","원피스"],
+  ["s k a t e","⛸️","스케이트"],
+  ["s p i n","🌀","돌기"],
+  ["f l y","🪰","파리"],
+  ["sh ar k","🦈","상어"],
+  ["wh a l e","🐋","고래"],
+  ["wh ee l","🛞","바퀴"],
+  ["b r i ck","🧱","벽돌"]]));
+SPELL2.push(...moreSpellings([["ap ple","🍎","사과"],
+  ["ba na na","🍌","바나나"],
+  ["but ter fly","🦋","나비"],
+  ["el e phant","🐘","코끼리"],
+  ["um brel la","☂️","우산"],
+  ["di no saur","🦖","공룡"],
+  ["lem on","🍋","레몬"],
+  ["car rot","🥕","당근"],
+  ["cook ie","🍪","과자"],
+  ["piz za","🍕","피자"],
+  ["cher ries","🍒","체리"],
+  ["pea nut","🥜","땅콩"],
+  ["mel on","🍈","멜론"],
+  ["tur tle","🐢","거북이"],
+  ["pen guin","🐧","펭귄"],
+  ["dol phin","🐬","돌고래"],
+  ["ze bra","🦓","얼룩말"],
+  ["spi der","🕷️","거미"],
+  ["la dy bug","🐞","무당벌레"],
+  ["kan ga roo","🦘","캥거루"],
+  ["oc to pus","🐙","문어"],
+  ["rock et","🚀","로켓"],
+  ["air plane","✈️","비행기"],
+  ["trac tor","🚜","트랙터"],
+  ["bal loon","🎈","풍선"],
+  ["but ton","🔘","단추"],
+  ["scis sors","✂️","가위"],
+  ["tro phy","🏆","트로피"],
+  ["to ma to","🍅","토마토"],
+  ["po ta to","🥔","감자"],
+  ["pine ap ple","🍍","파인애플"],
+  ["broc co li","🥦","브로콜리"],
+  ["bi cy cle","🚲","자전거"],
+  ["rain bow","🌈","무지개"],
+  ["cup cake","🧁","컵케이크"],
+  ["pic ture","🖼️","그림"]]));
 G1W({
   id: 'spell1', icon: '🔡', title: B('Spell It', '철자 쓰기'), sub: B('Build the word from sound chunks', '소리 조각으로 낱말 만들기'), u: 'Spelling',
   play() {
-    const t = pick(lvl('spell1') === 1 ? SPELL1 : [...SPELL1.slice(8), ...SPELL2]), pool = ['th', 'ay', 'er', 'i', 'a', 'o', 'oo', 'sh', 'ing', 'ou'].filter(x => !t[0].includes(x));
-    tileRound(this, { ask: B('Spell the word. Tap the sound chunks in order!', '소리 조각을 차례로 눌러 낱말의 철자를 만들어요!'), show: `<span class="emo">${t[1]}</span>`, target: t[0], extra: shuffle(pool).slice(0, 2), speakTiles: false, after: B(`${t[0].join('')}!`, `${t[0].join('')} — ${t[2].ko}!`), vocab: t[0].join('') });
+    const t = pick(lvl('spell1') === 1 ? SPELL1 : SPELL2), pool = ['th', 'ay', 'er', 'i', 'a', 'o', 'oo', 'sh', 'ing', 'ou'].filter(x => !t[0].includes(x));
+    tileRound(this, { ask: B('Spell the word. Tap the sound chunks in order!', '소리 조각을 차례로 눌러 낱말의 철자를 만들어요!'), show: `<span class="emo">${t[1]}</span>`, target: t[0], extra: shuffle(pool).slice(0, 2), speakTiles: false, hearWord: t[0].join(''), after: B(`${t[0].join('')}!`, `${t[0].join('')} — ${t[2].ko}!`), vocab: t[0].join('') });
   }
 });
+
+// Invented scenes support a literal detail or a reason grounded in the text.
+const READ_EVENTS_1 = [["The room was dark.","방이 어두웠어요.","turned on a lamp","등을 켰어요."],
+  ["The floor was wet.","바닥이 젖었어요.","dried it with a towel","수건으로 닦았어요."],
+  ["The paper kept blowing away.","종이가 자꾸 날아갔어요.","put a stone on it","위에 돌을 올렸어요."],
+  ["The plant drooped.","식물이 축 처졌어요.","gave it water","물을 줬어요."],
+  ["The gate would not shut.","문이 닫히지 않았어요.","moved the rock in the way","앞을 막은 돌을 치웠어요."],
+  ["A shoe was loose.","신발 끈이 풀렸어요.","tied the laces","끈을 묶었어요."],
+  ["The box was too heavy.","상자가 너무 무거웠어요.","asked a friend to help","친구에게 도와달라고 했어요."],
+  ["The mug had a crack.","컵에 금이 갔어요.","poured the water into another cup","물을 다른 컵에 옮겼어요."],
+  ["The shelf was too high.","선반이 너무 높았어요.","asked a grown-up to reach it","어른에게 꺼내 달라고 했어요."],
+  ["The marker had dried out.","색펜이 말랐어요.","used a new marker","새 색펜을 썼어요."],
+  ["Rain fell on the path.","길에 비가 내렸어요.","opened an umbrella","우산을 폈어요."],
+  ["The air was cold.","공기가 추웠어요.","put on a coat","외투를 입었어요."],
+  ["The ball rolled under a bench.","공이 의자 밑으로 굴러갔어요.","reached under the bench","의자 밑으로 손을 뻗었어요."],
+  ["The lid was stuck.","뚜껑이 꽉 끼었어요.","asked for help to open it","뚜껑을 열어 달라고 했어요."],
+  ["The kite string snapped.","연줄이 끊어졌어요.","tied on a new string","새 줄을 묶었어요."],
+  ["The book kept falling shut.","책이 자꾸 덮였어요.","held the pages open","책장을 펴서 잡았어요."],
+  ["The bag had a hole.","가방에 구멍이 났어요.","moved the things into a basket","물건을 바구니로 옮겼어요."],
+  ["The paper was too big for the box.","종이가 상자에 들어가기에는 너무 컸어요.","folded the paper in half","종이를 반으로 접었어요."],
+  ["The pencil point broke.","연필심이 부러졌어요.","sharpened the pencil","연필을 깎았어요."],
+  ["The room was noisy.","방이 시끄러웠어요.","moved to a quiet spot","조용한 곳으로 옮겼어요."],
+  ["The puzzle pieces got mixed up.","퍼즐 조각들이 섞였어요.","sorted them by color","색깔별로 조각을 나눴어요."],
+  ["The sign was hard to read.","표지판 글을 읽기 어려웠어요.","made the letters bigger","글자를 더 크게 썼어요."],
+  ["The toy car would not roll.","장난감 차가 구르지 않았어요.","cleared the dirt from its wheel","바퀴의 흙을 털었어요."],
+  ["The wind blew the hat away.","바람이 모자를 날렸어요.","picked up the hat","모자를 주웠어요."],
+  ["The snack was in a closed jar.","간식이 닫힌 통에 있었어요.","unscrewed the top","뚜껑을 돌려 열었어요."],
+  ["The seed tray was dry.","씨앗을 심은 판이 말랐어요.","misted the soil","흙에 물을 뿌렸어요."],
+  ["The blocks tipped over.","블록이 쓰러졌어요.","built on a flat board","평평한 판에 다시 쌓았어요."],
+  ["The small pieces were hard to find.","작은 조각을 찾기 어려웠어요.","put them in a bright tray","밝은색 쟁반에 담았어요."],
+  ["The tape would not stick.","테이프가 붙지 않았어요.","wiped the dusty surface","먼지 묻은 곳을 닦았어요."],
+  ["The page ripped.","종이가 찢어졌어요.","taped the tear","찢어진 곳에 테이프를 붙였어요."],
+  ["The cup kept tipping.","컵이 자꾸 넘어졌어요.","set it on a flat table","평평한 탁자에 컵을 놓았어요."],
+  ["The basket was full.","바구니가 꽉 찼어요.","found another basket","다른 바구니를 찾았어요."],
+  ["The painting was still wet.","그림의 물감이 아직 젖어 있었어요.","left it to dry","말리려고 그대로 뒀어요."],
+  ["The toy was out of reach.","장난감에 손이 닿지 않았어요.","called a grown-up","어른을 불렀어요."],
+  ["The line on the page was crooked.","종이 위 선이 삐뚤었어요.","used a ruler","자를 썼어요."],
+  ["The books fell sideways.","책이 옆으로 쓰러졌어요.","put a bookend at the side","옆에 책 받침대를 놓았어요."]].map(([en,ko,action,actionKo]) => [B(en,ko),B(action,actionKo)]);
+function readEvent1(game, level, isReport) {
+  const [cause, action] = pick(READ_EVENTS_1);
+  const field = level === 2 ? 0 : 1, answer = level === 2 ? cause : action;
+  const distance = text => Math.abs(text.en.length - answer.en.length) + Math.abs(text.ko.length - answer.ko.length);
+  const alternatives = shuffle(READ_EVENTS_1.filter(x => x[0] !== cause)).sort((a,b) => distance(a[field]) - distance(b[field])).slice(0,2);
+  const material = isReport
+    ? B('Class note: ' + cause.en + ' We ' + action.en + '.', '학급 기록. ' + cause.ko + ' 우리는 ' + action.ko)
+    : B(cause.en + ' Ana ' + action.en + '.', cause.ko + ' 아나는 ' + action.ko);
+  const ask = level === 2
+    ? B('Which clue explains what happened next?', '다음 행동의 까닭을 알려 주는 단서는?')
+    : isReport ? B('What did the class do?', '학급에서 무엇을 했나요?') : B('What did Ana do?', '아나는 무엇을 했나요?');
+  const options = level === 2 ? [cause, ...alternatives.map(x=>x[0])] : [action, ...alternatives.map(x=>x[1])];
+  quiz(game, { ask, show: '<div class="storytext">' + L(material) + '</div>',
+    opts: options.map((text,i)=>({html:'<span class="word">' + L(text) + '</span>',ok:i===0})),cls:'words sents' });
+}
 
 // ---------- 10. Story questions ----------
 const READ_STORIES = [
@@ -215,7 +358,9 @@ const READ_STORIES = [
 G1R({
   id: 'storyq', icon: '📚', title: B('Story Questions', '이야기 질문'), sub: B('Characters, problems, solutions', '인물, 문제, 해결'), u: 'Stories',
   play() {
-    const lv = lvl('storyq'), s = pick(READ_STORIES), qs = s.q.filter(q => q.lv <= lv), q = pick(qs.length ? qs : s.q);
+    const lv = lvl('storyq');
+    if (rnd(5)) return readEvent1(this, lv, false);
+    const s = pick(READ_STORIES), qs = s.q.filter(q => q.lv <= lv), q = pick(qs.length ? qs : s.q);
     quiz(this, { ask: q.ask, show: `<div class="storytext">${L(s.t)}</div>`, opts: [q.right, ...q.wrong].map((a, i) => ({ html: `<span class="word">${L(a)}</span>`, ok: i === 0 })), cls: 'words sents', after: B('Look back at the story to check.', '이야기를 다시 보고 확인해 봐요.') });
   }
 });
@@ -237,6 +382,7 @@ const TEXTFEAT = [[B('Which part tells the name of a book or story?', '책이나
 G1R({
   id: 'factdet', icon: '🕵️', title: B('Fact Detective', '사실 탐정'), sub: B('Main topic, details, text parts', '주제, 세부 내용, 글의 부분'), u: 'Informational text',
   play() {
+    if (rnd(5)) return readEvent1(this, lvl(this.id), true);
     if(lvl('factdet')===2){
       const q=pick([
        [B('A cup has a crack. Water drips onto the table. Ben gets a cloth.','컵에 금이 있어요. 탁자에 물이 떨어져요. 벤이 천을 가져와요.'),B('Why is a cloth useful here?','천이 도움이 되는 까닭은?'),[B('Water is on the table.','탁자에 물이 있어요.'),B('Ben is at the table.','벤이 탁자에 있어요.'),B('The cup is small.','컵이 작아요.')]],
@@ -273,7 +419,11 @@ const FIXES = [
 G1W({
   id: 'fixsent', icon: '🖍️', title: B('Fix the Sentence', '문장 고치기'), sub: B('Capitals, end marks, plurals, verbs', '대문자, 문장부호, 복수, 동사'), u: 'Grammar',
   play() {
-    const lv = lvl('fixsent'), pool = FIXES.filter(f => f[0] <= lv), f = pick(pool);
+    const lv = lvl('fixsent');
+    const [name, pet] = [pick(['Mia','Ben','Ana','Leo','Sam','Jo','Lily','Max']), pick(['cat','dog','duck','frog','bird','fish','rabbit','turtle'])];
+    const [plain, end] = lv === 1 ? [pick(['I see a ', 'I can draw a ', 'Look at the ', 'I like the ']) + pet, '.'] : ['Did ' + name + ' see the ' + pet, '?'];
+    const f = rnd(4) === 0 ? pick(FIXES.filter(row => row[0] === lv))
+      : [lv, plain + end, plain[0].toLowerCase() + plain.slice(1) + end, plain + (end === '?' ? '.' : '')];
     quiz(this, { ask: B('Which sentence is written correctly?', '바르게 쓴 문장은 어느 것일까요?'), opts: wordOpts(f[1], [f[2], f[3]]), cls: 'words sents', after: B(f[1], f[1]), vocab: f[1] });
   }
 });
@@ -291,7 +441,9 @@ const WORDM = [
 G1R({
   id: 'wordmeaning', icon: '🔎', title: B('Word Detective', '낱말 탐정'), sub: B('Meanings, opposites, word parts', '뜻, 반대말, 낱말의 부분'), u: 'Word meaning',
   play() {
-    const lv = lvl('wordmeaning'), w = pick(WORDM.filter(x => x[0] <= lv));
+    const lv = lvl('wordmeaning');
+    if (rnd(4)) return quiz(this, kOppositeItem(lv, false));
+    const w = pick(WORDM.filter(x => x[0] === lv));
     // Context items: the clue sentences are shown (and read) as material, the last sentence is the question.
     const cut = t => { const m = t.match(/^(.*[.!?])\s+([^.!?]*\?)$/); return m ? [m[1], m[2]] : ['', t]; }, ctx = B(cut(w[1].en)[0], cut(w[1].ko)[0]);
     quiz(this, { ask: B(cut(w[1].en)[1], cut(w[1].ko)[1]), show: ctx.en ? `<div class="storytext">${L(ctx)}</div>` : '', opts: wordOpts(w[2], w[3]), cls: 'words sents', after: B(`${w[2]}`, `${w[2]}`), vocab: w[2] });
@@ -308,6 +460,24 @@ const JOINS = [
 G1W({
   id: 'joinit', icon: '🔗', title: B('Join It', '문장 잇기'), sub: B('and, but, so, because', 'and, but, so, because'), u: 'Joining ideas',
   play() {
+    const level = lvl(this.id);
+    if (rnd(6)) {
+      const [cause, action] = pick(READ_EVENTS_1);
+      const reason = cause.en[0].toLowerCase() + cause.en.slice(1,-1);
+      const result = 'Ana ' + action.en;
+      if (level === 1) {
+        quiz(this, { ask: B('Which word joins a cause to its result?', '까닭 뒤에 결과를 잇는 낱말은?'),
+          show: '<div class="storytext">' + cause.en.slice(0,-1) + ', ___ ' + result + '.</div>',
+          askExtra: {t: cause.en + ' Blank. ' + result + '.',lang:'en-US'},
+          opts:wordOpts('so',['but','because']),cls:'words' });
+      } else {
+        const answers = [result + ' because ' + reason + '.', cause.en.slice(0,-1) + ' because ' + result + '.', result + ', but ' + reason + '.'];
+        quiz(this, { ask: B('Which sentence explains Ana’s action?', '아나가 왜 그렇게 했는지 알려 주는 문장은?'),
+          show: '<div class="storytext">' + cause.en + ' ' + result + '.</div>',
+          opts:wordOpts(answers[0],answers.slice(1)),cls:'words sents' });
+      }
+      return;
+    }
     if(lvl('joinit')===2){
       const q=pick([
        ...[
@@ -335,8 +505,26 @@ const WSTART = [
 G1W({
   id: 'writestarter', icon: '✍️', title: B('Writing Starter', '글쓰기 시작'), sub: B('Build opinion, fact and story sentences', '생각, 사실, 이야기 문장 만들기'), u: 'Sentences',
   play() {
-    const lv = lvl('writestarter'), w = pick(WSTART.filter(x => x[0] === lv)), extraPool = ['and', 'the', 'is', 'we', 'big', 'then', 'very'].filter(x => !w[1].includes(x));
-    tileRound(this, { ask: B('Put the words in order to build a sentence!', '낱말을 차례로 놓아 문장을 만들어요!'), show: `<span class="emo">${w[2]}</span>`, target: w[1], extra: others(extraPool, '', 1), speakTiles: false, after: w[3], vocab: L(B(w[3].en, w[3].en)) });
+    const lv = lvl('writestarter');
+    const [noun, icon, ko] = pick([
+      ['dog','🐶','강아지'], ['cat','🐱','고양이'], ['duck','🦆','오리'], ['frog','🐸','개구리'],
+      ['bird','🐦','새'], ['fish','🐟','물고기'], ['kite','🪁','연'], ['boat','⛵','배'],
+      ['train','🚆','기차'], ['truck','🚚','트럭'], ['tree','🌳','나무'], ['flower','🌼','꽃'],
+      ['ball','⚽','공'], ['book','📕','책'], ['shell','🐚','조개'], ['star','⭐','별'],
+      ['bear','🐻','곰'], ['fox','🦊','여우'], ['rabbit','🐰','토끼'], ['turtle','🐢','거북이']
+    ]);
+    const [en, meaning] = pick(lv === 1 ? [
+      ['I see a ' + noun + '.', ko + ' 그림이 보여요.'],
+      ['I like the ' + noun + '.', ko + ' 그림이 좋아요.'],
+      ['Look at the ' + noun + '.', ko + ' 그림을 봐요.']
+    ] : [
+      ['I can draw a ' + noun + '.', ko + ' 그림을 그릴 수 있어요.'],
+      ['Can you find the ' + noun + '?', ko + ' 그림을 찾을 수 있나요?'],
+      ['We can look at the ' + noun + '.', '우리 같이 ' + ko + ' 그림을 봐요.']
+    ]);
+    const w = rnd(5) ? [lv, en.split(' '), icon, B(en, meaning)] : pick(WSTART.filter(x => x[0] === lv));
+    const extraPool = ['and', 'the', 'is', 'we', 'big', 'then', 'very'].filter(x => !w[1].includes(x));
+    tileRound(this, { ask: B('Put the words in order to build a sentence!', '낱말을 차례로 놓아 문장을 만들어요!'), show: `<span class="emo">${w[2]}</span>`, target: w[1], extra: others(extraPool, '', 1), speakTiles: false, hearWord: w[3].en, after: w[3], vocab: L(B(w[3].en, w[3].en)) });
     // Keep the completed sentence above the fixed Next button on a short screen.
     const feedback = $('#fact');
     if (feedback) { feedback.style.fontSize = 'clamp(12px,2.2dvh,16px)'; feedback.style.lineHeight = '1.15'; }

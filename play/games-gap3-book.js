@@ -2,6 +2,7 @@
   'use strict';
   // Original fictional books; K.T.C.2.a. No fixed person/role association.
   const names = [B('Ari', '아리'), B('Bo', '보'), B('Cia', '시아')];
+  const portraits = ['👧🏻', '👦🏽', '👧🏿'];
   const jobs = [B('wrote the words', '글을 썼어요'), B('drew the pictures', '그림을 그렸어요'), B('read the book', '책을 읽었어요')];
   const scenes = [
     ['The Red Kite', '빨간 연', '🪁', 'The kite goes up.', '연이 올라가요.'],
@@ -12,8 +13,8 @@
     ['The Little Nest', '작은 둥지', '🪺', 'A bird has a nest.', '새에게 둥지가 있어요.']
   ];
   const orders = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
-  // Six genuinely different assignments × two requested roles, at each level.
-  const bank = orders.flatMap((order, i) => [0,1].map(target => ({order, target, scene: scenes[i]})));
+  // Each book can have any of the six role assignments and either requested role.
+  const bank = scenes.flatMap(scene => orders.flatMap(order => [0, 1].map(target => ({ order, target, scene }))));
   const roleTags = [B('✍️ words', '✍️ 글'), B('🖍️ pictures', '🖍️ 그림'), B('📖 reads', '📖 읽기')];
   const picture = (role, s) => role === 0
     ? `<span class="g3b-work g3b-words" aria-hidden="true">📝✏️</span>`
@@ -35,11 +36,11 @@
       quiz(this, {
         ask: question,
         show: `<section class="g3b-stage" aria-label="${L(B('Made-up book workshop', '가상 책 작업실'))}">
-          <div class="g3b-scenes">${order.map((role, i) => `<div class="g3b-scene"><strong>${L(names[i])}</strong>${picture(role, scene)}<span class="g3b-job" aria-label="${L(jobs[role])}">${L(roleTags[role])}</span><button class="say g3b-listen" data-g3b="${i}" aria-label="${L(B('Listen to ', '듣기: '))}${L(names[i])}">🔊</button></div>`).join('')}</div>
+          <div class="g3b-scenes">${order.map((role, i) => `<div class="g3b-scene"><strong><span aria-hidden="true">${portraits[i]}</span> ${L(names[i])}</strong>${picture(role, scene)}<span class="g3b-job" aria-label="${L(jobs[role])}">${L(roleTags[role])}</span><button class="say g3b-listen" data-g3b="${i}" aria-label="${L(B('Listen to ', '듣기: '))}${L(names[i])}">🔊</button></div>`).join('')}</div>
           <div class="g3b-cover" aria-label="${L(B('Made-up book', '가상의 책'))}"><span aria-hidden="true">${scene[2]}</span> ${L(B(scene[0], scene[1]))}</div>
           ${swap ? `<div class="g3b-swap" aria-label="${L(change)}">${L(names[person(0)])} ⇄ ${L(names[person(1)])} 📘</div>` : ''}
         </section>`,
-        opts: names.map((n, i) => ({html: `<span class="word">${L(n)}</span>`, ok: i === answer, category: 'book-person'})),
+        opts: names.map((n, i) => ({html: `<span class="word"><span aria-hidden="true">${portraits[i]}</span> ${L(n)}</span>`, ok: i === answer, category: 'book-person'})),
         cls: 'g3b-options',
         after: B(`${names[answer].en} ${target === 0 ? 'makes the words' : 'makes the pictures'}${swap ? ' in the new book' : ''}.`, `${swap ? '새 책에서 ' : ''}${names[answer].ko}: ${target === 0 ? '글을 써요' : '그림을 그려요'}.`),
         onRender() {

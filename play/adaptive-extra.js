@@ -58,6 +58,44 @@
   };
   words.K.push(['here', 'heer', 'herre'], ['little', 'litle', 'littel']);
   sentences.K.push('Come ___ to me.', 'I see a ___ cat.');
+  // Original K listening targets and short context clues.
+  const kWordPractice = [["all","al","awl","___ of us can go.","each"],
+    ["and","adn","annd","Red ___ blue make purple.","or"],
+    ["away","awya","awei","She put her toys ___ after play.","under"],
+    ["big","bgi","bigg","An ant is tiny. An elephant is ___.","small"],
+    ["blue","bleu","bloo","A clear sky is ___.","red"],
+    ["can","cna","kann","I ___ clap with my hands.","am"],
+    ["down","dwon","doun","Go ___ the slide to the sand.","up"],
+    ["find","fnid","fined","Look until you ___ your shoe.","hide"],
+    ["for","fro","frr","This gift is ___ you.","at"],
+    ["funny","funy","funney","That joke made me laugh. It was ___.","sad"],
+    ["go","goh","goo","The light is green. We can ___.","stop"],
+    ["help","hlep","hellp","I can ___ you carry it.","look"],
+    ["into","itno","innto","She stepped ___ the room.","under"],
+    ["jump","jmup","jumpp","Bend your knees and ___ over the line.","sit"],
+    ["look","lokk","luuk","___ at the bird up there.","Give"],
+    ["make","maek","mak","Fold paper to ___ a boat.","take"],
+    ["me","mee","mhe","I am thirsty. Give the cup to ___.","my"],
+    ["my","mi","mye","This is ___ bag. I own it.","me"],
+    ["not","nott","nto","A fish does ___ walk.","now"],
+    ["play","paly","plai","We can ___ tag at recess.","read"],
+    ["red","rde","redd","The stop sign is ___.","green"],
+    ["run","rnu","runn","Use your feet to ___ a race.","fly"],
+    ["see","ssee","sea","Open your eyes to ___ the bird.","hear"],
+    ["three","thre","thrae","Two and one make ___.","five"],
+    ["to","tto","tuh","I walk ___ school.","of"],
+    ["up","upp","uhp","The balloon goes ___ into the sky.","down"],
+    ["we","wee","whe","My friend and I are here. ___ can play.","Us"],
+    ["where","whre","wher","___ is the dog hiding?","Who"],
+    ["white","whiet","wite","Snow is ___.","black"],
+    ["will","wil","wlll","I ___ go to school tomorrow.","was"],
+    ["yes","yess","eys","Do you want to play? ___, I do.","No"],
+    ["yellow","yelow","yellwo","A ripe banana is ___.","purple"],
+    ["no","nno","noo","Is a fish a bird? ___, it is not.","Yes"]];
+  for (const [word, first, second, sentence] of kWordPractice) {
+    words.K.push([word, first, second]);
+    sentences.K.push(sentence);
+  }
   // 65: twelve distinct targets per grade; L2 adds sentence evidence.
   words[1].push(['once','wunce','onse'],['two','twoo','twu']);
   sentences[1].push('I went there ___, not twice.','One and one make ___.');
@@ -66,12 +104,13 @@
   words[3].push(['until','untill','untl'],['between','betwen','beetween']);
   sentences[3].push('We left as soon as the rain stopped. We waited ___ it stopped.','The small box is ___ the two big boxes.');
   for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
-    const t = pick(words[grade]);
-    const index=words[grade].indexOf(t), sentence = sentences[grade][index];
-    if(lv===1)return {ask:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askSay:B('Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
+    const familiar = grade === '1' && rnd(3) !== 0 ? pick(kWordPractice) : null;
+    const t = familiar ? familiar.slice(0, 3) : pick(words[grade]);
+    const index = words[grade].indexOf(t), sentence = familiar ? familiar[3] : sentences[grade][index];
+    if(lv===1)return {ask:B(['K', '1'].includes(grade) ? 'Spell it.' : 'Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
     const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:['never','between','these','Many','during','between','until','difference','Despite','nobody']};
-    const alternatives=lv===2?[t[1],(contextWrong[grade]||[])[index]||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
-    return { ask: B('Which word fits and is spelled right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
+    const alternatives=lv===2?[t[1],familiar?.[4]||(contextWrong[grade]||[])[index]|| (grade === 'K' ? kWordPractice[index - 12][4] : null) ||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
+    return { ask: B(['K', '1'].includes(grade) ? 'Fill this blank.' : 'Which word fits and is spelled right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),
       askExtra: { t: sentence.replace('___', 'blank'), lang: 'en-US' }, show: passage(sentence), opts: choices(t[0], alternatives), cls: 'words', after: B(sentence.replace('___', t[0]), sentence.replace('___', t[0])), vocab: t[0],
       onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sentence.replace('___', 'blank'), 'en-US'); } };
   });
@@ -92,12 +131,11 @@
   });
   const oppositePairs = [['hot', 'cold'], ['up', 'down'], ['big', 'small'], ['open', 'closed'], ['day', 'night'], ['full', 'empty'], ['wet', 'dry'], ['near', 'far'], ['fast', 'slow'], ['soft', 'hard'], ['in', 'out'], ['on', 'off']];
   for (const grade of ['K', '1']) add('admeaning' + grade, grade, B('Opposite Word Partners', '반대 뜻 짝꿍'), B('Vocabulary', '어휘'), lv => {
+    if (grade === 'K' || (grade === '1' && lv === 1)) return kOppositeItem(lv, false);
     const index = rnd(oppositePairs.length), source = oppositePairs[index], pair = lv === 2 ? [...source].reverse() : source;
     const nearby = {hot:['warm','cool'],cold:['cool','warm'],up:['across','along'],down:['across','along'],big:['medium','huge'],small:['medium','tiny'],open:['ajar','wide'],closed:['ajar','narrow'],day:['dawn','noon'],night:['dawn','dusk'],full:['half-full','almost full'],empty:['half-full','almost empty'],wet:['damp','soaked'],dry:['damp','slightly wet'],near:['nearby','next to'],far:['farther','distant'],fast:['quick','steady'],slow:['steady','slower'],soft:['smooth','fluffy'],hard:['firm','rough'],in:['beside','near'],out:['beside','near'],on:['dim','bright'],off:['dim','bright']};
     if(grade==='1'&&lv===2){const other=pick(oppositePairs.filter(x=>x!==source)),right=pair[1]+' → '+other[1];return {ask:B('Which pair gives the opposites in order?','차례로 반대 뜻인 낱말의 짝은?'),show:passage(pair[0]+' → '+other[0]),askExtra:{t:pair[0]+', '+other[0],lang:'en-US'},opts:choices(right,[other[1]+' → '+pair[1],pair[1]+' → '+other[0]]),cls:'words'};}
-    // 70b: K distractors are everyday words (no ajar/dusk/soaked) that are clearly not opposites.
-    const kNearby = {hot:['warm','sunny'],cold:['cool','icy'],up:['high','top'],down:['low','under'],big:['huge','tall'],small:['tiny','little'],open:['wide','big'],closed:['shut','locked'],day:['morning','sunny'],night:['dark','moon'],full:['lots','heavy'],empty:['little','light'],wet:['rainy','muddy'],dry:['sunny','hot'],near:['close','here'],far:['away','long'],fast:['quick','running'],slow:['late','tired'],soft:['fluffy','warm'],hard:['stiff','strong'],in:['inside','into'],out:['away','outside'],on:['bright','up'],off:['dark','down']};
-    const ds = (grade === 'K' ? kNearby : nearby)[pair[0]];
+    const ds = nearby[pair[0]];
     return { ask: B(`Which word means the opposite of "${pair[0]}"?`, `"${pair[0]}"와 반대 뜻인 낱말을 골라요.`),
       askExtra: { t: pair[0], lang: 'en-US' }, opts: choices(pair[1], ds), cls: 'words', after: B(`${pair[0]} ↔ ${pair[1]}`, `${pair[0]} ↔ ${pair[1]}`) };
   });
@@ -140,6 +178,41 @@
   ];
   // Finishing steps from projects where they clearly do not fit (index into projects).
   const wrongFinish = [[4, 1], [0, 10], [9, 4], [4, 1], [0, 9], [10, 4], [4, 1], [5, 0], [4, 10], [4, 1], [4, 1], [9, 4]];
+  const kTopicProjects = [["Toast","🍞","🔪 Slice bread","♨️ Toast bread","🧈 Spread butter"],
+    ["Sandwich","🥪","🖐️ Get bread","🥜 Spread filling","🍞 Cover filling"],
+    ["Fruit bowl","🥣🍓","🍎 Wash fruit","🔪 Cut fruit","🥣 Fill bowl"],
+    ["Juice","🧃","🍊 Cut orange","🤲 Squeeze orange","🥤 Pour juice"],
+    ["Lemon water","🍋","💧 Pour water","🔪 Cut lemon","🥤 Add lemon"],
+    ["Salad","🥗","🥬 Wash greens","🥕 Chop carrots","🥣 Toss salad"],
+    ["Cereal","🥣🌾","🥣 Get bowl","🥄 Add cereal","🥛 Add milk"],
+    ["Yogurt cup","🥛","🫙 Scoop yogurt","🫐 Wash berries","🥄 Stir berries in"],
+    ["Water bottle","🫗","🫙 Open bottle","💧 Add water","🔒 Close bottle"],
+    ["Cup of tea","🍵","🫖 Heat water","🍃 Add tea","☕ Pour tea"],
+    ["Ice tray","🧊","💧 Fill tray","❄️ Freeze water","↗️ Pop out ice"],
+    ["Pizza","🍕","🫓 Get dough","🍅 Add sauce","🧀 Add cheese"],
+    ["Paper boat","⛵","📄 Fold paper","🔺 Fold corners","↔️ Open hull"],
+    ["Paper fan","🪭","📄 Get paper","〰️ Fold pleats","🤏 Pinch end"],
+    ["Mask","🎭","📄 Get card","👀 Cut eye holes","🧵 Tie string"],
+    ["Name tag","🏷️","📄 Cut card","✍️ Write name","📌 Pin tag"],
+    ["Drum","🥁","🥫 Get tin","🎈 Stretch balloon","🪢 Tie edge"],
+    ["Collage","🎨","✂️ Cut shapes","📄 Lay them out","🧴 Glue shapes"],
+    ["Wreath","🌿","🍃 Find leaves","⭕ Cut ring","🧴 Glue leaves"],
+    ["Paper hat","👒","📰 Fold newspaper","🔺 Fold corners","↔️ Open hat"],
+    ["Snowman","⛄","❄️ Roll snow","⬆️ Stack snowballs","🥕 Add nose"],
+    ["Flag","🏳️","📄 Cut paper","🖍️ Draw stripes","🪵 Attach stick"],
+    ["Necklace","📿","🧵 Get string","🔴 Thread beads","🪢 Tie ends"],
+    ["Paper flower","🌼","📄 Cut petals","🔘 Join petals","🌱 Add stem"],
+    ["Toy train","🚂","🧱 Set blocks","🔗 Join cars","➕ Add engine"],
+    ["Toy garage","🚗","📦 Open box","✂️ Cut doorway","🚙 Park car"],
+    ["Seed cup","🌱","🥤 Get cup","🟫 Add soil","🌰 Plant seed"],
+    ["Bird feeder","🐦","🪵 Get tray","🌻 Add seeds","🧵 Hang tray"],
+    ["Brush cup","🖌️","🥤 Get cup","💧 Add water","💦 Rinse brush"],
+    ["Gift card","💌","📄 Fold card","🖍️ Draw picture","✉️ Seal envelope"],
+    ["Paper airplane","✈️","📄 Fold paper","🔺 Fold tip","🪽 Fold wings"],
+    ["Kite","🪁","🪵 Cross sticks","📄 Cover frame","🧵 Tie tail"]].map(([title, icon, ...cards]) => [title, icon, cards.map(card => {
+    const split = card.indexOf(' '), phrase = card.slice(split + 1);
+    return [card.slice(0, split), phrase, phrase.toLowerCase()];
+  })]);
   const stepHtml = s => `<span class="word">${s[0]} ${s[1]}</span>`;
   const stepChoices = (right, wrongs) => [right, ...wrongs].map((s, i) => ({ html: stepHtml(s), ok: i === 0 }));
   const stepCards = (steps, words) => `<div class="storytext" lang="en" style="font-size:clamp(17px,3.1dvh,23px);line-height:1.5">${steps.map((s, i) =>
@@ -148,7 +221,7 @@
   const stepRound = (ask, show, sayText, right, wrongs, after) => ({ ask, show, opts: stepChoices(right, wrongs), cls: 'words', after,
     onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sayText, 'en-US'); } });
   for (const grade of ['K', '1']) add('adinfo' + grade, grade, B('Read the Steps', '순서 글을 읽어요'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const [title, , steps] = pick(projects), text = spoken(steps);
+    const [title, , steps] = pick(grade === '1' ? [...projects, ...kTopicProjects] : projects), text = spoken(steps);
     if (grade === '1' && lv === 2) {
       const pair = (a, b) => ({ html: `<span class="word" aria-label="${a[1]}, then ${b[1]}">${a[0]} → ${b[0]}</span>` });
       return { ask: B('Which pair is step 2 → step 3?', '2번 → 3번의 짝은?'), show: stepCards(steps, ['1)', '2)', '3)']),
@@ -156,21 +229,30 @@
         after: B('Steps 2, then 3.', '2번 다음 3번이에요.'), onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(text, 'en-US'); } };
     }
     if (grade === '1') return stepRound(B('What is the first step?', '첫 번째 할 일을 골라요.'), passage(text), text, steps[0], [steps[1], steps[2]], B(text, text));
-    // K L1 finds the first step from First/Next/Last cards; L2 uses the order relation "after".
-    const show = stepCards(steps, ['First', 'Next', 'Last']);
-    return lv === 1
-      ? stepRound(B('What is the first step?', '첫 번째 할 일을 골라요.'), show, text, steps[0], [steps[1], steps[2]], B(text, text))
-      : stepRound(B(`What comes after "${steps[1][1]}"?`, `"${steps[1][1]}" 다음에 할 일은?`), show, text, steps[2], [steps[0], steps[1]], B(text, text));
+    const show = stepCards(steps, ['1)', '2)', '3)']);
+    if (lv === 1) {
+      const target = rnd(3), ordinal = ['first', 'second', 'last'][target];
+      const ko = ['첫 번째', '두 번째', '마지막'][target];
+      return stepRound(B('Which is the ' + ordinal + ' step?', ko + ' 할 일은?'), show, text, steps[target],
+        steps.filter((_, i) => i !== target), B(text, text));
+    }
+    const later = rnd(2) === 0, anchor = later ? rnd(2) : 1 + rnd(2), target = anchor + (later ? 1 : -1);
+    const clue = steps[anchor][1], direction = later ? 'after' : 'before', ko = later ? '다음' : '바로 전';
+    return stepRound(B('What comes ' + direction + ' "' + clue + '"?', '"' + clue + '" ' + ko + '에 할 일은?'),
+      show, text, steps[target], steps.filter((_, i) => i !== target), B(text, text));
   });
   add('adinfotopicK', 'K', B('What Do the Steps Make?', '무엇을 만드는 글일까요?'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const index = rnd(projects.length), [title, picture, steps] = projects[index];
+    const pool = [...projects, ...kTopicProjects];
+    const index = rnd(pool.length), [title, picture, steps] = pool[index];
     if (lv === 1) {
-      const ds = shuffle(projects.filter((_, j) => j !== index)).slice(0, 2);
+      const ds = shuffle(pool.filter((x, j) => j !== index && x[1] !== picture)).filter((x, i, a) => a.findIndex(y => y[1] === x[1]) === i).slice(0, 2);
       return stepRound(B('What do these steps make?', '이 순서로 무엇을 만들까요?'), stepCards(steps), spoken(steps), [picture, title], ds.map(x => [x[1], x[0]]), B(title, title));
     }
     // L2: infer the missing finishing step from the first two steps.
-    const shown = steps.slice(0, 2).concat([['❓', '?', '']]);
-    return stepRound(B('What step comes next?', '다음에 할 일은?'), stepCards(shown), `First, ${steps[0][2]}. Next, ${steps[1][2]}. What comes last?`, steps[2], wrongFinish[index].map(j => projects[j][2][2]), B(`${title}: ${steps[2][1]}`, `${title}: ${steps[2][1]}`));
+    const shown = steps.slice(0, 2).concat([['❓', '', '']]);
+    const wrongs = index < projects.length ? wrongFinish[index].map(j => projects[j][2][2])
+      : [kTopicProjects[(index + 5) % kTopicProjects.length][2][2], kTopicProjects[(index + 13) % kTopicProjects.length][2][2]];
+    return stepRound(B('What step comes next?', '다음에 할 일은?'), stepCards(shown) + '<small>' + title + '</small>', `Make ${title}. First, ${steps[0][2]}. Next, ${steps[1][2]}. What comes last?`, steps[2], wrongs, B(`${title}: ${steps[2][1]}`, `${title}: ${steps[2][1]}`));
   });
 })();
 // K-only round selection. Identity ignores distractors/order; keep the last nine

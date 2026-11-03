@@ -159,7 +159,10 @@ registerGame({
   area: AREA_READ('Alphabet'),
   play() {
     const pairs = lvl('memory') === 1 ? 4 : 6, alphabet = 'ABCDEFGHIJKLMNOP'.split('');
-    const ls = shuffle(alphabet).slice(0, pairs);
+    // Uppercase I and lowercase l look alike in Segoe UI. Keep either pair, never both.
+    const excluded = pick(['I', 'L']);
+    const eligible = alphabet.filter(letter => letter !== excluded);
+    const ls = shuffle(eligible).slice(0, pairs);
     if (dup(this, ls.slice().sort().join(''))) return this.play();
     const cards = shuffle(ls.flatMap(c => [{ k: c, t: c }, { k: c, t: c.toLowerCase() }]));
     // 70a: the instruction is read aloud on start and can be replayed (K cannot be expected to read it).

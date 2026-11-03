@@ -228,7 +228,7 @@ G1S({
  if(lvl(this.id)===2){const hidden=B('Hidden → visible → hidden','안 보임 → 보임 → 안 보임'),visible=B('Visible → hidden → visible','보임 → 안 보임 → 보임');round(this,B('Which sequence matches what you can see?','보이는 모습의 순서에 맞는 것은?'),B(`Only one lamp lights a ${obj.en}. It starts ${on?'off':'on'}. Switch it ${on?'on, then off':'off, then on'}.`,`${obj.ko} 옆에 전등 하나만 있어요. 처음에는 ${on?'꺼져':'켜져'} 있어요. ${on?'켠 다음 꺼요':'끈 다음 켜요'}.`),on?hidden:visible,[on?visible:hidden,on?B('Hidden → hidden → visible','안 보임 → 안 보임 → 보임'):B('Visible → visible → hidden','보임 → 보임 → 안 보임')]);return;}
  round(this,B('What changes in what you can see?','보이는 모습은 어떻게 바뀔까요?'),B(`In a room with no other light, a lamp is turned ${on?'on':'off'} beside a ${obj.en}.`,`다른 빛이 없는 방에서 ${obj.ko} 옆 전등을 ${on?'켜요':'꺼요'}.`),on?B('We can see it','모습이 보여요'):B('We cannot see it','모습이 안 보여요'),[on?B('We cannot see it','모습이 안 보여요'):B('We can see it','모습이 보여요'),B('Its shape changes','모양이 바뀌어요')]);};
  const sound=GAMES.find(g=>g.id==='sound1'),oldSound=sound.play;
- sound.play=function(){if(rnd(2))return oldSound.call(this);const obj=pick([B('drum skin','북의 가죽'),B('guitar string','기타 줄'),B('bell','종'),B('rubber band','고무줄')]);
+ sound.play=function(){if(rnd(2))return oldSound.call(this);const obj=pick([B('drum skin','북의 가죽'),B('guitar string','기타 줄'),B('bell','종'),B('rubber band','고무줄'),B('tuning fork','소리굽쇠'),B('cymbal','심벌즈'),B('violin string','바이올린 줄'),B('metal triangle','트라이앵글'),B('xylophone bar','실로폰 건반'),B('gong','징'),B('banjo string','밴조 줄'),B('metal chime','금속 풍경'),B('piano string','피아노 줄'),B('plucked ruler','튕긴 자'),B('ukulele string','우쿨렐레 줄'),B('snare drum head','작은북의 가죽')]);
  if(lvl(this.id)===2){round(this,B('Which sound sequence follows both actions?','두 행동에 맞는 소리의 순서는?'),B(`A ${obj.en} makes a sound. Stop its movement, then set it moving again.`,`${obj.ko}에서 소리가 나요. 움직임을 멈췄다가 다시 움직이게 해요.`),B('Sound → quiet → sound','소리 → 조용 → 소리'),[B('Sound → sound → quiet','소리 → 소리 → 조용'),B('Quiet → sound → quiet','조용 → 소리 → 조용')]);return;}
  round(this,B('What happens to the sound?','소리는 어떻게 될까요?'),B(`A ${obj.en} makes a sound. Its movement is completely stopped.`,`${obj.ko}에서 소리가 나요. 움직임을 완전히 멈춰요.`),B('It stops','소리가 멈춰요'),[B('It gets louder','소리가 더 커져요'),B('It stays the same','같은 소리가 나요')]);};
  const plant=GAMES.find(g=>g.id==='plants1'),oldPlant=plant.play;
@@ -262,4 +262,20 @@ G1S({
   const game = GAMES.find(g => g.id === id), play = game.play;
   game.play = function () { const raw = window.quiz; window.quiz = (g, item) => { window.quiz = raw; return raw(g, split(item)); }; try { return play.apply(this, arguments); } finally { window.quiz = raw; } };
  }
+})();
+
+(() => {
+ const g = GAMES.find(g=>g.id==='plants1'), prior=g.play;
+ const examples = [
+  [B('The soil in the pot is dry.','화분 흙이 말랐어요.'), B('Water the soil','흙에 물 주기'), B('Move it to the window','창가로 옮기기'), B('Use a bigger pot','더 큰 화분에 옮기기')],
+  [B('The pot sits in a dark closet.','화분이 어두운 벽장 안에 있어요.'), B('Move it into daylight','햇빛이 드는 곳에 옮기기'), B('Add more soil','흙을 더 넣기'), B('Water the leaves','잎에 물 주기')],
+  [B('The roots fill the whole little pot.','작은 화분이 뿌리로 가득 찼어요.'), B('Use a larger pot','더 큰 화분에 옮기기'), B('Move it into shade','그늘에 옮기기'), B('Wet the leaves','잎을 적시기')],
+  [B('A seedling has no soil around its roots.','새싹 뿌리 둘레에 흙이 없어요.'), B('Plant it in soil','흙에 심기'), B('Move it into shade','그늘에 옮기기'), B('Cover its leaves','잎을 덮기')]
+ ];
+ g.play=function(){
+   if(lvl(this.id)===2 || rnd(4))return prior.call(this);
+   const [story,right,...wrong]=pick(examples);
+   quiz(this,{ask:B('Which care helps the plant?','식물에게 어떤 돌봄이 필요할까요?'),
+    show:`<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:sOpts(right,wrong),cls:'words'});
+ };
 })();

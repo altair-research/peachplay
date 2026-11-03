@@ -122,6 +122,9 @@
         const total = rung.op === '-' ? a : a + k;
         pic = total <= 10 && flip ? (rung.op === '-' ? row(a - k, c1, k, c1, `${a}`, true) : row(a, c1, k, c2, `${a} ${k}`)) : frames(cells, total, `${a} ${k}`);
       } else if (mode === 1) {
+        if (k === 1 && rung.op === '+' && flip) {
+          return '<div class="ld-show">' + chip + eqLine([card(a), '<span aria-label="+1">↗ +1</span>', card('?')]) + '</div>';
+        }
         // start number + only the dots that are added or taken: count on / count back from the card
         return `<div class="ld-show">${chip}${eqLine([card(a), sign, rung.op === '-' ? row(0, c1, k, c1, `${k}`, true) : row(0, c1, k, c2, `${k}`), '=', '?'])}</div>`;
       }
