@@ -119,7 +119,7 @@ G2W({
 });
 
 // ---------- 8. Verbs, adjectives, adverbs ----------
-const IRR = [['run', 'ran', 'runned'], ['eat', 'ate', 'eated'], ['see', 'saw', 'seed'], ['go', 'went', 'goed'], ['draw', 'drew', 'drawed'], ['fly', 'flew', 'flied'], ['give', 'gave', 'gived'], ['write', 'wrote', 'writed'], ['swim', 'swam', 'swimmed'], ['take', 'took', 'taked'], ['come', 'came', 'comed'], ['sing', 'sang', 'singed']];
+const IRR = [['run', 'ran', 'runned'], ['eat', 'ate', 'eated'], ['see', 'saw', 'seed'], ['go', 'went', 'goed'], ['draw', 'drew', 'drawed'], ['fly', 'flew', 'flyed'], ['give', 'gave', 'gived'], ['write', 'wrote', 'writed'], ['swim', 'swam', 'swimmed'], ['take', 'took', 'taked'], ['come', 'came', 'comed'], ['sing', 'sang', 'singed']];
 G2W({
   id: 'grammar2b', icon: '🏃', title: B('Verbs, Adjectives, Adverbs', '동사, 형용사, 부사'), sub: B('Past tense, describing words, compare', '과거형, 꾸며 주는 말, 비교'), u: 'Grammar',
   play() {
@@ -316,4 +316,224 @@ G2R({
  ];
  game.play=function(){if(lvl(this.id)===1)return old.call(this);const [a,b,c]=shuffle(parts),pair=(x,y)=>B(`${x[0].en} → ${y[0].en}`,`${x[0].ko} → ${y[0].ko}`);
  quiz(this,{ask:B(`First ${a[1].en}, then ${b[1].en}. Which pair helps?`,`먼저 ${a[1].ko}, 다음 ${b[1].ko}. 알맞은 짝은?`),opts:[pair(a,b),pair(b,a),pair(a,c)].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0})),cls:'words sents'});};
+})();
+// 77b: grade 2 original practice. Context and grammatical relationships, not option order, vary.
+const g2EnglishQuiz77=(game,item)=>{const render=item.onRender;item.onRender=()=>{if(render)render();const button=$('.storytext .rd');if(button){const holder=document.createElement('div');holder.innerHTML=item.show||'';holder.querySelectorAll('br').forEach(e=>e.replaceWith(' '));button.onclick=()=>say(holder.textContent,'en-US');}};quiz(game,item);};
+const G2_WORD77 = [
+ ['after','aftr','affter','We eat dessert ___ dinner.','under'],['again','agen','agian','Let us play the game one more time, ___.','away'],
+ ['away','awey','aawy','The bird flew ___ from the tree.','during'],['been','beenn','beeen','I have ___ here before.','being'],
+ ['call','caall','cal','Please ___ my name loudly.','called'],['cold','coald','clod','Ice feels ___.','warm'],
+ ['come','cum','coem','Please ___ here beside me.','went'],['draw','drwa','drau','Use a pencil to ___ a picture.','drive'],
+ ['drink','dirnk','drinc','I will ___ water when thirsty.','drank'],['fall','faul','fawl','Leaves will ___ from trees.','fell'],
+ ['far','farr','faar','It takes hours to walk there. It is ___.','near'],['fast','fasst','fasstt','The runner moves ___, not slowly.','slow'],
+ ['full','ful','fooll','There is no room left. The box is ___.','empty'],['hold','hoald','holld','Please ___ my hand.','held'],
+ ['hot','hott','hoat','The soup is steaming. It is ___.','cold'],['hurt','hert','hurrt','Be careful so nobody gets ___.','hurting'],
+ ['laugh','laf','lagh','We smile and giggle. We ___ at the joke.','sleep'],['long','lonng','lawng','The rope reaches across the room. It is ___.','short'],
+ ['much','muchh','muhc','How ___ water do we need?','many'],['never','nevver','nevr','Fish live in water. They ___ walk to school.','always'],
+ ['own','oan','owne','It belongs to me. I ___ it.','owe'],['round','rownd','ruond','A circle is ___.','square'],
+ ['show','sho','shwo','Please ___ me your drawing.','sew'],['small','smal','smaul','An ant is very ___.','huge'],
+ ['start','strat','starrt','We are ready. Let us ___ the game.','stop'],['stop','stopp','stpo','The red light means ___.','go'],
+ ['take','taek','tayk','Please ___ a seat.','took'],['together','togther','togethr','We are a team. We work ___.','alone'],
+ ['try','tryy','tyr','If it is hard, ___ again.','tried'],['warm','wram','warrm','The blanket keeps me ___.','frozen'],
+
+ ['always','alwayz','allways','I ___ wash before eating, every time.','never'],
+ ['around','arownd','arround','We sat ___ the round table.','during'],
+ ['before','befor','befoer','Wash your hands ___ eating.','under'],
+ ['better','beter','bettur','That book is ___ than this good book.','best'],
+ ['both','boath','bouth','I have two hands. ___ are clean.','Each'],
+ ['bring','brign','brinng','Please ___ your book to class.','took'],
+ ['buy','bey','byy','We pay money to ___ bread.','sell'],
+ ['could','coud','culd','When I was five, I ___ swim.','can'],
+ ['does','doez','doese','She ___ her work each day.','do'],
+ ['done','donn','doen','I finished. My work is ___.','doing'],
+ ['every','evry','evrey','___ child gets one cup.','Many'],
+ ['first','ferst','frist','I came before the others. I was ___.','last'],
+ ['found','fownd','fuond','I looked for my sock and ___ it. Now I have it.','lost'],
+ ['gave','gaev','gayv','Yesterday she ___ me a gift.','give'],
+ ['goes','goez','gose','He ___ home after class.','go'],
+ ['green','grean','gerren','Mix blue and yellow to make ___.','red'],
+ ['grow','grouw','gorw','With care, our seedlings will ___.','grew'],
+ ['keep','keap','keepp','Do not throw it away. ___ it.','Lose'],
+ ['many','manny','meny','There are ___ books on the shelf.','much'],
+ ['off','ofe','offf','The lamp is dark. It is ___.','on'],
+ ['pull','pule','puul','Hold the rope and ___ it toward you.','push'],
+ ['read','readd','raed','I ___ a story from this book.','ride'],
+ ['right','righht','rihgt','Turn ___, not left.','wrong'],
+ ['sing','seng','sign','Use your voice to ___ a song.','ring'],
+ ['sit','sitt','seet','Please ___ on the chair.','set'],
+ ['sleep','sleap','slep','At bedtime I go to ___.','swim'],
+ ['tell','telll','tlel','Please ___ me your name.','talk'],
+ ['their','thier','thare','The twins own this bag. It is ___ bag.','there'],
+ ['these','thees','thes','___ two cups belong to me.','This'],
+ ['those','thoes','thoz','Look at ___ stars far away.','that'],
+ ['upon','uppon','uopn','Once ___ a time, a fox lived here.','until'],
+ ['wash','wosh','wahs','Use soap to ___ your hands.','watch'],
+ ['which','wich','whitch','___ of these two cups is yours?','When'],
+ ['why','whi','wyh','___ are you wet? Because it rained.','Who'],
+ ['wish','wisch','wihs','I ___ I could fly like a bird.','wash'],
+ ['work','werk','wrok','We must ___ together to finish the job.','went'],
+ ['would','woud','wuld','___ you like some water?','Does'],
+ ['your','yuor','yourr','This is ___ coat. You own it.','you'],
+ ['only','onley','olny','I have ___ one pencil, no more.','all'],
+ ['other','uther','ohter','One shoe is here. Where is the ___ shoe?','another']
+];
+(() => {
+ const set=(id,play)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){return ['grammar2a','grammar2b','punct2','poems2'].includes(id)&&rnd(5)===0?old.call(this):play.call(this);};};
+ const opts=(r,w)=>[r,...w].map((x,i)=>({html:`<span class="word">${typeof x==='string'?x:L(x)}</span>`,ok:i===0}));
+ const text=x=>`<div class="storytext">${typeof x==='string'?x:L(x)}</div>`;
+ const words=[...G2_WORD77,...TRICKY2.map(r=>[r[0],...r[3],r[1],null])];
+ set('tricky2',function(){const lv=lvl(this.id),w=pick(words),sent=w[3];
+  if(lv===1) {g2EnglishQuiz77(this,{ask:B('Pick the word that fits, with correct spelling.','문장에 맞고 철자가 바른 낱말은?'),askExtra:{t:sent.replace('___','blank'),lang:'en-US'},show:text(sent.replace('___','?')),opts:opts(w[0],[w[1],w[2]]),cls:'words',after:B(sent.replace('___',w[0]),sent.replace('___',w[0])),vocab:w[0]});return;}
+  const other=pick(words.filter(x=>x[0]!==w[0])),pair=(a,b)=>a+' → '+b;
+  g2EnglishQuiz77(this,{ask:B('Fill both blanks in order, with correct spelling.','두 빈칸을 차례로 채울 바른 철자 짝은?'),askExtra:{t:sent.replace('___','blank')+' '+other[3].replace('___','blank'),lang:'en-US'},show:text(sent.replace('___','?')+'<br>'+other[3].replace('___','?')),opts:opts(pair(w[0],other[0]),[pair(w[1],other[0]),pair(w[0],other[1])]),cls:'words',after:B(pair(w[0],other[0]),pair(w[0],other[0]))});
+ });
+ const things=[['kite','연','🪁'],['boat','배','⛵'],['bird','새','🐦'],['house','집','🏠'],['flower','꽃','🌸'],['fish','물고기','🐟'],['car','자동차','🚗'],['star','별','⭐'],['tree','나무','🌳'],['train','기차','🚂'],['cat','고양이','🐱'],['rabbit','토끼','🐰']];
+ const colors=[['red','빨간'],['blue','파란'],['green','초록'],['yellow','노란'],['purple','보라색'],['orange','주황색']];
+ set('sentence2',function(){const lv=lvl(this.id),o=pick(things),c=pick(colors),s=lv===1?`I drew ${c[0]==='orange'?'an':'a'} ${c[0]} ${o[0]}.`:`After lunch, I painted my ${o[0]} ${c[0]}.`;
+  tileRound(this,{ask:B('Put the words in order.','낱말을 차례로 놓아요.'),show:`<span class="emo">${o[2]}</span>`,hearWord:s,target:s.split(' '),extra:lv===1?['are']:['before','draw'],after:B(s,lv===1?`나는 ${c[1]} ${o[1]} 그림을 그렸어요.`:`점심 뒤에 ${o[1]} 그림을 ${c[1]}으로 칠했어요.`),vocab:s});
+ });
+ const chunks=`rab-bit|토끼|🐰;nap-kin|냅킨|🧻;bas-ket|바구니|🧺;pump-kin|호박|🎃;mag-net|자석|🧲;pen-cil|연필|✏️;kit-ten|아기 고양이|🐱;sun-set|해 질 녘|🌇;win-dow|창문|🪟;rib-bon|리본|🎀;pup-pet|인형|🧸;muf-fin|머핀|🧁;cac-tus|선인장|🌵;car-pet|카펫|🟥;ro-bot|로봇|🤖;ti-ger|호랑이|🐯;ze-bra|얼룩말|🦓;spi-der|거미|🕷️;pi-lot|조종사|🧑‍✈️;tu-lip|튤립|🌷;lem-on|레몬|🍋;mel-on|멜론|🍈;wag-on|수레|🛒;buck-et|양동이|🪣;tick-et|표|🎟️;jack-et|재킷|🧥;rock-et|로켓|🚀;pock-et|주머니|👖;but-ton|단추|🔘;mit-ten|벙어리장갑|🧤;ham-mer|망치|🔨;lad-der|사다리|🪜;let-ter|편지|✉️;ot-ter|수달|🦦;sum-mer|여름|☀️;win-ter|겨울|❄️;sis-ter|여자 형제|👧;broth-er|남자 형제|👦;wa-ter|물|💧;din-ner|저녁 식사|🍽️;mar-ket|시장|🏪;gar-den|정원|🌻;par-rot|앵무새|🦜;car-rot|당근|🥕;ap-ple|사과|🍎;tur-key|칠면조|🦃;don-key|당나귀|🫏;pan-da|판다|🐼;can-dy|사탕|🍬;ba-by|아기|👶;la-dy|여성|👩;sto-ry|이야기|📖;hap-py|행복한|😊;yel-low|노란색|🟡;pur-ple|보라색|🟣;ta-ble|탁자|🪑;can-dle|초|🕯️;tur-tle|거북이|🐢;pa-per|종이|📄;rain-bow|무지개|🌈`.split(';').map(x=>x.split('|'));
+ set('spell2',function(){const lv=lvl(this.id),r=pick(chunks),target=lv===1?r[0].split('-'):r[0].replaceAll('-','').split('');
+  tileRound(this,{ask:B(lv===1?'Build the word with sound parts.':'Build the word with letters.',lv===1?'소리 조각으로 낱말을 만들어요.':'글자로 낱말을 만들어요.'),show:`<span class="emo">${r[2]}</span>`,hearWord:r[0].replaceAll('-',''),target,extra:lv===1?['tion','ful'].filter(x=>!target.includes(x)):['a','e','i','o','u'].filter(x=>!target.includes(x)).slice(0,2),speakTiles:lv!==1,after:B(r[0].replaceAll('-',''),r[1]),vocab:r[0].replaceAll('-','')});
+ });
+ // Each plural and verb is practiced in a meaningful singular/plural or time context.
+ const nouns=[...PLUR,...`box|boxes|boxs;bus|buses|buss;class|classes|classs;brush|brushes|brushs;watch|watches|watchs;bench|benches|benchs;peach|peaches|peachs;wish|wishes|wishs;berry|berries|berrys;cherry|cherries|cherrys;city|cities|citys;family|families|familys;story|stories|storys;party|parties|partys;leaf|leaves|leafs;wolf|wolves|wolfs;knife|knives|knifes;life|lives|lifes;calf|calves|calfs;loaf|loaves|loafs`.split(';').map(x=>x.split('|'))];
+ set('grammar2a',function(){const lv=lvl(this.id),r=pick(nouns),many=rnd(2)===0,where=pick(['here','outside','nearby']);
+  const stem=lv===1?`One ${r[0]}; several ___ ${where}.`:`${many?'Several':'One'} ___ ${where} ${many?'are':'is'} easy to see.`;
+  const right=lv===1||many?r[1]:r[0],wrong=lv===1||many?[r[0],r[2]]:[r[1],r[2]];
+  g2EnglishQuiz77(this,{ask:B(lv===1?'Choose the plural noun.':'Match the noun to the number and verb.',lv===1?'여럿을 뜻하는 명사 형태는?':'수와 동사에 맞는 명사 형태는?'),show:text(stem.replace('___','?')),opts:opts(right,wrong),cls:'words',after:B(stem.replace('___',right),stem.replace('___',right))});
+ });
+ const verbComplements={"run":"around the pond","eat":"lunch","see":"a bird","go":"home","draw":"a boat","fly":"a kite","give":"a gift","write":"a note","swim":"in the pond","take":"a turn","come":"home","sing":"a song","drink":"water","ride":"a bike","drive":"a car","break":"a stick","choose":"a book","speak":"softly","wake":"early","wear":"a coat","tear":"paper","blow":"bubbles","grow":"beans","know":"the answer","throw":"a ball","begin":"the game","ring":"a bell","sit":"outside","get":"a book","forget":"a name","hold":"a rope","keep":"a coin","sleep":"soundly","feel":"happy","leave":"the room","meet":"a friend","send":"a note","spend":"a dime","build":"a tower","buy":"a book","bring":"a cup","think":"about birds","teach":"a lesson","catch":"a ball","find":"a key","lose":"a sock","stand":"by the door","understand":"a story"};
+ const verbs=[...IRR,...`drink|drank|drinked;ride|rode|rided;drive|drove|drived;break|broke|breaked;choose|chose|choosed;speak|spoke|speaked;wake|woke|woked;wear|wore|weared;tear|tore|teared;blow|blew|blowed;grow|grew|growed;know|knew|knowed;throw|threw|throwed;begin|began|beginned;ring|rang|ranged;sit|sat|sitted;get|got|getted;forget|forgot|forgetted;hold|held|holded;keep|kept|keeped;sleep|slept|sleeped;feel|felt|feeled;leave|left|leaved;meet|met|meeted;send|sent|sended;spend|spent|spended;build|built|builded;buy|bought|buyed;bring|brought|bringed;think|thought|thinked;teach|taught|teached;catch|caught|catched;find|found|finded;lose|lost|losed;stand|stood|standed;understand|understood|understanded`.split(';').map(x=>x.split('|'))];
+ set('grammar2b',function(){const lv=lvl(this.id),r=pick(verbs),past=rnd(2)===0;
+  const tail=verbComplements[r[0]];
+  const stem=lv===1?`Yesterday: ${r[0]} → ?`:past?`We will ${r[0]} ${tail} again. Yesterday we ___ ${tail}.`:`Yesterday we ${r[1]} ${tail}. Tomorrow we will ___ ${tail}.`;
+  const right=lv===1||past?r[1]:r[0];g2EnglishQuiz77(this,{ask:B(lv===1?'Choose the past-tense form.':'Use both time clues. Which form fits?',lv===1?'지난 일을 나타내는 형태는?':'두 시간 단서를 보고 알맞은 형태를 골라요.'),show:text(stem.replace('___','?')),opts:opts(right,[lv===1||past?r[0]:r[1],r[2]]),cls:'words',after:B(`${r[0]} → ${r[1]}`,`${r[0]} → ${r[1]}`)});
+ });
+ set('punct2',function(){const lv=lvl(this.id),o=pick(things),c=pick(colors),base=`The ${c[0]} ${o[0]} is mine`,r=lv===1?`${base}.`:`"${base}," said Mia.`,wrong=lv===1?[`${base},`,`${base}?`]:[`"${base}" said Mia.`,`${base}, said Mia.`];
+  g2EnglishQuiz77(this,{ask:B(lv===1?'Use a period to finish the statement.':'Choose the correct speech marks and comma.',lv===1?'평서문 끝에 마침표를 바르게 쓴 것은?':'따옴표와 쉼표를 바르게 쓴 것은?'),opts:opts(r,wrong),cls:'words sents',after:B(r,r)});
+ });
+})();
+// Original short school records and animal stories; no textbook passages.
+(() => {
+ const set=(id,play)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){return ['grammar2a','grammar2b','punct2','poems2'].includes(id)&&rnd(5)===0?old.call(this):play.call(this);};};
+ const opts=(r,w)=>[r,...w].map((x,i)=>({html:`<span class="word">${L(x)}</span>`,ok:i===0}));
+ const text=x=>`<div class="storytext">${L(x)}</div>`;
+ const records=[
+ ['paper boats','종이배','fold paper','종이를 접어요','float boats','배를 띄워요'],['clay bowls','찰흙 그릇','shape clay','찰흙을 빚어요','dry bowls','그릇을 말려요'],
+ ['seed pots','씨앗 화분','fill cups','컵을 채워요','plant seeds','씨앗을 심어요'],['fruit cups','과일 컵','wash fruit','과일을 씻어요','fill bowls','그릇에 담아요'],
+ ['bookmarks','책갈피','cut strips','띠를 잘라요','decorate strips','띠를 꾸며요'],['puppets','인형','draw faces','얼굴을 그려요','attach sticks','막대를 붙여요'],
+ ['cards','카드','fold cards','카드를 접어요','write greetings','인사를 써요'],['paintings','그림','mix paint','물감을 섞어요','paint scenes','풍경을 그려요'],
+ ['bird feeders','새 모이통','tie strings','줄을 묶어요','add seeds','씨앗을 담아요'],['paper crowns','종이 왕관','measure strips','띠를 재요','join ends','양 끝을 붙여요'],
+ ['toy roads','장난감 길','lay tracks','길을 놓아요','drive cars','차를 굴려요'],['collages','붙임 그림','tear paper','종이를 찢어요','glue pieces','조각을 붙여요'],
+ ['picture books','그림책','draw pictures','그림을 그려요','bind pages','책장을 묶어요'],['bean bags','콩 주머니','fill bags','주머니를 채워요','seal openings','입구를 막아요'],
+ ['ribbon wands','리본 막대','cut ribbons','리본을 잘라요','tie ribbons','리본을 묶어요'],['name tags','이름표','write names','이름을 써요','clip tags','이름표를 달아요'],
+ ['puzzles','퍼즐','draw scenes','풍경을 그려요','cut pieces','조각을 잘라요'],['leaf prints','나뭇잎 찍기','paint leaves','잎에 색을 칠해요','press leaves','잎을 눌러요'],
+ ['paper chains','종이 고리','cut paper','종이를 잘라요','link loops','고리를 이어요'],['snack trays','간식 쟁반','count plates','접시 수를 세요','serve snacks','간식을 담아요'],
+ ['sock dolls','양말 인형','stuff socks','양말을 채워요','sew tops','윗부분을 꿰매요'],['photo frames','사진틀','join sticks','막대를 이어요','add photos','사진을 넣어요'],
+ ['toy tents','장난감 천막','stand poles','기둥을 세워요','spread cloth','천을 펼쳐요'],['flower vases','꽃병','fill vases','꽃병을 채워요','arrange flowers','꽃을 꽂아요'],
+ ['garden signs','정원 팻말','paint boards','판자를 칠해요','write labels','이름을 적어요'],['treasure maps','보물 지도','draw paths','길을 그려요','mark clues','단서를 표시해요'],
+ ['wind flags','바람 깃발','cut cloth','천을 잘라요','attach poles','막대를 붙여요'],['gift bags','선물 가방','decorate bags','가방을 꾸며요','pack gifts','선물을 담아요']
+ ];
+ set('paragraph2',function(){const r=pick(records),lv=lvl(this.id),kind=rnd(3);
+  const topic=B(`We make ${r[0]} together.`,`우리는 함께 ${r[1]} 만들기를 해요.`),first=B(`First, we ${r[2]}.`,`먼저 ${r[3]}.`),last=B(`Then we ${r[4]}.`,`그다음 ${r[5]}.`);
+  const close=B('Our project is ready to share.','완성한 작품을 함께 나눠요.'),bad=B('First, we put the tools away.','먼저 도구를 치워요.');
+  if(lv===1){const right=[topic,first,last][kind];quiz(this,{ask:[B('Which opening names the whole activity?','활동 전체를 소개하는 첫 문장은?'),B('Which sentence should come before the last step?','마지막 단계 앞에 올 문장은?'),B('Which step comes next?','다음에 올 단계는?')][kind],show:text(B([first.en+' '+last.en,topic.en+' '+last.en,topic.en+' '+first.en][kind],[first.ko+' '+last.ko,topic.ko+' '+last.ko,topic.ko+' '+first.ko][kind])),opts:opts(right,kind===0?[first,last]:[close,bad]),cls:'words sents'});}
+  else {const order=shuffle([topic,first,last,close]),lab=x=>String.fromCharCode(65+order.indexOf(x)),right=`${lab(topic)} → ${lab(first)} → ${lab(last)} → ${lab(close)}`;
+   quiz(this,{ask:B('Order the opening, steps, and closing.','시작, 순서, 마무리를 차례로 놓아요.'),show:text(B(order.map((x,i)=>`${String.fromCharCode(65+i)}. ${x.en}`).join('<br>'),order.map((x,i)=>`${String.fromCharCode(65+i)}. ${x.ko}`).join('<br>'))),opts:opts(B(right,right),[B(`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`,`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`),B(`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`,`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`)]),cls:'words'});
+  }
+ });
+ const places=[B('art room','미술실'),B('classroom','교실'),B('library','도서관'),B('hall','강당')];
+ const oldInfo=GAMES.find(g=>g.id==='info2').play;
+ set('info2',function(){if(lvl(this.id)===2)return oldInfo.call(this);const r=pick(records),p=pick(places),kind=rnd(3);
+  const show=B(`Club notice: We make ${r[0]} in the ${p.en}. First, we ${r[2]}. Then we ${r[4]}.`,`동아리 안내: ${p.ko}에서 ${r[1]} 만들기를 해요. 먼저 ${r[3]}. 그다음 ${r[5]}.`);
+  const right=kind===0?p:kind===1?B(r[2],r[3]):B(r[4],r[5]);
+  quiz(this,{ask:[B('Where does the club meet?','동아리가 모이는 곳은?'),B('What is the first step?','첫 단계는?'),B('What follows the first step?','첫 단계 뒤에 하는 일은?')][kind],show:text(show),opts:opts(right,kind===0?places.filter(x=>x!==p).slice(0,2):[kind===1?B(r[4],r[5]):B(r[2],r[3]),B('pack up the tools','도구를 정리해요')]),cls:'words sents'});
+ });
+ const tales=[
+ ['Rabbit','토끼','The cart was too heavy.','수레가 너무 무거웠어요.','asked a friend to push','친구에게 밀어 달라고 부탁했어요','The cart moved.','수레가 움직였어요.','Share a hard job.','힘든 일은 함께해요.'],
+ ['Fox','여우','The seed bed was dry.','씨앗을 심은 흙이 말랐어요.','watered it each day','날마다 물을 주었어요','Green shoots appeared.','초록 싹이 나왔어요.','Keep caring for living things.','생명을 꾸준히 돌봐요.'],
+ ['Mouse','생쥐','The tall tower fell.','높은 탑이 무너졌어요.','built a wider base','아랫부분을 넓게 만들었어요','The new tower stood.','새 탑은 서 있었어요.','Learn from a failed try.','실패에서 배워요.'],
+ ['Bear','곰','The path was slippery.','길이 미끄러웠어요.','took small careful steps','작고 조심스러운 걸음을 옮겼어요','Bear reached home safely.','곰이 안전하게 집에 도착했어요.','Slow down when needed.','필요할 때는 천천히 가요.'],
+ ['Owl','부엉이','A friend looked sad.','친구가 슬퍼 보였어요.','sat and listened','앉아서 이야기를 들었어요','The friend felt heard.','친구는 마음을 알아줘서 좋았어요.','Listen to a friend.','친구의 이야기를 들어요.'],
+ ['Deer','사슴','Two friends wanted one swing.','친구 둘이 그네 하나를 타려 했어요.','suggested taking turns','번갈아 타자고 했어요','Both got a turn.','둘 다 차례를 얻었어요.','Take turns to be fair.','공평하게 번갈아 해요.'],
+ ['Duck','오리','A toy boat had a hole.','장난감 배에 구멍이 났어요.','patched the hole','구멍을 막았어요','The boat floated again.','배가 다시 떴어요.','Try a repair first.','먼저 고쳐 보아요.'],
+ ['Squirrel','다람쥐','Winter was coming.','겨울이 오고 있었어요.','stored nuts in a dry place','마른 곳에 견과를 모았어요','There was food in winter.','겨울에 먹이가 있었어요.','Prepare for later needs.','나중을 위해 준비해요.'],
+ ['Beaver','비버','A friend could not lift a log.','친구가 통나무를 들지 못했어요.','helped lift one end','한쪽 끝을 함께 들었어요','They carried it together.','함께 나를 수 있었어요.','Offer help when needed.','필요할 때 도와줘요.'],
+ ['Hedgehog','고슴도치','A ball broke a pot.','공이 화분을 깨뜨렸어요.','told the owner the truth','주인에게 사실을 말했어요','They planned a repair.','함께 고칠 계획을 세웠어요.','Own up to mistakes.','잘못을 솔직히 말해요.'],
+ ['Goat','염소','The bridge was narrow.','다리가 좁았어요.','waited for a friend to cross','친구가 건널 때까지 기다렸어요','Both crossed safely.','둘 다 안전하게 건넜어요.','Leave space for others.','다른 사람에게 자리를 내줘요.'],
+ ['Panda','판다','The room was messy.','방이 어질러져 있었어요.','sorted toys into boxes','장난감을 상자에 나눠 담았어요','The floor was clear.','바닥이 깨끗해졌어요.','Care for shared places.','함께 쓰는 곳을 돌봐요.'],
+ ['Otter','수달','The knot kept slipping.','매듭이 자꾸 풀렸어요.','practiced tying it','매듭 묶기를 연습했어요','The next knot held.','다음 매듭은 풀리지 않았어요.','Skills grow with practice.','연습하면 더 잘해요.'],
+ ['Frog','개구리','A small friend was left out.','작은 친구가 놀이에서 빠졌어요.','invited the friend to play','친구를 놀이에 초대했어요','The small friend joined the game.','작은 친구도 놀이에 참여했어요.','Include others in play.','다른 친구도 함께 놀아요.'],
+ ['Badger','오소리','The sign was hard to read.','팻말이 읽기 어려웠어요.','wrote larger letters','글씨를 크게 썼어요','Friends found the meeting spot.','친구들이 모일 곳을 찾았어요.','Make directions clear.','안내를 알기 쉽게 해요.'],
+ ['Seal','물개','There was one large snack.','큰 간식이 하나 있었어요.','cut equal pieces','같은 크기로 잘랐어요','Each friend got a fair share.','친구마다 공평하게 받았어요.','Share fairly with friends.','친구와 공평하게 나눠요.'],
+ ['Mole','두더지','A new tool was confusing.','새 도구를 쓰기 어려웠어요.','asked how to use it','쓰는 법을 물었어요','Mole used it safely.','두더지는 안전하게 썼어요.','Ask when you need help.','도움이 필요하면 물어봐요.'],
+ ['Raccoon','너구리','A borrowed cup was dirty.','빌린 컵이 더러웠어요.','washed it before returning it','돌려주기 전에 씻었어요','The owner got a clean cup.','주인은 깨끗한 컵을 받았어요.','Care for borrowed things.','빌린 물건을 소중히 해요.'],
+ ['Penguin','펭귄','A friend dropped many cards.','친구가 카드를 많이 떨어뜨렸어요.','helped pick them up','함께 주웠어요','The cards were soon gathered.','카드가 금방 모였어요.','Small help can matter.','작은 도움도 소중해요.'],
+ ['Koala','코알라','The bag had too many toys.','가방에 장난감이 너무 많았어요.','packed just what was needed','필요한 것만 담았어요','The bag was easy to carry.','가방을 들기 쉬워졌어요.','Choose what you need.','필요한 것을 골라요.'],
+ ['Lamb','어린 양','A promise was easy to forget.','약속을 잊어버릴 것 같았어요.','made a reminder note','기억할 쪽지를 썼어요','Lamb arrived on time.','어린 양은 제시간에 왔어요.','Find ways to keep promises.','약속을 지킬 방법을 찾아요.'],
+ ['Pig','돼지','The paint spilled.','물감이 쏟아졌어요.','cleaned it before playing','놀기 전에 닦았어요','Nobody slipped on it.','아무도 미끄러지지 않았어요.','Clean up your spills.','쏟은 것은 치워요.'],
+ ['Robin','울새','A long job felt hard.','긴 일이 어렵게 느껴졌어요.','finished one small part at a time','작은 부분을 하나씩 끝냈어요','The whole job was done.','일 전체가 끝났어요.','Work step by step.','한 단계씩 해요.'],
+ ['Turtle','거북이','A friend chose a different game.','친구가 다른 놀이를 골랐어요.','tried the new game','새 놀이를 해 보았어요','Both enjoyed playing.','둘 다 즐겁게 놀았어요.','Be open to new ideas.','새 생각도 받아들여요.']
+ ];
+ set('fables',function(){const r=pick(tales),lv=lvl(this.id),kind=rnd(3),wrongEvent=B(`${r[0]} left the problem unsolved.`,`${r[1]}는 문제를 그대로 두었어요.`),action=B(`${r[0]} ${r[4]}.`,`${r[1]}: ${r[5]}.`),end=B(r[6],r[7]),start=B(r[2],r[3]);
+  const story=B(`${r[2]} ${action.en} ${r[6]}`,`${r[3]} ${action.ko} ${r[7]}`);
+  let ask,right,wrong;
+  if(lv===1){ask=[B('What problem starts the story?','처음에 어떤 문제가 있었나요?'),B('What does the character do next?','주인공은 그다음 무엇을 하나요?'),B('What happens at the end?','마지막에 무슨 일이 생기나요?')][kind];right=[start,action,end][kind];wrong=[[end,action],[start,end],[start,action]][kind];}
+  else {const lesson=B(r[8],r[9]);ask=[B('Which lesson fits the action and result?','행동과 결과에 맞는 교훈은?'),B('Which action explains the ending?','결말이 나온 까닭을 보여 주는 행동은?'),B('Which plan uses the lesson next time?','다음에 교훈을 실천하는 계획은?')][kind];right=kind===1?action:lesson;wrong=kind===1?[start,end]:[B('Rush to finish before checking.','살피기 전에 빨리 끝내요.'),B('Leave when a task is hard.','어려우면 떠나요.')];}
+  quiz(this,{ask,show:text(story),opts:opts(right,wrong),cls:'words sents',after:B('Use the action and result as evidence.','행동과 결과를 근거로 생각해요.')});
+ });
+})();
+(() => {
+ const set=(id,play)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){return ['grammar2a','grammar2b','punct2','poems2'].includes(id)&&rnd(5)===0?old.call(this):play.call(this);};};
+ const opts=(r,w)=>[r,...w].map((x,i)=>({html:`<span class="word">${typeof x==='string'?x:L(x)}</span>`,ok:i===0}));
+ const senses=[
+ ['bat','A bat flew from the cave.','I swung a bat at the ball.','an animal','동물','a sports tool','운동 도구'],
+ ['bark','The dog has a loud bark.','The tree has rough bark.','a dog sound','개가 짖는 소리','tree covering','나무껍질'],
+ ['ring','I wear a gold ring.','I heard the bell ring.','finger jewelry','손가락 장신구','make a bell sound','종소리를 내다'],
+ ['park','We play in the park.','Please park the car here.','a play area','놀이 공간','leave a car','차를 세우다'],
+ ['duck','A duck swam past.','Duck under the low branch.','a water bird','물새','lower your head','고개를 숙이다'],
+ ['wave','I saw a wave in the sea.','Wave to your friend.','moving water','물결','move a hand in greeting','손을 흔들어 인사하다'],
+ ['light','Turn on the light.','This empty bag is light.','a lamp','등','not heavy','무겁지 않은'],
+ ['right','Your answer is right.','Turn right at the door.','a correct answer','올바른 답','the right side','오른쪽 방향'],
+ ['left','My left hand is up.','We left the park at noon.','opposite of right','오른쪽의 반대','went away','떠났다'],
+ ['watch','My watch shows noon.','Watch the puppy play.','a timepiece','손목시계','look at','바라보다'],
+ ['can','The soup is in a can.','I can swim now.','a metal container','금속 통','be able to','할 수 있다'],
+ ['jam','Spread jam on toast.','Cars waited in a traffic jam.','fruit spread','과일 잼','blocked traffic','교통 정체'],
+ ['fan','The fan cools the room.','I am a fan of this team.','an air mover','바람을 만드는 도구','a supporter','응원하는 사람'],
+ ['fly','A fly landed on my plate.','Birds fly over the lake.','an insect','곤충','move through the air','공중으로 이동하다'],
+ ['fair','Each child got a fair share.','We went to the school fair.','just and equal','공평한','a special event','행사'],
+ ['kind','She was kind to her friend.','What kind of fruit is this?','caring','친절한','a type','종류'],
+ ['mean','What does this word mean?','That was a mean trick.','have a meaning','뜻을 가지다','unkind','못된'],
+ ['miss','I miss my old friend.','Try not to miss the bus.','feel someone is absent','그리워하다','fail to catch','놓치다'],
+ ['nail','The nail holds the wood.','My finger has a broken nail.','a metal fastener','금속 못','a finger covering','손톱'],
+ ['note','Write me a short note.','Play one note on the piano.','a message','쪽지','a musical sound','음 하나'],
+ ['orange','I ate an orange.','The sunset looks orange.','a fruit','과일','a color','색'],
+ ['palm','I held a seed in my palm.','A palm grows by the beach.','part of a hand','손바닥','a kind of tree','야자나무'],
+ ['point','Point to the door.','The pencil has a sharp point.','show a direction','가리키다','a pointed tip','뾰족한 끝'],
+ ['rock','I found a smooth rock.','Rock the baby gently.','a hard stone','단단한 돌','sway gently','살살 흔들다'],
+ ['rose','A rose grew in the garden.','The balloon rose into the air.','a flower','꽃','moved upward','올라갔다'],
+ ['row','Sit in the front row.','Row the boat to shore.','a line of seats','좌석 줄','move a boat with oars','노를 젓다'],
+ ['seal','A seal swam in the sea.','Seal the bag so it stays shut.','a sea animal','바다 동물','close tightly','단단히 닫다'],
+ ['spring','Flowers bloom in spring.','The spring in the toy bends.','a season','계절','a coiled part','용수철'],
+ ['tie','Tie your shoelaces.','He wore a blue tie.','fasten with a knot','매듭으로 묶다','neck clothing','넥타이'],
+ ['train','The train arrived at the station.','We train for the race.','a rail vehicle','기차','practice for something','훈련하다'],
+ ['trunk','An elephant has a long trunk.','The tree trunk is thick.','an animal nose','코끼리 코','the main tree stem','나무 몸통'],
+ ['yard','The dog plays in the yard.','This ribbon is one yard long.','outdoor space','마당','a length unit','길이 단위'],
+ ['match','The socks match each other.','We watched a soccer match.','go together','서로 어울리다','a game','경기'],
+ ['bowl','Soup fills the bowl.','We bowl at the bowling alley.','a dish','그릇','roll a ball at pins','볼링을 하다'],
+ ['bill','The duck has a flat bill.','We paid the food bill.','a bird beak','새의 부리','a payment request','계산서'],
+ ['chest','I held my hand on my chest.','Toys fill the wooden chest.','part of the body','가슴','a storage box','보관 상자']
+ ];
+ set('wordnuance2',function(){const lv=lvl(this.id),r=pick(senses),a=rnd(2),right=B(r[3+a*2],r[4+a*2]),wrong=B(r[3+(1-a)*2],r[4+(1-a)*2]);
+  const show=lv===1?r[1+a]:`A. ${r[1+a]}<br>B. ${r[2-a]}`;
+  g2EnglishQuiz77(this,{ask:B(lv===1?`What does "${r[0]}" mean here?`:`How does "${r[0]}" change from A to B?`,lv===1?`여기서 "${r[0]}"의 뜻은?`:`A에서 B로 "${r[0]}"의 뜻이 어떻게 달라지나요?`),show:`<div class="storytext">${show}</div>`,opts:lv===1?opts(right,[wrong]):opts(B(`${right.en} → ${wrong.en}`,`${right.ko} → ${wrong.ko}`),[B(`${wrong.en} → ${right.en}`,`${wrong.ko} → ${right.ko}`),B(`${right.en} → ${right.en}`,`${right.ko} → ${right.ko}`)]),cls:'words sents',after:right});
+ });
+ const rhymes=`cat|hat|cap;dog|log|stick;fox|box|bag;bee|tree|bush;moon|spoon|fork;star|car|truck;boat|coat|shirt;goat|boat|ship;cake|lake|pond;snake|cake|pie;mouse|house|home;bear|chair|seat;pear|bear|wolf;light|kite|bird;night|light|lamp;rain|train|bus;train|rain|snow;bell|shell|rock;fish|dish|plate;duck|truck|car;frog|log|twig;king|ring|crown;ball|wall|fence;clock|sock|shoe;shoe|glue|tape;book|hook|clip;bed|sled|cart;red|bed|cot;hen|pen|pencil;hen|ten|nine;sun|bun|bread;run|sun|moon;day|hay|grass;play|clay|sand;back|sack|bag;black|snack|meal;wing|spring|fall;feet|sheet|blanket;seat|wheat|rice;go|snow|rain;low|bow|arrow;hill|mill|factory;hop|top|base;stop|shop|store;band|hand|arm;sand|band|group;lip|ship|boat;dip|zip|button;net|pet|dog;wet|jet|plane;rose|nose|ear;seed|bead|button;blue|shoe|boot;green|bean|pea;white|kite|plane;bright|night|dawn;small|ball|cube;round|ground|floor;deep|sheep|goat;sweet|feet|hands`.split(';').map(x=>x.split('|'));
+ set('poems2',function(){const lv=lvl(this.id),r=pick(rhymes);
+  if(lv===1)g2EnglishQuiz77(this,{ask:B(`Which word rhymes with "${r[0]}"?`,`"${r[0]}"와 끝부분 소리가 같은 낱말은?`),opts:opts(B(r[1],r[1]),[B(r[2],r[2]),B(['cat','dog','hat','mat','bat','rat','flat'].includes(r[0])?'sun':r[2]==='hat'?'cup':'hat',['cat','dog','hat','mat','bat','rat','flat'].includes(r[0])?'sun':r[2]==='hat'?'cup':'hat')]),cls:'words',after:B(`${r[0]} / ${r[1]}`,`${r[0]} / ${r[1]}`)});
+  else {const other=pick(rhymes.filter(x=>!r.includes(x[1])&&x[1]!==r[1]));
+   g2EnglishQuiz77(this,{ask:B('Which pair keeps the rhyme in both lines?','두 줄 모두 끝소리가 맞는 낱말 짝은?'),show:`<div class="storytext">${r[0]} → ?<br>${other[0]} → ?</div>`,opts:opts(B(`${r[1]} → ${other[1]}`,`${r[1]} → ${other[1]}`),[B(`${r[2]} → ${other[1]}`,`${r[2]} → ${other[1]}`),B(`${r[1]} → ${other[2]}`,`${r[1]} → ${other[2]}`)]),cls:'words',after:B(`${r[0]} / ${r[1]}; ${other[0]} / ${other[1]}`,`${r[0]} / ${r[1]}; ${other[0]} / ${other[1]}`)});
+  }
+ });
 })();

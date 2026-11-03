@@ -197,9 +197,9 @@
       after=b('This note is about our question.','이 기록은 조사 질문과 관련 있어요.');
       if(g==='2')names=labels.map(x=>b(`${prefix.en} · ${x.en}`,`${prefix.ko} · ${x.ko}`));
     } else {
-      const kind=g==='1'?rnd(3):index%3;
-      const quantity = g === '1' ? 1 + rnd(8) : index + 2;
-      const change = g === '1' ? 1 + rnd(3) : 3;
+      const kind=rnd(3);
+      const quantity = 1 + rnd(8);
+      const change = 1 + rnd(3);
       const a=kind===0?b(`Monday: ${quantity} ${r[5].en}.`,`월요일: ${r[5].ko} ${quantity}개.`):kind===1?b(`${r[5].en}: red on Monday.`,`${r[5].ko}: 월요일에는 빨간색.`):b(`${r[5].en}: small on Monday.`,`${r[5].ko}: 월요일에는 작았어요.`);
       const z=kind===0?b(`Friday: ${quantity+change} ${r[5].en}.`,`금요일: ${r[5].ko} ${quantity+change}개.`):kind===1?b(`${r[5].en}: blue on Friday.`,`${r[5].ko}: 금요일에는 파란색.`):b(`${r[5].en}: large on Friday.`,`${r[5].ko}: 금요일에는 컸어요.`);
       notes=[a,z];names=[b('A · observation','A · 관찰'),b('B · observation','B · 관찰')];
