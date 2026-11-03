@@ -123,12 +123,26 @@ registerGame({
 
 // ---------- Count the syllables ----------
 const SYL = [['dog', '🐶', 1], ['sun', '☀️', 1], ['fish', '🐟', 1], ['apple', '🍎', 2], ['monkey', '🐵', 2], ['tiger', '🐯', 2], ['rabbit', '🐰', 2], ['cat', '🐱', 1], ['pig', '🐷', 1], ['hat', '🎩', 1], ['bus', '🚌', 1], ['pencil', '✏️', 2],
-  ['banana', '🍌', 3], ['butterfly', '🦋', 3], ['elephant', '🐘', 3], ['umbrella', '☂️', 3], ['dinosaur', '🦖', 3]];
+  ['banana', '🍌', 3], ['butterfly', '🦋', 3], ['elephant', '🐘', 3], ['umbrella', '☂️', 3], ['dinosaur', '🦖', 3],
+  ['moon', '🌙', 1], ['star', '⭐', 1], ['duck', '🦆', 1], ['frog', '🐸', 1],
+  ['bee', '🐝', 1], ['bear', '🐻', 1], ['goat', '🐐', 1], ['sheep', '🐑', 1],
+  ['boat', '⛵', 1], ['train', '🚆', 1], ['truck', '🚚', 1], ['kite', '🪁', 1],
+  ['book', '📘', 1], ['bell', '🔔', 1], ['key', '🔑', 1], ['sock', '🧦', 1],
+  ['cake', '🎂', 1], ['bread', '🍞', 1], ['corn', '🌽', 1], ['grapes', '🍇', 1],
+  ['leaf', '🍃', 1], ['tree', '🌳', 1], ['house', '🏠', 1], ['door', '🚪', 1],
+  ['lemon', '🍋', 2], ['carrot', '🥕', 2], ['cookie', '🍪', 2], ['pizza', '🍕', 2],
+  ['pumpkin', '🎃', 2], ['cherries', '🍒', 2], ['peanut', '🥜', 2], ['melon', '🍈', 2],
+  ['turtle', '🐢', 2], ['penguin', '🐧', 2], ['dolphin', '🐬', 2], ['zebra', '🦓', 2],
+  ['spider', '🕷️', 2], ['ladybug', '🐞', 3], ['kangaroo', '🦘', 3], ['octopus', '🐙', 3],
+  ['rocket', '🚀', 2], ['airplane', '✈️', 2], ['tractor', '🚜', 2], ['balloon', '🎈', 2],
+  ['button', '🔘', 2], ['scissors', '✂️', 2], ['trophy', '🏆', 2],
+  ['tomato', '🍅', 3], ['potato', '🥔', 3], ['pineapple', '🍍', 3], ['broccoli', '🥦', 3],
+  ['bicycle', '🚲', 3]];
 registerGame({
   id: 'syllable', subject: 'read', icon: '👏', title: B('Clap the Parts', '박수로 음절 세기'), sub: B('How many parts?', '몇 개로 나뉠까?'),
   area: AREA_READ('Syllables'),
   play() {
-    const pool = lvl('syllable') === 1 ? SYL.filter(x => x[2] <= 2) : SYL, t = pick(pool);
+    const t = pick(SYL.filter(x => x[2] <= 2));
     quiz(this, {
       ask: B('Say the word and clap: how many parts?', '말하며 박수 치면 몇 부분일까요?'),
       show: `<div class="bigword"><span class="emo">${t[1]}</span> ${t[0]} <button class="say" id="hear">🔊</button></div><button class="pill" id="clap">👏 <span id="cl">0</span></button>`,
@@ -145,14 +159,8 @@ registerGame({
   area: AREA_READ('Alphabet'),
   play() {
     const pairs = lvl('memory') === 1 ? 4 : 6, alphabet = 'ABCDEFGHIJKLMNOP'.split('');
-    const history = (this._kBoards ||= { 4: [], 6: [] })[pairs];
-    let ls = shuffle(alphabet).slice(0, pairs), key = ls.slice().sort().join('');
-    for (let attempt = 0; history.includes(key); attempt++) {
-      // Sixteen distinct consecutive-letter sets provide a deterministic fallback.
-      ls = attempt < 32 ? shuffle(alphabet).slice(0, pairs) : Array.from({ length: pairs }, (_, i) => alphabet[(attempt + i) % 16]);
-      key = ls.slice().sort().join('');
-    }
-    history.push(key); if (history.length > 9) history.shift();
+    const ls = shuffle(alphabet).slice(0, pairs);
+    if (dup(this, ls.slice().sort().join(''))) return this.play();
     const cards = shuffle(ls.flatMap(c => [{ k: c, t: c }, { k: c, t: c.toLowerCase() }]));
     // 70a: the instruction is read aloud on start and can be replayed (K cannot be expected to read it).
     const instruction = L(B('Find the big and little letter pairs!', '짝이 되는 큰 글자와 작은 글자를 찾아요!'));
@@ -177,5 +185,15 @@ registerGame({
 (() => {
  const replace=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
  // sight L2 sentence fill removed (2026-10-28): L2 is now listen-and-write with letter tiles (see sight above).
- replace('syllable',()=>{const a=pick(SYL),b=pick(SYL.filter(x=>x[2]!==a[2])),r=a[2]>b[2]?a:b,short=a[2]<b[2]?a:b;return {ask:B('Which word needs MORE claps?','박수를 더 많이 치는 낱말은?'),askExtra:{t:`${a[0]}. ${b[0]}.`,lang:'en-US'},show:`<div class="bigword">${a[0]} · ${b[0]}</div>`,opts:[r[0],short[0],L(B('The same','똑같아요'))].map((x,i)=>({html:`<span class="word">${x}</span>`,ok:i===0})),cls:'words'};});
+ replace('syllable', () => {
+   const a = pick(SYL), b = pick(SYL.filter(word => word !== a));
+   const picture = (word, other) => ({ html: `<span class="emo">${word[1]}</span>`, label: word[0], ok: word[2] > other[2] });
+   return {
+     ask: B('Which word needs more claps?', '박수를 더 많이 치는 낱말은?'),
+     askExtra: { t: `${a[0]}. ${b[0]}.`, lang: 'en-US' },
+     show: '<span class="emo" aria-hidden="true">👏</span>',
+     opts: [picture(a, b), picture(b, a), { html: '<span class="num">=</span>', label: B('Same', '같아요'), ok: a[2] === b[2] }],
+     cls: 'shapes'
+   };
+ });
 })();

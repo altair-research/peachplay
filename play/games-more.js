@@ -21,7 +21,7 @@ registerGame({
     while (set.size < 3) { const v = n + pick([-2, -1, 1, 2]); if (v >= 1 && v <= 10) set.add(v); }
     const maker = (v) => { const kinds = [() => tfSvg(v), () => scatterSvg(v)]; if (v <= 6) kinds.push(() => diceSvg(v)); return pick(kinds)(); };
     quiz(this, {
-      ask: B(`Which one shows ${n}?`, `${n}을(를) 나타내는 것은 어느 것일까요?`), show: `<span class="num bignum">${n}</span>`,
+      ask: B(`Which one shows ${n}?`, `${n}${[2, 4, 5, 9].includes(n) ? '를' : '을'} 나타내는 것은 어느 것일까요?`), show: `<span class="num bignum">${n}</span>`,
       opts: [...set].map(v => ({ html: maker(v), ok: v === n })), cls: 'groups', after: B(`${n}!`, `${n}!`)
     });
   }
