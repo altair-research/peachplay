@@ -264,7 +264,7 @@ function grownups() {
   window.Learner.bind();
   window.Learner.bindStyle();
   if (window.Fluency) window.Fluency.bind();
-  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.spacing = []; S.today = null; S.homecard = null; S.fluency = []; S.ladder = null; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); if (window.Paper) window.Paper.clear(); renderPeaches(); grownups(); } };
+  $('#reset').onclick = () => { if (confirm(T().resetAsk)) { window.LearnLog.finish(); S.log = []; S.mastery = {}; S.strongAreas = null; S.pickLog = []; S.learnDays = {}; S.stats = {}; delete S.recent; S.rounds = {}; S.peaches = 0; S.profile = null; S.checks = []; S.review = []; S.spacing = []; S.today = null; S.homecard = null; S.fluency = []; S.ladder = null; S.hist = {}; S.stickers = []; S.bp = { level: 1, best: 0, stars: {}, friends: [], skin: 'plain', daily: null }; S.showK = false; S.last = ''; save(); if (window.Paper) window.Paper.clear(); renderPeaches(); grownups(); } };
   $('#copyLink').onclick = () => { const u = $('#shareUrl'), done = (ok) => { $('#copiedMsg').textContent = ok ? L(PT.copied) : ''; };
     const old = () => { try { u.focus(); u.select(); done(document.execCommand('copy')); } catch (e) { done(false); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SITE_URL).then(() => done(true), old); else old(); };

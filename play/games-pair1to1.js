@@ -1,19 +1,14 @@
 (() => {
   'use strict';
-  const banks = {
-    1: [[1,2],[2,1],[1,3],[3,1],[2,3],[3,2],[2,4],[4,2],[3,4],[4,3],[3,5],[5,3],[4,5],[5,4],[1,4],[4,1]],
-    2: [[3,4],[4,3],[3,5],[5,3],[4,6],[6,4],[5,7],[7,5],[6,8],[8,6],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8]]
-  };
   const icons = ['🍎','🐟','🌼','🟣'];
-  const history = {1:[],2:[]};
   const choice = (side, equal) => `<svg viewBox="0 0 100 70" aria-hidden="true"><rect x="8" y="8" width="84" height="22" rx="7" fill="${equal || side === 'A' ? '#4d78bd' : '#e2e8ef'}"/><rect x="8" y="40" width="84" height="22" rx="7" fill="${equal || side === 'B' ? '#4d78bd' : '#e2e8ef'}"/><text x="50" y="${equal ? 45 : side==='A'?25:57}" text-anchor="middle" fill="${equal?'#253653':'white'}" font-size="22">${equal?'=':side}</text></svg>`;
   registerGame({
     id:'pair1to1',grade:'K',subject:'math',icon:'🔗',title:B('Pair Them Up','하나씩 짝지어요'),
     sub:B('Join one to one','하나씩 이어요'),area:B('Math · Comparing sets','수학 · 묶음 비교'),
     play(){
-      const lv=Math.min(2,lvl(this.id)), available=banks[lv].map((v,i)=>i).filter(i=>!history[lv].includes(i));
-      const index=pick(available),[a,b]=banks[lv][index];history[lv]=[...history[lv],index].slice(-8);
-      const icon=icons[Math.floor(index/4)], wideA=index%4<2;
+      const lv=Math.min(2,lvl(this.id));
+      const a=lv===1?1+rnd(7):3+rnd(6), b=lv===1?1+rnd(7):3+rnd(6);
+      const icon=icons[(a+b)%icons.length], wideA=rnd(2)===0;
       const row=(n,side)=>`<div class="pair-group pair-${side}"><span class="pair-label">${side}</span>${Array.from({length:n},(_,i)=>{
         // Stagger L2 targets so 44px touch squares fit even when eight objects are spread narrowly.
         const spread=lv===1?Math.max(a,b)*44:((side==='A')===wideA?260:180),step=spread/Math.max(1,(lv===1?Math.max(a,b):n)-1);

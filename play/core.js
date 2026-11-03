@@ -1,6 +1,7 @@
 'use strict';
 // Core: device-local state, speech, helpers, and the shared multiple-choice quiz engine.
 // Validators: saved data can come from an old version, a hand-edited file or a restored backup, so it is checked before use.
+const RECENT_ITEMS = 20, RECENT_GAMES = 800;
 const GRADE_LIST = ['P', 'K', '1', '2', '3', '4', '5'];
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const numOr = (v, d = 0) => (Number.isFinite(v) ? v : d);
@@ -13,6 +14,12 @@ function cleanProf(p) {                                   // -> { active, list }
 }
 function cleanState(s) {                                  // keeps only known, well-typed fields
   const o = {}; if (!isObj(s)) return o;
+  if (isObj(s.recent)) {
+    o.recent = Object.fromEntries(Object.entries(s.recent)
+      .filter(([id, keys]) => /^[A-Za-z0-9_-]{1,40}$/.test(id) && Array.isArray(keys))
+      .slice(-RECENT_GAMES)
+      .map(([id, keys]) => [id, keys.slice(-RECENT_ITEMS).filter(k => typeof k === 'string' && /^[a-f0-9]{16}$/.test(k))]));
+  }
   if (isObj(s.demoSeen)) o.demoSeen = Object.fromEntries(Object.entries(s.demoSeen).filter(([k,v]) => /^[A-Za-z0-9_-]{1,40}$/.test(k) && v === true).slice(0, 800));
   if (Array.isArray(s.log)) o.log = window.LearnLog.clean(s.log);
   if (isObj(s.mastery) && window.Learner) o.mastery = window.Learner.cleanMastery(s.mastery);
@@ -327,12 +334,36 @@ function reviewStep() {
   const it = SESSION.review[SESSION.n]; SESSION.id = it.id; SESSION.reviewAnswered = false;
   MISS[it.id] = false; updateBar(); gameById(it.id).play();
 }
-const recent = {};                                   // per game: keys of the last rounds, to avoid repeats
-// true if this round's key was seen in the last rounds (caller should regenerate); gives up after 8 tries
+// Two 32-bit fingerprints keep even SVG question keys short enough to save locally.
+function recentKey(key) {
+  const text = String(key);
+  let a = 2166136261, b = 0x9e3779b9;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    a = Math.imul(a ^ code, 16777619);
+    b = Math.imul(b ^ code, 1597334677);
+  }
+  return (a >>> 0).toString(16).padStart(8, '0') + (b >>> 0).toString(16).padStart(8, '0');
+}
+
+// Retry at most eight times so a small pool can still deliver a round.
 function dup(game, key) {
-  const r = (recent[game.id] = recent[game.id] || []); game._tries = game._tries || 0;
-  if (r.includes(key) && game._tries < 8) { game._tries++; return true; }
-  game._tries = 0; r.push(key); if (r.length > 5) r.shift(); return false;
+  if (SESSION.review) return false;
+  const history = S.recent ||= Object.create(null);
+  const id = game.id;
+  if (!Object.hasOwn(history, id)) {
+    const ids = Object.keys(history);
+    if (ids.length >= RECENT_GAMES) delete history[ids[0]];
+    history[id] = [];
+  }
+  const keys = history[id], hash = recentKey(key);
+  game._tries ||= 0;
+  if (keys.includes(hash) && game._tries < 8) { game._tries++; return true; }
+  game._tries = 0;
+  keys.push(hash);
+  if (keys.length > RECENT_ITEMS) keys.shift();
+  save();
+  return false;
 }
 function launch(game, mix) {
   document.body.classList.remove('grown');

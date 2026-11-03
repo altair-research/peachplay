@@ -16,7 +16,7 @@ registerGame({
   id: 'quantity', subject: 'math', icon: '🎲', title: B('Show Me the Number', '수만큼 찾기'), sub: B('Match numbers to dots', '숫자와 점 짝 맞추기'),
   area: AREA_MATH('Counting & cardinality'),
   play() {
-    if(lvl('quantity')===2){const a=1+rnd(4),b=1+rnd(5),n=a+b;quiz(this,{ask:B(`Which dots make ${n} in all?`,`모두 ${n}개가 되게 하는 점은?`),askSay:B(`There are ${n} dots in all. Which picture shows the hidden dots?`,`점은 모두 ${n}개예요. 가린 점은 어느 그림일까요?`),show:tfSvg(a)+` + ? = <span class="num">${n}</span>`,opts:[b,b+1,b===1?3:b-1].map(v=>({html:tfSvg(v),ok:v===b})),cls:'groups'});return;}
+    if(lvl('quantity')===2){const a=1+rnd(8),b=1+rnd(10-a),n=a+b;quiz(this,{ask:B(`Which dots make ${n} in all?`,`모두 ${n}개가 되게 하는 점은?`),askSay:B(`There are ${n} dots in all. Which picture shows the hidden dots?`,`점은 모두 ${n}개예요. 가린 점은 어느 그림일까요?`),show:tfSvg(a)+` + ? = <span class="num">${n}</span>`,opts:[b,b+1,b===1?3:b-1].map(v=>({html:tfSvg(v),ok:v===b})),cls:'groups'});return;}
     const lv = lvl('quantity'), n = lv === 1 ? 1 + rnd(8) : 3 + rnd(8), set = new Set([n]);
     while (set.size < 3) { const v = n + pick([-2, -1, 1, 2]); if (v >= 1 && v <= 10) set.add(v); }
     const maker = (v) => { const kinds = [() => tfSvg(v), () => scatterSvg(v)]; if (v <= 6) kinds.push(() => diceSvg(v)); return pick(kinds)(); };

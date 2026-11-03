@@ -58,7 +58,7 @@ G2({
 G2({
   id: 'tenhundred', icon: '🔼', title: B('10 or 100 More, Less', '10 또는 100만큼 큰 수와 작은 수'), sub: B('Jump by tens and hundreds', '10, 100씩 뛰어요'), u: 'Mental math',
   play() {
-    const lv = lvl('tenhundred'), step = lv === 1 ? 10 : pick([10, 100, 10, 100]), more = rnd(2) === 0, n = step === 10 ? (lv === 1 ? 110 + rnd(790) : 105 + rnd(880)) : 150 + rnd(750), ans = more ? n + step : n - step, wrong = more ? n - step : n + step;
+    const lv = lvl('tenhundred'), step = lv === 1 ? 10 : pick([10, 100, 10, 100]), more = rnd(2) === 0, n = step === 10 ? (lv === 1 ? 110 + rnd(790) : 105 + rnd(880)) : 250 + rnd(650), ans = more ? n + step : n - step, wrong = more ? n - step : n + step;
     quiz(this, { ask: more ? B(`What is ${step} MORE than ${n}?`, `${n}보다 ${step} 큰 수는?`) : B(`What is ${step} LESS than ${n}?`, `${n}보다 ${step} 작은 수는?`), askSay: more ? B(`What is ${step} more than ${n}?`, `${n}보다 ${step} 큰 수는?`) : B(`What is ${step} less than ${n}?`, `${n}보다 ${step} 작은 수는?`), show: '', opts: numO(ans, [wrong, ans + 1, ans - 1, ans + (step === 10 ? 100 : 10), swapDigits(ans % 100) + Math.floor(ans / 100) * 100].filter(v => v > 0 && v < 1100), 1, 1100), after: B(`${n} ${more ? '+' : '−'} ${step} = ${ans}`, `${n} ${more ? '+' : '−'} ${step} = ${ans}`) });
   }
 });
