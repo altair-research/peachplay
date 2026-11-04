@@ -123,8 +123,8 @@
     if (solutions.length !== 1) { a = seq(n * n).map(i => i % n === Math.floor(i / n) ? 1 : 0); a.fill(1, 0, n); rows = seq(n).map(r => runs(a.slice(r * n, (r + 1) * n))); cols = seq(n).map(c => runs(seq(n).map(r => a[r * n + c]))); solutions = pictureSolutions(rows, cols, n); }
     if (solutions.length !== 1) throw new Error('Picture is not unique');
     const candidates = [a, ...shuffle(seq(a.length)).slice(0, 3).map(i => a.map((v, j) => i === j ? 1 - v : v))];
-    const clues = `<div class="z-pixel" style="--z-n:${n}"><span></span>${cols.map(c => `<b>${c.join('·')}</b>`).join('')}${rows.map((r, i) => `<b>${r.join('·')}</b>${seq(n).map(() => '<span class="z-cell">?</span>').join('')}`).join('')}</div>`;
-    return item(B('Numbers count filled runs. Leave a gap between runs. Which picture fits?', '숫자는 연속으로 칠할 칸 수예요. 묶음 사이는 비워요. 맞는 그림은?'), clues, candidates, v => eq(v, solutions[0]), B('A clue equal to the row width fills that entire row.', '줄의 칸 수와 단서가 같으면 그 줄은 모두 칠해요.'), v => bits(v, n));
+    const clues = `<div class="z-pixel" style="--z-n:${n};grid-template-rows:repeat(${n+1},1fr)">${cols.map((c,i) => `<b style="grid-column:${i+2};grid-row:1">${c.join('·')}</b>`).join('')}${rows.map((r,i) => `<b style="grid-column:1;grid-row:${i+2}">${r.join('·')}</b>`).join('')}<span class="z-cell" style="grid-column:2 / span ${n};grid-row:2 / span ${n};font-size:clamp(32px,7dvh,56px)">?</span></div>`;
+    return {...item(B('Which picture fits these number clues?', '숫자 단서에 맞는 그림은?'), clues, candidates, v => eq(v, solutions[0]), B('A clue equal to the row width fills that entire row.', '줄의 칸 수와 단서가 같으면 그 줄은 모두 칠해요.'), v => bits(v, n)), askSay:B('Numbers count filled runs. Leave a gap between runs. Which picture fits?', '숫자는 이어서 칠할 칸 수예요. 묶음 사이는 비워요. 맞는 그림은?')};
   });
 
   register('zowners', '🧺', 'Who Has It?', '누가 가졌을까요?', t => {

@@ -237,7 +237,7 @@ const WN2 = [
   [1, B('"I wear a ring on my finger." What is a ring here?', '"I wear a ring on my finger."에서 ring은 무엇일까요?'), B('jewelry', '반지'), [B('a bell sound', '종소리')]],
   [1, B('"I heard the bell ring." What does ring mean here?', '"I heard the bell ring."에서 ring은 무슨 뜻일까요?'), B('make a sound', '소리를 내다'), [B('jewelry on a finger', '손가락에 끼는 반지')]],
   [1, B('"The bat flew out of the cave." What is a bat here?', '"The bat flew out of the cave."에서 bat은 무엇일까요?'), B('an animal', '동물'), [B('a baseball tool', '야구 방망이')]], [1, B('"I hit the ball with a bat." What is a bat here?', '"I hit the ball with a bat."에서 bat은 무엇일까요?'), B('a baseball tool', '야구 방망이'), [B('an animal', '동물')]],
-  [1, B('"The dog\'s bark is loud." What is bark here?', '"The dog\'s bark is loud."에서 bark는 무엇일까요?'), B('a dog sound', '개가 짖는 소리'), [B('the outside of a tree', '나무껍질')]], [1, B('"The bark of the tree is rough." What is bark here?', '"The bark of the tree is rough."에서 bark는 무엇일까요?'), B('the outside of a tree', '나무껍질'), [B('a dog sound', '개가 짖는 소리')]],
+  [1, B('"The dog\'s bark is loud." What is bark here?', '"The dog\'s bark is loud."에서 bark는 무엇일까요?'), B('a dog sound', '짖는 소리'), [B('the outside of a tree', '나무껍질')]], [1, B('"The bark of the tree is rough." What is bark here?', '"The bark of the tree is rough."에서 bark는 무엇일까요?'), B('the outside of a tree', '나무껍질'), [B('a dog sound', '짖는 소리')]],
   [1, B('Which word means the same as "shout"?', '"shout"와 뜻이 비슷한 낱말은?'), B('yell', '소리치다'), [B('whisper', '속삭이다'), B('hum', '흥얼거리다')]], [1, B('Which word is the opposite of "whisper"?', '"whisper"의 반대에 가까운 낱말은?'), B('shout', '소리치다'), [B('murmur', '중얼거리다'), B('mumble', '웅얼거리다')]],
   [2, B('Which word is stronger than "big"?', '"big"보다 더 강한 낱말은?'), B('enormous', '아주 거대한'), [B('tiny', '아주 작은'), B('little', '작은')]], [2, B('Which word means a bigger smile?', '"smile"보다 더 큰 웃음은?'), B('grin', '활짝 웃다'), [B('frown', '찡그리다'), B('sigh', '한숨 쉬다')]],
   [2, B('Which list has three words that all sound alike?', '소리가 같은 낱말 짝은?'), B('to, too, two', 'to, too, two'), [B('to, toe, tow', 'to, toe, tow')]], [2, B('I can ___ the ocean from here. (see / sea)', '여기서 바다가 ___. (see / sea)'), B('see', 'see'), [B('sea', 'sea')]], [2, B('The ___ is blue. (see / sea)', '___은(는) 파래요. (see / sea)'), B('sea', 'sea'), [B('see', 'see')]],
@@ -440,7 +440,7 @@ const G2_WORD77 = [
   const close=B('Our project is ready to share.','완성한 작품을 함께 나눠요.'),bad=B('First, we put the tools away.','먼저 도구를 치워요.');
   if(lv===1){const right=[topic,first,last][kind];quiz(this,{ask:[B('Which opening names the whole activity?','활동 전체를 소개하는 첫 문장은?'),B('Which sentence should come before the last step?','마지막 단계 앞에 올 문장은?'),B('Which step comes next?','다음에 올 단계는?')][kind],show:text(B([first.en+' '+last.en,topic.en+' '+last.en,topic.en+' '+first.en][kind],[first.ko+' '+last.ko,topic.ko+' '+last.ko,topic.ko+' '+first.ko][kind])),opts:opts(right,kind===0?[first,last]:[close,bad]),cls:'words sents'});}
   else {const order=shuffle([topic,first,last,close]),lab=x=>String.fromCharCode(65+order.indexOf(x)),right=`${lab(topic)} → ${lab(first)} → ${lab(last)} → ${lab(close)}`;
-   quiz(this,{ask:B('Order the opening, steps, and closing.','시작, 순서, 마무리를 차례로 놓아요.'),show:text(B(order.map((x,i)=>`${String.fromCharCode(65+i)}. ${x.en}`).join('<br>'),order.map((x,i)=>`${String.fromCharCode(65+i)}. ${x.ko}`).join('<br>'))),opts:opts(B(right,right),[B(`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`,`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`),B(`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`,`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`)]),cls:'words'});
+   quiz(this,{ask:B('Order the opening, steps, and closing.','시작, 순서, 마무리를 차례로 놓아요.'),show:text(B(order.map((x,i)=>`${String.fromCharCode(65+i)}) ${x.en}`).join('<br>'),order.map((x,i)=>`${String.fromCharCode(65+i)}) ${x.ko}`).join('<br>'))),opts:opts(B(right,right),[B(`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`,`${lab(topic)} → ${lab(last)} → ${lab(first)} → ${lab(close)}`),B(`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`,`${lab(close)} → ${lab(first)} → ${lab(last)} → ${lab(topic)}`)]),cls:'words'});
   }
  });
  const places=[B('art room','미술실'),B('classroom','교실'),B('library','도서관'),B('hall','강당')];
@@ -489,23 +489,23 @@ const G2_WORD77 = [
  const opts=(r,w)=>[r,...w].map((x,i)=>({html:`<span class="word">${typeof x==='string'?x:L(x)}</span>`,ok:i===0}));
  const senses=[
  ['bat','A bat flew from the cave.','I swung a bat at the ball.','an animal','동물','a sports tool','운동 도구'],
- ['bark','The dog has a loud bark.','The tree has rough bark.','a dog sound','개가 짖는 소리','tree covering','나무껍질'],
- ['ring','I wear a gold ring.','I heard the bell ring.','finger jewelry','손가락 장신구','make a bell sound','종소리를 내다'],
+ ['bark','The dog has a loud bark.','The tree has rough bark.','a dog sound','짖는 소리','tree covering','나무껍질'],
+ ['ring','I wear a gold ring.','I heard the bell ring.','finger jewelry','손가락 장신구','make a sound','소리가 나다'],
  ['park','We play in the park.','Please park the car here.','a play area','놀이 공간','leave a car','차를 세우다'],
  ['duck','A duck swam past.','Duck under the low branch.','a water bird','물새','lower your head','고개를 숙이다'],
- ['wave','I saw a wave in the sea.','Wave to your friend.','moving water','물결','move a hand in greeting','손을 흔들어 인사하다'],
+ ['wave','I saw a wave in the sea.','Wave to your friend.','moving water','물결','greet by hand','손 인사'],
  ['light','Turn on the light.','This empty bag is light.','a lamp','등','not heavy','무겁지 않은'],
  ['right','Your answer is right.','Turn right at the door.','a correct answer','올바른 답','the right side','오른쪽 방향'],
  ['left','My left hand is up.','We left the park at noon.','opposite of right','오른쪽의 반대','went away','떠났다'],
  ['watch','My watch shows noon.','Watch the puppy play.','a timepiece','손목시계','look at','바라보다'],
- ['can','The soup is in a can.','I can swim now.','a metal container','금속 통','be able to','할 수 있다'],
+ ['can','The soup is in a can.','I can swim now.','a metal container','금속 통','be able to','가능하다'],
  ['jam','Spread jam on toast.','Cars waited in a traffic jam.','fruit spread','과일 잼','blocked traffic','교통 정체'],
- ['fan','The fan cools the room.','I am a fan of this team.','an air mover','바람을 만드는 도구','a supporter','응원하는 사람'],
- ['fly','A fly landed on my plate.','Birds fly over the lake.','a winged insect','날개 달린 곤충','move through the air','공중으로 이동하다'],
+ ['fan','The fan cools the room.','I am a fan of this team.','an air mover','바람 도구','a supporter','응원하는 사람'],
+ ['fly','A fly landed on my plate.','Birds fly over the lake.','a winged insect','날개 곤충','move through air','공중으로 이동하다'],
  ['fair','Each child got a fair share.','We went to the school fair.','just and equal','공평한','a special event','행사'],
  ['kind','She was kind to her friend.','What kind of fruit is this?','caring','친절한','a type','종류'],
  ['mean','What does this word mean?','That was a mean trick.','stand for','뜻하다','unkind','못된'],
- ['miss','I miss my old friend.','Try not to miss the bus.','feel someone is absent','그리워하다','fail to catch','놓치다'],
+ ['miss','I miss my old friend.','Try not to miss the bus.','feel an absence','그리워하다','fail to catch','놓치다'],
  ['nail','The nail holds the wood.','My finger has a broken nail.','a metal fastener','금속 못','a finger covering','손톱'],
  ['note','Write me a short note.','Play one note on the piano.','a message','쪽지','a musical sound','음 하나'],
  ['orange','I ate an orange.','The sunset looks orange.','a fruit','과일','a color','색'],
@@ -516,14 +516,14 @@ const G2_WORD77 = [
  ['row','Sit in the front row.','Row the boat to shore.','line of seats','좌석 줄','use boat oars','노를 젓다'],
  ['seal','A seal swam in the sea.','Seal the bag so it stays shut.','a sea animal','바다 동물','close tightly','단단히 닫다'],
  ['spring','Flowers bloom in spring.','The spring in the toy bends.','a season','계절','a coiled part','용수철'],
- ['tie','Tie your shoelaces.','He wore a blue tie.','fasten with a knot','매듭으로 묶다','neck clothing','넥타이'],
+ ['tie','Tie your shoelaces.','He wore a blue tie.','fasten a knot','매듭으로 묶다','neck clothing','넥타이'],
  ['train','The train arrived at the station.','We train for the race.','a rail vehicle','기차','practice for something','훈련하다'],
- ['trunk','An elephant has a long trunk.','The tree trunk is thick.','an animal nose','코끼리 코','the main tree stem','나무 몸통'],
+ ['trunk','An elephant has a long trunk.','The tree trunk is thick.','an animal nose','코끼리 코','main tree stem','나무 몸통'],
  ['yard','The dog plays in the yard.','This ribbon is one yard long.','outdoor space','마당','a length unit','길이 단위'],
  ['match','The socks match each other.','We watched a soccer match.','go together','서로 어울리다','a game','경기'],
- ['bowl','Soup fills the bowl.','We bowl at the bowling alley.','a deep dish','깊은 그릇','roll a ball at pins','볼링을 하다'],
+ ['bowl','Soup fills the bowl.','We bowl at the bowling alley.','a deep dish','깊은 그릇','roll at pins','볼링을 하다'],
  ['bill','The duck has a flat bill.','We paid the food bill.','a bird beak','새의 부리','a payment request','계산서'],
- ['chest','I held my hand on my chest.','Toys fill the wooden chest.','part of the body','가슴','a storage box','보관 상자']
+ ['chest','I held my hand on my chest.','Toys fill the wooden chest.','body part','가슴','a storage box','보관 상자']
  ];
  set('wordnuance2',function(){const lv=lvl(this.id),r=pick(senses),a=rnd(2),right=B(r[3+a*2],r[4+a*2]),wrong=B(r[3+(1-a)*2],r[4+(1-a)*2]);
   const show=lv===1?r[1+a]:`A. ${r[1+a]}<br>B. ${r[2-a]}`;

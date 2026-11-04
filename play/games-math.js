@@ -300,7 +300,9 @@ registerGame({
     const sym = {}; [...new Set(unit)].forEach((c, i) => sym[c] = pal[i]);
     const total = unit.length * 2 + rnd(unit.length), seq = Array.from({ length: total + 1 }, (_, i) => sym[unit[i % unit.length]]);
     const ans = seq[total], shown = seq.slice(0, total);
-    const choices = [ans, ...others(pal.slice(0, 6).filter(x => x !== ans), ans, 2)];
+    // A familiar wrong symbol requires following the pattern, not spotting the only familiar picture.
+    const familiar = pick(Object.values(sym).filter(x => x !== ans));
+    const choices = [ans, familiar, pick(pal.slice(0, 6).filter(x => x !== ans && x !== familiar))];
     quiz(this, {
       ask: B('What comes next in the pattern?', '무늬의 다음에 올 것은 뭘까요?'),
       show: `<div class="train pat">${shown.map(s => `<div class="pc">${s}</div>`).join('')}<div class="pc gap">?</div></div>`,
@@ -319,7 +321,7 @@ registerGame({
     const counts = shuffle([1, 2, 3, 4, 5, 6]).slice(0, cats.length);
     // The label under the line is a small word, not another copy of the picture, so the only pictures to count are in the column (2026-10-26).
     const NAME = { '🍎': B('apple', '사과'), '🍌': B('banana', '바나나'), '🍇': B('grapes', '포도'), '🍑': B('peach', '복숭아') };
-    const col = (c, n) => `<div class="gcol"><div class="gstack">${Array.from({ length: n }, () => `<span>${c}</span>`).join('')}</div><div class="glabel gword">${L(NAME[c])}</div></div>`;
+    const col = (c, n, selected = false) => `<div class="gcol"${selected ? ' style="outline:3px solid #a64b26;outline-offset:3px;border-radius:8px;background:#fff4d8"' : ''}><div class="gstack">${Array.from({ length: n }, () => `<span>${c}</span>`).join('')}</div><div class="glabel gword">${L(NAME[c])}</div></div>`;
     const show = `<div class="graph">${cats.map((c, i) => col(c, counts[i])).join('')}</div>`;
     const mode = rnd(2) === 0 ? 'most' : 'howmany';
     if (mode === 'most') {
@@ -327,7 +329,7 @@ registerGame({
       quiz(this, { ask: B('Which one has the MOST?', '가장 많은 것은 어느 것일까요?'), show, opts: cats.map((c, i) => ({ html: `<span class="emo">${c}</span>`, ok: counts[i] === top })), cls: 'shapes' });
     } else {
       const i = rnd(cats.length);
-      quiz(this, { ask: B(`How many ${cats[i]} are there?`, `${cats[i]}는 몇 개일까요?`), show, opts: numOpts(counts[i], 1, 7), after: B(`${counts[i]}`, `${counts[i]}`) });
+      quiz(this, { ask: B('Count the outlined group.', '테두리 안의 그림은 몇 개일까요?'), askSay: B(`How many ${NAME[cats[i]].en} pictures are in the outlined group?`, `테두리 안의 ${NAME[cats[i]].ko} 그림은 몇 개일까요?`), show: `<div class="graph">${cats.map((c, j) => col(c, counts[j], j === i)).join('')}</div>`, opts: numOpts(counts[i], 1, 7), after: B(`${counts[i]}`, `${counts[i]}`) });
     }
   }
 });

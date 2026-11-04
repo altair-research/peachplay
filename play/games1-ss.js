@@ -10,7 +10,7 @@ const tOpts = (right, wrongs, cls = 'word') => [right, ...wrongs].map(w => ({ ht
 const FIGS = [
   { id: 'franklin', n: B('Benjamin Franklin', '벤저민 프랭클린'), ini: 'BF', c: '#5aa9e6', sym: '⚡', what: B('He was an inventor, author, and statesman.', '발명가, 작가, 정치가였어요.'), short: B('inventor and author', '발명가이자 작가'), grp: 'colonies', trait: 'curious' },
   { id: 'jefferson', n: B('Thomas Jefferson', '토머스 제퍼슨'), ini: 'TJ', c: '#a78bfa', sym: '📜', what: B('He was the main writer of the Declaration of Independence.', '독립선언서를 가장 중심이 되어 쓴 사람이에요.'), short: B('main writer of the Declaration of Independence', '독립선언서를 주로 쓴 사람'), grp: 'colonies', trait: 'curious' },
-  { id: 'lewis', n: B('Lewis and Clark, with Sacagawea', '루이스와 클라크, 그리고 사카가웨아'), ini: 'LC', c: '#4fd1b8', sym: '🧭', what: B('They explored the American West. Sacagawea, a Shoshone woman, helped as a guide and interpreter. Many Native American nations helped them too.', '미국 서부를 탐험했어요. 쇼쇼니족 여성 사카가웨아가 길잡이와 통역으로 도왔어요. 여러 원주민 부족도 도와주었어요.'), short: B('explorers of the West', '서부를 탐험한 사람들'), grp: 'frontier', trait: 'courage' },
+  { id: 'lewis', n: B('Lewis, Clark & Sacagawea', '루이스·클라크·사카가웨아'), ini: 'LC', c: '#4fd1b8', sym: '🧭', what: B('They explored the American West. Sacagawea, a Shoshone woman, helped as a guide and interpreter. Many Native American nations helped them too.', '미국 서부를 탐험했어요. 쇼쇼니족 여성 사카가웨아가 길잡이와 통역으로 도왔어요. 여러 원주민 부족도 도와주었어요.'), short: B('explorers of the West', '서부를 탐험한 사람들'), grp: 'frontier', trait: 'courage' },
   { id: 'roosevelt', n: B('Theodore Roosevelt', '시어도어 루스벨트'), ini: 'TR', c: '#7cc95e', sym: '🌲', what: B('He helped protect National Parks and nature.', '국립공원과 자연을 보호하도록 도왔어요.'), short: B('protected National Parks', '국립공원을 보호한 사람'), grp: 'parks', trait: 'environment' },
   { id: 'carver', n: B('George Washington Carver', '조지 워싱턴 카버'), ini: 'GC', c: '#ffb347', sym: '🥜', what: B('He was a scientist and teacher who helped farmers and found many uses for peanuts.', '농부들을 돕고 땅콩의 쓰임새를 많이 찾아낸 과학자이자 선생님이에요.'), short: B('scientist who studied peanuts', '땅콩을 연구한 과학자'), grp: 'south', trait: 'perseverance' },
   { id: 'bridges', n: B('Ruby Bridges', '루비 브리지스'), ini: 'RB', c: '#f78fb3', sym: '🏫', what: B('In 1960, a six-year-old girl bravely became the first Black child at her New Orleans school, helping make schools fair for all children.', '1960년, 여섯 살 소녀가 뉴올리언스의 자기 학교에 다닌 첫 흑인 아이가 되어, 모든 아이를 위한 공평한 학교를 만드는 데 용감하게 힘을 보탰어요.'), short: B('helped make schools fair for everyone', '모두에게 공평한 학교를 만든 사람'), grp: 'south', trait: 'courage' }
@@ -301,7 +301,7 @@ G1T({
  [B('scrubbing clothes by hand','손으로 빨래하기'),B('Which tool washes clothes in a powered spinning drum?','전기로 통을 돌려 빨래하는 도구는?'),[B('a washing machine','세탁기'),B('a washboard','빨래판'),B('a washing tub','빨래통')]]
  ];
  GAMES.find(g=>g.id==='thennow').play=function(){const q=pick(now),lv=lvl(this.id);quiz(this,{ask:q[1],show:lv===2?`<div class="storytext">${L(B('Long ago: ','옛날의 방법: '))}${L(q[0])}</div>`:'',opts:o(q[2]),cls:'words'});};
- const examples={fairness:[B('Share turns equally','차례를 똑같이 나눠요'),B('Keep trying after mistakes','틀려도 다시 도전해요'),B('Speak up when afraid','무서워도 나서서 말해요')],respect:[B('Listen without interrupting','끝까지 귀 기울여요'),B('Keep practicing a song','노래를 계속 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')],courage:[B('Tell the truth bravely','무서워도 사실을 말해요'),B('Let friends finish talking','끝까지 들어요'),B('Divide turns equally','차례를 똑같이 나눠요')],perseverance:[B('Try again after mistakes','틀려도 다시 도전해요'),B('Divide snacks equally','간식을 똑같이 나눠요'),B('Welcome a new classmate','새 친구를 반겨요')],kindness:[B('Help carry dropped books','책을 주워 줘요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Speak up when afraid','무서워도 나서서 말해요')],tolerance:[B('Play across language differences','말이 달라도 어울려요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')]};
+ const examples={fairness:[B('Share turns equally','차례를 똑같이 나눠요'),B('Keep trying after mistakes','틀려도 다시 도전해요'),B('Speak up when afraid','무서워도 나서서 말해요')],respect:[B('Listen without interrupting','끝까지 귀 기울여요'),B('Keep practicing a song','노래를 계속 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')],courage:[B('Tell the truth bravely','무서워도 사실을 말해요'),B('Let friends finish talking','끝까지 들어요'),B('Divide turns equally','차례를 똑같이 나눠요')],perseverance:[B('Try again after mistakes','틀려도 다시 도전해요'),B('Divide snacks equally','간식을 똑같이 나눠요'),B('Welcome a new classmate','새 친구를 반겨요')],kindness:[B('Help carry dropped books','책을 주워 줘요'),B('Practice after a mistake','틀려도 다시 연습해요'),B('Speak up when afraid','무서워도 나서서 말해요')],tolerance:[B('Play across language differences','말이 달라도 어울려요'),B('Practice after a mistake','틀려도 다시 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')]};
  const ch=GAMES.find(g=>g.id==='character1'),old=ch.play;ch.play=function(){if(lvl(this.id)===1)return old.call(this);const s=pick(SCEN);quiz(this,{ask:B('Which action shows the same trait?','같은 마음을 보여 주는 행동은?'),show:`<div class="storytext">${L(s[0])}</div>`,opts:o(examples[s[1]]),cls:'words'});};
  const patriot=[
  [B('What does liberty mean?','liberty는 무슨 뜻일까요?'),[B('Freedom','자유'),B('Fairness','공정'),B('Duty','의무')]],
@@ -427,18 +427,18 @@ G1T({
 
 (() => {
  const songWords = [
-  [B('mountains','mountains'),B('land rising high','높이 솟은 땅'),'⛰️'],
+  [B('mountains','mountains'),B('high land','높은 땅'),'⛰️'],
   [B('sea','sea'),B('ocean water','넓은 바닷물'),'🌊'],
-  [B('sky','sky'),B('space above us','머리 위로 펼쳐진 곳'),'🌤️'],
-  [B('grain','grain'),B('edible crop seeds','먹는 곡식 씨앗'),'🌾'],
-  [B('plain','plain'),B('wide flat land','넓고 평평한 땅'),'🏞️'],
-  [B('hill','hill'),B('gently raised land','작게 솟은 땅'),'⛰️'],
-  [B('rock','rock'),B('hard stone','단단한 돌 조각'),'🪨'],
-  [B('woods','woods'),B('land with many trees','나무가 많은 곳'),'🌳'],
-  [B('gleam','gleam'),B('shine softly','은은하게 빛나다'),'✨'],
-  [B('breeze','breeze'),B('gentle moving air','살살 부는 바람'),'🍃'],
-  [B('rills','rills'),B('small streams','작은 시냇물'),'💧'],
-  [B('liberty','liberty'),B('freedom to make choices','자유롭게 고르기'),'🕊️']
+  [B('sky','sky'),B('above us','위쪽 공간'),'🌤️'],
+  [B('grain','grain'),B('crop seeds','곡식 씨앗'),'🌾'],
+  [B('plain','plain'),B('flat land','평평한 땅'),'🏞️'],
+  [B('hill','hill'),B('low rise','낮은 언덕'),'⛰️'],
+  [B('rock','rock'),B('hard stone','단단한 돌'),'🪨'],
+  [B('woods','woods'),B('many trees','많은 나무'),'🌳'],
+  [B('gleam','gleam'),B('soft shine','은은한 빛'),'✨'],
+  [B('breeze','breeze'),B('gentle wind','산들바람'),'🍃'],
+  [B('rills','rills'),B('small streams','시냇물'),'💧'],
+  [B('liberty','liberty'),B('free choices','자유로운 선택'),'🕊️']
  ];
  const g = GAMES.find(g => g.id === 'patriot');
  g.play = function () {

@@ -80,7 +80,12 @@ function home() {
     if (!q) { box.innerHTML = ''; $('#subjtiles').style.display = ''; return; }
     const hits = visibleGames().filter(g => `${g.title.en} ${g.title.ko} ${g.sub.en} ${g.sub.ko}`.toLowerCase().includes(q));
     $('#subjtiles').style.display = 'none';
-    box.innerHTML = hits.length ? `<div class="menu">${hits.map(gameBtn).join('')}</div>` : `<p class="note2">${L(B('No games found.', '찾는 게임이 없어요.'))}</p>`;
+    box.innerHTML = hits.length ? `<div class="menu">${hits.map(gameBtn).join('')}</div>` : `<p class="note2">${L(B('No games found.', '찾는 게임이 없어요.'))}</p><button class="next" id="clearGameSearch">🏠 ${L(B('See games', '게임 보기'))}</button>`;
+    if ($('#clearGameSearch')) $('#clearGameSearch').onclick = () => {
+      const search = $('#gsearch'); search.value = ''; search.dispatchEvent(new Event('input', { bubbles: true }));
+      $('#subjtiles').scrollIntoView({ block: 'start' });
+      window.scrollBy(0, -($('header').getBoundingClientRect().height + 8)); $('.stile')?.focus({ preventScroll: true });
+    };
     wireGames();
   };
   if ($('#showk')) $('#showk').onclick = () => { S.showK = !S.showK; save(); home(); };
@@ -173,7 +178,7 @@ function subjectScreen(sub) {
   view().innerHTML = `<h1>${shellIcon(sub)} ${T().subjects[sub]}</h1>
     ${(kidGrade() === 'P' || sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
     <div class="menu">${games.map(gameBtn).join('')}</div>
-    <div><button class="next" id="b">${T().back}</button></div>`;
+    <div><button class="next" id="b">🏠 ${T().back}</button></div>`;
   wireGames(); $$('.chk').forEach(b => b.onclick = () => startDiag(b.dataset.sub)); $('#b').onclick = home;
   window.scrollTo(0, 0);
 }

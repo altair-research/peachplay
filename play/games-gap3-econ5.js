@@ -19,17 +19,40 @@
     ['corn',1909,['KS','IA','TX'],'middle'],['corn',1919,['TX','IL','GA'],'middle'],
     ['manufacturing',1909,['NY','CA','GA'],'max'],['manufacturing',1909,['OH','MA','TX'],'min'],
     ['manufacturing',1919,['PA','CA','GA'],'max'],['manufacturing',1919,['IL','IN','IA'],'min'],
-    ['manufacturing',1919,['NY','WA','GA'],'middle'],['manufacturing',1919,['OH','MI','NE'],'middle']
+    ['manufacturing',1919,['NY','WA','GA'],'middle'],['manufacturing',1919,['OH','MI','NE'],'middle'],
+    ["corn",1909,["IA","IN","MN"],"max"],
+    ["corn",1909,["IL","OH","WI"],"min"],
+    ["corn",1909,["MO","IL","GA"],"middle"],
+    ["corn",1909,["NE","IA","MI"],"middle"],
+    ["corn",1909,["IL","KS","NC"],"max"],
+    ["corn",1909,["IA","MO","PA"],"min"],
+    ["corn",1909,["OH","IL","NC"],"middle"],
+    ["corn",1909,["IN","IA","WI"],"middle"],
+    ["corn",1919,["IA","NE","MN"],"max"],
+    ["corn",1919,["IL","MO","WI"],"min"],
+    ["corn",1919,["IN","IL","GA"],"middle"],
+    ["corn",1919,["OH","IA","MI"],"middle"],
+    ["corn",1919,["IL","TX","NC"],"max"],
+    ["corn",1919,["IA","MO","PA"],"min"],
+    ["corn",1919,["NE","IL","NC"],"middle"],
+    ["corn",1919,["TX","IA","WI"],"middle"],
+    ["manufacturing",1919,["NY","TX","IA"],"max"],
+    ["manufacturing",1919,["OH","WI","GA"],"min"],
+    ["manufacturing",1919,["MN","IL","NE"],"middle"],
+    ["manufacturing",1919,["NJ","PA","IA"],"middle"],
+    ["manufacturing",1919,["IL","NC","GA"],"max"],
+    ["manufacturing",1919,["PA","MA","NE"],"min"],
+    ["manufacturing",1919,["KS","NY","GA"],"middle"],
+    ["manufacturing",1919,["MO","OH","IA"],"middle"]
   ].map(([m,y,ids,rule]) => {
     const values=ids.map(id=>vals(m,y,id));
     const target=rule==='max'?Math.max(...values):rule==='min'?Math.min(...values):1;
     if(values.filter(v=>v===target).length!==1) throw Error('Ambiguous 68F map item');
     return {m,y,ids,rule,answer:values.indexOf(target)};
   });
-  const comparison = [
-    ['corn','TX'],['corn','KS'],['corn','IA'],['corn','NE'],
-    ['manufacturing','IL'],['manufacturing','OH'],['manufacturing','CA'],['manufacturing','MA']
-  ].map(([m,id])=>({m,y:1909,ids:[id],kind:'compare'}));
+  const comparison = ['corn','manufacturing'].flatMap(m => Object.keys(koNames)
+    .filter(id => vals(m,1909,id)!==undefined && vals(m,1919,id)!==undefined)
+    .map(id => ({m,y:1909,ids:[id],kind:'compare'})));
   // Short original paraphrases of the admitted 68E evidence, with explicit scope.
   const evidence = [
     {kind:'transport',card:B('NPS · early 1900s: Water routes and rail connections helped Calumet industries near Chicago.','NPS · 1900년대 초: 수로와 철도 연결은 Chicago 근처 Calumet 산업에 도움이 되었어요.'),ask:B('Which access supported this industrial area?','이 산업 지역에 도움이 된 교통 연결은?'),opts:[B('Water and rail access','수로와 철도 연결'),B('Water access without rail','철도 없이 수로 연결'),B('Rail access without water','수로 없이 철도 연결')]},

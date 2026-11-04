@@ -252,7 +252,7 @@ const actions=[
  [B('Mary Musgrove interpreted between Creek and English speakers.','메리 머스그로브는 크리크 말과 영어를 통역했어요.'),B('Helpfulness: helping people understand','도움: 서로 이해하도록 돕기')],
  [B('Sequoyah worked for years to develop Cherokee writing.','세쿼이아는 오랜 노력으로 체로키 글자를 만들었어요.'),B('Patience: continuing difficult work','인내: 어려운 일을 꾸준히 하기')],
  [B('Juliette Gordon Low started Girl Scouts so girls could learn.','줄리엣 고든 로는 소녀들이 배우도록 걸스카우트를 만들었어요.'),B('Service: creating chances to learn','봉사: 배움의 기회 만들기')],
- [B('Jackie Robinson faced racist abuse while helping integrate baseball.','재키 로빈슨은 야구의 인종 장벽을 허물며 차별을 견뎠어요.'),B('Courage: facing unfair treatment','용기: 부당한 대우에 맞서기')],
+ [B('Jackie Robinson faced racist abuse while helping integrate baseball.','재키 로빈슨은 야구에서 차별을 견디며 장벽을 허물었어요.'),B('Courage: facing unfair treatment','용기: 부당한 대우에 맞서기')],
  [B('Martin Luther King Jr. worked for fair laws using nonviolent protest.','마틴 루서 킹 주니어는 비폭력 시위로 공정한 법에 힘썼어요.'),B('Civility: seeking change without violence','예의: 폭력 없이 바꾸려 하기')],
  [B('Jimmy Carter worked for human rights and peace.','지미 카터는 인권과 평화를 위해 노력했어요.'),B('Compassion: caring about other people','연민: 다른 사람을 배려하기')]
 ];
@@ -322,8 +322,8 @@ for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.p
   [B("Creek communities exist today.", "오늘날에도 크리크족 공동체가 있어요."), B("Creek life continues", "크리크족은 지금도 살아요"), B("Creek life ended", "크리크족은 사라졌어요"), B("Creek life began in Europe", "크리크족은 유럽에서 시작했어요")],
   [B("Long ago Cherokee towns stood in north Georgia’s mountains.", "옛날 조지아 북쪽 산에 체로키족 마을이 있었어요."), B("Mountain towns", "산에 있는 마을"), B("Island towns", "섬에 있는 마을"), B("Desert towns", "사막에 있는 마을")],
   [B("Cherokee learners could use Sequoyah’s signs.", "체로키 사람들은 세쿼이아가 만든 기호를 배울 수 있었어요."), B("Read Cherokee", "체로키 말 읽기"), B("Read English", "영어 읽기"), B("Read Spanish", "스페인 말 읽기")],
-  [B("Musgrove helped two groups understand each other.", "머스그로브는 두 집단이 서로 말을 알아듣게 도왔어요."), B("Help people talk", "대화를 돕기"), B("Help people farm", "농사를 돕기"), B("Help people build", "집 짓기를 돕기")],
-  [B("A family grew plants and hunted nearby animals for food.", "한 가족은 식물을 기르고 주변 동물을 사냥해 먹을 것을 얻었어요."), B("Food from nearby land", "주변 땅에서 얻은 음식"), B("Food from a factory", "공장에서 만든 음식"), B("Food from a faraway ship", "멀리서 배로 온 음식")],
+  [B("Musgrove helped two groups understand each other.", "머스그로브는 두 집단이 서로 말을 알아듣게 도왔어요."), B("Help people talk", "대화를 돕기"), B("Help people farm", "농사를 돕기"), B("Help people build", "건축 돕기")],
+  [B("A family grew plants and hunted nearby animals for food.", "한 가족은 식물을 기르고 주변 동물을 사냥해 먹을 것을 얻었어요."), B("Food from nearby land", "근처 땅의 음식"), B("Food from a factory", "공장 음식"), B("Food from a faraway ship", "멀리서 온 음식")],
   [B("A Cherokee family lives in its community now.", "한 체로키 가족이 지금도 자기 공동체에서 살아요."), B("A living community", "오늘날에도 있는 공동체"), B("An ancient tool", "아주 옛날의 도구"), B("A past event", "지나간 사건")]
  ];
  let turn=0;

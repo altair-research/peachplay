@@ -24,11 +24,23 @@
 
   function mount(tool, game) {
     const topic = tool.topics ? pick(tool.topics) : null;
-    const prompt = mode => !mode && topic ? topic : tool.prompt(mode);
+    let task = null;
+    const prompt = mode => !mode && topic ? topic : tool.prompt(mode, task);
     let mode = 0, state = tool.init(0), chosen = null, history = [], feedback = '', drag = null, swallowClick = false;
     const initial = copy(state);
-    const keyFor = m => JSON.stringify([tool.id, m, !m && topic ? topic.en : tool.prompt(m).en, state]);
+    const keyFor = m => JSON.stringify([tool.id, m, m ? task.id : topic?.en || tool.prompt(0).en, !m ? state : null]);
     if (dup(game, keyFor(0))) return mount(tool, game);
+    const visited = new Set(), recentTasks = { 1: [], 2: [] };
+    function challenge(m) {
+      if (!m) { task = null; state = copy(initial); return; }
+      const bank = tool.challenges[m];
+      const fresh = bank.filter(t => !recentTasks[m].includes(t.id)), pool = fresh.length ? fresh : bank;
+      task = visited.has(m) ? pick(pool) : bank[0];
+      // Register the actual task, never a newly generated prompt or mutable construction.
+      for (let tries = 0; dup(game, keyFor(m)) && tries < 80; tries++) task = pick(pool);
+      recentTasks[m].push(task.id); if (recentTasks[m].length > 5) recentTasks[m].shift();
+      visited.add(m); state = tool.init(m, task);
+    }
     const root = document.createElement('section'); root.className = 'm-play';
     root.setAttribute('aria-label', text(tool.title));
     view().replaceChildren(root);
@@ -61,11 +73,11 @@
       const b = e.target.closest('button'); if (!b || !root.contains(b)) return;
       const key = b.dataset.key, action = b.dataset.action;
       if (action?.startsWith('mode-')) {
-        mode = +action.slice(5); state = mode ? tool.init(mode) : copy(initial); dup(game, keyFor(mode)); chosen = null; history = []; feedback = ''; draw(key); say(text(prompt(mode))); return;
+        mode = +action.slice(5); challenge(mode); chosen = null; history = []; feedback = ''; draw(key); say(text(prompt(mode))); return;
       }
       if (action === 'listen' || action === 'help') { message(tool.help || words.help); say(`${text(prompt(mode))} ${text(tool.help || words.help)}`); }
       else if (action === 'undo') { if (history.length) state = history.pop(); chosen = null; feedback = ''; }
-      else if (action === 'reset') { change(() => { state = mode ? tool.init(mode) : copy(initial); }); chosen = null; }
+      else if (action === 'reset') { change(() => { state = mode ? tool.init(mode, task) : copy(initial); }); chosen = null; }
       else if (action === 'check') { message(tool.check(state, mode) ? words.good : words.retry); say(feedback); }
       else if (action) {
         change(() => tool.action?.(state, action, chosen, message));
@@ -228,7 +240,8 @@
     init: () => ({ pieces: [], selected: -1 }),
     prompt: m => m === 1 ? B('Fill the outline with 2 triangles.', '삼각형 2개로 점선 안을 채워요.') : m === 2 ? B('Fill the rectangle with 2 or more pieces.', '조각 2개 이상으로 직사각형을 채워요.') : B('Make a mosaic. Try turning the shapes.', '도형을 돌려 모자이크를 만들어요.'),
     render({ state: s, mode, chosen }) {
-      const outline = mode ? `<rect x="${mode === 1 ? 88 : 44}" y="44" width="${mode === 1 ? 88 : 176}" height="88" fill="#eef3fa" stroke="#334155" stroke-width="2" stroke-dasharray="5 4"/>` : '';
+      const t = s.task;
+      const outline = mode ? `<rect x="${t.x * 44}" y="${t.y * 44}" width="${t.w * 44}" height="${t.h * 44}" fill="#eef3fa" stroke="#334155" stroke-width="2" stroke-dasharray="5 4"/>` : '';
       return `<div class="m-meter">${text(B('Pieces', '조각'))}: ${s.pieces.length}/12 ${s.selected >= 0 ? `· ${s.selected + 1}` : ''}</div><div class="m-pattern-board">${svg(outline + s.pieces.map((p, i) => `<polygon points="${polygon(p).map(([x, y]) => `${x * 44},${y * 44}`).join(' ')}" fill="${colors[p.kind % 4]}" fill-opacity=".85" stroke="${i === s.selected ? '#1d4ed8' : '#344958'}" stroke-width="${i === s.selected ? 4 : 2}"/>`).join(''))}<div class="m-grid">${Array.from({ length: 24 }, (_, i) => target(`p${i}`, B(`Place at row ${Math.floor(i / 6) + 1}, column ${i % 6 + 1}`, `${Math.floor(i / 6) + 1}행 ${i % 6 + 1}열에 놓기`), '·')).join('')}</div></div><div class="m-tray">${shapes.map((s, i) => source(`shape${i}`, s.n, shapeSVG(i, colors[i % 4]), chosen === `shape${i}`)).join('')}</div><div class="m-tools">${act('nextpiece', B('Next piece', '다음 조각'))}${act('turn', B('Turn', '돌리기'))}${act('flip', B('Flip', '뒤집기'))}${act('remove', words.remove)}</div>`;
     },
     select: s => s.selected >= 0 ? `piece${s.selected}` : null,
@@ -340,12 +353,12 @@
     init: m => ({ slots: m === 2 ? ['c', 'a', 'p', '', ''] : ['', '', '', '', ''], page: 0, upper: false, selected: -1 }),
     prompt: m => m === 1 ? B('🐱 Build cat. Listen or use the word.', '🐱 cat을 만들어요. 듣거나 낱말을 보아요.') : m === 2 ? B('🧢 cap → 🐱 cat. Change one letter.', '🧢 cap → 🐱 cat. 글자 하나를 바꿔요.') : B('Make English words with letter tiles.', '글자 타일로 영어 낱말을 만들어요.'),
     render({ state: s, mode, chosen }) {
-      const pool = mode ? 'catpms' : alphabet.slice(s.page * 6, s.page * 6 + 6);
-      return `<div class="m-letter-art" aria-hidden="true">${mode === 1 ? '🐱' : mode === 2 ? '🧢 → 🐱' : 'a b c'}</div><div class="m-slots">${s.slots.map((ch, i) => target(`slot${i}`, B(`Space ${i + 1}: ${ch || 'empty'}`, `${i + 1}번 칸: ${ch || '빈칸'}`), ch ? (s.upper ? ch.toUpperCase() : ch) : '·', `aria-pressed="${s.selected === i}"`)).join('')}</div><div class="m-tray">${[...pool].map(ch => source(`letter${ch}`, B(`Letter ${ch}`, `글자 ${ch}`), s.upper ? ch.toUpperCase() : ch, chosen === `letter${ch}`)).join('')}</div><div class="m-tools">${mode ? act('word', B('Hear cat', 'cat 듣기')) : act('page', B('More letters', '다른 글자'))}${act('case', B('Aa', 'Aa'), `aria-label="${esc(text(B('Switch letter case', '대소문자 바꾸기')))}"`)}${act('remove', words.remove)}</div>`;
+      const pool = mode ? [...new Set((s.task.from || '') + s.task.word + 'catpms')].slice(0, 6).join('') : alphabet.slice(s.page * 6, s.page * 6 + 6);
+      return `<div class="m-letter-art" aria-hidden="true">${mode ? (s.task.from ? s.task.fromIcon + ' → ' : '') + s.task.icon : 'a b c'}</div><div class="m-slots">${s.slots.map((ch, i) => target(`slot${i}`, B(`Space ${i + 1}: ${ch || 'empty'}`, `${i + 1}번 칸: ${ch || '빈칸'}`), ch ? (s.upper ? ch.toUpperCase() : ch) : '·', `aria-pressed="${s.selected === i}"`)).join('')}</div><div class="m-tray">${[...pool].map(ch => source(`letter${ch}`, B(`Letter ${ch}`, `글자 ${ch}`), s.upper ? ch.toUpperCase() : ch, chosen === `letter${ch}`)).join('')}</div><div class="m-tools">${mode ? act('word', B(`Hear ${s.task.word}`, `${s.task.word} 듣기`)) : act('page', B('More letters', '다른 글자'))}${act('case', B('Aa', 'Aa'), `aria-label="${esc(text(B('Switch letter case', '대소문자 바꾸기')))}"`)}${act('remove', words.remove)}</div>`;
     },
     select(s, d) { s.selected = +d.slice(4); return s.slots[s.selected] ? `move${s.selected}` : null; },
     drop(s, src, dest) { const i = +dest.slice(4); if (src.startsWith('letter')) s.slots[i] = src.slice(6); else { const j = +src.slice(4); [s.slots[i], s.slots[j]] = [s.slots[j], s.slots[i]]; } s.selected = i; },
-    action(s, a) { if (a === 'page') s.page = (s.page + 1) % 5; if (a === 'case') s.upper = !s.upper; if (a === 'remove' && s.selected >= 0) s.slots[s.selected] = ''; if (a === 'word') say('cat', 'en-US'); },
+    action(s, a) { if (a === 'page') s.page = (s.page + 1) % 5; if (a === 'case') s.upper = !s.upper; if (a === 'remove' && s.selected >= 0) s.slots[s.selected] = ''; if (a === 'word') say(s.task.word, 'en-US'); },
     check: s => s.slots.join('|') === 'c|a|t||'
   };
 
@@ -458,6 +471,235 @@
       Object.assign(s, pick(boards));
     }
     return s;
+  };
+
+  // 85: a task travels with its construction. Reset/undo/language changes cannot
+  // accidentally ask about one target and check another. These are guided,
+  // unscored manipulatives: showing a construction target is intentional.
+  const tasks = (tool, one, two, init, check) => {
+    const freeInit = tool.init, freePrompt = tool.prompt;
+    tool.challenges = { 1: one, 2: two };
+    for (const m of [1, 2]) tool.challenges[m].forEach((t, i) => { t.id = `${tool.id}-${m}-${i}`; });
+    tool.init = (m, t = tool.challenges[m]?.[0]) => m ? { ...init(m, t), task: copy(t) } : freeInit(0);
+    tool.prompt = (m, t = tool.challenges[m]?.[0]) => m ? t.prompt : freePrompt(0);
+    tool.check = (s, m) => !!s.task && check(s, m, s.task);
+  };
+  const placeHint = (chosen, src, dest) => chosen === src ? `drop-${dest}` : `src-${src}`;
+  const clearChoice = chosen => /^(color|shape|unit|weight|letter|fractionpiece|command)/.test(chosen) ? `src-${chosen}` : `drop-${chosen.startsWith('move') ? 'slot' + chosen.slice(4) : chosen}`;
+  const doneHint = m => m ? 'check' : null;
+  const cubeOne = [{ n: 7, g: 2 }];
+  for (let n = 2; cubeOne.length < 20; n++) for (let g = 1; g <= Math.min(4, n); g++) {
+    if (n !== 7 || g !== 2) cubeOne.push({ n, g });
+    if (cubeOne.length === 20) break;
+  }
+  const cubeTwo = [{ rows: 3, cols: 4, stripes: false }];
+  for (const stripes of [false, true]) for (let rows = 2; rows <= 4; rows++) for (let cols = 2; cols <= 5; cols++) {
+    if (cubeTwo.length < 20 && (stripes || rows !== 3 || cols !== 4)) cubeTwo.push({ rows, cols, stripes });
+  }
+  cubeOne.forEach(t => { t.prompt = B(`🎯 🧊×${t.n} · ${t.g} ${t.g === 1 ? 'group' : 'groups'}. Connect the cubes.`, `🎯 🧊×${t.n} · ${t.g}묶음으로 이어요.`); });
+  cubeTwo.forEach(t => { t.prompt = B(`🎯 ▦ ${t.rows}×${t.cols}. ${t.stripes ? 'Make neighboring rows different.' : 'Build a rectangle.'}`, `🎯 ▦ ${t.rows}줄×${t.cols}개. ${t.stripes ? '이웃 줄은 다른 무늬로 만들어요.' : '직사각형을 만들어요.'}`); });
+  tasks(cubes, cubeOne, cubeTwo, () => ({ cells: Array(20).fill(null) }), (s, m, t) => {
+    const occupied = s.cells.map((c, i) => c ? i : -1).filter(i => i >= 0);
+    if (m === 1) return occupied.length === t.n && groups(s.cells) === t.g;
+    if (occupied.length !== t.rows * t.cols) return false;
+    const xs = occupied.map(i => i % 5), ys = occupied.map(i => Math.floor(i / 5));
+    if (Math.max(...xs) - Math.min(...xs) + 1 !== t.cols || Math.max(...ys) - Math.min(...ys) + 1 !== t.rows) return false;
+    if (!t.stripes) return true;
+    const rowColors = [];
+    for (let y = Math.min(...ys); y <= Math.max(...ys); y++) {
+      const row = occupied.filter(i => Math.floor(i / 5) === y).map(i => s.cells[i].color);
+      if (new Set(row).size !== 1 || rowColors.at(-1) === row[0]) return false;
+      rowColors.push(row[0]);
+    }
+    return true;
+  });
+  cubes.hint = (s, m, chosen) => {
+    if (!m) return null;
+    if (cubes.check(s, m)) return 'check';
+    const t = s.task, goal = Array(20).fill(null);
+    if (m === 1) {
+      // A snake visits neighboring cells; each group has its own pattern.
+      for (let k = 0; k < t.n; k++) { const y = Math.floor(k / 5), x = y % 2 ? 4 - k % 5 : k % 5; goal[y * 5 + x] = Math.floor(k * t.g / t.n); }
+    } else for (let y = 0; y < t.rows; y++) for (let x = 0; x < t.cols; x++) goal[y * 5 + x] = t.stripes ? y % 2 : 0;
+    for (let i = 0; i < 20; i++) {
+      if (goal[i] === null && s.cells[i]) return chosen === `c${i}` ? 'remove' : chosen ? clearChoice(chosen) : `drop-c${i}`;
+      if (goal[i] !== null && (!s.cells[i] || s.cells[i].color !== goal[i] || s.cells[i].split)) return placeHint(chosen, `color${goal[i]}`, `c${i}`);
+    }
+    return null;
+  };
+
+  const patternOne = [{ x: 2, y: 1, w: 2, h: 2, kind: 0 }], patternTwo = [{ x: 1, y: 1, w: 4, h: 2, mixed: false }];
+  for (const kind of [0, 2]) for (let y = 0; y < 3; y++) for (let x = 0; x < 5; x++) {
+    if (patternOne.length < 20 && (kind || x !== 2 || y !== 1)) patternOne.push({ x, y, w: 2, h: 2, kind });
+  }
+  for (const [w, h] of [[2, 3], [2, 4], [4, 2], [4, 3], [4, 4], [6, 2], [6, 3], [6, 4]]) for (let y = 0; y <= 4 - h; y++) for (let x = 0; x <= 6 - w; x++) {
+    if (patternTwo.length < 20) patternTwo.push({ x, y, w, h, mixed: true });
+  }
+  patternOne.forEach(t => { t.prompt = B(`🎯 ${t.kind ? '▭' : '△'}×2. Fill the dotted square.`, `🎯 ${t.kind ? '▭' : '△'}×2. 점선 네모를 채워요.`); });
+  patternTwo.forEach(t => { t.prompt = B(`🎯 ▭ ${t.w}×${t.h}. ${t.mixed ? 'Fill with different kinds of shapes.' : 'Fill with two or more pieces.'}`, `🎯 ▭ ${t.w}×${t.h}. ${t.mixed ? '서로 다른 모양으로 채워요.' : '조각 둘 이상으로 채워요.'}`); });
+  const patternPlan = (t, m) => {
+    if (m === 1 && t.kind === 2) return [0, 1].map(dy => ({ kind: 2, x: t.x, y: t.y + dy, turn: 0, flip: false }));
+    const out = [0, 2].map(turn => ({ kind: 0, x: t.x, y: t.y, turn, flip: false }));
+    for (let y = 0; y < t.h; y++) for (let x = 0; x < t.w; x += 2) if (x || y >= 2) out.push({ kind: 2, x: t.x + x, y: t.y + y, turn: 0, flip: false });
+    return out;
+  };
+  tasks(patterns, patternOne, patternTwo, () => ({ pieces: [], selected: -1 }), (s, m, t) => {
+    if (m === 1 && (s.pieces.length !== 2 || s.pieces.some(p => p.kind !== t.kind))) return false;
+    if (s.pieces.length < 2 || (t.mixed && new Set(s.pieces.map(p => p.kind)).size < 2)) return false;
+    const polys = s.pieces.map(polygon);
+    return !polys.some(p => p.some(([x, y]) => x < t.x || x > t.x + t.w || y < t.y || y > t.y + t.h)) &&
+      Math.abs(sum(polys.map(area)) - t.w * t.h) < 1e-7 && polys.every((p, i) => polys.slice(i + 1).every(q => area(intersection(p, q)) < 1e-7));
+  });
+  patterns.hint = (s, m, chosen) => {
+    if (!m) return null;
+    if (patterns.check(s, m)) return 'check';
+    const plan = patternPlan(s.task, m);
+    for (let i = 0; i < s.pieces.length; i++) {
+      const p = s.pieces[i], q = plan[i];
+      if (!q || p.kind !== q.kind || p.x !== q.x || p.y !== q.y) return s.selected === i ? 'remove' : 'nextpiece';
+      if (p.flip !== q.flip) return s.selected === i ? 'flip' : 'nextpiece';
+      if (p.turn !== q.turn) return s.selected === i ? 'turn' : 'nextpiece';
+    }
+    const q = plan[s.pieces.length];
+    return q ? placeHint(chosen, `shape${q.kind}`, `p${q.y * 6 + q.x}`) : null;
+  };
+
+  const baseOne = [14, 12, 18, 21, 25, 29, 30, 34, 38, 42, 46, 51, 55, 59, 63, 67, 72, 78, 84, 96].map(n => ({ n, ones: n % 10 }));
+  const baseTwo = [126, 24, 37, 48, 59, 63, 75, 86, 97, 108, 114, 132, 145, 158, 169, 173, 184, 195, 207, 218].map(n => ({ n, ones: 10 + n % 10 }));
+  baseOne.forEach(t => { t.prompt = B(`🎯 ${t.n}. Build with tens and ones.`, `🎯 ${t.n}. 십과 일로 만들어요.`); });
+  baseTwo.forEach(t => { t.prompt = B(`🎯 ${t.n} · 1×${t.ones}. Use ${t.ones} ones.`, `🎯 ${t.n} · 1×${t.ones}. 일 ${t.ones}개를 써요.`); });
+  const baseGoal = t => [t.ones, Math.floor((t.n - t.ones) / 10) % 10, Math.floor((t.n - t.ones) / 100)];
+  tasks(baseten, baseOne, baseTwo, () => ({ counts: [0, 0, 0], selected: 0 }), (s, m, t) => s.counts.join() === baseGoal(t).join());
+  baseten.hint = (s, m, chosen, p) => {
+    const n = +(p.en.match(/\d+/) || [0])[0], goal = m ? baseGoal(s.task) : [n % 10, Math.floor(n / 10) % 10, Math.floor(n / 100)];
+    if (!m && !n) return null;
+    for (const i of [2, 1, 0]) {
+      if (s.counts[i] > goal[i]) { if (chosen) return `src-${chosen}`; return s.selected === i ? 'remove' : `drop-unit${i}`; }
+      if (s.counts[i] < goal[i]) return placeHint(chosen, `unit${i}`, `unit${i}`);
+    }
+    return doneHint(m);
+  };
+
+  const clockOne = [270, ...Array.from({ length: 24 }, (_, i) => i * 30).filter(n => n !== 270)].map(n => ({ n, start: 0 }));
+  const clockTwo = [{ n: 455, start: 0, direct: true }];
+  for (let i = 0; clockTwo.length < 20; i++) { const start = (i * 35 + 50) % 720, add = [15, 20, 30, 45][i % 4]; clockTwo.push({ n: (start + add) % 720, start, add }); }
+  clockOne.forEach(t => { t.prompt = B(`🎯 🕒 ${timeText(t.n)}. Move the hands.`, `🎯 🕒 ${timeText(t.n)}. 바늘을 맞춰요.`); });
+  clockTwo.forEach(t => { t.prompt = t.direct ? B('🎯 🕒 7:35. Set the clock.', '🎯 🕒 7:35. 바늘을 맞춰요.') : B(`🕒 ${timeText(t.start)} → +${t.add} min → ?`, `🕒 ${timeText(t.start)} → ${t.add}분 뒤 → ?`); });
+  tasks(clock, clockOne, clockTwo, (m, t) => ({ minutes: t.start, step: m === 1 ? 30 : 5, digital: true }), (s, m, t) => s.minutes === t.n);
+  clock.hint = (s, m, _, p) => {
+    const match = p.en.match(/(\d+):(\d+)/), goal = m ? s.task.n : match ? (+match[1] % 12) * 60 + +match[2] : null;
+    if (goal === null) return null;
+    const delta = (goal - s.minutes + 1080) % 720 - 360;
+    if (!delta) return doneHint(m);
+    if (Math.abs(delta) >= 60) return delta > 0 ? 'hourplus' : 'hourminus';
+    const step = Math.abs(delta) % 5 ? 1 : Math.abs(delta) % 30 ? 5 : 30;
+    if (s.step !== step) return `step${step}`;
+    return delta > 0 ? 'minplus' : 'minminus';
+  };
+
+  const weightsFor = (n, count) => {
+    if (!n && (count === undefined || count === 0)) return [];
+    if (n < 0 || count === 0) return null;
+    for (const w of [5, 2, 1]) if (w <= n) { const rest = weightsFor(n - w, count === undefined ? undefined : count - 1); if (rest && rest.length < 8) return [w, ...rest]; }
+    return null;
+  };
+  const balanceOne = [3, ...Array.from({ length: 20 }, (_, i) => i + 2).filter(n => n !== 3)].map(n => ({ n }));
+  const balanceTwo = [{ n: 7, count: 2 }];
+  for (let count = 2; count <= 5; count++) for (let n = count; n <= count * 5; n++) if (balanceTwo.length < 20 && (n !== 7 || count !== 2) && weightsFor(n, count)) balanceTwo.push({ n, count });
+  balanceOne.forEach(t => { t.prompt = B(`⚖️ ${t.n} = ?. Match the right pan.`, `⚖️ ${t.n} = ?. 오른쪽을 같게 만들어요.`); });
+  balanceTwo.forEach(t => { t.prompt = B(`⚖️ ${t.n} = ? · ●×${t.count}. Use ${t.count} weights.`, `⚖️ ${t.n} = ? · ●×${t.count}. 추 ${t.count}개로 만들어요.`); });
+  tasks(balance, balanceOne, balanceTwo, (m, t) => ({ pans: [weightsFor(t.n), m === 2 ? [5] : []], selected: 1, locked: true }), (s, m, t) => sum(s.pans[1]) === t.n && (m === 1 || s.pans[1].length === t.count));
+  balance.hint = (s, m, chosen, p) => {
+    const n = m ? s.task.n : +(p.en.match(/\d+/) || [0])[0];
+    if (!n) return null;
+    for (const i of m ? [1] : [0, 1]) {
+      const row = s.pans[i], count = m === 2 ? s.task.count - row.length : undefined, rest = weightsFor(n - sum(row), count);
+      if (!rest || row.length + rest.length > 8) return i ? 'rightremove' : 'leftremove';
+      if (rest.length) return placeHint(chosen, `weight${rest[0]}`, `pan${i}`);
+    }
+    return doneHint(m);
+  };
+
+  const wordPics = { cat:'🐱', cap:'🧢', hat:'🎩', bat:'🦇', sun:'☀️', run:'🏃', pig:'🐷', wig:'💇', dog:'🐶', log:'🪵', hen:'🐔', pen:'🖊️', bed:'🛏️', red:'🔴', bug:'🐛', rug:'▧', fan:'🪭', pan:'🍳', map:'🗺️', pot:'🍲', hot:'♨️', cup:'☕', pup:'🐶', pin:'📍', fin:'🦈', top:'🔝', hop:'🐇', net:'🥅', pet:'🐶', bag:'👜', tag:'🏷️', mop:'🧹', pop:'🫧', can:'🥫', man:'🧍', sit:'🪑', hit:'🏏', ten:'🔟' };
+  const letterPairs = [['cap','cat'],['bat','hat'],['run','sun'],['wig','pig'],['log','dog'],['pen','hen'],['red','bed'],['rug','bug'],['pan','fan'],['cap','map'],['hot','pot'],['pup','cup'],['fin','pin'],['hop','top'],['pet','net'],['tag','bag'],['pop','mop'],['man','can'],['hit','sit'],['hen','ten']];
+  const letterOne = letterPairs.map(([,word]) => ({ word, icon: wordPics[word] }));
+  const letterTwo = letterPairs.map(([from,word]) => ({ from, word, icon: wordPics[word], fromIcon: wordPics[from] }));
+  letterOne.forEach(t => { t.prompt = B(`🎯 ${t.icon} ${t.word}. Build the word.`, `🎯 ${t.icon} ${t.word}. 낱말을 만들어요.`); });
+  letterTwo.forEach(t => { t.prompt = B(`${t.fromIcon} ${t.from} → ${t.icon} ${t.word}. Change one letter.`, `${t.fromIcon} ${t.from} → ${t.icon} ${t.word}. 한 글자를 바꿔요.`); });
+  tasks(letters, letterOne, letterTwo, (m, t) => ({ slots: [...(t.from || '').padEnd(5, ' ')].map(ch => ch.trim()), page: 0, upper: false, selected: -1 }), (s, m, t) => s.slots.join('|') === [...t.word, '', ''].join('|'));
+  letters.hint = (s, m, chosen, p) => {
+    const pair = p.en.match(/^Try (\w+) and (\w+)/), word = m ? s.task.word : pair?.[1];
+    if (!word) return null;
+    if (!m && pair.slice(1).some(w => s.slots.join('|') === [...w, '', ''].join('|'))) return null;
+    for (let i = 0; i < 5; i++) {
+      const ch = word[i] || ''; if (s.slots[i] === ch) continue;
+      if (!ch) { if (chosen && chosen !== `move${i}`) return chosen.startsWith('letter') ? `src-${chosen}` : `drop-slot${s.selected}`; return s.selected === i ? 'remove' : `drop-slot${i}`; }
+      if (!m && !alphabet.slice(s.page * 6, s.page * 6 + 6).includes(ch)) return 'page';
+      return placeHint(chosen, `letter${ch}`, `slot${i}`);
+    }
+    return doneHint(m);
+  };
+
+  const fractionOne = [{ a: [2,2], b: [] }];
+  for (const d of denominators) for (let n = 1; n <= d; n++) if (d !== 2 || n !== 2) fractionOne.push({ a: Array(n).fill(d), b: [] });
+  const fractionTwo = [{ a: [2], b: [4,4] }];
+  for (const d of denominators) for (const e of denominators) for (let n = 1; n <= d; n++) if (d !== e && n * e % d === 0 && !(d === 2 && e === 4 && n === 1) && fractionTwo.length < 20) fractionTwo.push({ a: Array(n).fill(d), b: Array(n * e / d).fill(e) });
+  fractionOne.forEach(t => { t.prompt = B(`🎯 A: ${t.a.length}/${t.a[0]}. Use 1/${t.a[0]} pieces.`, `🎯 A: ${t.a.length}/${t.a[0]}. ${t.a[0]}분의 1 조각으로 만들어요.`); });
+  fractionTwo.forEach(t => { t.prompt = B(`🎯 A: ${t.a.length}/${t.a[0]} = B: ? · 1/${t.b[0]} pieces.`, `🎯 A: ${t.a.length}/${t.a[0]} = B: ? · ${t.b[0]}분의 1 조각으로.`); });
+  tasks(fractions, fractionOne, fractionTwo, () => ({ rows: [[], []], selected: 0, circle: false }), (s, m, t) => s.rows[0].join() === t.a.join() && s.rows[1].join() === t.b.join());
+  fractions.hint = (s, m, chosen, p) => {
+    const match = p.en.match(/(\d+)\/(\d+)/);
+    let goal = m ? [s.task.a, s.task.b] : match ? [Array(+match[1]).fill(+match[2]), []] : null;
+    if (!goal && p.en.includes('whole')) goal = [p.en.includes('halves') ? [2,4,4] : p.en.includes('thirds') ? [3,6,6,6,6] : [4,8,8,8,8,8,8], []];
+    if (!goal) return null;
+    for (let i = 0; i < 2; i++) {
+      const row = s.rows[i], want = goal[i];
+      if (row.some((d, j) => d !== want[j])) {
+        if (chosen) return `src-${chosen}`;
+        return s.selected === i ? 'remove' : `drop-fraction${i}`;
+      }
+      if (row.length < want.length) return placeHint(chosen, `fractionpiece${want[row.length]}`, `fraction${i}`);
+    }
+    return doneHint(m);
+  };
+
+  // Shortest legal card sequence, bounded by the existing eight slots.
+  const robotPlan = (goal, walls) => {
+    const queue = [{ pos: 12, facing: 0, code: [] }], seen = new Set(['12/0']);
+    for (let i = 0; i < queue.length; i++) {
+      const q = queue[i]; if (q.pos === goal) return q.code;
+      if (q.code.length === 8) continue;
+      for (const c of [0, 2, 1]) {
+        const s = { ...q, code: [c], pc: 0, blocked: false, walls }; robotStep(s);
+        const key = `${s.pos}/${s.facing}`;
+        if (!s.blocked && !seen.has(key)) { seen.add(key); queue.push({ pos: s.pos, facing: s.facing, code: [...q.code, c] }); }
+      }
+    }
+    return null;
+  };
+  const codeOne = [{ goal: 4, walls: [] }], codeTwo = [{ goal: 6, walls: [9], code: [0,2,0,0] }];
+  for (const goal of [0,1,2,3,4,5,6,7,8,9,10,11,13,14,15]) for (const walls of [[], [9], [5], [1], [13]]) {
+    if (walls.includes(goal)) continue;
+    const plan = robotPlan(goal, walls); if (!plan) continue;
+    if (codeOne.length < 20 && !(goal === 4 && !walls.length)) codeOne.push({ goal, walls });
+    if (codeTwo.length < 20 && walls.length && plan.includes(2) && !(goal === 6 && walls[0] === 9)) {
+      const code = [...plan]; code[0] = 1; codeTwo.push({ goal, walls, code });
+    }
+  }
+  codeOne.forEach(t => { t.prompt = B('🤖 ↑ → ⭐. Build a path to the star.', '🤖 ↑ → ⭐. 별까지 가는 길을 만들어요.'); });
+  codeTwo.forEach(t => { t.prompt = B('🤖 → ⭐ · 🧱 ⛔. Fix the cards.', '🤖 → ⭐ · 🧱 ⛔. 벽을 피해 카드를 고쳐요.'); });
+  const checkCode = coding.check;
+  tasks(coding, codeOne, codeTwo, (m, t) => ({ ...robotStart(), code: t.code ? [...t.code] : [], selected: -1, goal: t.goal, walls: [...t.walls], edit: 'goal', free: false }), s => checkCode(s));
+  coding.hint = (s, m, chosen) => {
+    if (!m) return null;
+    if (checkCode(s)) return !s.blocked && s.pos === s.goal && s.pc === s.code.length ? 'check' : 'run';
+    const plan = robotPlan(s.goal, s.walls); if (!plan) return null;
+    if (s.code.length > plan.length) {
+      if (chosen && !chosen.startsWith('movecard')) return `src-${chosen}`;
+      return s.selected === s.code.length - 1 ? 'remove' : `drop-code${s.code.length - 1}`;
+    }
+    for (let i = 0; i < plan.length; i++) if (s.code[i] !== plan[i]) return placeHint(chosen, `command${plan[i]}`, `code${i}`);
+    return 'run';
   };
 
   [cubes, patterns, baseten, clock, balance, letters, fractions, coding].forEach(tool => registerGame({

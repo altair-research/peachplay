@@ -229,7 +229,7 @@ registerGame({
     if(lvl('compass')===2){
       const d=[B('North','북쪽'),B('East','동쪽'),B('South','남쪽'),B('West','서쪽')],start=rnd(4),right=!!rnd(2),turns=1+rnd(3),ans=(start+(right?turns:4-turns))%4;
       // 70a: one sentence; each quarter-turn is drawn as one arrow so the count is visible.
-      quiz(this,{ask:B(`Facing ${d[start].en}, turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}: which way?`,`${d[start].ko}에서 ${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면?`),show:`<div style="display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:22px;line-height:1.2">N ↑<br>W ← · → E<br>S ↓</div><div style="font-size:28px" aria-hidden="true">🧍 ${(right?'↻':'↺').repeat(turns)}</div></div>`,opts:d.map((n,i)=>({html:`<span class="word">${L(n)}</span>`,ok:i===ans})),cls:'words'});return;
+      quiz(this,{ask:B(`Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}: which way?`,`${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),askSay:B(`Face ${d[start].en}. Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}. Which way now?`,`${d[start].ko}을 봐요. ${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),show:`<div style="display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:22px;line-height:1.2">N ↑<br>W ← · → E<br>S ↓</div><div style="font-size:28px" aria-hidden="true">🧍 ${['↑','→','↓','←'][start]} <small>${L(d[start])}</small><br>${(right?'↻':'↺').repeat(turns)}</div></div>`,opts:d.map((n,i)=>({html:`<span class="num">${['↑','→','↓','←'][i]}</span><span class="word">${L(n)}</span>`,ok:i===ans})),cls:'words'});return;
     }
     const dirs = [['N', B('North', '북쪽'), [0, -1]], ['E', B('East', '동쪽'), [1, 0]], ['S', B('South', '남쪽'), [0, 1]], ['W', B('West', '서쪽'), [-1, 0]]];
     const N = 4, items = [['🏠', B('house', '집')], ['🏫', B('school', '학교')], ['🌳', B('tree', '나무')], ['🏪', B('store', '가게')], ['⛲', B('fountain', '분수')], ['🏥', B('hospital', '병원')]];
@@ -244,9 +244,9 @@ registerGame({
     const rose = '<div class="rose"><span class="rn">N</span><span class="rw">W</span><span class="re">E</span><span class="rs">S</span></div>';
     const from = rev ? b : a, to = rev ? a : b;
     quiz(this, {
-      ask: B(`Which way is the ${to[1].en} from the ${from[1].en}?`, `${from[1].ko}에서 ${to[1].ko}은(는) 어느 쪽에 있을까요?`),
-      show: `<div class="mapwrap"><div class="map n4">${cells.join('')}</div>${rose}</div>`,
-      opts: dirs.map(x => ({ html: `<span class="num">${x[0]}</span>`, label: x[1], ok: x === ans })), cls: 'shapes',
+      ask: B(`From ${from[1].en} to ${to[1].en}: which way?`, `${from[1].ko}에서 ${to[1].ko}은(는) 어느 쪽에 있을까요?`),
+      show: `<div style="font-size:clamp(22px,4dvh,30px)" aria-hidden="true">${from[0]} ➜ ${to[0]}</div><div class="mapwrap"><div class="map n4">${cells.join('')}</div>${rose}</div>`,
+      opts: dirs.map(x => ({ html: `<span class="num">${({N:'↑',E:'→',S:'↓',W:'←'})[x[0]]}</span><small>${x[0]}</small>`, label: x[1], ok: x === ans })), cls: 'shapes',
       after: B(`It is to the ${ans[1].en}.`, `${ans[1].ko}에 있어요.`), vocab: ans[1].en
     });
   }

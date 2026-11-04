@@ -34,6 +34,44 @@ body:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system) .ver{co
 header .icon .shell-icon{width:1em;height:1em;display:block;margin:auto}
 
 body:is(.skin-explorer,.theme-dark,.theme-system) .gchip{background:var(--card);color:var(--ink);border-color:var(--theme-edge)}
+
+/* Request 88: keep child actions at least 44px and separate command targets.
+   Spatial boards keep their own geometry; manipulative layouts belong to 85. */
+#view :is(.next,.opt.tile,.g3a-menu,.g3p-button),.bpcard .bpgo{min-height:44px!important}
+#view>.home-primary{margin-bottom:18px}
+@media(max-width:380px){#view>.home-hero{margin-bottom:8px}}
+body:not(.playing) header{row-gap:10px}
+.subject-group h2{margin-top:8px;margin-bottom:8px}
+#view>div:has(>#clr),#view>div:has(>#rrun),#view>div:has(>#sundo),#view>div:has(>#snew){display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+#view>div:has(>#rrun){margin-top:8px}
+#view .scatter{gap:8px}
+#view .scatter .obj{transform:none!important}
+#view .rp-word{margin-left:8px}
+#view .z-options{gap:8px!important;margin-top:8px!important}
+.bpmodes{gap:8px}
+.bpcard #bpnext{margin-right:8px}
+#view :is(.g3a-material,.g3a-topics,.g3a-choices,.g3a-bins,.g3a-collection,.g3p-material,.g3p-slots,.g3p-cards,.g3p-tools,.g3p-topics){gap:8px}
+#view .g3a-options,#view .g3p-options{gap:8px!important}
+#view .g3a-choices{flex-wrap:wrap}
+#view .g3a-choices>button{flex:1 1 90px;min-width:44px}
+#view .g3p-poem{display:flex;flex-direction:column;gap:8px}
+#view>.g3p-note{margin-top:8px;gap:8px}
+#view:has(>#nx)>.cheer{margin-bottom:12px}
+body:not(.muted):not(.voice-off) #view:has(.z-board)>.show.auto-say-host{margin-top:10px}
+/* A symbol plus its word can share a row instead of doubling every card. */
+#view .opts.words>.opt:has(>.num):has(>.word){display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px}
+#view>.opts.words:has(>.opt>.num):has(>.opt:nth-child(4)>.word){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
+/* v4.88 tower: four picture+word options (86 added pictures to rhyme/compound) go 2×2 so a 360px phone fits. */
+#view>.opts.words:has(>.opt>.emo):has(>.opt:nth-child(4)>.word){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
+/* Arrow and compass letter share a row; the word goes below (compass at 1280×720 overflowed by 7px). */
+#view .opt:has(>.num+small+.ol){display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;column-gap:6px}
+#view .opt:has(>.num+small+.ol)>.ol{grid-column:1/-1}
+/* Two short poems stay side by side: the 8px gap made 2×165px wrap at 360px. */
+#view .g3p-material>.g3p-poem{flex:1 1 140px;min-width:0}
+/* Keep four-step picture sequences in order while fitting a phone's width. */
+@media(max-width:600px){
+ #view>.show .mixrow:has(>.op~.op~.op){font-size:clamp(24px,7.5vw,32px)!important;gap:4px!important}
+}
 body:is(.skin-explorer,.theme-dark,.theme-system) .gchip.on{background:var(--theme-selected);border-color:var(--theme-accent);color:var(--ink)}
 
 body.grade-prek:not(.grown):not(.skin-explorer):not(.theme-dark):not(.theme-system) #surprise{background:#c94420;color:#fff;border-color:#ff7a52}
