@@ -111,7 +111,7 @@
   const read = () => clean(S && S.profile && S.profile.school);
   const current = () => { const s = read(); return s && s.grade === kidGrade() ? s : null; };     // results of another grade are not used
   function store(patch) {
-    const s = Object.assign(current() || { ir: {}, miss: [] }, patch, { at: new Date().toISOString().slice(0, 10), grade: kidGrade() });
+    const s = Object.assign(current() || { ir: {}, miss: [] }, patch, { at: today(), grade: kidGrade() });
     S.profile = S.profile || {}; S.profile.school = clean(s); save();
   }
   // domain keys parents marked One Grade Level Below or lower (for Learner.weakDomain, see docs/review/integ-results.md)
@@ -143,7 +143,7 @@
   const style = () => { if (!document.getElementById('sr-css')) document.head.insertAdjacentHTML('beforeend', `<style id="sr-css">${CSS}</style>`); };
   let backTo = null;
   const goBack = () => (backTo || home)();
-  const disclaimer = () => `<p class="note2">${L(B('PeachPlay is not affiliated with i-Ready or Curriculum Associates. These are starting suggestions from what you entered, not a score, a prediction or a promise of results. Nothing leaves this device.', 'PeachPlay는 i-Ready·Curriculum Associates와 관련이 없어요. 입력하신 내용으로 고른 시작 제안일 뿐, 점수·예측·효과 보장이 아니에요. 아무것도 이 기기 밖으로 나가지 않아요.'))}</p>`;
+  const disclaimer = () => `<p class="note2">${L(B('PeachPlay is not affiliated with i-Ready or Curriculum Associates. These are starting suggestions from what you entered, not a score, a prediction or a promise of results. The school results you enter stay on this device.', 'PeachPlay는 i-Ready·Curriculum Associates와 관련이 없어요. 입력하신 내용으로 고른 시작 제안일 뿐, 점수·예측·효과 보장이 아니에요. 입력한 학교 결과는 이 기기에만 저장돼요.'))}</p>`;
   const tabs = (on) => `<div class="sr-tabs" role="group">${[['ir', '📊 i-Ready'], ['ck', `✏️ ${L(B('Missed test questions', '틀린 문항 체크'))}`], ['rep', `📄 ${T().importCard}`], ['card', `🗂️ ${L(B('Result card', '결과 풀이 카드'))}`]].map(([k, t]) => `<button class="pill" data-tab="${k}" aria-pressed="${k === on}">${t}</button>`).join('')}</div>`;
   const wireTabs = () => {
     $$('[data-tab]').forEach(b => b.onclick = () => ({ ir: irScreen, ck: checkScreen, rep: importScreen, card: cardScreen })[b.dataset.tab]());

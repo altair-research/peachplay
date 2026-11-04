@@ -74,7 +74,7 @@
     [1,"What can float on a puddle?","물웅덩이에 띄울 수 있는 것은?","💧",["⛵","boat","배"],["🔑","key","열쇠"],["🪙","coin","동전"]],
     [1,"What shows that it rained?","비가 왔다는 단서가 되는 것은?","❔",["💧","puddle","물웅덩이"],["🍂","dry leaf","마른 잎"],["🌵","cactus","선인장"]],
     [1,"What forms on cold glass?","아주 추운 날 창문에 생길 수 있는 것은?","🪟",["❄️","frost","서리"],["🌱","sprout","새싹"],["🕸️","web","거미줄"]],
-    [1,"What lights up the sky during a storm?","폭풍이 칠 때 하늘을 번쩍 밝히는 것은?","⛈️",["⚡","lightning","번개"],["🌧️","rain","비"],["🌬️","wind","바람"]],
+    [1,"What lights up the sky during a storm?","폭풍 속 하늘을 번쩍 밝히는 것은?","⛈️",["⚡","lightning","번개"],["🌧️","rain","비"],["🌬️","wind","바람"]],
     [1,"Which tool shows how warm it is outside?","밖이 얼마나 따뜻한지 알려 주는 도구는?","☀️",["🌡️","thermometer","온도계"],["📏","ruler","자"],["🧭","compass","나침반"]],
     [2,"What can you peel and eat?","껍질을 벗겨 먹을 수 있는 것은?","🍽️",["🍌","banana","바나나"],["🍞","bread","빵"],["🍚","rice","밥"]],
     [2,"Which food grows under the soil?","흙 아래에서 자라는 것은?","🌱",["🥕","carrot","당근"],["🍎","apple","사과"],["🍇","grape","포도"]],

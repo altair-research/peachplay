@@ -236,7 +236,7 @@ registerGame({
       const t = pick(['hexagon', 'octagon']), near = t === 'octagon' ? ['hexagon', 'heptagon'] : ['pentagon', 'octagon'], k = NEAR_SHAPES[t].n;
       const svg = (key) => `<svg viewBox="0 0 100 100" class="shape" style="transform:rotate(${rnd(31) - 15}deg)" fill="${pick(SHAPE_COLORS)}" stroke="#1d3557" stroke-width="3">${NEAR_SHAPES[key].svg}</svg>`;
       quiz(this, {
-        ask: B(`Count the sides. Which shape has ${k} sides?`, `변을 세어 봐요. 변이 ${k}개인 모양은?`),
+        ask: B(`Which shape has ${k} sides?`, `변이 ${k}개인 모양은?`),
         show: sideSticks(k),
         opts: [t, ...near].map(key => ({ html: svg(key), ok: key === t })), cls: 'shapes',
         after: t === 'octagon' ? B('An octagon has 8 sides, like a stop sign 🛑.', '팔각형은 변이 8개예요. 정지 표지판 🛑처럼요.') : B('A hexagon has 6 sides.', '육각형은 변이 6개예요.'),
@@ -259,9 +259,9 @@ registerGame({
 // ---------- 9. 3-D shapes in my world ----------
 const SOLIDS = {
   sphere: { n: B('sphere', '구'), things: [['🏀', B('basketball', '농구공')], ['⚽', B('soccer ball', '축구공')], ['🌍', B('globe', '지구본')]] },
-  cube: { n: B('cube', '정육면체'), things: [['🎲', B('dice', '주사위')], ['🧊', B('ice', '얼음')]] },
+  cube: { n: B('cube', '정육면체'), things: [['🎲', B('game die', '주사위')], ['🧊', B('ice block', '얼음덩이')]] },
   cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')]] },
-  cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('can', '캔')], ['🔋', B('battery', '건전지')]] }
+  cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('tin can', '깡통')], ['🔋', B('battery', '건전지')]] }
 };
 // Plain line drawings of the four solids (no real object), used where the answer is the shape itself.
 function solidSvg(k) {

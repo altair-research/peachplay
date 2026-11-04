@@ -142,7 +142,7 @@ viewpoint3:[
  rr('How does the speaker feel?','이야기하는 사람의 기분은?','The thunder boomed. I hid under the blanket with my hands over my ears.','frightened by the storm','proud of the storm','bored by the storm'),
  rr('Who is telling the story?','이야기를 들려주는 사람은?','From my seat in the back row, I watched the driver turn toward the museum.','a passenger on the bus','the bus driver','a guide waiting inside the museum')],
 character3:[
- rr('Which action shows responsibility?','책임감을 보여 주는 행동은?','Nell promised to feed the class fish. Before going home, she checked the feeding chart and did her job.','keeping her promise to care for the fish','leaving the job for someone else','forgetting the promised task'),
+ rr('Which action shows responsibility?','책임감을 보여 주는 행동은?','Nell promised to feed the class fish. Before going home, she checked the feeding chart and did her job.','caring for the fish as promised','leaving the job for someone else','forgetting the promised task'),
  rr('Which action shows curiosity?','궁금한 것을 알아보려는 행동은?','Dev wondered how gears turned. He found a book and read about them.','reading to answer his question','putting the question aside','guessing without checking')],
 plot3:[
  rr('What happened immediately before the kite rose?','연이 떠오르기 바로 전에 무슨 일이 있었나요?','Lee tied the string. A breeze blew. The kite rose. Lee smiled.','A breeze blew.','Lee tied the string.','Lee smiled.'),
@@ -155,10 +155,10 @@ evidence3:[
  rr('Which detail tells how the parcel traveled?','소포를 어떻게 옮겼는지 알려 주는 근거는?','A courier carried the parcel by bicycle. It had a round stamp. The box was brown.','A courier carried it by bicycle.','It had a round stamp.','The box was brown.')],
 explain3:[
  rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Topic: Returning a borrowed board game','Count the pieces before closing the box.','Close the box without checking pieces.','Keep a few pieces for another game.'),
- rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Goal: Children can choose books without help in the reading corner.','Put cushions beside an easy-to-reach book basket.','Put the books on a shelf too high to reach.','Store the books in a locked supply cupboard.')],
+ rr('Choose a detail that explains the task.','이 일을 하는 방법을 설명하는 내용은?','Goal: Children can choose books without help in the reading corner.','Put cushions beside an easy-to-reach book basket.','Put books on an unreachable shelf.','Store books in a locked cupboard.')],
 opinion3:[
- rr('Which reason serves our goal?','우리 목표에 도움이 되는 이유는?','Goal: compare weather changes over time. Our class should keep a weather journal.','Daily notes would help us compare changes.','A cover drawing would show our favorite season.','A neat title would show who owns the journal.'),
- rr('Which reason supports the proposal?','이 제안을 뒷받침하는 이유는?','Goal: Help newcomers find rooms. Put a school map near the front door.','A map would help them locate the rooms.','A map would tell when lessons start.','A map would list the lesson supplies.')],
+ rr('Which reason serves our goal?','우리 목표에 도움이 되는 이유는?','Goal: compare weather changes over time. Our class should keep a weather journal.','Daily notes would help us compare changes.','Cover art would show our favorite season.','A title would name the journal’s owner.'),
+ rr('Which reason supports the proposal?','이 제안을 뒷받침하는 이유는?','Goal: Help newcomers find rooms. Put a school map near the front door.','A map would help them locate rooms.','A map would tell when lessons start.','A map would list the lesson supplies.')],
 poetry3:[
  rr('Which end words rhyme?','각 행의 끝 낱말 중 끝소리가 같은 짝은?','A little frog beside the lake\nLeaps past a slowly sliding snake.','lake / snake','frog / sliding','beside / slowly'),
  rr('How many lines are in this poem?','이 시는 몇 행인가요?','Wind blows.\nRain falls.\nSun glows.\nBird calls.','4','3','5')],
@@ -167,7 +167,7 @@ source3:[
  rr('Which card answers how much a ticket costs?','표의 가격을 알려 주는 카드는?','Practice cards: A—Hours: Open at ten. B—Ticket desk: Each ticket costs two dollars.','Card B','Card A','Neither card')],
 revise3:[
  rr('Keep both details with less repetition.','반복을 줄이고 두 특징을 모두 남겨요.','The path is narrow. The path is rocky.','The path is narrow and rocky.','The path is wide and smooth.','The path is narrow but not rocky.'),
- rr('Keep both actions with less repetition.','반복을 줄이고 두 행동을 모두 남겨요.','We opened the jars. We labeled the jars.','We opened and labeled the jars.','We labeled the jars without opening them.','We opened the jars but did not label them.')]
+ rr('Keep both actions with less repetition.','반복을 줄이고 두 행동을 모두 남겨요.','We opened the jars. We labeled the jars.','We opened and labeled the jars.','We labeled the jars without opening them.','We opened jars without labeling them.')]
 };
 const moreReading={
 fluency3:[

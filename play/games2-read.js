@@ -97,7 +97,7 @@ G2R({
     const lv = lvl('wordparts2'), kind = pick(lv === 1 ? ['prefix', 'suffix', 'compound'] : ['prefix', 'suffix', 'meaning', 'meaning', 'compound', 'base']);
     if (kind === 'prefix') { const t = pick(WPARTS), ds = [t[1] + t[0], t[0] + t[0] + t[1]].filter(x => x !== t[2]); quiz(this, { ask: B(`Add the prefix: ${t[0]}- + ${t[1]} = ?`, `앞붙임을 붙여요: ${t[0]}- + ${t[1]} = ?`), show: '', opts: wordOpts(t[2], ds), cls: 'words', after: B(`${t[2]} means ${L(t[3])}.`, `"${t[2]}"의 뜻: ${t[3].ko}`), vocab: t[2] }); }
     else if (kind === 'suffix') { const t = pick(WSUFF), ds = [t[0] + 'e' + t[1], t[1] + t[0]].filter(x => x !== t[2]); quiz(this, { ask: B(`Add the ending: ${t[0]} + -${t[1]} = ?`, `뒷붙임을 붙여요: ${t[0]} + -${t[1]} = ?`), show: '', opts: wordOpts(t[2], ds), cls: 'words', after: B(`${t[2]} means ${L(t[3])}.`, `"${t[2]}"의 뜻: ${t[3].ko}`), vocab: t[2] }); }
-    else if (kind === 'meaning') { const t = pick([...WPARTS, ...WSUFF]), others_ = shuffle([...WPARTS, ...WSUFF].filter(x => x !== t)).slice(0, 2); quiz(this, { ask: B(`What does "${t[2]}" mean?`, `"${t[2]}"의 뜻은 무엇일까요?`), show: '', opts: [t, ...others_].map((x, i) => ({ html: `<span class="word">${L(x[3])}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${t[2]}: ${t[3].en}`, `${t[2]}: ${t[3].ko}`), vocab: t[2] }); }
+    else if (kind === 'meaning') { const t = pick([...WPARTS, ...WSUFF]), others_ = shuffle([...WPARTS, ...WSUFF].filter(x => x !== t)).sort((a,b) => Math.abs(a[3].en.length-t[3].en.length)-Math.abs(b[3].en.length-t[3].en.length)).slice(0, 2); quiz(this, { ask: B(`What does "${t[2]}" mean?`, `"${t[2]}"의 뜻은 무엇일까요?`), show: '', opts: [t, ...others_].map((x, i) => ({ html: `<span class="word">${L(x[3])}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${t[2]}: ${t[3].en}`, `${t[2]}: ${t[3].ko}`), vocab: t[2] }); }
     else if (kind === 'base') { const t = pick([...WPARTS, ...WSUFF]), ds = shuffle(['ing', 'ed', t[2].slice(0, -1), t[0] === t[2].slice(0, t[0].length) ? t[0] : t[1]]).filter(x => x !== t[0 === 1 ? 0 : 1]).slice(0, 2); const base = t[2].startsWith(t[0]) && WPARTS.includes(t) ? t[1] : t[0]; const opts = [base, ...shuffle([t[2].slice(0, 2), t[2].slice(-3), 'ing', 'ed'].filter(x => x !== base)).slice(0, 2)]; quiz(this, { ask: B(`What is the base (root) word in "${t[2]}"?`, `"${t[2]}"에서 바탕이 되는 낱말은?`), show: '', opts: wordOpts(base, opts.slice(1)), cls: 'words', after: B(`${t[2]} = ${WPARTS.includes(t) ? t[0] + ' + ' + t[1] : t[0] + ' + ' + t[1]}`, `${t[2]} = ${t[0]} + ${t[1]}`), vocab: base }); }
     else { const c = pick(COMPD), ds = shuffle(COMPD.filter(x => x !== c)).slice(0, 2).map(x => x[0] + c[1]).filter(x => x !== c[2]); quiz(this, { ask: B(`Which compound word is made from "${c[0]}" + "${c[1]}"?`, `"${c[0]}" + "${c[1]}"로 만든 합친 낱말은?`), show: '', opts: wordOpts(c[2], ds.length === 2 ? ds : [c[1] + c[0], c[0] + c[0]]), cls: 'words', after: B(`${c[0]} + ${c[1]} = ${c[2]}`, `${c[0]} + ${c[1]} = ${c[2]}`), vocab: c[2] }); }
   }
@@ -436,7 +436,7 @@ const G2_WORD77 = [
  ['wind flags','바람 깃발','cut cloth','천을 잘라요','attach poles','막대를 붙여요'],['gift bags','선물 가방','decorate bags','가방을 꾸며요','pack gifts','선물을 담아요']
  ];
  set('paragraph2',function(){const r=pick(records),lv=lvl(this.id),kind=rnd(3);
-  const topic=B(`We make ${r[0]} together.`,`우리는 함께 ${r[1]} 만들기를 해요.`),first=B(`First, we ${r[2]}.`,`먼저 ${r[3]}.`),last=B(`Then we ${r[4]}.`,`그다음 ${r[5]}.`);
+  const topic=B(`We make ${r[0]} together.`,`${r[1]} 만들기를 해요.`),first=B(`First, we ${r[2]}.`,`먼저 ${r[3]}.`),last=B(`Then we ${r[4]}.`,`그다음 ${r[5]}.`);
   const close=B('Our project is ready to share.','완성한 작품을 함께 나눠요.'),bad=B('First, we put the tools away.','먼저 도구를 치워요.');
   if(lv===1){const right=[topic,first,last][kind];quiz(this,{ask:[B('Which opening names the whole activity?','활동 전체를 소개하는 첫 문장은?'),B('Which sentence should come before the last step?','마지막 단계 앞에 올 문장은?'),B('Which step comes next?','다음에 올 단계는?')][kind],show:text(B([first.en+' '+last.en,topic.en+' '+last.en,topic.en+' '+first.en][kind],[first.ko+' '+last.ko,topic.ko+' '+last.ko,topic.ko+' '+first.ko][kind])),opts:opts(right,kind===0?[first,last]:[close,bad]),cls:'words sents'});}
   else {const order=shuffle([topic,first,last,close]),lab=x=>String.fromCharCode(65+order.indexOf(x)),right=`${lab(topic)} → ${lab(first)} → ${lab(last)} → ${lab(close)}`;
@@ -501,19 +501,19 @@ const G2_WORD77 = [
  ['can','The soup is in a can.','I can swim now.','a metal container','금속 통','be able to','할 수 있다'],
  ['jam','Spread jam on toast.','Cars waited in a traffic jam.','fruit spread','과일 잼','blocked traffic','교통 정체'],
  ['fan','The fan cools the room.','I am a fan of this team.','an air mover','바람을 만드는 도구','a supporter','응원하는 사람'],
- ['fly','A fly landed on my plate.','Birds fly over the lake.','an insect','곤충','move through the air','공중으로 이동하다'],
+ ['fly','A fly landed on my plate.','Birds fly over the lake.','a winged insect','날개 달린 곤충','move through the air','공중으로 이동하다'],
  ['fair','Each child got a fair share.','We went to the school fair.','just and equal','공평한','a special event','행사'],
  ['kind','She was kind to her friend.','What kind of fruit is this?','caring','친절한','a type','종류'],
- ['mean','What does this word mean?','That was a mean trick.','have a meaning','뜻을 가지다','unkind','못된'],
+ ['mean','What does this word mean?','That was a mean trick.','stand for','뜻하다','unkind','못된'],
  ['miss','I miss my old friend.','Try not to miss the bus.','feel someone is absent','그리워하다','fail to catch','놓치다'],
  ['nail','The nail holds the wood.','My finger has a broken nail.','a metal fastener','금속 못','a finger covering','손톱'],
  ['note','Write me a short note.','Play one note on the piano.','a message','쪽지','a musical sound','음 하나'],
  ['orange','I ate an orange.','The sunset looks orange.','a fruit','과일','a color','색'],
- ['palm','I held a seed in my palm.','A palm grows by the beach.','part of a hand','손바닥','a kind of tree','야자나무'],
+ ['palm','I held a seed in my palm.','A palm grows by the beach.','hand’s inner surface','손바닥','a tropical tree','야자나무'],
  ['point','Point to the door.','The pencil has a sharp point.','show a direction','가리키다','a pointed tip','뾰족한 끝'],
  ['rock','I found a smooth rock.','Rock the baby gently.','a hard stone','단단한 돌','sway gently','살살 흔들다'],
  ['rose','A rose grew in the garden.','The balloon rose into the air.','a flower','꽃','moved upward','올라갔다'],
- ['row','Sit in the front row.','Row the boat to shore.','a line of seats','좌석 줄','move a boat with oars','노를 젓다'],
+ ['row','Sit in the front row.','Row the boat to shore.','line of seats','좌석 줄','use boat oars','노를 젓다'],
  ['seal','A seal swam in the sea.','Seal the bag so it stays shut.','a sea animal','바다 동물','close tightly','단단히 닫다'],
  ['spring','Flowers bloom in spring.','The spring in the toy bends.','a season','계절','a coiled part','용수철'],
  ['tie','Tie your shoelaces.','He wore a blue tie.','fasten with a knot','매듭으로 묶다','neck clothing','넥타이'],
@@ -521,7 +521,7 @@ const G2_WORD77 = [
  ['trunk','An elephant has a long trunk.','The tree trunk is thick.','an animal nose','코끼리 코','the main tree stem','나무 몸통'],
  ['yard','The dog plays in the yard.','This ribbon is one yard long.','outdoor space','마당','a length unit','길이 단위'],
  ['match','The socks match each other.','We watched a soccer match.','go together','서로 어울리다','a game','경기'],
- ['bowl','Soup fills the bowl.','We bowl at the bowling alley.','a dish','그릇','roll a ball at pins','볼링을 하다'],
+ ['bowl','Soup fills the bowl.','We bowl at the bowling alley.','a deep dish','깊은 그릇','roll a ball at pins','볼링을 하다'],
  ['bill','The duck has a flat bill.','We paid the food bill.','a bird beak','새의 부리','a payment request','계산서'],
  ['chest','I held my hand on my chest.','Toys fill the wooden chest.','part of the body','가슴','a storage box','보관 상자']
  ];

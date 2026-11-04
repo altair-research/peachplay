@@ -74,9 +74,9 @@ G1T({
     const f = pick(FIGS), ds = others(Object.keys(GRPS), f.grp, lvl('placetime')===2?3:2), names = Object.fromEntries(Object.entries(GRPS));
     if (rnd(2) === 0) {
       const wrong = shuffle(FIGS.filter(x => x.grp !== f.grp)).slice(0,lvl('placetime')===2?3:2);
-      quiz(this, { ask: B(`Whose story is connected to ${GRPS[f.grp].en}?`, `${GRPS[f.grp].ko}: 이곳이나 시대와 관련 있는 인물은 누구일까요?`), opts: [f,...wrong].map((x,i) => ({ html: `<span class="word">${L(x.n)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) }); return;
+      quiz(this, { ask: B(`Whose story is connected to ${GRPS[f.grp].en}?`, `${GRPS[f.grp].ko}: 관련 인물은?`), opts: [f,...wrong].map((x,i) => ({ html: `<span class="word">${L(x.n)}</span>`, ok: i === 0 })), cls: 'words sents', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) }); return;
     }
-    quiz(this, { ask: B(`${f.n.en}'s story is connected to...`, `${f.n.ko}의 이야기와 관련 있는 곳과 때는?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [f.grp, ...ds].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === f.grp })), cls: 'words', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) });
+    quiz(this, { ask: B(`${f.n.en}'s story is connected to...`, `${f.n.ko}: 관련된 곳과 때는?`), show: `<div class="figbig">${figCard(f)}<b>${L(f.n)}</b></div>`, opts: [f.grp, ...ds].map(k => ({ html: `<span class="word">${L(names[k])}</span>`, ok: k === f.grp })), cls: 'words', after: B(`${f.n.en}: ${GRPS[f.grp].en}.`, `${f.n.ko}: ${GRPS[f.grp].ko}.`) });
   }
 });
 
@@ -160,7 +160,7 @@ const WORLD = {
 const OCEANS = { pac: { n: B('Pacific Ocean', '태평양'), at: [[-150, 10]] }, atl: { n: B('Atlantic Ocean', '대서양'), at: [[-35, 20]] }, ind: { n: B('Indian Ocean', '인도양'), at: [[80, -20]] }, arc: { n: B('Arctic Ocean', '북극해'), at: [[0, 84]] }, sou: { n: B('Southern Ocean', '남극해'), at: [[20, -62]] } };
 const px = (lon, lat) => `${(lon + 180).toFixed(1)},${(90 - lat).toFixed(1)}`;
 const worldSvg = (hl, dot) => `<svg viewBox="0 0 360 180" class="worldsvg"><rect width="360" height="180" fill="#bfe6ff"/>${Object.entries(WORLD).map(([k, c]) => (typeof WORLD_PATHS !== 'undefined' && WORLD_PATHS[k] ? `<path d="${WORLD_PATHS[k]}" fill="${k === hl ? '#ef476f' : '#9ad07a'}" stroke="${k === hl ? '#ef476f' : '#9ad07a'}" stroke-width=".6" stroke-linejoin="round"/>` : `<polygon points="${c.p.map(q => px(q[0], q[1])).join(' ')}" fill="${k === hl ? '#ef476f' : '#9ad07a'}" stroke="#4d7a3a" stroke-width="1"/>`)).join('')}${dot ? `<circle cx="${dot[0] + 180}" cy="${90 - dot[1]}" r="7" fill="#ffd166" stroke="#c9951b" stroke-width="2"/>` : ''}</svg>`;
-const LAND = [['🏔️', B('mountain', '산'), B('a very high, rocky area', '아주 높고 바위가 많은 곳')], ['🏜️', B('desert', '사막'), B('a very dry place that gets little rain', '비가 거의 오지 않는 아주 건조한 곳')], ['🏞️', B('valley', '계곡'), B('low land between hills or mountains', '언덕이나 산 사이의 낮은 땅')], ['🏖️', B('coast', '해안'), B('land that meets the ocean', '바다와 닿아 있는 땅')]];
+const LAND = [['🏔️', B('mountain', '산'), B('a very high, rocky area', '아주 높고 바위가 많은 곳')], ['🏜️', B('desert', '사막'), B('a dry place with little rain', '비가 드문 건조한 곳')], ['🏞️', B('valley', '계곡'), B('low land between hills or mountains', '언덕이나 산 사이의 낮은 땅')], ['🏖️', B('coast', '해안'), B('land that meets the ocean', '바다와 닿아 있는 땅')]];
 G1T({
   id: 'worldmap', icon: '🌍', title: B('Continents and Oceans', '대륙과 대양'), sub: B('7 continents, 5 oceans, landforms', '7대륙, 5대양, 지형'), u: 'Earth',
   play() {
@@ -233,7 +233,7 @@ G1T({
       const save = rnd(2) === 0;
       const story = save ? B(`You put money aside for ${goal.en}.`, `${goal.ko} 살 돈을 따로 모아 둬요.`)
         : B(`You pay for ${goal.en} today.`, `오늘 ${goal.ko} 값을 내요.`);
-      const actions = [B('Save for later', '나중을 위해 모으기'), B('Spend it now', '지금 물건 값 내기')];
+      const actions = [B('Save for later', '나중을 위해 모으기'), B('Spend it now', '지금 값 내기')];
       quiz(this, {
         ask: B('What are you doing with your money?', '지금 돈으로 무엇을 하나요?'),
         show: `<div class="storytext">${L(story)}</div>`, askExtra: { t: L(story) },
@@ -244,7 +244,7 @@ G1T({
     const qs = [
       [1, B('You put a dollar in a jar for a future purchase. Are you saving or spending?', '나중에 물건을 사려고 저금통에 1달러를 넣어요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Saving', '모으기'), [tx2('Spending', '쓰기')]],
       [1, B('You pay for a pencil at a store. Are you saving or spending?', '가게에서 연필 값을 내요. 모으는 걸까요, 쓰는 걸까요?'), tx2('Spending', '쓰기'), [tx2('Saving', '모으기')]],
-      [1, B('There are three children but only two seats. What is limited?', '아이는 세 명인데 자리는 두 개예요. 무엇이 부족할까요?'), tx2('Seats', '자리'), [tx2('Children', '아이'), tx2('Choices of color', '고를 수 있는 색')]],
+      [1, B('There are three children but only two seats. What is limited?', '아이는 세 명인데 자리는 두 개예요. 무엇이 부족할까요?'), tx2('Seats', '자리'), [tx2('Children', '아이'), tx2('Colors', '색깔')]],
       [1, B('Two kids want the last toy, but there is only one. This is called ___.', '아이 둘이 마지막 남은 장난감 하나를 갖고 싶어 해요. 이것을 ___(이)라고 해요.'), tx2('scarcity', '부족(희소성)'), [tx2('a service', '서비스'), tx2('a trade', '교환')]],
       [1, B('People earn money by ___.', '사람들은 ___ 돈을 벌어요.'), tx2('working', '일해서'), [tx2('sleeping', '잠만 자서'), tx2('wishing', '소원을 빌어서')]],
       [1, B('Which one is a NEED?', '꼭 필요한 것은 어느 것일까요?'), tx2('food', '음식'), [tx2('a video game', '게임'), tx2('a new toy', '새 장난감')]],
@@ -301,7 +301,7 @@ G1T({
  [B('scrubbing clothes by hand','손으로 빨래하기'),B('Which tool washes clothes in a powered spinning drum?','전기로 통을 돌려 빨래하는 도구는?'),[B('a washing machine','세탁기'),B('a washboard','빨래판'),B('a washing tub','빨래통')]]
  ];
  GAMES.find(g=>g.id==='thennow').play=function(){const q=pick(now),lv=lvl(this.id);quiz(this,{ask:q[1],show:lv===2?`<div class="storytext">${L(B('Long ago: ','옛날의 방법: '))}${L(q[0])}</div>`:'',opts:o(q[2]),cls:'words'});};
- const examples={fairness:[B('Share turns equally','차례를 똑같이 나눠요'),B('Keep trying after mistakes','틀려도 다시 해 봐요'),B('Speak up when afraid','무서워도 나서서 말해요')],respect:[B('Listen without interrupting','말을 끊지 않고 들어요'),B('Keep practicing a song','노래를 계속 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')],courage:[B('Tell the truth bravely','무서워도 사실을 말해요'),B('Let friends finish talking','친구 말이 끝나길 기다려요'),B('Divide turns equally','차례를 똑같이 나눠요')],perseverance:[B('Try again after mistakes','틀려도 다시 해 봐요'),B('Divide snacks equally','간식을 똑같이 나눠요'),B('Welcome a new classmate','새 반 친구를 반겨요')],kindness:[B('Help carry dropped books','떨어진 책을 주워 줘요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Speak up when afraid','무서워도 나서서 말해요')],tolerance:[B('Play with a child who uses another language','다른 말을 쓰는 아이와 놀아요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')]};
+ const examples={fairness:[B('Share turns equally','차례를 똑같이 나눠요'),B('Keep trying after mistakes','틀려도 다시 도전해요'),B('Speak up when afraid','무서워도 나서서 말해요')],respect:[B('Listen without interrupting','끝까지 귀 기울여요'),B('Keep practicing a song','노래를 계속 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')],courage:[B('Tell the truth bravely','무서워도 사실을 말해요'),B('Let friends finish talking','끝까지 들어요'),B('Divide turns equally','차례를 똑같이 나눠요')],perseverance:[B('Try again after mistakes','틀려도 다시 도전해요'),B('Divide snacks equally','간식을 똑같이 나눠요'),B('Welcome a new classmate','새 친구를 반겨요')],kindness:[B('Help carry dropped books','책을 주워 줘요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Speak up when afraid','무서워도 나서서 말해요')],tolerance:[B('Play across language differences','말이 달라도 어울려요'),B('Practice after a mistake','틀린 뒤 다시 연습해요'),B('Divide snacks equally','간식을 똑같이 나눠요')]};
  const ch=GAMES.find(g=>g.id==='character1'),old=ch.play;ch.play=function(){if(lvl(this.id)===1)return old.call(this);const s=pick(SCEN);quiz(this,{ask:B('Which action shows the same trait?','같은 마음을 보여 주는 행동은?'),show:`<div class="storytext">${L(s[0])}</div>`,opts:o(examples[s[1]]),cls:'words'});};
  const patriot=[
  [B('What does liberty mean?','liberty는 무슨 뜻일까요?'),[B('Freedom','자유'),B('Fairness','공정'),B('Duty','의무')]],
@@ -354,11 +354,11 @@ G1T({
  // New dates checked against National Archives and NPS; see banks2.md.
  const dates=[
  [1752,B('Franklin flies a kite','프랭클린의 연 실험')],
- [1776,B('Jefferson drafts the Declaration','제퍼슨이 독립선언서 초안을 씀')],
+ [1776,B('Jefferson drafts the Declaration','제퍼슨의 독립선언서 초안')],
  [1805,B('Explorers reach the Pacific','탐험대가 태평양에 닿음')],
  [1896,B('Carver arrives at Tuskegee','카버가 터스키기에 옴')],
  [1901,B('Roosevelt becomes President','루스벨트가 대통령이 됨')],
- [1960,B('Ruby Bridges starts school','루비 브리지스가 학교에 감')]
+ [1960,B('Ruby Bridges starts school','루비 브리지스의 등교')]
  ];
  place.play=function(){if(lvl(this.id)===1&&rnd(2))return prior.call(this);const two=lvl(this.id)===2,chosen=shuffle(dates).slice(0,3),sorted=[...chosen].sort((a,b)=>a[0]-b[0]),last=rnd(2)===0,right=two?sorted[1]:sorted[last?2:0];
  quiz(this,{ask:two?B('Which event is between the other two in time?','시간 순서에서 다른 두 일 사이에 일어난 일은?'):last?B('Which event came later?','더 나중에 일어난 일은?'):B('Which event came earlier?','더 먼저 일어난 일은?'),show:`<div class="storytext" style="font-size:clamp(16px,2.8dvh,21px)">${chosen.map(x=>`${x[0]}: ${L(x[1])}`).join('<br>')}</div>`,opts:tOpts(right[1],chosen.filter(x=>x!==right).map(x=>x[1])),cls:'words sents'});};
@@ -432,13 +432,13 @@ G1T({
   [B('sky','sky'),B('space above us','머리 위로 펼쳐진 곳'),'🌤️'],
   [B('grain','grain'),B('edible crop seeds','먹는 곡식 씨앗'),'🌾'],
   [B('plain','plain'),B('wide flat land','넓고 평평한 땅'),'🏞️'],
-  [B('hill','hill'),B('a rise in the land','땅이 솟은 작은 언덕'),'⛰️'],
-  [B('rock','rock'),B('a hard piece of stone','단단한 돌 조각'),'🪨'],
+  [B('hill','hill'),B('gently raised land','작게 솟은 땅'),'⛰️'],
+  [B('rock','rock'),B('hard stone','단단한 돌 조각'),'🪨'],
   [B('woods','woods'),B('land with many trees','나무가 많은 곳'),'🌳'],
   [B('gleam','gleam'),B('shine softly','은은하게 빛나다'),'✨'],
   [B('breeze','breeze'),B('gentle moving air','살살 부는 바람'),'🍃'],
   [B('rills','rills'),B('small streams','작은 시냇물'),'💧'],
-  [B('liberty','liberty'),B('freedom to make choices','스스로 고를 수 있는 자유'),'🕊️']
+  [B('liberty','liberty'),B('freedom to make choices','자유롭게 고르기'),'🕊️']
  ];
  const g = GAMES.find(g => g.id === 'patriot');
  g.play = function () {

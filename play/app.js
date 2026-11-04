@@ -316,12 +316,21 @@ for (const name of ['home', 'subjectScreen', 'grownups', 'stickerBook', 'setting
     return result;
   };
 }
+// A first visit from the introduction keeps the language the parent just chose.
+// Existing children keep their own preference; example browsing never persists it.
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  const landing = localStorage.getItem('peachy-landing-lang');
+  if (!['en', 'ko'].includes(saved.lang) && ['en', 'ko'].includes(landing)) S.lang = landing;
+} catch (_) {}
 renderPeaches(); renderProfBtn();
 // Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language.
 (() => {
   const q = new URLSearchParams(location.search), g = q.get('game') && gameById(q.get('game')), lg = q.get('lang');
   if (q.get('example') === '1') { Example.open(0, lg); return; }
   if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
+  document.documentElement.lang = S.lang;
+  $('#langBtn').textContent = T().switchTo; renderNav();
   // &lv=1|2 (sample review links): start that game at the given level so a reviewer sees the exact screen being judged.
   const lv = +q.get('lv'); if (g && (lv === 1 || lv === 2)) { stat(g.id).level = lv; save(); }
   if (q.get('results') === '1') { gate(() => SchoolResults.open(grownups, true)); return; }

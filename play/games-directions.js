@@ -177,7 +177,7 @@
   const writeCountItem = () => {   // the reverse: "write how many" wants the numeral, not a drawing
     const n = 3 + rnd(5), ch = pick(ALL);
     return {
-      verb: 'write', sentence: 'Count. Write how many.', gloss: '세어 보고, 몇 개인지 write',
+      verb: 'write', sentence: 'Count and write how many.', gloss: '세어 보고, 몇 개인지 write',
       show: paper(countRow(Array(n).fill(ch))),
       opts: [{ html: paper(numBox(n)), ok: true, desc: `numeral ${n}` }, { html: paper(dotBox(n)), ok: false, desc: `${n} dots drawn` }, { html: paper(numBox(nearN(n, 1, 9))), ok: false, desc: 'numeral one off' }],
       after: WORDS.write.mean
@@ -226,7 +226,7 @@
     const groups = mark => paper(`<span class="dr-groups">${[a, b].map((k, i) => `<span class="dr-group${mark && mark[i] ? ' dr-m-' + mark[i] : ''}">${countRow(Array(k).fill(ch))}</span>`).join('')}</span>`);
     const m = (i, mk) => i === 0 ? [mk, ''] : ['', mk];
     return {
-      verb: 'circle', sentence: `Compare. Circle the group with ${more ? 'more' : 'fewer'}.`, gloss: `compare: ${more ? '더 많은' : '더 적은'} 쪽을 circle`,
+      verb: 'circle', sentence: `Compare and circle the group with ${more ? 'more' : 'fewer'}.`, gloss: `compare: ${more ? '더 많은' : '더 적은'} 쪽을 circle`,
       show: groups(null),
       opts: [{ html: groups(m(t, 'circle')), ok: true, desc: `${more ? 'more' : 'fewer'} group circled` }, { html: groups(m(1 - t, 'circle')), ok: false, desc: 'other group circled' }, { html: groups(m(t, 'under')), ok: false, desc: 'right group underlined' }],
       after: B('Compare: look at both groups to find more or fewer.', 'compare = 두 묶음을 견주어 더 많은지 적은지 봐요.')
@@ -277,7 +277,7 @@
     const it = maker();
     return {
       ...it,
-      ask: B(`“${it.sentence}”`, `“${it.sentence}” (${it.gloss})`),
+      ask: B(`“${it.sentence}”`, it.gloss),
       askSay: B(`${it.sentence} Which paper did that?`, `${it.gloss}. 이렇게 한 종이는?`),
       askExtra: { t: it.sentence, lang: 'en-US' },
       show: `<span class="dr-before">${e('👩‍🏫', 'dr-teacher')}${it.show}</span>`,

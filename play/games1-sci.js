@@ -158,7 +158,7 @@ G1S({
     } else if (kind === 'feel') {
       quiz(this, { ask: B('Hum and touch your throat. What do you feel?', '콧노래를 부르며 목을 만져 봐요. 무엇이 느껴질까요?'), show: '<span class="emo">🎶🤚</span>', opts: sOpts(tx('A tiny vibration', '작은 떨림'), [tx('Something cold', '차가운 것'), tx('Something wet', '젖은 것')]), cls: 'words', after: B('Your throat vibrates when you hum.', '콧노래를 부르면 목이 떨려요.') });
     } else {
-      const items = [[B('a loud whistle', '크게 부는 호루라기'), true], [B('a flashing flashlight', '깜빡이는 손전등'), true], [B('a quiet whisper', '아주 작은 속삭임'), false], [B('a tiny candle indoors', '집 안의 작은 촛불'), false]];
+      const items = [[B('a loud whistle', '크게 부는 호루라기'), true], [B('a flashing flashlight', '깜빡이는 손전등'), true], [B('a quiet whisper', '아주 작은 속삭임'), false], [B('a tiny candle indoors', '실내의 작은 촛불'), false]];
       const good = pick(items.filter(x => x[1])), bad = shuffle(items.filter(x => !x[1]));
       quiz(this, { ask: B('Which help signal can people far away notice?', '멀리 있는 사람이 알아챌 도움 신호는?'), opts: [good, ...bad].map(x => ({ html: `<span class="word">${L(x[0])}</span>`, ok: x === good })), cls: 'words sents', after: B('Loud sounds and bright lights can be seen or heard from far away.', '큰 소리와 밝은 빛은 멀리서도 보이고 들려요.') });
     }
@@ -208,7 +208,7 @@ G1S({
 (() => {
  const bank=[
   [B('The soil feels dry.','흙이 말랐어요.'),B('The soil is dry; the plant already gets light.','빛을 받는 식물의 흙이 말랐어요.'),[B('Water the soil','흙에 물을 줘요'),B('Move it to light','더 밝은 곳으로 옮겨요'),B('Add more soil','흙을 더 넣어요')]],
-  [B('The plant is in a dark cupboard.','식물이 어두운 찬장 안에 있어요.'),B('The soil is damp; the plant is in a dark cupboard.','흙이 촉촉한 식물이 어두운 찬장 안에 있어요.'),[B('Move it into daylight','빛이 드는 곳으로 옮겨요'),B('Water the soil again','흙에 물을 더 줘요'),B('Add more soil','흙을 더 넣어요')]]
+  [B('The plant is in a dark cupboard.','식물이 어두운 찬장 안에 있어요.'),B('The soil is damp; the plant is in a dark cupboard.','흙이 촉촉한 식물이 어두운 찬장 안에 있어요.'),[B('Move it into daylight','밝은 곳으로 옮겨요'),B('Water the soil again','흙에 물을 더해요'),B('Add more soil','흙을 더 넣어요')]]
  ];
  const animals=[
   [B('The drinking bowl is empty.','마실 그릇이 비었어요.'),B('The rabbit has hay to eat but an empty drinking bowl.','먹을 건초가 있는 토끼의 마실 그릇이 비었어요.'),[B('Fill its drinking bowl','마실 그릇을 채워요'),B('Add more hay','건초를 더 줘요'),B('Add bedding','깔짚을 더 넣어요')]],
@@ -267,7 +267,7 @@ G1S({
 (() => {
  const g = GAMES.find(g=>g.id==='plants1'), prior=g.play;
  const examples = [
-  [B('The soil in the pot is dry.','화분 흙이 말랐어요.'), B('Water the soil','흙에 물 주기'), B('Move it to the window','창가로 옮기기'), B('Use a bigger pot','더 큰 화분에 옮기기')],
+  [B('The soil in the pot is dry.','화분 흙이 말랐어요.'), B('Water the soil','흙에 물 주기'), B('Move near the window','창가로 옮기기'), B('Use a bigger pot','더 큰 화분에 옮기기')],
   [B('The pot sits in a dark closet.','화분이 어두운 벽장 안에 있어요.'), B('Move it into daylight','햇빛이 드는 곳에 옮기기'), B('Add more soil','흙을 더 넣기'), B('Water the leaves','잎에 물 주기')],
   [B('The roots fill the whole little pot.','작은 화분이 뿌리로 가득 찼어요.'), B('Use a larger pot','더 큰 화분에 옮기기'), B('Move it into shade','그늘에 옮기기'), B('Wet the leaves','잎을 적시기')],
   [B('A seedling has no soil around its roots.','새싹 뿌리 둘레에 흙이 없어요.'), B('Plant it in soil','흙에 심기'), B('Move it into shade','그늘에 옮기기'), B('Cover its leaves','잎을 덮기')]

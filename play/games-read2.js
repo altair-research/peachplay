@@ -107,7 +107,7 @@ registerGame({
     // Two look-alike words: only the whole spelling tells them apart.
     const ds = shuffle(SIGHT_LOOK[t].filter(w => w !== t)).slice(0, 2);
     quiz(this, {
-      ask: B('Listen. Find it!', '듣고 그 낱말을 눌러요.'), askExtra: { t, lang: 'en-US' },
+      ask: B('Listen; find it!', '듣고 그 낱말을 눌러요.'), askExtra: { t, lang: 'en-US' },
       show: hear,
       opts: [t, ...ds].map(w => ({ html: `<span class="num" lang="en">${w}</span>`, ok: w === t })), cls: 'shapes',
       after: B(`${t}!`, `${t}!`),

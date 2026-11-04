@@ -11,7 +11,7 @@
     // Picture-first (2026-10-26): the place itself is shown beside its map, so the color's meaning is visible, and the answers are pictures.
     if(lv===1&&rnd(3)===0){const water=!!rnd(2),pic=(e,n,ok)=>({html:`<span class="emo">${e}</span>`,label:n,ok});return {ask:water?B('Blue on the map shows what?','지도의 파랑은 무엇일까요?'):B('Green on the map shows what?','지도의 초록은 무엇일까요?'),show:map(items,turn,true)+' ➜ '+map(items,turn),opts:[pic('🌊',B('water','물'),water),pic('⛰️',B('land','땅'),!water),pic('☁️',B('sky','하늘'),false)],cls:'shapes',after:B('Blue on a map shows water. Green shows land.','지도에서 파랑은 물, 초록은 땅이에요.')};}
     // The answer is a map number, never the same picture as the scene (2026-10-26: a picture answer gave itself away).
-    if(lv===1){const t=pick(items),no=x=>(items.indexOf(x)+turn)%3+1;return {ask:B(`Find the ${t[1].en} ${t[0]} on the map. Which number?`,`지도에서 ${t[1].ko} ${t[0]}는 몇 번?`),show:map(items,turn,true)+' ➜ '+map(items,turn),opts:items.map(x=>({html:text(String(no(x))),ok:x===t})),after:B('A map uses small signs in the same places.','지도는 같은 자리에 작은 표시로 나타내요.')};}
+    if(lv===1){const t=pick(items),no=x=>(items.indexOf(x)+turn)%3+1;return {ask:B(`Which number marks the ${t[1].en} ${t[0]}?`,`지도에서 ${t[1].ko} ${t[0]}는 몇 번?`),show:map(items,turn,true)+' ➜ '+map(items,turn),opts:items.map(x=>({html:text(String(no(x))),ok:x===t})),after:B('A map uses small signs in the same places.','지도는 같은 자리에 작은 표시로 나타내요.')};}
     if(kind===0)return {ask:B('Which map from above matches the scene?','장면과 배치가 같은 지도는?'),show:map(items,turn,true),opts:[0,1,2].map((d,i)=>({html:map(items,(turn+d)%3),label:B('Map '+(i+1),'지도 '+(i+1)),ok:i===0})),after:B('The matching model keeps the places in the same positions.','작은 모형에서도 장소의 위치 관계는 같아요.')};
     const t=items[kind-1];return {ask:B('Which numbered place is shown by this sign?','이 표시는 지도의 몇 번 장소일까요?'),show:text(t[0])+map(items,turn),opts:items.map(x=>({html:text(String((items.indexOf(x)+turn)%3+1)),ok:x===t})),after:B('A map sign stands for a place.','지도 표시는 장소를 나타내요.')};
   });
@@ -76,7 +76,7 @@
     [B('Juneteenth','준틴스'),B('June 19','6월 19일'),B('Remembers freedom from slavery','노예제에서 벗어난 자유를 기념해요'),'🕊️'],
     [B('Martin Luther King Jr. Day','마틴 루서 킹 주니어의 날'),B('Third Monday in January','1월 셋째 월요일'),B('Honors a leader for equal rights','평등한 권리를 위해 힘쓴 지도자를 기려요'),'🤝'],
     [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','군 복무 중 목숨을 잃은 분들을 기억해요'),'🌺'],
-    [B("Washington’s Birthday / Presidents Day",'워싱턴 탄생일 / 대통령의 날'),B('Third Monday in February','2월 셋째 월요일'),B('A federal holiday named for George Washington','조지 워싱턴의 이름을 붙인 연방 공휴일'),'🇺🇸🎂']
+    [B("Washington’s Birthday",'워싱턴 탄생일'),B('Third Monday in February','2월 셋째 월요일'),B('Honors the first U.S. president','미국의 첫 대통령을 기려요'),'🇺🇸🎂']
   ];
   add('holidayclues',B('Holiday Stories','기념일 이야기'),'📅',B('Social Studies · Holidays','사회 · 기념일'),lv=>{
     // People are shown by a place or role picture, never a face: 🥇 first president, 🏛️ his memorial, 🏠 the White House now.
@@ -90,7 +90,7 @@
   const customs=[
     [B('Mia eats rice; Leo eats noodles.','미아는 밥을, 레오는 국수를 먹어요.'),B('foods','음식'),'👧🍚 👦🍜','🍽️'],
     [B('Mia says hello; Leo says annyeong.','미아는 hello, 레오는 안녕이라고 말해요.'),B('greetings','인사말'),'👧💬 👦💬','👋'],
-    [B('Mia sings at a birthday; Leo tells a story.','미아는 생일에 노래하고 레오는 이야기를 해요.'),B('celebrations','축하 방법'),'👧🎂🎤 👦🎂📖','🎉'],
+    [B('Mia sings at a birthday; Leo tells a story.','미아는 생일에 노래하고 레오는 이야기를 해요.'),B('parties','축하 방법'),'👧🎂🎤 👦🎂📖','🎉'],
     [B('Mia visits cousins; Leo calls cousins.','미아는 사촌을 만나고 레오는 전화해요.'),B('family visits','연락 방법'),'👧🚗 👦📞','💌'],
     [B('Mia plays a drum; Leo plays a flute.','미아는 북을, 레오는 플루트를 연주해요.'),B('music','음악'),'👧🥁 👦🪈','🎶'],
     [B('Mia reads in English; Leo reads in Korean.','미아는 영어로, 레오는 한국어로 읽어요.'),B('languages','언어'),'👧📘🇺🇸 👦📗🇰🇷','🗣️']
@@ -113,7 +113,7 @@
       const strip=at=>`<span style="display:inline-flex;gap:3px">${[0,1,2].map(i=>`<span style="display:inline-grid;place-items:center;width:clamp(18px,min(5.5vw,4.4dvh),32px);height:clamp(24px,min(7vw,5.2dvh),38px);border:2px solid ${i===at?'#e0703a':'#b9a27f'};border-radius:6px;background:${i===at?'#ffe3cf':'#fff'};font-size:clamp(12px,min(4vw,2.8dvh),20px)">${i===at?'⭐':i===1?'🧒':''}</span>`).join('')}</span>`;
       if(lv===1){const w=when===3?rnd(3):when,wd=words[w],c=[B('the day before today','오늘 전날'),B('the day happening now','지금인 날'),B('the day after today','오늘 다음 날')][w];
         return {ask:B(`Find ${wd.en.toLowerCase()}.`,`${wd.ko}을(를) 찾아요.`),askSay:B(`${act.en}. ${wd.en} is ${c.en}. Find ${wd.en.toLowerCase()}.`,`${act.ko}. ${wd.ko}은(는) ${c.ko}이에요. ${wd.ko}을(를) 찾아요.`),show:card(`🧒 = ${L(B('now','지금'))}`),opts:[0,1,2].map(i=>({html:strip(i),ok:i===w})),cls:'shapes'};}
-      const ask=B(`${word.en}: past, present, or future?`,`${word.ko}: 과거, 현재, 미래 중 무엇일까요?`);
+      const ask=B(`${word.en}: past, present, or future?`,`${word.ko}: 언제일까요?`);
       return {ask,show:card(`${L(act)} · ${L(word)}`),askSay:B(`${act.en}. ${ask.en}`,`${act.ko}. ${ask.ko}`),opts:tense.map((x,i)=>pic(strip(i),x,i===key)),cls:'shapes'};
     }
     if(kind===1){const t=pick(customs),story=t[0],near=n=>customs[(customs.indexOf(t)+n)%customs.length];return {ask:lv===1?B('What is different?','무엇이 다를까요?'):B('How can we learn from each other?','서로 어떻게 배울까요?'),show:card(t[2])+card(L(story)),askExtra:{t:L(story)},opts:lv===1?[pic(t[3],t[1],true),pic(near(1)[3],near(1)[1],false),pic(near(2)[3],near(2)[1],false)]:[pic('😊❓',B('ask kindly','존중하며 묻기'),true),pic('🗣️👤',B('talk about me','내 얘기만'),false),pic('🤔💭',B('guess, not ask','묻지 않고 짐작'),false)],cls:'shapes',after:B('These are two made-up families, not a rule about a whole group.','두 가상의 가정 이야기예요. 한 집단 모두의 관습이라는 뜻은 아니에요.')};}
@@ -157,7 +157,7 @@ registerGame({
       { ga: true, ask: B('Tap the GEORGIA flag.', '조지아 주기를 눌러요.') },
       { ga: false, ask: B('Tap the U.S.A. flag.', '미국 국기를 눌러요.') },
       { ga: false, ask: B('Which flag has 50 stars?', '별이 50개인 깃발은?') },
-      { ga: true, ask: B('Which flag has stars in a circle?', '파란 네모 안에 별이 동그랗게 있는 깃발은?') },
+      { ga: true, ask: B('Which flag has stars in a circle?', '별이 동그랗게 모인 깃발은?') },
       { ga: false, ask: B('Which flag has many stripes and stars?', '빨강 흰색 줄이 많고 파란 모서리에 별이 많은 깃발은?') },
       { ga: true, ask: B('Which flag is the flag of the Peach State?', '복숭아의 주(Peach State) 깃발은?') },
       { ga: false, ask: B('Which flag is the flag of our country?', '우리나라(미국)의 깃발은?') }
@@ -260,12 +260,12 @@ const CITIZEN = [
   [['🚶', B('walking inside', '복도에서 걸어요')], ['🏃', B('running inside', '복도에서 뛰어요')]],
   [['🙏', B('saying thanks', '고맙다고 말해요')], ['🙊', B('being rude', '무례하게 말해요')]],
   [['🧸', B('cleaning up', '정리해요')], ['🛋️', B('leaving mess', '어질러요')]],
-  [['👂', B('listening', '잘 들어요')], ['🗣️', B('chatting loudly', '떠들어요')]],
+  [['👂', B('listening', '잘 들어요')], ['🗣️', B('loud talk', '떠들어요')]],
   [['🪑', B('chair in', '의자 넣어요')], ['🪑', B('chair out', '그냥 둬요')]],
   [['🧍', B('taking turns', '차례 지켜요')], ['🚷', B('cutting line', '새치기해요')]],
   [['🩹', B('helping friend', '친구 도와요')], ['😆', B('laughing at', '비웃어요')]],
   [['📚', B('returning book', '책 돌려줘요')], ['📚', B('keeping book', '안 돌려줘요')]],
-  [['🚰', B('tap off', '물 잠가요')], ['🚰', B('wasting water', '물 낭비해요')]]
+  [['🚰', B('tap off', '물 잠가요')], ['🚰', B('tap left on', '물 낭비해요')]]
 ];
 registerGame({
   id: 'citizen', subject: 'ss', icon: '🌟', title: B('Good Citizens', '착한 시민'), sub: B('Kind and fair', '친절하고 공정하게'),
@@ -405,7 +405,7 @@ registerGame({
   if(lvl(this.id)===1&&rnd(2)){const k=rnd(GA_SYMBOLS.length),v=GA_SYMBOLS[k];return quiz(this,{ask:B(`What kind of symbol is the ${v.n.en}?`,`주 상징 ${v.n.ko}: 어떤 종류일까요?`),show:`<span class="emo">${v.e}</span>`,opts:[v,...others(GA_SYMBOLS,v,2)].map(x=>pic(kindPic[x.q.en],x.q,x===v)),cls:'shapes'});}
   if(lvl(this.id)===1)return quiz(this,{ask:B(`Which is Georgia's state ${t.q.en}?`,`조지아의 주 ${t.q.ko} 상징은?`),opts:[pic(t.e,t.n,true),...sameKind[i].map((x,n)=>pic(sameKindPic[i][n],x,false))],cls:'shapes'});
   const j=pick(named.filter(x=>x!==i)),u=GA_SYMBOLS[j],pair=(a,b)=>B(`${a.en} + ${b.en}`,`${a.ko} + ${b.ko}`);
-  quiz(this,{ask:B(`Which pair matches Georgia's ${t.q.en} and ${u.q.en}?`,`조지아의 ${t.q.ko} 상징과 ${u.q.ko} 상징에 맞는 짝은?`),opts:[pic(t.e+u.e,pair(t.n,u.n),true),pic(sameKindPic[i][0]+u.e,pair(sameKind[i][0],u.n),false),pic(t.e+sameKindPic[j][0],pair(t.n,sameKind[j][0]),false)],cls:'shapes'});
+  quiz(this,{ask:B(`Which pair matches Georgia's ${t.q.en} and ${u.q.en}?`,`조지아 상징: ${t.q.ko}·${u.q.ko} 짝은?`),opts:[pic(t.e+u.e,pair(t.n,u.n),true),pic(sameKindPic[i][0]+u.e,pair(sameKind[i][0],u.n),false),pic(t.e+sameKindPic[j][0],pair(t.n,sameKind[j][0]),false)],cls:'shapes'});
  };
  const jobs=GAMES.find(g=>g.id==='jobs'),old=jobs.play;
  jobs.play=function(){if(lvl(this.id)===1)return old.call(this);const a=pick(JOBS),b=pick(JOBS.filter(x=>x!==a)),c=pick(JOBS.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.n.en} + ${y.n.en}`,`${x.n.ko} + ${y.n.ko}`);quiz(this,{ask:B('Which pair can do BOTH jobs in order?','두 일을 차례로 하는 사람들의 짝은?'),show:`<div class="storytext">${L(a.q)}<br>${L(b.q)}</div>`,askExtra:{t:`${L(a.q)} ${L(b.q)}`},opts:[[a,b],[a,c],[c,b]].map(([x,y],i)=>pic(x.e+y.e,pair(x,y),i===0)),cls:'shapes'});};
@@ -433,7 +433,7 @@ const FLAG_FEATURE_PIC = {
   gold: '<svg viewBox="0 0 20 20" class="ffeat"><rect width="20" height="20" fill="#1b3a8a"/><circle cx="10" cy="10" r="5" fill="#e5b92b"/></svg>',
   nogold: '<svg viewBox="0 0 20 20" class="ffeat"><rect width="20" height="20" fill="#3c3b6e"/><circle cx="10" cy="10" r="5" fill="none" stroke="#e5b92b" stroke-width="1" stroke-dasharray="1.5 1.2"/><line x1="4" y1="16" x2="16" y2="4" stroke="#d62828" stroke-width="2"/></svg>'
 };
-(() => {const g=GAMES.find(g=>g.id==='flags'),old=g.play;g.play=function(){if(lvl(this.id)===1)return old.call(this);const ga=!!rnd(2);quiz(this,{ask:B('Which two pictures BOTH match this flag?','이 깃발에 둘 다 맞는 그림 짝은?'),show:(ga?flagGA():flagUS()).replace('<svg ','<svg style="width:min(55vw,28dvh);height:auto" '),opts:(()=>{const GA=[['s3',B('3 stripes','줄 3개')],['ring',B('stars in a ring','별은 고리 모양')],['n13',B('13 stars','별 13개')],['gold',B('a gold circle','금색 동그라미')]],US=[['s13',B('13 stripes','줄 13개')],['rows',B('stars in rows','별은 여러 줄')],['n50',B('50 stars','별 50개')],['nogold',B('no gold circle','금색 동그라미 없음')]],facts=ga?GA:US,wrong=ga?US:GA,a=rnd(4),b=pick([0,1,2,3].filter(x=>x!==a)),pair=(x,y)=>({html:`<span class="fpair">${FLAG_FEATURE_PIC[x[0]]}${FLAG_FEATURE_PIC[y[0]]}</span><span class="ol">${L(x[1])}<br>${L(y[1])}</span>`});return [pair(facts[a],facts[b]),pair(wrong[a],facts[b]),pair(facts[a],wrong[b])];})().map((x,i)=>({...x,ok:i===0})),cls:'shapes'});};})();
+(() => {const g=GAMES.find(g=>g.id==='flags'),old=g.play;g.play=function(){if(lvl(this.id)===1)return old.call(this);const ga=!!rnd(2);quiz(this,{ask:B('Which two pictures BOTH match this flag?','깃발에 맞는 두 그림은?'),show:(ga?flagGA():flagUS()).replace('<svg ','<svg style="width:min(55vw,28dvh);height:auto" '),opts:(()=>{const GA=[['s3',B('3 stripes','줄 3개')],['ring',B('stars in a ring','별은 고리 모양')],['n13',B('13 stars','별 13개')],['gold',B('a gold circle','금색 동그라미')]],US=[['s13',B('13 stripes','줄 13개')],['rows',B('stars in rows','별은 여러 줄')],['n50',B('50 stars','별 50개')],['nogold',B('no gold circle','금색 동그라미 없음')]],facts=ga?GA:US,wrong=ga?US:GA,a=rnd(4),b=pick([0,1,2,3].filter(x=>x!==a)),pair=(x,y)=>({html:`<span class="fpair">${FLAG_FEATURE_PIC[x[0]]}${FLAG_FEATURE_PIC[y[0]]}</span><span class="ol">${L(x[1])}<br>${L(y[1])}</span>`});return [pair(facts[a],facts[b]),pair(wrong[a],facts[b]),pair(facts[a],wrong[b])];})().map((x,i)=>({...x,ok:i===0})),cls:'shapes'});};})();
 
 (() => {
   const g = GAMES.find(g => g.id === 'flags'), prior = g.play;

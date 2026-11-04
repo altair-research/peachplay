@@ -409,7 +409,7 @@ registerGame({
   ['🔕','👋',B('A bell is quiet. You shake it.','종이 조용해요. 흔들어요.'),[['🔔🎵',B('It rings','소리가 나요')],['🔕',B('Still quiet','조용해요')]]],
   ['🧊','☀️',B('An ice cube sits in the hot sun.','얼음이 뜨거운 햇볕에 있어요.'),[['💧',B('It melts','녹아요')],['🧊',B('Stays ice','그대로 얼음')]]],
   ['🌱','💧☀️',B('A sprout gets water and sun.','새싹이 물과 햇빛을 받아요.'),[['🌻',B('It grows','자라요')],['🥀',B('It wilts','시들어요')],['🌱',B('Stays small','그대로예요')]]],
-  ['🧽','💧',B('A dry sponge goes into water.','마른 스펀지를 물에 넣어요.'),[['🧽💦',B('Wet','젖어요')],['🧽',B('Still dry','그대로 말라 있어요')]]],
+  ['🧽','💧',B('A dry sponge goes into water.','마른 스펀지를 물에 넣어요.'),[['🧽💦',B('Wet','젖어요')],['🧽',B('Dry','말라요')]]],
   ['🌽','🔥',B('Corn kernels are heated.','옥수수 알을 뜨겁게 데워요.'),[['🍿',B('Popcorn','팝콘이 돼요')],['🌽',B('Stays corn','그대로예요')]]],
   ['🌧️','⏳',B('It rains for a long time.','비가 오래 와요.'),[['💦',B('Puddles','물웅덩이')],['🏜️',B('Dry ground','땅이 말라요')]]],
   ['🥚','🍳🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
@@ -452,9 +452,9 @@ registerGame({
  const ALL=[...MIX,...extra];
  const chains=[[MIX[0],'#ffc59a',B('light orange','연주황')],[MIX[1],'#a8e6b8',B('light green','연초록')],[MIX[2],'#cdb4f0',B('light purple','연보라')]];
  game.play=function(){if(lvl(this.id)!==2)return old.call(this);
-  if(!rnd(3)){const [m,light,name]=pick(chains),others=shuffle(ALL.filter(x=>x[2]!==light&&x[2]!==m[2])).slice(0,2);
+  if(!rnd(3)){const [m,light,name]=pick(chains),others=shuffle(ALL.filter(x=>x[5].en.startsWith('light ')&&x[2]!==light&&x[2]!==m[2])).slice(0,2);
    const o=(c,n,ok)=>({html:CDOT(c),label:n,ok});
-   quiz(this,{ask:B('Mix again with white. Which color comes out?','그 색에 하양을 또 섞으면 무슨 색?'),askSay:B(`${m[3].en} and ${m[4].en} make ${m[5].en}. Then add white. Which color comes out?`,`${m[3].ko}과 ${m[4].ko}을 섞으면 ${m[5].ko}. 여기에 하양을 섞으면 무슨 색?`),
+   quiz(this,{ask:B('What color comes from adding white?','하양을 또 섞으면 무슨 색?'),askSay:B(`${m[3].en} and ${m[4].en} make ${m[5].en}. Then add white. Which color comes out?`,`${m[3].ko}과 ${m[4].ko}을 섞으면 ${m[5].ko}. 여기에 하양을 섞으면 무슨 색?`),
     show:`<div class="mixrow" style="${R}">${dot(m[0])}<span class="op">+</span>${dot(m[1])}<span class="op">=</span>${dot(m[2])}</div><div class="mixrow" style="${R}">${dot(m[2])}<span class="op">+</span>${dot(W[0])}<span class="op">=</span><span class="qbox" style="width:min(9vw,6dvh);height:min(9vw,6dvh);font-size:min(6vw,4dvh)">?</span></div>`,
     opts:[o(light,name,true),o(m[2],m[5],false),o(others[0][2],others[0][5],false)],cls:'shapes',after:B(`${m[5].en} and white make ${name.en}!`,`${m[5].ko}과 하양을 섞으면 ${name.ko}!`)});return;}
   const t=pick(ALL),paints=[...new Map(ALL.flatMap(m=>[[m[0],m[3]],[m[1],m[4]]])).entries()],flip=rnd(2);

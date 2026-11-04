@@ -4,7 +4,7 @@
 const FEEDBACK_EMAIL = 'altair.research.lab@gmail.com';
 const BK = {
   title: B('Backup & restore', '백업과 복원'),
-  note: B("Progress lives only on this device. Save a backup file (or code) to move it to another device or keep it safe. The file contains your children's names and progress, so keep it private.", '기록은 이 기기에만 저장돼요. 다른 기기로 옮기거나 안전하게 보관하려면 백업 파일(또는 코드)을 저장하세요. 파일에는 아이 이름과 기록이 들어 있으니 다른 사람에게 보내지 마세요.'),
+  note: B("Progress lives only on this device. Save a backup file (or code) to move it to another device or keep it safe. Recent paper worksheet pages are not included; their saved grading results are included. The file contains your children's names and progress, so keep it private.", '기록은 이 기기에만 저장돼요. 다른 기기로 옮기거나 안전하게 보관하려면 백업 파일(또는 코드)을 저장하세요. 최근 종이 학습지 원본은 백업에 들어가지 않고, 저장한 채점 기록은 포함돼요. 파일에는 아이 이름과 기록이 들어 있으니 다른 사람에게 보내지 마세요.'),
   readFail: B('Could not read progress. No backup was created. Please try again in a normal browser window.', '기록을 읽지 못해 백업을 만들지 않았어요. 일반 브라우저 창에서 다시 시도해 주세요.'),
   save: B('Save backup file', '백업 파일 저장'), copy: B('Copy backup code', '백업 코드 복사'), copied: B('Copied!', '복사됐어요!'),
   load: B('Restore from file', '파일에서 복원'), paste: B('Restore from code', '코드로 복원'), pasteHint: B('Paste backup code here', '백업 코드를 여기에 붙여넣기'),

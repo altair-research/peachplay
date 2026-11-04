@@ -104,8 +104,18 @@
     const add = document.getElementById('wkResults'); if (add) add.onclick = () => SchoolResults.open(grownups);
     const b = document.getElementById('wkCopy'); if (!b) return;
     b.onclick = () => {
-      const done = ok => { const s = document.getElementById('wkCopied'); if (s) s.textContent = ok ? L(TX.copied) : ''; };
-      try { navigator.clipboard.writeText(text()).then(() => done(true), () => done(false)); } catch (e) { done(false); }
+      const message = text();
+      const done = () => { const s = document.getElementById('wkCopied'); if (s) s.textContent = L(TX.copied); };
+      const fallback = () => {
+        const s = document.getElementById('wkCopied'); if (!s) return;
+        s.textContent = '';
+        const field = document.createElement('textarea'); field.value = message; field.readOnly = true;
+        field.setAttribute('aria-label', L(TX.copy)); s.appendChild(field); field.select();
+        let copied = false; try { copied = document.execCommand('copy'); } catch (_) {}
+        if (copied) done();
+        else s.prepend(document.createTextNode(L(B('Select the text below and copy it.', '아래 글을 선택해서 복사해 주세요.'))));
+      };
+      try { navigator.clipboard.writeText(message).then(done, fallback); } catch (_) { fallback(); }
     };
   }
   function reminder(source, translate = L) {

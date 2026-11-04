@@ -307,7 +307,9 @@ function readEvent1(game, level, isReport) {
   const ask = level === 2
     ? B('Which clue explains what happened next?', '다음 행동의 까닭을 알려 주는 단서는?')
     : isReport ? B('What did the class do?', '학급에서 무엇을 했나요?') : B('What did Ana do?', '아나는 무엇을 했나요?');
-  const options = level === 2 ? [cause, ...alternatives.map(x=>x[0])] : [action, ...alternatives.map(x=>x[1])];
+  // Short option captions keep the full action in the story and its read-aloud.
+  const briefActions = new Map([["dried it with a towel","dried with a towel","수건으로 닦았어요"],["put a stone on it","placed a stone on it","위에 돌을 올렸어요"],["moved the rock in the way","moved the blocking rock","막은 돌을 치웠어요"],["asked a friend to help","asked a friend","친구에게 도움을 청했어요"],["poured the water into another cup","poured into another cup","다른 컵에 옮겼어요"],["asked a grown-up to reach it","asked a grown-up","어른에게 꺼내달라고 했어요"],["reached under the bench","reached under the bench","의자 밑으로 뻗었어요"],["asked for help to open it","asked for help","열어달라고 부탁했어요"],["tied on a new string","tied new string on","새 줄을 묶었어요"],["moved the things into a basket","put things in a basket","물건을 바구니로 옮겼어요"],["folded the paper in half","folded it in half","종이를 반으로 접었어요"],["moved to a quiet spot","moved somewhere quiet","조용한 곳으로 옮겼어요"],["cleared the dirt from its wheel","cleaned the dirty wheel","바퀴의 흙을 털었어요"],["built on a flat board","built on a flat board","평평한 판에 쌓았어요"],["put them in a bright tray","used a bright tray","밝은색 쟁반에 담았어요"],["set it on a flat table","used a flat table","평평한 탁자에 놓았어요"],["put a bookend at the side","added a bookend","책 버팀대를 놓았어요"],["taped the tear","taped the tear","찢어진 곳을 붙였어요"],["made the letters bigger","made the letters bigger","글자를 크게 썼어요"]].map(([key,en,ko])=>[key,B(en,ko)]));
+  const options = level === 2 ? [cause, ...alternatives.map(x=>x[0])] : [action, ...alternatives.map(x=>x[1])].map(x=>briefActions.get(x.en)||x);
   quiz(game, { ask, show: '<div class="storytext">' + L(material) + '</div>',
     opts: options.map((text,i)=>({html:'<span class="word">' + L(text) + '</span>',ok:i===0})),cls:'words sents' });
 }

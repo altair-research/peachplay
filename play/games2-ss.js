@@ -84,9 +84,9 @@ G2SS({
         [B('Which ocean touches the east side of Georgia?', '조지아의 동쪽 바다는?'), B('Atlantic Ocean', '대서양'), [B('Pacific Ocean', '태평양'), B('Arctic Ocean', '북극해')]]]);
       quiz(this, { ask: q[0], show: gaMapSvg({ compass: true, states: q[1].en !== 'Atlantic Ocean' }), opts: sw(q[1], q[2]), cls: 'words', after: B(`${q[1].en}.`, `${q[1].ko}.`) });
     } else {
-      const q = pick([[B('What do the brown triangles on the Georgia map show?', '조지아 지도의 갈색 삼각형은 무엇을 나타낼까요?'), B('Mountains in the north', '북쪽의 산'), [B('Cities', '도시'), B('Rivers', '강')]],
+      const q = pick([[B('What do the brown triangles on the Georgia map show?', '조지아 지도의 갈색 삼각형은 무엇을 나타낼까요?'), B('Mountains in the north', '북쪽의 산'), [B('Cities on the map', '지도에 있는 도시'), B('Rivers across the state', '주를 흐르는 강')]],
         [B('What do the blue lines on the Georgia map show?', '조지아 지도의 파란 선은 무엇을 나타낼까요?'), B('Rivers', '강'), [B('Mountains', '산'), B('Roads', '도로')]],
-        [B('What does the green oval in the south show?', '남쪽의 초록 타원은 무엇을 나타낼까요?'), B('The Okefenokee Swamp', '오키페노키 습지'), [B('A big city', '큰 도시'), B('A mountain', '산')]]]);
+        [B('What does the green oval in the south show?', '남쪽의 초록 타원은 무엇을 나타낼까요?'), B('The Okefenokee Swamp', '오키페노키 습지'), [B('The capital city', '주도인 도시'), B('The northern mountains', '북쪽 산들')]]]);
       quiz(this, { ask: q[0], show: gaMapSvg({}), opts: sw(q[1], q[2]), cls: 'words', after: B(`${q[1].en}.`, `${q[1].ko}.`) });
     }
   }
@@ -152,7 +152,7 @@ G2SS({
       const t = pick([[B('You choose a sticker book instead of a ball. What did you give up?', '공 대신 스티커 책을 골랐어요. 포기한 것은?'), B('The ball', '공'), [B('The sticker book', '스티커 책'), B('Nothing', '아무것도 없어요')]],
         [B('You choose to play outside instead of watching TV. What did you give up?', '텔레비전 보는 대신 밖에서 놀기로 했어요. 포기한 것은?'), B('Watching TV', '텔레비전 보기'), [B('Playing outside', '밖에서 놀기'), B('Nothing', '아무것도 없어요')]]]);
       quizOf([t[0], t[1], t[2], B('Giving up the next best choice is called an opportunity cost.', '하나를 고르면서 포기한 다른 선택들 중 가장 좋은 것을 기회비용이라고 해요.')]);
-    } else if (kind === 'save') quizOf(pick([[B('What does it mean to save money?', '돈을 저축한다는 것은 무슨 뜻일까요?'), B('To keep it to use later', '나중에 쓰려고 모아 두는 것'), [B('To spend it all today', '오늘 다 쓰는 것'), B('To lose it', '잃어버리는 것')]],
+    } else if (kind === 'save') quizOf(pick([[B('What does it mean to save money?', '돈을 저축한다는 것은 무슨 뜻일까요?'), B('To keep it to use later', '나중에 쓰려고 모아 두는 것'), [B('To buy a toy today', '오늘 장난감을 사는 것'), B('To pay for a snack', '간식 값을 내는 것')]],
       [B('You want a $20 toy and have $5. What is a smart plan?', '20달러짜리 장난감을 사고 싶은데 5달러가 있어요. 어떤 계획을 세우면 좋을까요?'), B('Save a little each week', '매주 조금씩 모으기'), [B('Spend the $5 on candy right now', '지금 사탕에 5달러 쓰기'), B('Forget the toy and the money', '장난감도 돈도 잊기')]]]));
     else quizOf(pick([[B('Which one is a way to earn money?', '돈을 버는 방법은 무엇일까요?'), B('Working at a job', '일해서 돈 받기'), [B('Wishing for money', '돈이 생기길 바라기'), B('Spending money', '돈 쓰기')]],
       [B('People earn money by ...', '사람들은 무엇을 해서 돈을 벌까요?'), B('doing work or selling goods and services', '일하거나 물건·서비스를 팔기'), [B('buying things they want at a store', '가게에서 원하는 물건 사기'), B('putting coins in a piggy bank', '저금통에 동전 넣기')]]]));
@@ -205,7 +205,7 @@ G2SS({
 (() => {
 'use strict';
 // Own examples informed by gap-top5-prep; no source illustrations or questions reused.
-const methods=[B('Price','가격'),B('First-come-first-served','선착순'),B('Sharing','나누기'),B('Lottery','추첨')];
+const methods=[B('Buying at a set price','정해진 값 내기'),B('Serving in signup order','신청한 순서대로 받기'),B('Sharing among the group','함께 나눠 갖기'),B('Drawing names at random','이름을 뽑아 받기')];
 const things=[B('bookmarks','책갈피'),B('paper sheets','종이'),B('ribbons','리본'),B('pencils','연필')];
 const turns={};
 for(const id of ['goods2','choices2','gamap2']){const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const i=turns[id]||0;turns[id]=i+1;if(i%2)return old.call(this);const lv=lvl(id),n=2+rnd(4),t=pick(things);let ask,answer,wrong,show='';
@@ -265,9 +265,9 @@ const environments=[
  [B('Oglethorpe, Tomochichi and Mary Musgrove met near the Savannah River. Rivers offered routes for travel and trade.','오글소프, 토모치치, 메리 머스그로브는 서배너강 근처에서 만났어요. 강은 이동과 교역의 길이 됐어요.'),B('A river could connect travel and trade','강이 이동과 교역을 이어 줬어요')]
 ];
 for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.play;g.play=function(){const t=turns[id]||0;turns[id]=t+1;if(t%2)return old.call(this);const lv=lvl(id),i=Math.floor(t/2);
- if(id==='heroes2') {const r=actions[i%actions.length];quiz(this,lv===1?make('citizenship',B('Which trait is supported by this action?','이 행동이 보여 주는 시민의 태도는?'),r[0],r[1],wrongTraits[i%actions.length].map(k=>actions[k][1])):make('citizenship-evidence',B(`Which action by ${HEROES2[i%actions.length].n.en} supports this trait? ${r[1].en}`,`${HEROES2[i%actions.length].n.ko}: 이 태도를 보여 준 행동은? ${r[1].ko}`),B('Choose the action that best supports the trait.','이 태도를 가장 잘 보여 주는 행동을 골라요.'),B(r[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),r[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')),wrongTraits[i%actions.length].map(k=>actions[k]).map(x=>B(x[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),x[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')))));return;}
+ if(id==='heroes2') {const r=actions[i%actions.length];quiz(this,lv===1?make('citizenship',B('Which trait is supported by this action?','이 행동이 보여 주는 시민의 태도는?'),r[0],r[1],wrongTraits[i%actions.length].map(k=>actions[k][1])):make('citizenship-evidence',B(`Which action by ${HEROES2[i%actions.length].n.en} supports this trait? ${r[1].en}`,`${HEROES2[i%actions.length].n.ko}: 알맞은 행동은? ${r[1].ko}`),B('Choose the action that best supports the trait.','이 태도를 가장 잘 보여 주는 행동을 골라요.'),B(r[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),r[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')),wrongTraits[i%actions.length].map(k=>actions[k]).map(x=>B(x[0].en.replace(/^(Oglethorpe|Tomochichi|Mary Musgrove|Sequoyah|Juliette Gordon Low|Jackie Robinson|Martin Luther King Jr\.|Jimmy Carter) /,''),x[0].ko.replace(/^(오글소프|토모치치|메리 머스그로브|세쿼이아|줄리엣 고든 로|재키 로빈슨|마틴 루서 킹 주니어|지미 카터)[는은] /,'')))));return;}
  const r=environments[i%environments.length];
- if(lv===1){quiz(this,make('environment',B('How did this environment help people?','이 환경은 사람들에게 어떤 도움이 됐나요?'),r[0],r[1],[B('Ice and snow kept food cold','얼음과 눈이 음식을 차갑게 지켜 줬어요'),B('Tall mountains kept towns safe','높은 산이 마을을 지켜 줬어요')]));return;}
+ if(lv===1){quiz(this,make('environment',B('How did this environment help people?','이 환경은 사람들에게 어떤 도움이 됐나요?'),r[0],r[1],[B('Ice and snow kept food cold','얼음과 눈이 음식을 차갑게 보관했어요'),B('Tall mountains kept towns safe','높은 산이 마을을 보호했어요')]));return;}
  // Comparison cards are optional-location examples: never infer or collect a child's home.
  const local=i%2===0;
  quiz(this,make('region-compare',B('Compare the historical place with the practice community.','역사 속 장소와 가상 공동체를 비교해요.'),B(`${r[0].en} Practice community today: ${local?'a garden uses soil and water.':'trucks use roads for trade.'} Families live in many different ways.`,`${r[0].ko} 오늘날 가상 공동체: ${local?'텃밭에서 흙과 물을 이용해요.':'트럭이 도로로 물건을 운반해요.'} 가족마다 생활 모습은 다양해요.`),local?B('Both can use natural resources','두 곳 모두 자원을 써요'):B('People use different routes and tools','서로 다른 길과 도구를 이용해요'),local?[B('Both places trade by truck','두 곳 모두 트럭으로 교역해요'),B('Long ago, people grew no plants','옛날에는 식물을 기르지 않았어요')]:[B('Both places farm the same field','두 곳은 같은 들판에서 농사지어요'),B('Long ago, people used trucks','옛날에도 트럭을 썼어요')]));

@@ -275,7 +275,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Which comparison best shows the material savings?","ko":"재료를 얼마나 덜 썼는지 가장 잘 보여 주는 비교는?"},"show":{"en":"Plan A uses one sign for six meetings. Plan B uses one new sign at every meeting.","ko":"A는 모임 6번에 안내판 하나를 써요. B는 매번 새 안내판 하나를 써요."},"right":{"en":"A uses five fewer signs than B","ko":"A는 B보다 안내판을 5개 덜 써요"},"wrong":[{"en":"A uses six fewer signs than B","ko":"A는 B보다 안내판을 6개 덜 써요"},{"en":"Both plans use six signs","ko":"두 계획 모두 6개를 써요"}]},
-{"ask":{"en":"Which comparison explains when sharing one ruler works?","ko":"자 하나를 공유할 수 있는 때를 바르게 비교한 것은?"},"show":{"en":"Group A measures one at a time. Group B must have all three pupils measure at once.","ko":"A는 한 명씩 재요. B는 세 명이 꼭 동시에 재야 해요."},"right":{"en":"One ruler meets A’s timing but not B’s","ko":"자 하나는 A의 시간 조건에 맞지만 B에는 안 맞아요"},"wrong":[{"en":"One ruler meets both groups’ timing equally","ko":"자 하나로 두 모임의 시간 조건을 똑같이 채워요"},{"en":"Group B can use one ruler by taking turns","ko":"B 모임은 차례를 나누어 자 하나를 써요"}]}
+{"ask":{"en":"Which comparison explains when sharing one ruler works?","ko":"자 하나를 공유할 수 있는 때를 바르게 비교한 것은?"},"show":{"en":"Group A measures one at a time. Group B must have all three pupils measure at once.","ko":"A는 한 명씩 재요. B는 세 명이 꼭 동시에 재야 해요."},"right":{"en":"One ruler meets A’s timing but not B’s","ko":"자 하나로 A만 제시간에 재요"},"wrong":[{"en":"One ruler meets both groups’ timing equally","ko":"자 하나로 두 모임이 제시간에 재요"},{"en":"Group B can use one ruler by taking turns","ko":"B는 번갈아 자 하나를 써요"}]}
 ]
 },
 "heatsource3": {

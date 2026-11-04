@@ -84,7 +84,7 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
   function blendItem(game, t, pool, parts, extra = {}) {
     const wide = parts.length === 2 && parts.some(p => p.show.length > 1);
     return quiz(game, {
-      ask: B('Put the sounds together. Which picture?', '소리를 합치면 어떤 그림일까요?'),
+      ask: B('Which picture matches the joined sounds?', '소리를 합치면 어떤 그림일까요?'),
       show: `${extra.top || ''}<div class="ph-stage">${HEAR()}${boxes(parts.length, [], -1, wide ? 'wide' : '')}</div>`,
       opts: picOpts(t, near(t, pool, 2)), cls: 'shapes', vocab: t.w,
       after: B(`${parts.map(p => p.show).join(' · ')} → ${t.w}!`, `${parts.map(p => p.show).join(' · ')} → ${t.w}!`),
@@ -97,7 +97,7 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
   function segItem(game, t, extra = {}) {
     const n = t.ph.length, fill = t.gr && t.gr.length === n ? t.gr : t.ph.map(() => '•');
     return quiz(game, {
-      ask: B('How many sounds? Pick the boxes.', '소리가 몇 개예요? 상자를 골라요.'),
+      ask: B('How many sound boxes do you need?', '소리 상자는 몇 개일까요?'),
       show: `${extra.top || ''}<div class="ph-row">${pic(t, 'ph-pic')}${HEAR()}<button class="pill ph-tap" id="phTap" aria-label="${L(B('Tap once for each sound', '소리마다 한 번 눌러요'))}">👆<span class="ph-chips" id="phChips"></span></button></div>`,
       opts: [2, 3, 4].map(k => ({ html: boxes(k, [], -1, 'sm') + `<span class="sr-only">${k}</span>`, ok: k === n })), cls: 'ph-strips',
       after: B(`${t.w}: ${n} sounds.`, `${t.w}: 소리 ${n}개.`), vocab: t.w,
@@ -168,7 +168,7 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
         // Read turn: the changed tile is marked; decode the new word and find its picture.
         const other = pick(pairs(2, t).map(p => p.t).filter(x => x !== s)) || pick(pairs(2, s).map(p => p.t).filter(x => x !== t)) || pick(CH.filter(x => x !== s && x !== t));
         return quiz(this, { ...common,
-          ask: B('One letter changed. Which picture now?', '글자 하나가 바뀌었어요. 이제 어떤 그림?'),
+          ask: B('Which picture matches the changed word?', '바뀐 낱말에 맞는 그림은?'),
           show: `<div class="ph-row">${pic(s, 'ph-pic')}${HEAR()}</div><div class="ph-chain">${tiles(s.gr)}<span class="ph-arrow">➜</span>${tiles(t.gr, pos)}</div>`,
           opts: picOpts(t, [s, other]), cls: 'shapes',
           onRender() { wire(cues); picNames(); }
@@ -222,25 +222,25 @@ potato 🥔 po-ta-to puh-tay-toe|octopus 🐙 oc-to-pus ock-tuh-puss|kangaroo �
       const both = COMP.filter(c => c[2] && c[3]), c = pick(both), [a, b] = PARTS[c[0]];
       if (lv === 1) {
         const ds = shuffle(COMP.filter(x => x !== c)).sort((x, y) => (PARTS[y[0]].some(p => PARTS[c[0]].includes(p)) ? 1 : 0) - (PARTS[x[0]].some(p => PARTS[c[0]].includes(p)) ? 1 : 0)).slice(0, 2);
-        return quiz(game, { ask: B('Put the two words together. Which picture?', '두 낱말을 합치면 어떤 그림?'),
+        return quiz(game, { ask: B('Which picture joins the two words?', '두 낱말을 합치면 어떤 그림?'),
           show: `${tp}<div class="ph-eq"><span role="img" aria-label="${a}">${c[2]}</span><b>+</b><span role="img" aria-label="${b}">${c[3]}</span><b>=</b><span class="ph-box q">?</span></div>${HEAR()}`,
           opts: [c, ...ds].map(x => ({ html: pic(cw(x)), ok: x === c })), cls: 'shapes', vocab: c[0], after: B(`${a} + ${b} = ${c[0]}`, `${a} + ${b} = ${c[0]}`),
           onRender() { wire(fresh => talk([a, b], { fresh, gap: 500 })); picNames(); } });
       }
       const PEOPLE = ['👨', '👦', '👩'], other = pick(COMP.filter(x => x !== c && x[3] && x[3] !== c[3] && !(PEOPLE.includes(x[3]) && [c[2], c[3]].some(e => PEOPLE.includes(e)))));   // boy/man/lady faces look alike: never two in one item (O3)
-      return quiz(game, { ask: B('Take one part away. What is left?', '한 부분을 빼면 무엇이 남을까요?'),
+      return quiz(game, { ask: B('What stays after taking one part away?', '한 부분을 빼면 무엇이 남을까요?'),
         show: `${tp}<div class="ph-eq"><span role="img" aria-label="${c[0]}">${c[1]}</span><b>−</b><span role="img" aria-label="${a}">${c[2]}</span><b>=</b><span class="ph-box q">?</span></div>${HEAR()}`,
         opts: [[b, c[3]], [a, c[2]], [PARTS[other[0]][1], other[3]]].map(([w, e], k) => ({ html: pic({ w, e }), ok: k === 0 })), cls: 'shapes', vocab: b, after: B(`${c[0]} − ${a} = ${b}`, `${c[0]} − ${a} = ${b}`),
         onRender() { wire(fresh => talk([c[0], `take away ${a}`], { fresh, gap: 500 })); picNames(); } });
     }
     if (kind === 'syl') {
       if (lv === 1) { const t = pick(SYL), n = t.say.length, ds = shuffle(SYL.filter(x => x !== t && x.say.length === n)).slice(0, 2);
-        return quiz(game, { ask: B('Put the parts together. Which picture?', '부분을 합치면 어떤 그림?'),
+        return quiz(game, { ask: B('Which picture matches the joined parts?', '부분을 합치면 어떤 그림?'),
           show: `${tp}<div class="ph-stage">${HEAR()}${boxes(n, [], -1, 'wide')}</div>`, opts: picOpts(t, ds), cls: 'shapes', vocab: t.w, after: B(`${t.show.join(' · ')} → ${t.w}`, `${t.show.join(' · ')} → ${t.w}`),
           onRender() { wire(fresh => talk(t.say, { fresh, gap: 420, onStart: lightIn('.show .ph-box') })); picNames(); },
           onCorrect() { $$('.show .ph-box').forEach((b, k) => { b.textContent = t.show[k]; }); } }); }
       const t = pick([...SYL, ...ONE]), n = t.say.length;
-      return quiz(game, { ask: B('Clap the parts. How many claps?', '박수로 나눠요. 몇 번일까요?'),
+      return quiz(game, { ask: B('How many claps match the word parts?', '낱말을 나누면 박수 몇 번일까요?'),
         show: `${tp}<div class="ph-row">${pic(t, 'ph-pic')}${HEAR()}</div>`, opts: [1, 2, 3].map(k => ({ html: `<span class="ph-claps" aria-hidden="true">${'👏'.repeat(k)}</span><span class="sr-only">${k}</span>`, ok: k === n })), cls: 'shapes',
         vocab: t.w, after: B(`${t.show.join(' · ')}: ${n}`, `${t.show.join(' · ')}: ${n}`),
         onRender() { wire(fresh => talk([[t.w, 0.65]], { fresh })); }, onCorrect() { talk(t.say, { gap: 380 }); } });
