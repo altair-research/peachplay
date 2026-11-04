@@ -170,7 +170,7 @@ function startAdapt(subject) {
 function adaptFinish() {
   const a = DIAG.adapt; DIAG.adapt = null;
   const gr = kidGrade(), res = a.result(), kidD = AG.indexOf(gr) * 2;
-  const check = { at: new Date().toISOString().slice(0, 16), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length, est: res.map(r => [r.dom.k, r.est]) };
+  const check = { at: today() + 'T' + new Date().toTimeString().slice(0, 5), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length, est: res.map(r => [r.dom.k, r.est]) };
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift(); save();
   const top = 2 * adaptMaxGrade() + 1;
   const domTop = (dom) => Math.min(top, 2 * adaptLadder(dom).reduce((m, l, i) => (l.length ? i : m), 0) + 1);   // some areas have no games in the upper grades

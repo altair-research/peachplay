@@ -88,7 +88,7 @@ function finishDiag() {
   if (DIAG.confirm) { DIAG.active = false; return window.Learner.finishConfirm(); }
   DIAG.active = false; if (DIAG.adapt) return adaptFinish();
   const gr = kidGrade(), prev = [...S.checks].reverse().find(c => c.scope === DIAG.scope && (c.grade || 'K') === gr);   // only compare check-ups of the same grade
-  const check = { at: new Date().toISOString().slice(0, 16), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length };
+  const check = { at: today() + 'T' + new Date().toTimeString().slice(0, 5), scope: DIAG.scope, grade: gr, items: DIAG.res, ok: DIAG.res.filter(x => x.ok).length, total: DIAG.res.length };
   S.checks.push(check); if (S.checks.length > 40) S.checks.shift();
   S.profile = S.profile || {}; save(); checkResult(check, prev);
 }
