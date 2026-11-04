@@ -9,6 +9,7 @@
     title: B('This week at a glance', '이번 주 한눈에'),
     none: B('No practice this week yet. Start with Today\'s 10 minutes on the home screen.', '이번 주 기록이 아직 없어요. 홈의 "오늘 10분"부터 시작해 보세요.'),
     days: (d, q) => B(`Played on ${d} of the last 7 days · ${q} questions`, `최근 7일 중 ${d}일 했어요 · ${q}문제`),
+    ordinaryDays: (d, q) => B(`Played on ${d} of the last 7 days · ${q} ordinary questions`, `최근 7일 중 ${d}일 했어요 · 일반 문제 ${q}개`),
     acc: (p, prev) => B(`Right on the first try: ${p}%${prev === null ? '' : ` (last week ${prev}%)`}`, `한 번에 맞힌 비율: ${p}%${prev === null ? '' : ` (지난주 ${prev}%)`}`),
     good: B('Going well', '잘 되고 있어요'),
     more: B('Practise more', '더 연습해요'),
@@ -27,10 +28,12 @@
   const pct = v => Math.round(100 * v);
 
   function data(source = S, weak = null) {
-    const rows = window.LearnLog.clean(source.log).filter(r => !(r[5] & 2) && gameById(r[1]) && gradeOf(gameById(r[1])) !== 'P');
+    const all = window.LearnLog.clean(source.log).filter(r => !(r[5] & 2) && gameById(r[1]) && gradeOf(gameById(r[1])) !== 'P');
     const from = dayStart(6), prevFrom = dayStart(13);
+    const thinking = window.LearnLog.thinking(all.filter(r => r[0] >= from));
+    const rows = window.LearnLog.ordinary(all);
     const week = rows.filter(r => r[0] >= from), prev = rows.filter(r => r[0] >= prevFrom && r[0] < from);
-    const days = new Set(week.map(r => new Date(r[0] * 1000).toDateString())).size;
+    const days = new Set(all.filter(r => r[0] >= from).map(r => new Date(r[0] * 1000).toDateString())).size;
     const areas = new Map();
     const add = (list, key) => list.forEach(r => {
       const dom = window.Learner.domainFor(r[1]); if (!dom) return;
@@ -47,7 +50,7 @@
       more = (weak || window.SchoolResults.weakKeys()).map(k => doms.find(d => d.k === k)).filter(Boolean).slice(0, 2).map(dom => ({ k: dom.k, dom, rows: [] }));
       fromSchool = more.length > 0;
     }
-    return { week, prev, days, good, more, fromSchool, areas: list };
+    return { week, prev, days, good, more, fromSchool, areas: list, thinking };
   }
   // The game in this area missed most this week, if any.
   const missedGame = rows => {
@@ -57,12 +60,14 @@
   };
   function lines(d, translate = L, grade = kidGrade()) {
     const L = translate;
-    if (!d.week.length && !d.more.length) return null;
+    if (!d.week.length && !d.more.length && !d.thinking.count) return null;
     const out = { head: [], good: d.good.map(a => `${L(a.dom.n)} ${pct(a.now)}%`), more: d.more.map(a => L(a.dom.n)), todo: [] };
     if (d.week.length) {
-      out.head.push(L(TX.days(d.days, d.week.length)));
+      out.head.push(L((d.thinking.count ? TX.ordinaryDays : TX.days)(d.days, d.week.length)));
       out.head.push(L(TX.acc(pct(acc(d.week)), d.prev.length >= 5 ? pct(acc(d.prev)) : null)));
-    } else out.head.push(L(TX.none));
+    } else if (d.thinking.count) out.head.push(L(TX.ordinaryDays(d.days, 0)));
+    else out.head.push(L(TX.none));
+    out.head.push(L(window.LearnLog.thinkingText(d.thinking.count, d.thinking.correct)));
     const focus = d.more[0];
     if (focus) {
       const g = missedGame(focus.rows);

@@ -7,7 +7,8 @@
   const text = (en, ko) => L(B(en, ko));
   window.PictureDemo = {
     intercept(game, item) {
-      if (pending && pending.id === game.id) {
+      const demoId = item.thinking ? game.id + '-thinking' : game.id;
+      if (pending && pending.id === demoId) {
         const p = pending;
         if (signature(item) === p.key) {
           if (++p.tries < 40) { game.play(); return true; }
@@ -15,13 +16,15 @@
           pending = null; view().innerHTML = `<button class="next" id="demoHome">🏠 ${T().back}</button>`;
           $('#demoHome').onclick = home; return true;
         }
-        pending = null;
+        // A different thinking candidate can still be rejected by dup() in quiz().
+        // Keep the demonstrated item excluded until the engine accepts a fresh candidate.
+        if (!item.thinking) pending = null;
         return false;
       }
       // QA pages (scripts/qa/harness.js) skip the demo unless a test asks for it with __qa.demo = true.
       if (window.__qa && !window.__qa.demo) return false;
-      if (DIAG.active || SESSION.review || SESSION.mix || mixed || SESSION.n !== 0 ||
-          !(['P', 'K'].includes(gradeOf(game)) || gradeOf(game)==='both' && kidGrade()==='K') || S.demoSeen?.[game.id]) return false;
+      if (DIAG.active || SESSION.review || SESSION.mix || mixed || (!item.thinking && SESSION.n !== 0) ||
+          !(['P', 'K'].includes(gradeOf(game)) || gradeOf(game)==='both' && kidGrade()==='K') || S.demoSeen?.[demoId]) return false;
       const key = signature(item);
       view().innerHTML = `<section class="picture-demo" aria-label="${text('Watch first', '먼저 보아요')}">
         <div class="prompt">👀 ${text('Watch first', '먼저 보아요')}<button class="say" id="demoSay" aria-label="${T().listen}">🔊</button></div>
@@ -88,11 +91,14 @@
       $('#demoSay').onclick = () => say(board ? text('Watch. Join one top picture to one bottom picture. The picture left over shows which group has more. Then it is your turn.', '보아요. 위 그림 하나와 아래 그림 하나를 이어요. 남는 그림이 있는 쪽이 더 많아요. 다음은 내 차례예요.') : text('Watch. Tap one picture. Then it is your turn.', '보아요. 그림 하나를 눌러요. 다음은 내 차례예요.'));
       $('#demoReplay').onclick = replay;
       $('#demoGo').onclick = () => {
-        run++; finger.getAnimations().forEach(x => x.cancel()); S.demoSeen ||= {}; S.demoSeen[game.id] = true; save();
-        pending = {id: game.id, key, tries: 0}; game.play();
+        run++; finger.getAnimations().forEach(x => x.cancel()); S.demoSeen ||= {}; S.demoSeen[demoId] = true; save();
+        pending = {id: demoId, key, tries: 0}; game.play();
       };
       requestAnimationFrame(replay); $('#demoGo').focus();
       return true;
+    },
+    accepted(game, item) {
+      if (item.thinking && pending?.id === game.id + '-thinking') pending = null;
     }
   };
   addEventListener('DOMContentLoaded', () => {

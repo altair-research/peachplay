@@ -269,7 +269,7 @@
     const n = dayNum(d);
     // 1) missed answers today, else in the last 3 days (2 or more in one area)
     if (window.LearnLog && Array.isArray(S.log)) {
-      const rows = window.LearnLog.clean(S.log).filter(r => r[3] === 0 && !(r[5] & 2));
+      const rows = window.LearnLog.clean(S.log).filter(r => r[3] === 0 && !(r[5] & 10));
       const midnight = Math.floor(new Date(new Date().toDateString()).getTime() / 1000);
       for (const from of [midnight, midnight - 2 * 86400]) {
         const count = {};

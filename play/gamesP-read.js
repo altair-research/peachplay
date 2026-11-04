@@ -2,17 +2,17 @@
   'use strict';
   const {art,scene,position,person,svg,register,task,names}=PK;
   const objects=['ball','cup','book','box','flower','tree','cat','fish','hat','house','apple','chair'];
-  const banks=fn=>[1,2].map(lv=>Array.from({length:24},(_,i)=>fn(lv,i)));
+  const banks=(fn,length=24)=>[1,2].map(lv=>Array.from({length},(_,i)=>fn(lv,i)));
   const sound={pkSound:true};
   register('listenP','read','Listen and find','듣고 찾아요','CLL1 · CLL2',banks((lv,i)=>{
     const k=objects[i%12],other=objects[(i+1+Math.floor(i/12))%12];
-    if(lv===1)return task(`Find the ${names[k].en}.`,`${names[k].ko} 그림을 찾아요.`,art(k),art(k),art(other),sound);
-    const inside=i%2===0;
-    return task(`Move the ${names[k].en} picture ${inside?'inside':'outside'} the box picture.`,`${names[k].ko} 그림을 상자 그림 ${inside?'안':'밖'}에 놓아요.`,scene([art(k),position(inside?'inside':'outside',k)]),position(inside?'inside':'outside',k),position(inside?'outside':'inside',k),sound);
+    if(lv===1)return task(`Find the ${names[k].en}.`,`${names[k].ko} 그림을 찾아요.`,'',art(k),art(other),sound);
+    const inside=Math.floor(i/12)%2===0;
+    return task(`Move the ${names[k].en} picture ${inside?'inside':'outside'} the box picture.`,`${names[k].ko} 그림을 상자 그림 ${inside?'안':'밖'}에 놓아요.`,art(k),position(inside?'inside':'outside',k),position(inside?'outside':'inside',k),sound);
   }));
   register('actionP','read','Follow one direction','부탁대로 해요','CLL1 · CLL3',banks((lv,i)=>{
-    const k=objects[i%12],where=lv===1?(i%2?'inside':'outside'):(i%2?'above':'below'),foil={inside:'outside',outside:'inside',above:'below',below:'above'}[where],loc={inside:'안',outside:'밖',above:'위',below:'아래'};
-    return task(`Move the ${names[k].en} picture ${where} the box picture.`,`${names[k].ko} 그림을 상자 그림 ${loc[where]}에 놓아요.`,position(where,k),position(where,k),position(foil,k),sound);
+    const k=objects[i%12],where=lv===1?(Math.floor(i/12)%2?'inside':'outside'):(Math.floor(i/12)%2?'above':'below'),foil={inside:'outside',outside:'inside',above:'below',below:'above'}[where],loc={inside:'안',outside:'밖',above:'위',below:'아래'};
+    return task(`Move the ${names[k].en} picture ${where} the box picture.`,`${names[k].ko} 그림을 상자 그림 ${loc[where]}에 놓아요.`,art(k),position(where,k),position(foil,k),sound);
   }));
   function opposite(k,state) {
     if(k==='door')return svg(`<rect x="30" y="10" width="55" height="80" fill="#eee" stroke="#684b38" stroke-width="4"/>${state?'<path d="M30 10l32 17v63L30 90z" fill="#c99e6c"/>':'<rect x="30" y="10" width="55" height="80" fill="#c99e6c"/><circle cx="74" cy="53" r="4"/>'}`);
@@ -21,11 +21,16 @@
     if(k==='curtain')return svg(`<rect x="20" y="10" width="80" height="80" fill="#cbe5ed" stroke="#684b38" stroke-width="3"/><path d="M60 10v80m-40-40h80" stroke="#684b38" stroke-width="3"/><path d="M20 10h${state?20:40}v80H20zM100 10h-${state?20:40}v80h${state?20:40}z" fill="#8254a5"/>`);
     if(k==='jar')return svg(`<rect x="35" y="30" width="50" height="60" rx="8" fill="#b7dce7" stroke="#436cb5" stroke-width="3"/><rect x="${state?78:32}" y="${state?10:23}" width="56" height="10" rx="3" fill="#8254a5"/>`, '',state?150:120,100);
     if(k==='window')return svg(`<rect x="18" y="10" width="84" height="80" fill="#b7dce7" stroke="#684b38" stroke-width="4"/>${state?'<path d="M18 10l30 15v55L18 90M102 10L72 25v55l30 10" fill="#fff" stroke="#684b38" stroke-width="3"/>':'<path d="M60 10v80m-42-40h84" stroke="#684b38" stroke-width="4"/>'}`);
+    const covers={chest:['#a77950',45,36],gate:['#78985c',80,55],cabinet:['#926a54',55,76],folder:['#e6be52',82,48],envelope:['#e7d7b1',84,46],case:['#607d9c',64,39]};
+    if(covers[k]) {
+      const [color,w,h]=covers[k], x=60-w/2,y=88-h;
+      return svg(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${state?'#fff':color}" stroke="#564331" stroke-width="4"/>${state?`<path d="M${x} ${y}l${w*.5} -12v${h}l-${w*.5} 12z" fill="${color}"/>`:''}`);
+    }
     const body=art(k).replace(/^.*?<svg[^>]*>|<\/svg>$/g,'');
     return svg(body+(state?'<path d="M38 32q-12 16 0 16q12 0 0-16M67 48q-12 16 0 16q12 0 0-16M85 20q-12 16 0 16q12 0 0-16" fill="#579dcc" stroke="#fff" stroke-width="1"/>':''),L(B(state?'wet '+names[k].en:'dry '+names[k].en,state?'물방울이 맺힌 그림':'마른 그림')));
   }
   register('oppositeP','read','Opposite partners','반대 짝꿍','CLL2',banks((lv,i)=>{
-    const kinds=lv===1?['door','box','book','curtain','jar','window']:['towel','rock','leaf','cup','book','sock'],k=kinds[i%kinds.length],state=Math.floor(i/kinds.length)%2;
+    const kinds=lv===1?['door','box','book','curtain','jar','window','chest','gate','cabinet','folder','envelope','case']:['towel','rock','leaf','cup','flower','sock','hat','chair','boat','tree','ball','apple'],k=kinds[i%kinds.length],state=Math.floor(i/kinds.length)%2;
     return task(lv===1?`This picture is ${state?'open':'closed'}. Find the ${state?'closed':'open'} picture.`:`This picture is ${state?'wet':'dry'}. Find the ${state?'dry':'wet'} picture.`,lv===1?`이 그림은 ${state?'열려':'닫혀'} 있어요. ${state?'닫힌':'열린'} 그림을 찾아요.`:`이 그림은 ${state?'물방울이 맺혀':'말라'} 있어요. ${state?'마른':'물방울이 맺힌'} 그림을 찾아요.`,opposite(k,state),opposite(k,!state),opposite(k,state));
   }));
   register('storyP','read','A little picture story','작은 그림 이야기','CLL6',banks((lv,i)=>{
@@ -34,9 +39,12 @@
   }));
   const rhymes=[['cat','hat','dog'],['dog','log','cat'],['frog','log','bee'],['boat','goat','fish'],['mouse','house','duck'],['bee','tree','cat'],['hat','cat','boat'],['log','frog','hat'],['goat','boat','dog'],['house','mouse','fish'],['tree','bee','hat'],['bear','chair','frog']];
   register('rhymeP','read','Sound partners','소리 짝꿍','CLL7',banks((lv,i)=>{
-    const [a,b,c]=rhymes[i%12];
-    return task('Listen to the English words. Find the sound partner.','영어 낱말을 듣고 끝소리가 비슷한 짝을 찾아요.',lv===1?scene([art(a),art(b)]):art(a),art(b),art(c),{...sound,askExtra:{t:`${a}. ${lv===1?a+'. '+b+'. ':''}${b}. ${c}.`,lang:'en-US'},pkChoices:[B(b,b),B(c,c)],pkChoiceLang:'en-US'});
-  }));
+    const [a,b,near]=rhymes[i%12], c=i<12?near:rhymes[(i%12+(lv===1?3:5)+Math.floor(i/12))%12][2];
+    const sameFamily=rhymes.some(([x,y])=>(x===a&&y===c)||(x===c&&y===a)||(x===c&&y===b)||(x===b&&y===c));
+    const sameStart={cat:'cup',dog:'duck',frog:'fish',boat:'bear',mouse:'moon',bee:'boat',hat:'house',log:'leaf',house:'hat',bear:'book'};
+    const wrong=lv===2&&i>=24&&sameStart[a]?sameStart[a]:sameFamily||a===c||b===c?near:c;
+    return task('Listen to the English words. Find the sound partner.','영어 낱말을 듣고 끝소리가 비슷한 짝을 찾아요.',lv===1?art(a):scene([art(a),svg('<text x="60" y="65" text-anchor="middle" font-size="44">?</text>')]),art(b),art(wrong),{...sound,askSay:B(`Which word ends like ${a}? ${b} or ${wrong}?`,'영어 낱말을 듣고 끝소리가 비슷한 짝을 찾아요.'),askExtra:{t:`${a}. ${b}. ${wrong}.`,lang:'en-US'},pkChoices:[B(b,b),B(wrong,wrong)],pkChoiceLang:'en-US'});
+  },36));
   register('letterP','read','Letter picture match','글자 그림 찾기','CLL8',banks((lv,i)=>{
     const alphabet=lv===1?'AMSOTXHILUVW':'BPDRNMFECOGQ',a=alphabet[i%12],b=alphabet[(i+1+Math.floor(i/12))%12],letter=(s,size)=>svg(`<text x="60" y="75" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="${size}">${s}</text>`,s);
     return task('Find the same letter picture.','같은 글자 그림을 찾아요.',letter(a,65),letter(a,70),letter(b,70));

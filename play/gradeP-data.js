@@ -76,7 +76,7 @@
     banks=banks.map(b=>[...new Map(b.map(it=>[JSON.stringify(it),it])).values()]);
     if(banks.some(b=>b.length<12)) throw new Error(id+' needs 12 distinct tasks per level');
     registerGame({id,grade:'P',rounds:5,subject,icon:{math:'🧩',read:'🔊',write:'🎨',sci:'🌱',ss:'🏡',life:'🌈'}[subject],title:B(title,ko),sub:B('Two pictures · play together','그림 두 개 · 함께 놀이해요'),area:B('Pre-K · '+code,'프리케이 · '+code),pkBanks:banks,pkOpen:!!config.open,
-      play(){ const item=choose(this,banks); if(config.open) return open(this,item); quiz(this,{...item,pk:true,cls:'pk-options'}); }
+      play(){ const item=choose(this,banks); if(config.open) { if(dup(this,[item.ask,item.opts.map(o=>o.html).sort()])) return this.play(); return open(this,item); } quiz(this,{...item,pk:true,cls:'pk-options'}); }
     });
   }
   function task(en,ko,show,yes,no,extra={}) { return {ask:B(en,ko),show,opts:[{html:yes,ok:true,say:extra.pkChoices?.[0]},{html:no,ok:false,say:extra.pkChoices?.[1]}],...extra}; }

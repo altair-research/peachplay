@@ -22,7 +22,7 @@
     const entry = (S.mastery || {})[domainKey(domain)];
     return !!(entry && passed(entry.right, entry.total) && entry.approved && time - entry.approved < days30);
   };
-  const domainRows = domain => window.LearnLog.clean(S.log).filter(row => Object.values(domain.g).some(ids => ids.includes(row[1])) && !(row[5] & 2) && (!domain.reviewOnly || (domain.g[kidGrade()] || []).includes(row[1]) && gameById(row[1]) && gradeOf(gameById(row[1])) === kidGrade() && !heldGame(gameById(row[1])) && !CHECK_SKIP.includes(row[1])));
+  const domainRows = domain => window.LearnLog.clean(S.log).filter(row => Object.values(domain.g).some(ids => ids.includes(row[1])) && !(row[5] & 10) && (!domain.reviewOnly || (domain.g[kidGrade()] || []).includes(row[1]) && gameById(row[1]) && gradeOf(gameById(row[1])) === kidGrade() && !heldGame(gameById(row[1])) && !CHECK_SKIP.includes(row[1])));
   // Recent evidence is kept within the current grade and topic. Reuse the last played game, not an unplayed unit.
   const reviewBands = domain => {
     const history = domainRows(domain);
@@ -144,7 +144,7 @@
     const weakIds = new Set(weak.flatMap(domain => domain.reviewOnly
       ? reviewBands(domain).flatMap(item => domain.topics.find(ids => ids.includes(item.id)) || []).filter(id => gameById(id) && gradeOf(gameById(id)) === kidGrade() && !heldGame(gameById(id)))
       : Object.values(domain.g).flat()));
-    const rows = window.LearnLog.clean(S.log).filter(row => row[0] >= now() - 14 * 86400 && !(row[5] & 2) && weakIds.has(row[1]));
+    const rows = window.LearnLog.clean(S.log).filter(row => row[0] >= now() - 14 * 86400 && !(row[5] & 10) && weakIds.has(row[1]));
     const wrong = rows.filter(row => row[3] === 0), offered = cleanPickLog(S.pickLog).filter(row => row[0] >= now() - 14 * 86400 && weak.some(domain => domain.k === row[1]));
     const rates = [wrong.length >= 10 ? wrong.filter(row => row[5] & 4).length / wrong.length : null, rows.filter(row => row[3] === 2).length / rows.length, offered.length >= 10 ? offered.filter(row => row[2] === 0).length / offered.length : null];
     const result = candidate => ({ candidate, total: rows.length, wrong: wrong.length, offered: offered.length, rates });
@@ -163,7 +163,7 @@
     const domain = domainFor(game.id);
     if (domain && domain.reviewOnly && (gradeOf(game) !== kidGrade() || heldGame(game))) return false;
     if (weakGame(game)) return false;
-    const rows = window.LearnLog.clean(S.log).filter(row => row[1] === game.id && !(row[5] & 2)).slice(-20), saved = S.stats[game.id] || {};
+    const rows = window.LearnLog.clean(S.log).filter(row => row[1] === game.id && !(row[5] & 10)).slice(-20), saved = S.stats[game.id] || {};
     return rows.length >= 5 ? window.LearnLog.accuracy(rows) >= 0.85 : (saved.right || 0) + (saved.wrong || 0) >= 5 && saved.right / (saved.right + (saved.wrong || 0)) >= 0.85;
   };
   const arrange = (base, max) => {

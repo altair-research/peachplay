@@ -197,8 +197,10 @@ function addPeach() { S.peaches++; save(); renderPeaches(); }
 
 // 4 clean answers in a row -> level up (max 2); every 3rd miss -> level down.
 const MISS = {};                                     // games whose current round already logged a miss (so the finish is not logged twice)
-function record(id, ok) {
+function record(id, ok, thinking = false) {
   window.LearnLog.answer(id, ok ? 1 : 0);
+  // Optional questions keep their first answer in LearnLog, but never change ordinary performance or review queues.
+  if (thinking) { if (ok && !MISS[id]) SESSION.done = (SESSION.done || 0) + 1; if (!ok) MISS[id] = true; return; }
   if (gradeOf(gameById(id) || {}) === 'P') { if (SESSION.review) { if (ok) reviewSolved(); return; } if (ok) { SESSION.done++; const st=stat(id); st.right++; PK.recordPlay(id); save(); } return; }
   if (DIAG.active) return;
   if (SESSION.review) {
@@ -225,7 +227,7 @@ function record(id, ok) {
 }
 
 // End of a round: a clean first-try finish counts as right; a round that had a miss counts as wrong once (not again if the miss was already logged).
-function recordFinal(id, missed) { window.LearnLog.answer(id, missed ? 0 : 1); if (SESSION.review) { if (missed && window.Spacing) window.Spacing.missed(SESSION.review[SESSION.n]); reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true); else if (!MISS[id]) record(id, false); MISS[id] = false; }
+function recordFinal(id, missed, thinking = false) { window.LearnLog.answer(id, missed ? 0 : 1); if (SESSION.review) { if (missed && window.Spacing) window.Spacing.missed(SESSION.review[SESSION.n]); reviewSolved(); MISS[id] = false; return; } if (!missed) record(id, true, thinking); else if (!MISS[id]) record(id, false, thinking); MISS[id] = false; }
 // ---- sound effects, mascot, confetti, session bar ----
 let audioCtx = null;
 function tone(freq, ms, when = 0, type = 'sine', gain = 0.14) {
@@ -514,17 +516,21 @@ function scaffoldNote(game, type, ok) { const k = game.id + ':' + type; SCAFFOLD
 // ctx (engine only): { step: originalItem } = the smaller step; { resume: true } = the original question again after it.
 function quiz(game, item, ctx = {}) {
   const follow = !!(ctx.step || ctx.resume);         // same question continues: no new dup/log entry, misses kept
+  if (!follow && window.MathThinking?.eligible(game)) item = window.MathThinking.build(game);
   if (!follow && window.PictureDemo?.intercept(game, item)) return;
   confetti.clear?.();
   const pk=game.grade === 'P';
   document.body.classList.toggle('pk-playing', pk);
   if (!follow) MISS[game.id] = false;
-  const boss = !ctx.step && !pk && !DIAG.active && !SESSION.review && SESSION.learnerMode === 'challenge' && lvl(game.id) >= 2;
-  const askText = (ctx.step ? '👣 ' : '') + (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + L(item.ask);
-  const key = askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
+  const boss = !ctx.step && !pk && kidGrade() !== 'P' && !DIAG.active && !SESSION.review && SESSION.learnerMode === 'challenge' && lvl(game.id) >= 2;
+  const thinking = !!item.thinking;
+  const heading = () => boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : thinking ? L(B('🧩 Thinking question: ', '🧩 생각 문제: ')) : '';
+  const askText = (ctx.step ? '👣 ' : '') + heading() + L(item.ask);
+  const key = item.itemKey || askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
   if (!follow && dup(game, key)) return game.play();
+  if (!follow) window.PictureDemo?.accepted?.(game, item);
   if (DIAG.confirm) window.Learner.confirmOptions(item.opts.length);
-  if (!follow) window.LearnLog.begin(game, lvl(game.id));
+  if (!follow) window.LearnLog.begin(game, lvl(game.id), thinking);
   const opts = shuffle(item.opts);
   view().innerHTML = `
     <div class="prompt"${pk ? ` aria-label="${askText.replace(/"/g, '&quot;')}"` : ''}>${pk ? '' : askText}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
@@ -538,7 +544,7 @@ function quiz(game, item, ctx = {}) {
     if (S.lang === 'en') LANGUAGE_PAIRS.forEach((ko, en) => { if (/[가-힣]/.test(ko) && !/[가-힣]/.test(en)) text = text.replaceAll(ko, en); });
     return text;
   };
-  const ask = () => { say(item.askSay ? question(item.askSay) : (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
+  const ask = () => { say(item.askSay ? question(item.askSay) : heading() + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
   $('#sp').onclick = ask; ask();
   if (!ctx.step) addPrevButton();
   const root = view().firstElementChild, still = () => view().firstElementChild === root;
@@ -546,7 +552,7 @@ function quiz(game, item, ctx = {}) {
     legacyPairs: game.id === 'symmetry' ? (item.ask.en.includes('Does it have a line of symmetry?') ? [['Yes', '네, 있어요'], ['No', '아니요, 없어요']] : [['Yes, they match', '네, 맞아요'], ['No, they do not match', '아니요, 안 맞아요']]) : null,
     update: () => {
     const prompt = $('#sp').parentElement;
-    const text = (boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : '') + question(item.ask);
+    const text = heading() + question(item.ask);
     if (pk) prompt.setAttribute('aria-label', text);
     else { for (const node of [...prompt.childNodes]) if (node.nodeType === Node.TEXT_NODE) node.remove(); prompt.prepend(document.createTextNode(text)); }
     opts.forEach((o, i) => { const label = view().querySelector(`[data-i="${i}"] .ol`); if (label && o.label) label.innerHTML = labelText(o.label); });
@@ -617,8 +623,9 @@ function quiz(game, item, ctx = {}) {
       setTimeout(() => { if (still()) quiz(game, ctx.step, { resume: true }); }, 1900);
       return;
     }
+    if (thinking && boss && !missed) window.Learner.noteBoss();
     if (item.fade && !pk && kidGrade() !== 'P' && !missed && !SESSION.review) scaffoldNote(game, item.fade, !!opts[+btn.dataset.i].ok);
-    if (!pk && kidGrade() !== 'P' && !missed && !SESSION.review) {
+    if (!thinking && !pk && kidGrade() !== 'P' && !missed && !SESSION.review) {
       SESSION.cleanStreak = opts[+btn.dataset.i].ok ? (SESSION.cleanStreak || 0) + 1 : 0;
       showStreak();
       if (boss) window.Learner.noteBoss();
@@ -627,7 +634,7 @@ function quiz(game, item, ctx = {}) {
     }
     if (opts[+btn.dataset.i].ok) {
       btn.classList.add('ok');
-      if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed); if (pk || !missed) addPeach();
+      if (practice) { if (SESSION.review) reviewSolved(); else SESSION.done++; PK.recordPlay(game.id); } else recordFinal(game.id, pk ? false : missed, thinking); if (pk || !missed) addPeach();
       $('#cheer').textContent = pk ? T().prekNice : SESSION.learnerMode === 'slow' ? L(B('Great try!', '잘 도전했어요!')) : pick(T().right) + (SESSION.learnerMode === 'challenge' && !document.body.classList.contains('skin-explorer') && SESSION.cleanStreak ? ` 🏅${SESSION.cleanStreak}` : '');
       if (typeof window.rememberDictionaryWords === 'function') window.rememberDictionaryWords(item.vocab);
       if (item.after) $('#fact').textContent = L(item.after);
@@ -638,11 +645,11 @@ function quiz(game, item, ctx = {}) {
       nextButton(() => game.play(), pk ? {auto:false} : {});
     } else {
       if (pk) { $('#cheer').textContent=T().prekAgain; say(T().prekAgain); return; }
-      SESSION.cleanStreak = 0; showStreak();
-      btn.classList.add('no'); missed = true; record(game.id, false);
+      if (!thinking) SESSION.cleanStreak = 0; showStreak();
+      btn.classList.add('no'); missed = true; record(game.id, false, thinking);
       $('#cheer').textContent = T().again; say(T().again);
       setTimeout(() => btn.classList.remove('no'), 400);
-      if (++wrongs === 2 && !ctx.resume && stepDownReady(game)) {
+      if (++wrongs === 2 && !thinking && !ctx.resume && stepDownReady(game)) {
         let small = null; try { small = game.stepDown(item); } catch (e) { small = null; }
         if (small && small.opts?.length) {
           $$('.opt').forEach(o => o.disabled = true);

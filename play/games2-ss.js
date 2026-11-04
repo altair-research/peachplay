@@ -334,6 +334,6 @@ for(const id of ['heroes2','nations2']){const g=GAMES.find(x=>x.id===id),old=g.p
    const pair=(a,b)=>B(a.en+' → '+b.en,a.ko+' → '+b.ko);
    const clue=advanced?pair(source,second[0]):source;
    quiz(this,{ask:advanced?B('Which two ideas fit the clues in order?','두 단서에 순서대로 맞는 생각은?'):B('What does this clue tell us?','이 단서에서 무엇을 알 수 있나요?'),
-    show:show(clue),askExtra:{t:L(clue)},opts:advanced?sw(pair(right,second[1]),[pair(second[1],right),pair(wrong[0],second[1])]):sw(right,wrong),cls:'words'});
+    show:show(clue),askExtra:{t:L(clue)},opts:advanced?sw(pair(right,second[1]),[pair(second[1],right),pair(wrong[0],second[1])]):sw(right,wrong),cls:advanced?'words sents':'words'});
  };
 })();

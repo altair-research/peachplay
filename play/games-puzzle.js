@@ -8,9 +8,7 @@
   const permutations = a => a.length ? a.flatMap((x, i) => permutations(a.filter((_, j) => j !== i)).map(p => [x, ...p])) : [[]];
   const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const text = s => `<span class="z-number">${s}</span>`;
-  const grid = (a, n, mark = -1, box = 0) => `<div class="z-grid" style="--z-n:${n}">${a.map((v, i) => `<span class="z-cell ${i === mark ? 'z-mark z-empty' : ''} ${box && (i % n + 1) % box === 0 ? 'z-edge' : ''} ${box && (Math.floor(i / n) + 1) % (n / box) === 0 ? 'z-bottom' : ''}">${i === mark ? '' : v === null ? '·' : v}</span>`).join('')}</div>`;
-  const bits = (a, n) => grid(a.map(v => v ? '●' : '·'), n);
-  const line = s => `<div class="z-line">${s}</div>`;
+  const { grid, bits, line, turn, mirror, pyramid } = window.PuzzleVisuals;
   const nums = answer => shuffle([answer, answer + 1, answer + 2, Math.max(0, answer - 1)]).filter((v, i, a) => a.indexOf(v) === i);
   function item(ask, show, candidates, valid, hint, render = text) {
     const options = [...new Map(candidates.map(v => [JSON.stringify(v), v])).values()];
@@ -155,7 +153,7 @@
     const n = t === 0 ? 2 : 3 + Math.floor(t / 2), rows = [seq(n).map(() => t===0 ? rnd(4) : 1 + rnd(3 + t))];
     while (rows[rows.length - 1].length > 1) { const r = rows[rows.length - 1]; rows.push(r.slice(1).map((v, i) => v + r[i])); }
     const at = t <= 2 ? rows.length - 1 : rnd(rows.length - 1) + 1, col = rnd(rows[at].length), ans = rows[at][col];
-    const visual = rows.slice().reverse().map((r, k) => `<div class="z-pyramid">${r.map((v, j) => rows.length - 1 - k === at && j === col ? `<b class="z-empty" aria-label="${L(B('empty block', '빈 칸'))}"></b>` : `<b>${v}</b>`).join('')}</div>`).join('');
+    const visual = pyramid(rows, at, col);
     // One unknown only: the missing block is an empty glowing box, so the screen never shows two question marks.
     return numberItem(B('Each block is the sum of the two below it. What goes in the empty block?', '아래 두 칸을 더하면 위 칸이 돼요. 빈 칸에 들어갈 수는?'), visual, ans, B('Look at the pair directly under an empty block.', '빈칸 바로 아래 두 칸부터 보세요.'));
   });
@@ -237,8 +235,6 @@
     return item(B(t >= 2 ? 'In each row, overlap the first two. Dots in both disappear. Complete the last.' : 'In each row, overlap the first two. Keep all dots. Complete the last.', t >= 2 ? '각 줄의 앞 두 그림을 겹쳐요. 겹친 점은 없어져요. 마지막 그림은?' : '각 줄의 앞 두 그림을 겹쳐 점을 모두 남겨요. 마지막 그림은?'), `<div class="z-matrix">${rows.flatMap((r, i) => r.map((v, j) => i === rows.length - 1 && j === 2 ? '<span class="z-cell">?</span>' : bits(v, n))).join('')}</div>`, candidates, v => eq(v, ans), B('Follow one cell through the first two pictures.', '한 칸을 골라 앞 두 그림에서 점이 있는지 보세요.'), v => bits(v, n));
   });
 
-  const turn = (a, n) => seq(a.length).map(i => a[(n - 1 - i % n) * n + Math.floor(i / n)]);
-  const mirror = (a, n) => seq(a.length).map(i => a[Math.floor(i / n) * n + n - 1 - i % n]);
   function spatial(t, folded = false, reflected = false) {
     const n = t < 2 ? 3 : t < 5 ? 4 : 5, base = seq(n * n).map(() => rnd(2));
     const steps = t < 2 ? 1 + t : t < 5 ? 2 : 3; let ans = base;

@@ -1,0 +1,28 @@
+/* Kept local to optional math questions and their three picture/number answers. */
+#view:has(.mt-board) { gap: 4px; }
+#view:has(.mt-board) > .prompt { font-size: clamp(17px, 2.9dvh, 23px); line-height: 1.2; margin: 2px 0; }
+#view:has(.mt-board) > .show { margin: 0; padding: 0; min-height: 0; flex: 0 1 auto; }
+.mt-board { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; max-height: 32dvh; color: #173c59; background: #fff; border-radius: 10px; font-size: clamp(16px, 3dvh, 24px); }
+.mt-row { display: flex; justify-content: center; align-items: center; gap: clamp(2px, 1vw, 8px); max-width: 100%; }
+.mt-board .z-grid { width: min(52vw, 26dvh, 230px); height: min(52vw, 26dvh, 230px); }
+.mt-row .z-grid { width: min(24vw, 18dvh, 150px); height: min(24vw, 18dvh, 150px); }
+.mt-board .z-cell svg { width: 95%; height: 95%; }
+.mt-empty { border: 2px dashed #426783; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 36px; flex-shrink: 0; background: #f0f8fc; }
+.mt-tile { width: 100%; height: 100%; background: #4c91be; border: 1px solid #173c59; }
+.mt-turn { width: 46px; height: 46px; flex-shrink: 0; }
+.mt-scale { width: min(43vw, 26dvh, 190px); height: auto; }
+.mt-heavy { font-size: 22px; line-height: 1; }
+.mt-pan { display: inline-block; border-bottom: 3px solid #173c59; border-radius: 0 0 12px 12px; width: 45px; text-align: center; }
+.mt-hop { font-size: 18px; }.mt-hop-0 { color: #934a22; }.mt-hop-1 { color: #256b9a; }
+.mt-machine { background: #e1eff7; border: 2px solid #426783; border-radius: 7px; padding: 5px; white-space: nowrap; }
+.mt-array { width: min(31vw, 21dvh, 160px); height: min(31vw, 21dvh, 160px); }
+.mt-fold { position: relative; }.mt-fold::after { content: ''; position: absolute; top: 2px; bottom: 2px; right: 2px; width: calc(50% - 2px); background: #d1e3ef; border-left: 3px dashed #173c59; }
+.mt-unfold { font-size: 35px; }
+.mt-options { display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px !important; }
+.mt-options .opt { padding: 5px !important; min-width: 0; min-height: 55px; }
+.mt-options svg { width: min(20vw, 12dvh, 95px); height: min(20vw, 12dvh, 95px); display: block; margin: auto; }
+.mt-options .mt-array { background: #fff; border-radius: 6px; }
+.mt-options .z-grid { width: min(20vw, 12dvh, 95px); height: min(20vw, 12dvh, 95px); margin: auto; }
+.mt-options .z-cell { font-size: clamp(10px, 2.8dvh, 17px); }
+.mt-options .z-number { font-size: 26px; }
+@media (max-width: 380px) { .mt-row .z-number { font-size: 19px; }.mt-hop { font-size: 14px; } }
