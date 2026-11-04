@@ -22,8 +22,13 @@
   const colors = ['#b9dce5', '#ead5a7', '#d6c7ef', '#b9ddc4'];
   const marks = ['●', '✦', '▤', '◇'];
 
-  function mount(tool) {
+  function mount(tool, game) {
+    const topic = tool.topics ? pick(tool.topics) : null;
+    const prompt = mode => !mode && topic ? topic : tool.prompt(mode);
     let mode = 0, state = tool.init(0), chosen = null, history = [], feedback = '', drag = null, swallowClick = false;
+    const initial = copy(state);
+    const keyFor = m => JSON.stringify([tool.id, m, !m && topic ? topic.en : tool.prompt(m).en, state]);
+    if (dup(game, keyFor(0))) return mount(tool, game);
     const root = document.createElement('section'); root.className = 'm-play';
     root.setAttribute('aria-label', text(tool.title));
     view().replaceChildren(root);
@@ -38,10 +43,13 @@
     function draw(focusKey) {
       root.innerHTML = `<div class="m-heading"><strong>${esc(text(tool.title))}</strong>${act('listen', words.listen, '', '🔊')}</div>
         <div class="m-modes">${[words.free, words.one, words.two].map((w, i) => act(`mode-${i}`, w, `aria-pressed="${mode === i}"`)).join('')}</div>
-        <p class="m-prompt">${esc(text(tool.prompt(mode)))}</p>
+        <p class="m-prompt">${esc(text(prompt(mode)))}</p>
         <div class="m-work">${tool.render(ctx())}</div>
         <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(words.help))}</p>
         <div class="m-footer">${act('undo', words.undo, history.length ? '' : 'disabled')}${act('reset', words.reset)}${mode ? act('check', words.check) : act('help', B('How to', '사용법'))}</div>`;
+      // Glow the one button that moves toward the goal, so a child who cannot read the labels still sees what to press.
+      const hint = tool.hint?.(state, mode, chosen, prompt(mode));
+      if (hint) [...root.querySelectorAll('[data-key]')].find(b => b.dataset.key === hint)?.classList.add('m-next');
       if (focusKey) [...root.querySelectorAll('[data-key]')].find(b => b.dataset.key === focusKey)?.focus({ preventScroll: true });
     }
     function put(src, dest) {
@@ -53,11 +61,11 @@
       const b = e.target.closest('button'); if (!b || !root.contains(b)) return;
       const key = b.dataset.key, action = b.dataset.action;
       if (action?.startsWith('mode-')) {
-        mode = +action.slice(5); state = tool.init(mode); chosen = null; history = []; feedback = ''; draw(key); say(text(tool.prompt(mode))); return;
+        mode = +action.slice(5); state = mode ? tool.init(mode) : copy(initial); dup(game, keyFor(mode)); chosen = null; history = []; feedback = ''; draw(key); say(text(prompt(mode))); return;
       }
-      if (action === 'listen' || action === 'help') { message(tool.help || words.help); say(`${text(tool.prompt(mode))} ${text(tool.help || words.help)}`); }
+      if (action === 'listen' || action === 'help') { message(tool.help || words.help); say(`${text(prompt(mode))} ${text(tool.help || words.help)}`); }
       else if (action === 'undo') { if (history.length) state = history.pop(); chosen = null; feedback = ''; }
-      else if (action === 'reset') { change(() => { state = tool.init(mode); }); chosen = null; }
+      else if (action === 'reset') { change(() => { state = mode ? tool.init(mode) : copy(initial); }); chosen = null; }
       else if (action === 'check') { message(tool.check(state, mode) ? words.good : words.retry); say(feedback); }
       else if (action) {
         change(() => tool.action?.(state, action, chosen, message));
@@ -132,14 +140,14 @@
       swallowClick = false;
       S.lang = S.lang === 'en' ? 'ko' : 'en'; save();
       languageButton.textContent = S.lang === 'en' ? '한국어' : 'English';
-      feedback = ''; root.setAttribute('aria-label', text(tool.title)); draw(); say(text(tool.prompt(mode)));
+      feedback = ''; root.setAttribute('aria-label', text(tool.title)); draw(); say(text(prompt(mode)));
     };
     languageButton.addEventListener('click', language, true);
     const observer = new MutationObserver(() => {
       if (!root.isConnected) { languageButton.removeEventListener('click', language, true); observer.disconnect(); drag = null; try { speechSynthesis.cancel(); } catch (_) {} }
     });
     observer.observe(view(), { childList: true });
-    draw(); say(`${text(tool.prompt(mode))} ${text(tool.help || words.help)}`);
+    draw(); say(`${text(prompt(mode))} ${text(tool.help || words.help)}`);
   }
 
   function groups(cells) {
@@ -272,7 +280,20 @@
       if (a.startsWith('bundle')) { if (s.counts[i] < 10) return msg(B('Collect ten of this unit first.', '이 단위를 열 개 모아 봐요.')); s.counts[i] -= 10; s.counts[i + 1]++; }
       if (a.startsWith('split')) { if (!s.counts[i]) return msg(B('Add a block of this unit first.', '풀어 볼 블록을 먼저 놓아요.')); s.counts[i]--; s.counts[i - 1] += 10; }
     },
-    check: (s, m) => m === 1 ? s.counts.join(',') === '4,1,0' : value(s) === 126 && s.counts[0] === 16
+    check: (s, m) => m === 1 ? s.counts.join(',') === '4,1,0' : value(s) === 126 && s.counts[0] === 16,
+    // Next step toward the goal: choose a block, put it in its column, trade ten, take one out, then Check.
+    hint(s, m, chosen, p) {
+      if (chosen) return `drop-${chosen}`;
+      const n = +(p.en.match(/\d+/) || [0])[0];
+      const goal = m === 1 ? [4, 1, 0] : m === 2 ? [16, 1, 1] : [n % 10, Math.floor(n / 10) % 10, Math.floor(n / 100) % 10];
+      if (!m && !n) return null;
+      for (const i of [0, 1]) if (s.counts[i] >= 10 && goal[i] < 10) return `bundle${i}`;
+      for (const i of [2, 1, 0]) {
+        if (s.counts[i] < goal[i]) return `src-unit${i}`;
+        if (s.counts[i] > goal[i]) return s.selected === i ? 'remove' : `drop-unit${i}`;
+      }
+      return m ? 'check' : null;
+    }
   };
 
   const timeText = mins => `${Math.floor(mins / 60) || 12}:${String(mins % 60).padStart(2, '0')}`;
@@ -411,9 +432,37 @@
     check(s) { const test = { ...copy(s), ...robotStart() }; for (let i = 0; i < test.code.length; i++) robotStep(test); return !test.blocked && test.pos === test.goal; }
   };
 
+  // 84: optional free-play invitations. Same tools and controls; no target answer or new score.
+  const freeBuildIdeas = [["🐍","snake","뱀"],["🏠","house","집"],["🌻","flower","꽃"],["🌳","tree","나무"],["🚂","train","기차"],["🚗","car","자동차"],["🚀","rocket","로켓"],["⛵","boat","배"],["🌉","bridge","다리"],["🏰","castle","성"],["🤖","robot","로봇"],["🐟","fish","물고기"],["🐱","cat","고양이"],["🐶","dog","강아지"],["🦋","butterfly","나비"],["🐢","turtle","거북이"],["🐰","rabbit","토끼"],["🪑","chair","의자"],["🪜","ladder","사다리"],["👑","crown","왕관"],["🪁","kite","연"],["☀️","sun","해"],["🦖","dinosaur","공룡"],["🎸","guitar","기타"],["🍎","apple","사과"],["☂️","umbrella","우산"],["🐘","elephant","코끼리"],["🦒","giraffe","기린"],["🌈","rainbow","무지개"],["🛝","slide","미끄럼틀"]];
+  cubes.topics = freeBuildIdeas.map(([e, en, ko]) => B(`Make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en} with cubes. ${e}`, `큐브로 ${ko} 모양을 만들어요. ${e}`));
+  patterns.topics = freeBuildIdeas.map(([e, en, ko]) => B(`Make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en} with shapes. ${e}`, `도형으로 ${ko} 모양을 만들어요. ${e}`));
+  baseten.topics = Array.from({ length: 30 }, (_, i) => { const n = 12 + i * 3; return B(`Explore ${n}. Try bundling and unbundling.`, `${n}을 만들고 묶거나 풀어 봐요.`); });
+  clock.topics = Array.from({ length: 24 }, (_, i) => B(`Explore ${timeText(i * 30)}. Move both hands.`, `${Math.floor(i / 2) || 12}시${i % 2 ? ' 30분' : ''}를 만들고 바늘을 움직여 봐요.`));
+  balance.topics = Array.from({ length: 30 }, (_, i) => B(`Explore ${i + 2} on both pans.`, `양쪽 접시에 ${i + 2}를 만들어 봐요.`));
+  letters.topics = [["cat","cap"],["hat","bat"],["sun","run"],["pig","wig"],["dog","log"],["hen","pen"],["bed","red"],["bug","rug"],["fan","pan"],["map","cap"],["pot","hot"],["cup","pup"],["pin","fin"],["top","hop"],["net","pet"],["bag","tag"],["mop","pop"],["can","man"],["sit","hit"],["ten","hen"],["fox","box"],["bat","bit"],["pan","pin"],["hat","hot"],["tap","top"],["pig","peg"],["cot","cut"],["pat","pet"],["rag","rug"],["big","bag"]].map(([a, b]) => B(`Try ${a} and ${b}. Change the letters.`, `${a}와 ${b}를 만들고 글자를 바꿔 봐요.`));
+  fractions.topics = denominators.flatMap(d => Array.from({ length: d }, (_, i) => B(`Explore ${i + 1}/${d}. Try bars and circles.`, `${d}분의 ${i + 1}을 막대와 원으로 만들어 봐요.`)));
+  fractions.topics.push(B('Make a whole with halves and fourths.', '반과 4분의 1로 전체를 만들어 봐요.'), B('Make a whole with thirds and sixths.', '3분의 1과 6분의 1로 전체를 만들어 봐요.'), B('Make a whole with fourths and eighths.', '4분의 1과 8분의 1로 전체를 만들어 봐요.'));
+  // Free coding still lets the child move the star and walls. Start from varied reachable boards.
+  const codingInit84 = coding.init;
+  coding.init = m => {
+    const s = codingInit84(m);
+    if (!m) {
+      const boards = [];
+      for (const goal of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15]) {
+        // All walls stay off the chosen route (up first, then right).
+        const gx = goal % 4, gy = Math.floor(goal / 4);
+        const route = [12]; for (let y = 2; y >= gy; y--) route.push(y * 4);
+        for (let x = 1; x <= gx; x++) route.push(gy * 4 + x);
+        for (const wall of [1, 5, 9, 13]) if (!route.includes(wall)) boards.push({ goal, walls: [wall] });
+      }
+      Object.assign(s, pick(boards));
+    }
+    return s;
+  };
+
   [cubes, patterns, baseten, clock, balance, letters, fractions, coding].forEach(tool => registerGame({
     id: tool.id, grade: 'both', subject: 'create', icon: tool.icon, title: tool.title, sub: tool.sub,
     area: B('Manipulative Playground · Exploration', '교구 놀이터 · 탐색'),
-    play() { mount(tool); }
+    play() { mount(tool, this); }
   }));
 })();

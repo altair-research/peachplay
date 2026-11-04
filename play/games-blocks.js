@@ -12,7 +12,9 @@ registerGame({
   area: AREA_BRAIN('Spatial planning'), rounds: 1,
   play() {
     const lv = lvl('blocks'), W = lv === 1 ? 6 : 7, H = lv === 1 ? 9 : 10, goal = lv === 1 ? 3 : 5, tickMs = lv === 1 ? 950 : 700;
-    const keys = lv === 1 ? ['dot', 'domino', 'i3', 'l3', 'o', 'domino', 'i3'] : Object.keys(BLOCK_SHAPES);
+    const keys = lv === 1 ? ['dot', 'domino', 'i3', 'l3', 'o', 't4', 'domino', 'i3'] : Object.keys(BLOCK_SHAPES);
+    const opening = [pick(keys), pick(keys)];
+    if (dup(this, JSON.stringify(['blocks', W, H, goal, opening.map(k => BLOCK_SHAPES[k].c)]))) return this.play();
     const ask = B(`Fill a whole row to clear it! Clear ${goal} rows.`, `가로 한 줄을 가득 채우면 사라져요! ${goal}줄을 없애요.`);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="bstatrow"><div class="bstat" id="bstat"></div><div class="bnextbox"><span>${L(B("Next", "다음"))}</span><div class="bnext" id="bnext"></div></div></div>
@@ -20,7 +22,7 @@ registerGame({
       <div class="bctl"><button class="pill" id="bl">◀</button><button class="pill" id="br2">↻</button><button class="pill" id="bd">⬇</button><button class="pill" id="bn">▶</button></div>
       <pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
-    const board = Array.from({ length: H }, () => Array(W).fill(null)); let nextK = pick(keys), cur = null, rows = 0, solved = false, missed = false, timer = null;
+    const board = Array.from({ length: H }, () => Array(W).fill(null)); let nextK = opening[0], openingNext = opening[1], cur = null, rows = 0, solved = false, missed = false, timer = null;
     const boardEl = $('#bb');
     const collide = (cells, x, y) => cells.some(([cx, cy]) => { const bx = x + cx, by = y + cy; return bx < 0 || bx >= W || by >= H || (by >= 0 && board[by][bx]); });
     const dropY = () => { let y = cur.y; while (!collide(cur.cells, cur.x, y + 1)) y++; return y; };
@@ -36,7 +38,7 @@ registerGame({
       if (nb) { nb.style.setProperty('--pw', nw); nb.innerHTML = Array.from({ length: nw * nh }, (_, i) => nc.some(p => p[0] === i % nw && p[1] === Math.floor(i / nw)) ? `<i style="background:${BLOCK_SHAPES[nextK].col}"></i>` : '<b></b>').join(''); }
     };
     const spawn = () => {
-      const k = nextK; nextK = pick(keys); const cells = BLOCK_SHAPES[k].c.map(p => p.slice()), w = Math.max(...cells.map(p => p[0])) + 1;
+      const k = nextK; nextK = openingNext || pick(keys); openingNext = null; const cells = BLOCK_SHAPES[k].c.map(p => p.slice()), w = Math.max(...cells.map(p => p[0])) + 1;
       cur = { cells, x: Math.floor((W - w) / 2), y: 0, col: BLOCK_SHAPES[k].col };
       if (collide(cur.cells, cur.x, cur.y)) {                       // too high: friendly reset, keep playing
         if (!missed) { missed = true; record('blocks', false); }

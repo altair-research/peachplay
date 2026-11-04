@@ -602,3 +602,5 @@ select{min-height:44px;font-size:16px;border-radius:10px;padding:4px 8px}
 .filename{font-size:15px;color:var(--muted,#7a675c);word-break:break-all}
 .gi-games>summary{min-height:44px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
 @media (orientation:landscape) and (max-height:430px){#view{padding-bottom:6px}#fact:empty,#cheer:empty{display:none}}  /* "play anyway" landscape: the game fits one screen */
+/* 11-04 user: English by default; the language choice lives in Settings, so the top-bar switch is hidden (still used by Settings and QA). */
+header #langBtn{display:none}

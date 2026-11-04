@@ -262,7 +262,13 @@ function bpPlay(which) {
     else if (['Enter', ' '].includes(e.key)) { e.preventDefault(); if (bomb) blast(keyRow * N + keyCol); else if (keyPiece !== null && place(keyPiece, keyCol, keyRow)) { keyPiece = null; clearPreview(); boardEl.focus(); } else keyPreview(); }
     else if (e.key === 'Escape') { keyPiece = null; clearPreview(); trayEl.querySelector('[tabindex="0"]')?.focus(); }
   };
-  newTray(); render(); say(L(ask)); $('#bphint').textContent = L(ask);
+  newTray();
+  // Tray order, paint and world decorations do not make a new spatial problem.
+  const itemKey = JSON.stringify(['blockpuzzle', N, cfg.type, cfg.goal, board.map(r => r.map(c => c ? (c.g || 1) : 0)), tray.map(p => JSON.stringify([...p.cells].sort((a, b) => a[1] - b[1] || a[0] - b[0]))).sort()]);
+  const game = GAMES.find(g => g.id === 'blockpuzzle');
+  if (!cfg.daily && dup(game, itemKey)) return bpPlay(which);
+  if (cfg.daily) dup(game, itemKey); // Today's fixed puzzle deliberately stays the same.
+  render(); say(L(ask)); $('#bphint').textContent = L(ask);
   // short "world x level" splash
   const sp = document.createElement('div'); sp.className = 'bpsplash'; sp.innerHTML = `<span>${th.e}</span><b>${L(th.name)}</b><small>${cfg.daily ? L(B('Today\'s puzzle', '오늘의 퍼즐')) : cfg.n ? L(B('Level', '레벨')) + ' ' + cfg.n : L(B('Endless', '끝없이'))}</small>`; $('.bpboardwrap').appendChild(sp); setTimeout(() => sp.remove(), 1400);
   if (cfg.n === 1) setTimeout(() => { const h = $('#bphint'); if (h && !done && alive() && !bomb) h.textContent = L(B('Drag a block to the board. Fill a whole row or column!', '블록을 판에 끌어다 놓아요. 가로나 세로 한 줄을 채워요!')); }, 1800);

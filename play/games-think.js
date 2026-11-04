@@ -12,6 +12,7 @@ registerGame({
   play() {
     const lv = lvl('gonogo'), N = lv === 1 ? 10 : 14, showMs = lv === 1 ? 1500 : 1000, go = pick(['🍑', '🍎', '⭐']), nogo = pick(['🐝', '🕷️', '🌵']);
     let seq; do { seq = Array.from({ length: N }, (_, i) => (i < 2 || rnd(100) >= 30) ? go : nogo); } while (seq.filter(x => x === nogo).length < 3);
+    if (dup(this, JSON.stringify(['gonogo', seq.map(x => x === go ? 1 : 0)]))) return this.play();
     const ask = B(`Tap only the ${go}! Do NOT tap the ${nogo}.`, `${go}만 눌러요! ${nogo}는 누르지 않아요.`);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="gdots" id="gdots">${seq.map(() => '<i></i>').join('')}</div>
@@ -43,6 +44,7 @@ registerGame({
   play() {
     const lv = lvl('sortcards'), phases = lv === 1 ? [['color', 4], ['shape', 4]] : [['color', 3], ['shape', 4], ['color', 3]];
     const trials = phases.flatMap(([rule, n], pi) => Array.from({ length: n }, () => ({ rule, pi, card: pick([['red', 'star'], ['blue', 'circle']]) })));
+    if (dup(this, JSON.stringify(['sortcards', trials.map(t => [t.rule, t.card[1]])]))) return this.play();
     const rt = { color: B('COLOR game! Match the COLOR.', '색깔 게임! 같은 색깔 상자에 넣어요.'), shape: B('SHAPE game! Match the SHAPE.', '모양 게임! 같은 모양 상자에 넣어요.') };
     view().innerHTML = `<div class="prompt" id="rule"></div><div class="gdots" id="gdots">${trials.map(() => '<i></i>').join('')}</div>
       <div class="cardstage" id="cardstage"></div>
@@ -91,6 +93,7 @@ registerGame({
   play() {
     const lv = lvl('spotdiff'), cols = 3, rows = lv === 1 ? 2 : 3, N = cols * rows, k = lv === 1 ? 1 : 2, base = shuffle(SDPOOL).slice(0, N), diffs = shuffle([...Array(N).keys()]).slice(0, k);
     const second = base.map((e, i) => diffs.includes(i) ? pick(SDPOOL.filter(x => x !== e && !base.includes(x))) : e);
+    if (dup(this, JSON.stringify(['spotdiff', base.map((e, i) => [e, second[i]]).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))]))) return this.play();
     const ask = B(k === 1 ? 'Find the one that is different!' : 'Find 2 things that are different!', k === 1 ? '다른 그림 1개를 찾아요!' : '다른 그림 2개를 찾아요!');
     const grid = (arr, cls) => `<div class="sdg ${cls}" style="--c:${cols}">${arr.map((e, i) => `<button class="sdc" data-i="${i}">${e}</button>`).join('')}</div>`;
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="sdwrap">${grid(base, 'ref')}<div class="sdarrow">⬇</div>${grid(second, 'tap')}</div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
@@ -112,14 +115,20 @@ const IMAGINE = {
   square: [['🪟', B('window', '창문')], ['🧇', B('waffle', '와플')], ['🖼️', B('picture', '액자')], ['📦', B('box', '상자')], ['🎁', B('present', '선물')], ['🍞', B('bread', '식빵')]],
   rectangle: [['🚪', B('door', '문')], ['📱', B('phone', '휴대폰')], ['📖', B('book', '책')], ['🍫', B('chocolate bar', '초콜릿')], ['🛏️', B('bed', '침대')], ['🚌', B('bus', '버스')]]
 };
+// A new set of possible uses changes the material, not the correctness rule: every idea is welcome.
+IMAGINE.circle.push(['🍊', B('orange', '오렌지')], ['🛞', B('wheel', '바퀴')], ['🥯', B('bagel', '베이글')], ['🪙', B('coin', '동전')]);
+IMAGINE.triangle.push(['📐', B('ruler', '자')], ['🚩', B('flag', '깃발')], ['🥪', B('sandwich', '샌드위치')], ['🥕', B('carrot', '당근')]);
+IMAGINE.square.push(['🧊', B('ice cube', '얼음')], ['🟨', B('tile', '타일')], ['📒', B('notebook', '공책')], ['🧈', B('butter', '버터')]);
+IMAGINE.rectangle.push(['🧱', B('brick', '벽돌')], ['🪧', B('sign', '표지판')], ['🧻', B('paper', '종이')]);
 registerGame({
   id: 'imagine', subject: 'create', icon: '💭', title: B('What Could It Be?', '무엇일 수 있을까?'), sub: B('Many right answers!', '정답이 여러 개예요!'),
   area: AREA_CREATE('Imagination'), rounds: 4,
   play() {
-    const k = pick(Object.keys(IMAGINE)); if (dup(this, k)) return this.play();
+    const k = pick(Object.keys(IMAGINE)), ideas = shuffle(IMAGINE[k]).slice(0, 6);
+    if (dup(this, JSON.stringify(['imagine', k, ideas.map(it => it[1].en).sort()]))) return this.play();
     const need = lvl('imagine')===2?3:2, ask = lvl('imagine')===2?B('Find 3 different ideas for this shape!','이 모양으로 서로 다른 생각 3개를 골라요!'):B('What could this shape be? Tap 2 or more ideas!', '이 모양은 무엇일 수 있을까요? 2개 이상 골라요!');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="show">${shapeSvg(k, 0).replace('class="shape"', 'class="shape big"')}</div>
-      <div class="opts shapes imagine">${shuffle(IMAGINE[k]).map(it => `<button class="opt idea"><span class="emo">${it[0]}</span><span class="ol">${labelText(it[1])}</span></button>`).join('')}</div>
+      <div class="opts shapes imagine">${shuffle(ideas).map(it => `<button class="opt idea"><span class="emo">${it[0]}</span><span class="ol">${labelText(it[1])}</span></button>`).join('')}</div>
       <div><button class="next" id="idone" disabled>${T().done}</button></div><div class="fact" id="fact"></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
     let n = 0, done = false; const btn = $('#idone');
@@ -134,11 +143,16 @@ const SCENES = {
   space: { bg: 'radial-gradient(circle at 20% 20%,#3b2d7a,#120a33)', st: ['🚀', '🌍', '🌙', '⭐', '🛸', '👩‍🚀', '☄️', '🪐', '🌠', '🌟'], n: B('Space', '우주') },
   ocean: { bg: 'linear-gradient(#9be3ff 0 20%,#2aa0d8 20% 100%)', st: ['🐠', '🐙', '🐳', '🦀', '🐢', '🐚', '🌊', '⛵', '🐬', '🦈'], n: B('Ocean', '바다') }
 };
+SCENES.farm.st.push('🐐', '🦆', '🥕', '🌽', '🐕', '🐈');
+SCENES.space.st.push('🛰️', '🔭', '🤖', '🧑‍🚀', '🌌', '☀️');
+SCENES.ocean.st.push('🪸', '🦑', '🦭', '🪼', '🐡', '🦞');
 registerGame({
   id: 'scene', subject: 'create', icon: '🎨', title: B('Build a Scene', '장면 만들기'), sub: B('Place stickers and imagine', '스티커를 놓고 상상해요'),
   area: AREA_CREATE('Open-ended play'), rounds: 1,
   play() {
-    const sk = pick(Object.keys(SCENES)), sc = SCENES[sk], ask = lvl('scene')===2?B('Build a scene with a character, a place, and an event. Tell how they connect.','인물·장소·사건이 있는 장면을 만들고 연결해 말해요.'):B('Tap a sticker, then tap the picture to place it. Make your own scene!', '스티커를 누르고 그림을 눌러 놓아요. 나만의 장면을 만들어요!');
+    const sk = pick(Object.keys(SCENES)), sc = { ...SCENES[sk], st: shuffle(SCENES[sk].st).slice(0, 10) };
+    if (dup(this, JSON.stringify(['scene', sk, [...sc.st].sort()]))) return this.play();
+    const ask = lvl('scene')===2?B('Build a scene with a character, a place, and an event. Tell how they connect.','인물·장소·사건이 있는 장면을 만들고 연결해 말해요.'):B('Tap a sticker, then tap the picture to place it. Make your own scene!', '스티커를 누르고 그림을 눌러 놓아요. 나만의 장면을 만들어요!');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="scene" id="scene" style="background:${sc.bg}"></div>
       <div class="pal" id="pal">${sc.st.map(e => `<button class="stkb" data-e="${e}">${e}</button>`).join('')}</div>
@@ -160,11 +174,12 @@ registerGame({
 
 // ---------- 7. Story sparks ----------
 const SPARK = [['🐘', '🚀', '🍕'], ['🐱', '🌈', '🎈'], ['🦖', '🏠', '🍪'], ['🐢', '🌙', '🎸'], ['🐶', '🚗', '🌻'], ['🦋', '⚽', '🎩'], ['🐙', '⭐', '🍓'], ['🐸', '🚲', '☂️'], ['🦁', '🎁', '🐟'], ['🐝', '🛁', '🏰']];
+SPARK.push(["🐰","🌳","🧺"], ["🐧","⛵","🧣"], ["🦊","⛺","🔦"], ["🐻","🏖️","🪣"], ["🦆","🌧️","👢"], ["🐿️","🌻","🥜"], ["🐼","🚂","📦"], ["🦒","🏰","🗝️"], ["🐭","🛏️","🔔"], ["🦉","🌙","📚"], ["🐬","🏝️","🎁"], ["🐴","🌉","🍎"], ["🐑","⛰️","🎒"], ["🐷","🛁","🧼"], ["🦀","🌊","👒"], ["🦔","🍂","🧤"], ["🐨","🌳","🪁"], ["🦜","⛵","🗺️"], ["🐕","🏡","🧦"], ["🦋","🌼","💧"], ["🐢","🏫","🖍️"], ["🐸","🌈","🥁"], ["🦁","🎪","⚽"], ["🐘","🎡","🍉"], ["🐙","🪸","🎨"], ["🐱","🌨️","🛷"], ["🐶","🌾","🧢"], ["🦝","🏕️","🍞"], ["🐝","🌷","🎀"], ["🦖","🪐","🧩"]);
 registerGame({
   id: 'storyspark', subject: 'create', icon: '✨', title: B('Story Sparks', '이야기 씨앗'), sub: B('Tell a story with 3 pictures', '그림 3개로 이야기해요'),
   area: AREA_CREATE('Storytelling'), rounds: 3,
   play() {
-    const s = pick(SPARK); if (dup(this, s.join(''))) return this.play();
+    const s = pick(SPARK); if (dup(this, JSON.stringify(['storyspark', [...s].sort()]))) return this.play();
     const ask = lvl('storyspark')===2?B('Use all 3 pictures: tell what happened, why, and what happened next.','그림 3개로 사건·까닭·결과를 이어 말해요.'):B('Make up a story with all three pictures! Tell it to a grown-up.', '그림 3개로 이야기를 지어 봐요! 어른에게 들려줘요.');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div><div class="show sparkrow">${s.map(e => `<span class="spark">${e}</span>`).join('')}</div>
       <div><button class="pill" id="snew">🔄 ${L(B('New pictures', '다른 그림'))}</button> <button class="next" id="sdone2">${L(B('I told a story!', '이야기했어요!'))}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;

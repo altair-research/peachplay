@@ -228,11 +228,39 @@ const STORIES = [
   { s: ['👶', '🧒', '🧑'], a: B('A baby grows into a child, then a grown-up.', '아기가 어린이가 되고, 어른이 돼요.') }, { s: ['🪥', '🦷', '😁'], a: B('Brush your teeth, get them clean, and smile!', '이를 닦으면 깨끗해지고 활짝 웃어요!') },
   { s: ['🌰', '🌱', '🌳', '🍎'], a: B('A seed grows into a tree that gives apples.', '씨앗이 자라 나무가 되고 사과가 열려요.') }, { s: ['🥚', '🍳', '🍽️', '😋'], a: B('Crack the egg, cook it, serve it, and eat!', '알을 깨서 익히고, 담아서, 먹어요!') }
 ];
+// Everyday picture sequences. L1 follows three stages; L2 keeps all four.
+const STORY_MATERIALS = [
+  { s: ["🍎","🔪🍎","🍎🥣","😋"], a: B("Pick an apple, slice it, put the slices in a bowl, then eat.", "사과를 꺼내 썰고, 그릇에 담아 먹어요.") },
+  { s: ["🍌","🤏🍌","🍌🥣","😋"], a: B("Get a banana, peel it, put it in a bowl, then eat.", "바나나를 꺼내 껍질을 벗기고 그릇에 담아 먹어요.") },
+  { s: ["🥕","🚰🥕","🔪🥕","🥗"], a: B("Get a carrot, wash it, cut it, then make a salad.", "당근을 꺼내 씻고 썰어 샐러드를 만들어요.") },
+  { s: ["🍓","🚰🍓","🍓🥣","😋"], a: B("Get berries, wash them, put them in a bowl, then eat.", "딸기를 꺼내 씻고 그릇에 담아 먹어요.") },
+  { s: ["🍞","🍞🧀","🥪","😋"], a: B("Get bread, add cheese, close the sandwich, then eat.", "빵에 치즈를 놓고 샌드위치를 만들어 먹어요.") },
+  { s: ["🥣🌾","🥛🥣","🥄🥣","😋"], a: B("Put cereal in a bowl, add milk, get a spoon, then eat.", "그릇에 시리얼을 담고 우유를 부어 숟가락으로 먹어요.") },
+  { s: ["🫖💧","🫖🔥","☕","😌"], a: B("Fill the kettle, warm the water, pour a cup, then enjoy.", "주전자에 물을 담아 데우고 컵에 부어 마셔요.") },
+  { s: ["🍋","🔪🍋","🍋💧","🥤"], a: B("Get a lemon, cut it, squeeze it, then make a drink.", "레몬을 꺼내 자르고 즙을 짜서 음료를 만들어요.") },
+  { s: ["🧺👕","🧼👕","☀️👕","👕👧"], a: B("Gather a shirt, wash it, dry it, then wear it.", "옷을 모아 빨고 말린 뒤 입어요.") },
+  { s: ["👐💦","👐🧼","👐🚰","👐🧻"], a: B("Wet your hands, use soap, rinse, then dry.", "손을 적시고 비누칠한 뒤 헹구고 닦아요.") },
+  { s: ["🦷","🪥🫧","🚰","😁"], a: B("Get ready, brush, rinse, then smile.", "이를 닦을 준비를 하고 닦은 뒤 헹구고 웃어요.") },
+  { s: ["📄","🖍️📄","🖼️","🧱🖼️"], a: B("Get paper, draw, frame the picture, then hang it.", "종이에 그림을 그리고 액자에 넣어 벽에 걸어요.") },
+  { s: ["📦","🧸📦","🎁","🎁🙌"], a: B("Get a box, put a toy in, wrap it, then give it.", "상자에 장난감을 넣고 포장해서 건네요.") },
+  { s: ["📄✏️","✉️","📮","📬"], a: B("Write a letter, put it in an envelope, post it, then it arrives.", "편지를 써서 봉투에 넣어 보내면 우편함에 도착해요.") },
+  { s: ["🪵","🛠️","🪑","🧒🪑"], a: B("Get wood, build a chair, finish it, then sit.", "나무로 의자를 만들어 완성한 뒤 앉아요.") },
+  { s: ["🎒","🚶","⛺","🌙⛺"], a: B("Pack, walk to camp, put up a tent, then sleep there.", "짐을 싸서 걸어가 텐트를 치고 밤에 자요.") },
+  { s: ["🌨️","❄️❄️","☃️","☀️💧"], a: B("Snow falls, snow piles up, build a snowman, then sunshine melts it.", "눈이 내려 쌓이면 눈사람을 만들어요. 햇볕에 녹아요.") },
+  { s: ["🌧️","💦","☀️💦","🏜️"], a: B("Rain falls, puddles form, sun warms them, then the ground dries.", "비가 와 물웅덩이가 생기고 햇볕이 나면 땅이 말라요.") },
+  { s: ["🌼","🐝🌼","🍯","🍯🍞"], a: B("A flower grows, a bee visits, bees make honey, then honey goes on bread.", "꽃에 벌이 찾아와 꿀을 만들면 빵에 발라 먹어요.") },
+  { s: ["🐑","✂️🐑","🧶","🧣"], a: B("A sheep grows wool, wool is cut, yarn is made, then a scarf.", "양털을 깎아 실을 만들고 목도리를 떠요.") },
+  { s: ["🌳🍎","🧺🍎","🚰🍎","😋"], a: B("Apples grow, pick them, wash them, then eat.", "사과가 열리면 따서 씻은 뒤 먹어요.") },
+  { s: ["🥚","🐣","🐥","🐔"], a: B("An egg hatches, the chick grows, then becomes a hen.", "알에서 병아리가 나와 자라면 닭이 돼요.") },
+  { s: ["🌰","🌱","🌷","🥀"], a: B("A seed sprouts, blooms, then the flower fades.", "씨앗에서 싹이 나고 꽃이 핀 뒤 시들어요.") },
+  { s: ["⚽","🦶⚽","⚽💨","🥅"], a: B("Get the ball, kick it, it rolls, then reaches the goal.", "공을 발로 차면 굴러서 골대에 들어가요.") }
+];
+STORIES.push(...STORY_MATERIALS.flatMap(st => [{ s: st.s.slice(0, 3), a: st.a }, st]));
 registerGame({
   id: 'story', subject: 'brain', icon: '🔢', title: B('What Happens First?', '무엇이 먼저일까?'), sub: B('Put pictures in order', '그림을 순서대로'),
   area: AREA_BRAIN('Sequencing'),
   play() {
-    const pool = lvl('story') === 1 ? STORIES.filter(x => x.s.length === 3) : STORIES, st = pick(pool);
+    const pool = STORIES.filter(x => x.s.length === (lvl('story') === 1 ? 3 : 4)), st = pick(pool);
     tileRound(this, { ask: B('Put the pictures in order: first, next, last!', '그림을 순서대로 눌러요: 먼저, 그다음, 마지막!'), target: st.s, extra: [], after: st.a, vocab: L(B(st.a.en, st.a.en)) });
   }
 });
@@ -285,9 +313,13 @@ registerGame({
   id: 'robot', subject: 'brain', icon: '🤖', title: B('Code the Robot', '로봇 코딩'), sub: B('Give the robot directions', '로봇에게 길을 알려 줘요'),
   area: AREA_BRAIN('Coding & directions'),
   play() {
-    const lv = lvl('robot'), N = lv === 1 ? 3 : 4, K = lv === 1 ? 2 + rnd(2) : 3 + rnd(3), D = { u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0] };
-    let tx = 0, ty = 0, guard = 0;
-    while ((tx === 0 && ty === 0) && guard++ < 50) { tx = 0; ty = 0; for (let i = 0; i < K; i++) { const d = D[pick(['d', 'r', 'r', 'd', 'u', 'l'])]; const nx = tx + d[0], ny = ty + d[1]; if (nx >= 0 && ny >= 0 && nx < N && ny < N) { tx = nx; ty = ny; } } }
+    const lv = lvl('robot'), N = lv === 1 ? 3 : 4, D = { u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0] };
+    // A different relative route is a different task; translating that route is not.
+    const routes = [];
+    for (let dx = 1 - N; dx < N; dx++) for (let dy = 1 - N; dy < N; dy++) if (dx || dy) routes.push([dx, dy]);
+    const [dx, dy] = pick(routes), sx = Math.max(0, -dx) + rnd(N - Math.abs(dx)), sy = Math.max(0, -dy) + rnd(N - Math.abs(dy));
+    const tx = sx + dx, ty = sy + dy;
+    if (dup(this, JSON.stringify(['robot', N, dx, dy]))) return this.play();
     const ask = B('Tell the robot how to get to the star!', '로봇이 별에 가도록 길을 알려 줘요!'), cells = [];
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="rgrid" style="--n:${N}">${Array.from({ length: N * N }, (_, i) => `<div class="rc" data-x="${i % N}" data-y="${Math.floor(i / N)}"></div>`).join('')}</div>
@@ -296,21 +328,21 @@ registerGame({
       <div><button class="pill" id="rrun">▶ ${T().run}</button> <button class="pill" id="rclr">🗑 ${T().clear}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
     const cell = (x, y) => document.querySelector(`.rc[data-x="${x}"][data-y="${y}"]`);
-    let prog = [], x = 0, y = 0, busy = false, solved = false, missed = false; const arrows = { u: '⬆️', d: '⬇️', l: '⬅️', r: '➡️' };
+    let prog = [], x = sx, y = sy, busy = false, solved = false, missed = false; const arrows = { u: '⬆️', d: '⬇️', l: '⬅️', r: '➡️' };
     const paint = () => { $$('.rc').forEach(c => { c.textContent = ''; }); cell(tx, ty).textContent = '⭐'; cell(x, y).textContent = '🤖'; };
     const showProg = () => { $('#rprog').innerHTML = prog.map(k => `<span>${arrows[k]}</span>`).join('') || `<em>${T().addArrows}</em>`; };
     paint(); showProg();
     $$('.rkeys .pill').forEach(b => b.onclick = () => { if (busy || solved || prog.length >= 10) return; prog.push(b.dataset.k); showProg(); say('', 'en-US'); });
-    $('#rclr').onclick = () => { if (busy || solved) return; prog = []; x = 0; y = 0; paint(); showProg(); $('#cheer').textContent = ''; };
+    $('#rclr').onclick = () => { if (busy || solved) return; prog = []; x = sx; y = sy; paint(); showProg(); $('#cheer').textContent = ''; };
     $('#rrun').onclick = async () => {
-      if (busy || solved || !prog.length) return; busy = true; x = 0; y = 0; paint();
+      if (busy || solved || !prog.length) return; busy = true; x = sx; y = sy; paint();
       const alive = () => !!document.getElementById('rrun');
       for (const k of prog) { await new Promise(r => setTimeout(r, 380)); if (!alive()) return; const nx = x + D[k][0], ny = y + D[k][1]; if (nx >= 0 && ny >= 0 && nx < N && ny < N) { x = nx; y = ny; paint(); } }
       busy = false; if (!alive()) return;
       if (x === tx && y === ty) { solved = true; recordFinal('robot', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); nextButton(() => this.play()); }
-      else { missed = true; $('#cheer').textContent = T().again; setTimeout(() => { if (alive()) { x = 0; y = 0; paint(); } }, 700); }
+      else { missed = true; $('#cheer').textContent = T().again; setTimeout(() => { if (alive()) { x = sx; y = sy; paint(); } }, 700); }
     };
-    window.__robot = { tx, ty, N, D, press: (k) => document.querySelector(`.rkeys .pill[data-k="${k}"]`).click(), run: () => $('#rrun').click() };
+    window.__robot = { sx, sy, tx, ty, N, D, press: (k) => document.querySelector(`.rkeys .pill[data-k="${k}"]`).click(), run: () => $('#rrun').click() };
   }
 });
 // Missing-ingredient retrieval complements the original five color mixes.
@@ -398,6 +430,8 @@ registerGame({
  const game=GAMES.find(g=>g.id==='cause');
  const big=e=>`<span style="font-size:1.25em">${e}</span>`,small=e=>`<span style="font-size:.6em">${e}</span>`;
  const stack=n=>`<svg viewBox="0 0 22 46" style="height:clamp(30px,6.5dvh,52px);width:auto" aria-hidden="true">${Array.from({length:n},(_,i)=>`<rect x="2" y="${37-i*9}" width="18" height="8" rx="1.5" fill="#c9773e" stroke="#7a4524"/>`).join('')}</svg>`;
+ const paper=(cut=false)=>`<svg viewBox="0 0 60 50" style="width:clamp(30px,8vw,50px);height:clamp(30px,6dvh,44px)" aria-hidden="true">${cut?'<path d="M3 5H25V45H3ZM35 5H57V45H35Z"/>':'<path d="M8 5H52V45H8Z"/>'}</svg>`;
+ const drawer=open=>`<svg viewBox="0 0 60 50" style="width:clamp(30px,8vw,50px);height:clamp(30px,6dvh,44px)" aria-hidden="true"><rect x="6" y="4" width="48" height="36" fill="#d7b382" stroke="#694c2f"/><rect x="10" y="${open?24:9}" width="40" height="26" fill="#efd6b2" stroke="#694c2f"/><path d="M24 ${open?38:22}h12" stroke="#694c2f" stroke-width="3"/></svg>`;
  const ON='👆⬆️',OFF='👆⬇️',TAPON='🤚↪️',TAPOFF='🤚↩️';
  // [before, action, sentence, [result pic, name] correct first]
  const rows=[
@@ -414,15 +448,41 @@ registerGame({
   ['🌧️','⏳',B('It rains for a long time.','비가 오래 와요.'),[['💦',B('Puddles','물웅덩이')],['🏜️',B('Dry ground','땅이 말라요')]]],
   ['🥚','🍳🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
  ];
+ rows.push(
+  ['⚽💨','✋',B('A rolling ball meets a hand that holds it.','구르는 공을 손으로 잡아요.'),[['⚽',B('It stops','멈춰요')],['⚽💨',B('Keeps rolling','계속 굴러요')]]],
+  ['🔆',OFF,B('A light is on. The switch is pressed down.','불이 켜져 있어요. 스위치를 내려요.'),[['⬛',B('Dark','어두워져요')],['🔆',B('Bright','밝아요')]]],
+  ['🚰💧',TAPOFF,B('Water flows from a tap. The tap is closed.','수돗물이 흘러요. 수도꼭지를 잠가요.'),[['🚰',B('Water stops','물이 멈춰요')],['🚰💧',B('Keeps flowing','계속 흘러요')]]],
+  [big('🎈'),'🤏💨',B('A big balloon has its air let out.','큰 풍선에서 공기를 빼요.'),[[small('🎈'),B('Smaller','작아져요')],[big('🎈'),B('Same size','그대로예요')]]],
+  [stack(2),'🧱⬇️',B('Two blocks are stacked. Add one on top.','쌓인 블록 두 개 위에 하나를 더 놓아요.'),[[stack(3),B('Taller','높아져요')],[stack(1),B('Shorter','낮아져요')],[stack(2),B('Same height','그대로예요')]]],
+  ['🔔🎵','✋',B('A ringing bell is held still.','울리는 종을 잡아서 멈춰요.'),[['🔕',B('Quiet','조용해져요')],['🔔🎵',B('Ringing','울려요')]]],
+  ['💧','❄️',B('Water stays in a cold freezer until frozen.','물을 냉동실에 두고 얼 때까지 기다려요.'),[['🧊',B('Ice','얼음')],['💧',B('Still liquid','그대로 물')]]],
+  [paper(),'✂️',B('Scissors cut paper all the way across.','가위로 종이를 끝까지 잘라요.'),[[paper(true),B('Two pieces','두 조각')],[paper(),B('One piece','한 조각')]]],
+  ['📕','🤲',B('Hands pull a closed book apart at its covers.','닫힌 책의 표지를 양쪽으로 펼쳐요.'),[['📖',B('Open book','펼친 책')],['📕',B('Closed book','덮인 책')]]],
+  ['📖','🤲➡️⬅️',B('Hands bring the two book covers together.','책의 양쪽 표지를 맞대요.'),[['📕',B('Closed book','덮인 책')],['📖',B('Open book','펼친 책')]]],
+  ['🔒','🔑↪️',B('The matching key turns inside a closed lock.','닫힌 자물쇠에 맞는 열쇠를 넣고 돌려요.'),[['🔓',B('Unlocked','풀림')],['🔒',B('Locked','잠김')]]],
+  ['🔓','🤏⬇️',B('An open padlock is pushed shut.','열린 자물쇠를 눌러 닫아요.'),[['🔒',B('Locked','잠김')],['🔓',B('Unlocked','풀림')]]],
+  ['🌂','🤲⬆️',B('A folded umbrella is pushed up.','접힌 우산을 위로 밀어요.'),[['☂️',B('Open','펼침')],['🌂',B('Folded','접힘')]]],
+  ['☂️','🤲⬇️',B('An open umbrella is pulled down.','펼친 우산을 아래로 당겨요.'),[['🌂',B('Folded','접힘')],['☂️',B('Open','펼침')]]],
+  [drawer(false),'🤚⬇️',B('A closed drawer is pulled out.','닫힌 서랍을 당겨요.'),[[drawer(true),B('Open drawer','열린 서랍')],[drawer(false),B('Closed drawer','닫힌 서랍')]]],
+  [drawer(true),'🤚⬆️',B('An open drawer is pushed in.','열린 서랍을 밀어요.'),[[drawer(false),B('Closed drawer','닫힌 서랍')],[drawer(true),B('Open drawer','열린 서랍')]]]
+ );
  // [state A, state B, action A→B, action B→A, names]
  const two=[
   ['⚽','⚽💨','🤚➡️','✋',B('push','밀기'),B('stop','멈추기'),B('still','멈춤'),B('rolling','굴러감')],
   ['⬛','🔆',ON,OFF,B('switch on','켜기'),B('switch off','끄기'),B('dark','어두움'),B('bright','밝음')],
   ['🚰','🚰💧',TAPON,TAPOFF,B('turn on','틀기'),B('turn off','잠그기'),B('no water','물 없음'),B('water','물 나옴')],
   ['🧊','💧','☀️','❄️',B('warm it in the sun','햇볕에 두기'),B('put it in the freezer','얼리기'),B('ice','얼음'),B('water','물')],
-  ['🧽','🧽💦','💧','✊',B('dip in water','물에 담그기'),B('squeeze','꼭 짜기'),B('dry','마름'),B('wet','젖음')],
+  ['🧽','🧽💦','💧','☀️⏳',B('dip in water','물에 담그기'),B('leave until dry','마를 때까지 두기'),B('dry','마름'),B('wet','젖음')],
   ['🔕','🔔🎵','👋','✋',B('shake','흔들기'),B('hold still','잡기'),B('quiet','조용함'),B('ringing','소리 남')]
  ];
+ two.push(
+  ['😐','😮','⬇️','⬆️',B('open your mouth','입 벌리기'),B('close it','입 다물기'),B('closed','다묾'),B('open','벌림')],
+  [stack(2),stack(3),'🧱⬇️','✋⬆️',B('add a block','블록 놓기'),B('take it off','블록 빼기'),B('two blocks','블록 둘'),B('three blocks','블록 셋')],
+  ['📕','📖','🤲','🤲➡️⬅️',B('open the book','책 펴기'),B('close it','책 덮기'),B('closed','덮임'),B('open','펼침')],
+  ['🔒','🔓','🔑↪️','🤏⬇️',B('unlock','잠금 풀기'),B('lock','잠그기'),B('locked','잠김'),B('unlocked','풀림')],
+  ['🌂','☂️','🤲⬆️','🤲⬇️',B('open the umbrella','우산 펴기'),B('fold it','우산 접기'),B('folded','접힘'),B('open','펼침')],
+  [drawer(false),drawer(true),'🤚⬇️','🤚⬆️',B('pull the drawer','서랍 당기기'),B('push it back','서랍 밀기'),B('closed','닫힘'),B('open','열림')]
+ );
  const pic=(e,label,ok)=>({html:/^</.test(e)?e:`<span class="emo" style="white-space:nowrap;font-size:clamp(20px,min(${[...e].length>2?'6.5vw':'9vw'},5.5dvh),44px)">${e}</span>`,label,ok});
  const box=e=>`<span style="display:inline-grid;place-items:center;min-width:clamp(20px,min(6vw,5dvh),40px);height:clamp(28px,min(8vw,6dvh),46px);padding:0 1px;border:2px solid #b9a27f;border-radius:6px;background:#fff;font-size:clamp(10px,min(3.3vw,3dvh),22px);letter-spacing:-2px;white-space:nowrap">${e}</span>`;
  const strip=s=>`<span style="display:inline-flex;gap:1px;align-items:center">${s.map(box).join('')}</span>`;

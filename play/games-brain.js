@@ -15,18 +15,49 @@ const DOT_SHAPES = {
   star: { pts: starPts(), e: '⭐', n: B('a star', '별') },
   heart: { pts: heartPts(), e: '❤️', n: B('a heart', '하트') },
   kite: { pts: [[50, 12], [78, 45], [50, 90], [22, 45]], e: '🪁', n: B('a kite', '연') },
-  tree: { pts: [[50, 10], [78, 48], [62, 48], [82, 80], [18, 80], [38, 48], [22, 48]], e: '🎄', n: B('a tree', '나무') }
+  tree: { pts: [[50, 10], [78, 48], [62, 48], [82, 80], [18, 80], [38, 48], [22, 48]], e: '🎄', n: B('a tree', '나무') },
+  boat: { pts: [[12,52],[88,52],[70,82],[30,82]], e: '⛵', n: B('a boat', '배') },
+  mountain: { pts: [[12,84],[38,20],[55,54],[68,30],[88,84]], e: '⛰️', n: B('a mountain', '산') },
+  flag: { pts: [[24,90],[24,12],[82,12],[68,40],[28,40],[28,90]], e: '🚩', n: B('a flag', '깃발') },
+  arrow: { pts: [[12,38],[56,38],[56,16],[88,50],[56,84],[56,62],[12,62]], e: '➡️', n: B('an arrow', '화살표') },
+  fish: { pts: [[12,28],[35,42],[60,18],[88,50],[60,82],[35,58],[12,72]], e: '🐟', n: B('a fish', '물고기') },
+  cup: { pts: [[24,15],[78,15],[68,88],[34,88]], e: '🥤', n: B('a cup', '컵') },
+  bell: { pts: [[18,72],[30,56],[30,28],[50,12],[70,28],[70,56],[82,72]], e: '🔔', n: B('a bell', '종') },
+  shirt: { pts: [[30,15],[70,15],[90,40],[72,50],[72,85],[28,85],[28,50],[10,40]], e: '👕', n: B('a shirt', '옷') },
+  pants: { pts: [[24,15],[76,15],[82,88],[58,88],[50,46],[42,88],[18,88]], e: '👖', n: B('pants', '바지') },
+  boot: { pts: [[25,12],[54,12],[54,55],[82,68],[82,86],[25,86]], e: '👢', n: B('a boot', '장화') },
+  chair: { pts: [[20,12],[40,12],[40,52],[82,52],[82,86],[65,86],[65,68],[20,68]], e: '🪑', n: B('a chair', '의자') },
+  table: { pts: [[12,35],[88,35],[88,85],[70,85],[70,53],[30,53],[30,85],[12,85]], e: '🪑', n: B('a table', '탁자') },
+  stairs: { pts: [[12,85],[12,60],[36,60],[36,35],[60,35],[60,12],[86,12],[86,85]], e: '🪜', n: B('stairs', '계단') },
+  lightning: { pts: [[55,10],[20,58],[44,58],[34,90],[82,36],[57,36]], e: '⚡', n: B('lightning', '번개') },
+  pencil: { pts: [[35,84],[35,30],[50,10],[65,30],[65,84]], e: '✏️', n: B('a pencil', '연필') },
+  rocket: { pts: [[50,10],[68,35],[68,58],[84,82],[60,72],[40,72],[16,82],[32,58],[32,35]], e: '🚀', n: B('a rocket', '로켓') },
+  butterfly: { pts: [[50,35],[15,12],[12,46],[32,58],[18,88],[50,72],[82,88],[68,58],[88,46],[85,12]], e: '🦋', n: B('a butterfly', '나비') },
+  umbrella: { pts: [[12,45],[28,18],[50,10],[72,18],[88,45],[56,45],[56,88],[44,88],[44,45]], e: '☂️', n: B('an umbrella', '우산') },
+  cross: { pts: [[36,12],[64,12],[64,36],[88,36],[88,64],[64,64],[64,88],[36,88],[36,64],[12,64],[12,36],[36,36]], e: '➕', n: B('a cross', '십자') },
+  diamond: { pts: [[12,30],[32,12],[68,12],[88,30],[50,88]], e: '💎', n: B('a gem', '보석') },
+  bowl: { pts: [[12,28],[88,28],[78,68],[60,84],[40,84],[22,68]], e: '🥣', n: B('a bowl', '그릇') },
+  trapezoid: { pts: [[32,20],[68,20],[90,82],[10,82]], e: '🔷', n: B('a trapezoid', '사다리꼴') },
+  parallelogram: { pts: [[32,20],[90,20],[68,82],[10,82]], e: '🔷', n: B('a slanted shape', '기울어진 네모') },
+  chevron: { pts: [[14,18],[50,42],[86,18],[86,52],[50,80],[14,52]], e: '🏹', n: B('a bent arrow', '꺾인 화살표') },
+  vase: { pts: [[30,12],[70,12],[58,38],[78,68],[68,88],[32,88],[22,68],[42,38]], e: '🏺', n: B('a vase', '꽃병') },
+  crown2: { pts: [[14,88],[14,20],[34,20],[34,40],[66,40],[66,20],[86,20],[86,88]], e: '🏰', n: B('a castle', '성') },
+  tent: { pts: [[12,88],[50,12],[88,88],[62,88],[50,58],[38,88]], e: '⛺', n: B('a tent', '텐트') }
 };
 registerGame({
   id: 'dots', subject: 'brain', icon: '🔗', title: B('Connect the Dots', '점 잇기'), sub: B('Follow the numbers', '숫자 순서대로'),
   area: AREA_BRAIN('Number order'),
   play() {
-    // Skip the last 2 shapes, so the same shape never comes twice in a row and the order still varies
-    // (2026-11-01 user: crown came twice in a row; dup() gave up because level 1 had only 3 shapes).
-    const pool = lvl('dots') === 1 ? ['house', 'crown', 'hexagon', 'kite', 'tree'] : ['star', 'heart', 'sun', 'crown'];
-    const seen = (this._seen = this._seen || []), key = pick(pool.filter(k => !seen.slice(-2).includes(k)));
-    seen.push(key); if (seen.length > 8) seen.shift();
-    const sh = DOT_SHAPES[key], n = sh.pts.length, ask = B('Connect the dots in order. What is it?', '숫자 순서대로 점을 이어요. 무엇이 될까요?');
+    const level = lvl('dots'), pool = Object.keys(DOT_SHAPES).filter(k => level === 2 || DOT_SHAPES[k].pts.length <= 8);
+    const key = pick(pool), sh = { ...DOT_SHAPES[key], pts: DOT_SHAPES[key].pts.map(p => p.slice()) };
+    // More numbered steps at L2, on the same recognizable outline. Split only the longest edge.
+    while (level === 2 && sh.pts.length < 10) {
+      const lengths = sh.pts.map((p, i) => Math.hypot(p[0] - sh.pts[(i + 1) % sh.pts.length][0], p[1] - sh.pts[(i + 1) % sh.pts.length][1]));
+      const i = lengths.indexOf(Math.max(...lengths)), a = sh.pts[i], b = sh.pts[(i + 1) % sh.pts.length];
+      sh.pts.splice(i + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+    }
+    if (dup(this, JSON.stringify(['dots', sh.pts]))) return this.play();
+    const n = sh.pts.length, ask = B('Connect the dots in order. What is it?', '숫자 순서대로 점을 이어요. 무엇이 될까요?');
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <svg id="dsvg" class="dotsvg" viewBox="0 0 100 100"><polygon id="dfill" points="" fill="#ffd166" fill-opacity="0"/><polyline id="dline" points="" fill="none" stroke="#ef476f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line id="ddrag" x1="0" y1="0" x2="0" y2="0" stroke="#ef476f" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 2" opacity="0" pointer-events="none"/>
       ${sh.pts.map((p, i) => `<g class="dg" data-i="${i}"><circle cx="${p[0]}" cy="${p[1]}" r="4.6" class="dc"/><text x="${p[0]}" y="${p[1] + 1.9}" class="dt">${i + 1}</text><circle cx="${p[0]}" cy="${p[1]}" r="8" fill="transparent"/></g>`).join('')}</svg>
@@ -74,13 +105,84 @@ const LINE_PUZZLES = {
   six: { lv: 1, limit: 3, s: 26, ox: 20, oy: 34, dots: [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]], sol: [[0, 0, 2, 0], [2, 0, 0, 1], [0, 1, 2, 1]] },
   nine: { lv: 2, limit: 4, s: 20, ox: 20, oy: 20, dots: [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]], sol: [[0, 0, 3, 0], [3, 0, 0, 3], [0, 3, 0, 0], [0, 0, 2, 2]] }
 };
+// Original dot layouts: each row is one valid straight segment; no recolors or translated copies.
+Object.assign(LINE_PUZZLES, {
+  layout1: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[0,1],[1,1]],"sol":[[0,0,1,0],[0,1,1,1]]},
+  layout2: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[0,1],[1,1]],"sol":[[0,0,2,0],[0,1,1,1]]},
+  layout3: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[2,0],[0,1],[1,1]],"sol":[[1,0,2,0],[0,1,1,1]]},
+  layout4: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[0,1],[1,1]],"sol":[[0,0,2,0],[0,1,1,1]]},
+  layout5: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[3,0],[0,1],[1,1]],"sol":[[0,0,3,0],[0,1,1,1]]},
+  layout6: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[3,0],[0,1],[1,1]],"sol":[[1,0,3,0],[0,1,1,1]]},
+  layout7: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[0,1],[1,1]],"sol":[[0,0,3,0],[0,1,1,1]]},
+  layout8: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[2,0],[3,0],[0,1],[1,1]],"sol":[[2,0,3,0],[0,1,1,1]]},
+  layout9: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[3,0],[0,1],[1,1]],"sol":[[0,0,3,0],[0,1,1,1]]},
+  layout10: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[2,0],[3,0],[0,1],[1,1]],"sol":[[1,0,3,0],[0,1,1,1]]},
+  layout11: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1]],"sol":[[0,0,3,0],[0,1,1,1]]},
+  layout12: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[0,1],[2,1]],"sol":[[0,0,2,0],[0,1,2,1]]},
+  layout13: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[0,1],[2,1]],"sol":[[0,0,2,0],[0,1,2,1]]},
+  layout14: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[3,0],[0,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout15: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[3,0],[0,1],[2,1]],"sol":[[1,0,3,0],[0,1,2,1]]},
+  layout16: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[0,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout17: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[3,0],[0,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout18: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[2,0],[3,0],[0,1],[2,1]],"sol":[[1,0,3,0],[0,1,2,1]]},
+  layout19: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout20: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[3,0],[1,1],[2,1]],"sol":[[0,0,3,0],[1,1,2,1]]},
+  layout21: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[1,1],[2,1]],"sol":[[0,0,3,0],[1,1,2,1]]},
+  layout22: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1]],"sol":[[0,0,3,0],[1,1,2,1]]},
+  layout23: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],"sol":[[0,0,2,0],[0,1,2,1]]},
+  layout24: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[3,0],[0,1],[1,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout25: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[0,1],[1,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout26: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[3,0],[0,1],[1,1],[2,1]],"sol":[[0,0,3,0],[0,1,2,1]]},
+  layout27: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[1,0],[2,0],[3,0],[0,1],[1,1],[2,1]],"sol":[[1,0,3,0],[0,1,2,1]]},
+  layout28: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[3,0],[0,1],[3,1]],"sol":[[0,0,3,0],[0,1,3,1]]},
+  layout29: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[0,1],[3,1]],"sol":[[0,0,3,0],[0,1,3,1]]},
+  layout30: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[3,1]],"sol":[[0,0,3,0],[0,1,3,1]]},
+  layout31: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[1,0],[3,0],[0,1],[1,1],[3,1]],"sol":[[0,0,3,0],[0,1,3,1]]},
+  layout32: {"lv":1,"limit":2,"s":22,"ox":17,"oy":34,"dots":[[0,0],[2,0],[3,0],[0,1],[1,1],[3,1]],"sol":[[0,0,3,0],[0,1,3,1]]},
+  layout33: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[0,1],[1,1],[0,2],[1,2]],"sol":[[0,0,2,0],[0,1,1,1],[0,2,1,2]]},
+  layout34: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[0,1],[2,1],[0,2],[1,2]],"sol":[[0,0,3,0],[0,1,2,1],[0,2,1,2]]},
+  layout35: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1],[0,2],[1,2]],"sol":[[0,0,3,0],[1,1,2,1],[0,2,1,2]]},
+  layout36: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2]],"sol":[[2,0,3,0],[0,1,2,1],[0,2,1,2]]},
+  layout37: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[3,0],[0,1],[3,1],[0,2],[1,2]],"sol":[[1,0,3,0],[0,1,3,1],[0,2,1,2]]},
+  layout38: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[0,1],[1,1],[3,1],[0,2],[1,2]],"sol":[[0,0,1,0],[0,1,3,1],[0,2,1,2]]},
+  layout39: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[2,0],[3,0],[0,1],[1,1],[3,1],[0,2],[1,2]],"sol":[[2,0,3,0],[0,1,3,1],[0,2,1,2]]},
+  layout40: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[3,0],[2,1],[3,1],[0,2],[1,2]],"sol":[[1,0,3,0],[2,1,3,1],[0,2,1,2]]},
+  layout41: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[3,0],[0,1],[2,1],[3,1],[0,2],[1,2]],"sol":[[1,0,3,0],[0,1,3,1],[0,2,1,2]]},
+  layout42: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[1,1],[2,1],[3,1],[0,2],[1,2]],"sol":[[1,0,2,0],[1,1,3,1],[0,2,1,2]]},
+  layout43: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1],[3,1],[0,2],[1,2]],"sol":[[0,0,3,0],[1,1,3,1],[0,2,1,2]]},
+  layout44: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[3,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,1,2]]},
+  layout45: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[3,0],[0,1],[1,1],[0,2],[2,2]],"sol":[[1,0,3,0],[0,1,1,1],[0,2,2,2]]},
+  layout46: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[3,0],[1,1],[2,1],[0,2],[2,2]],"sol":[[0,0,3,0],[1,1,2,1],[0,2,2,2]]},
+  layout47: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[3,0],[0,1],[1,1],[2,1],[0,2],[2,2]],"sol":[[1,0,3,0],[0,1,2,1],[0,2,2,2]]},
+  layout48: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[0,1],[3,1],[0,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout49: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[1,1],[3,1],[0,2],[2,2]],"sol":[[0,0,3,0],[1,1,3,1],[0,2,2,2]]},
+  layout50: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[0,1],[1,1],[3,1],[0,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout51: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[2,1],[3,1],[0,2],[2,2]],"sol":[[0,0,3,0],[2,1,3,1],[0,2,2,2]]},
+  layout52: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[3,0],[0,1],[2,1],[3,1],[0,2],[2,2]],"sol":[[1,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout53: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[1,1],[2,1],[3,1],[0,2],[2,2]],"sol":[[0,0,3,0],[1,1,3,1],[0,2,2,2]]},
+  layout54: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[3,0],[0,1],[1,1],[2,1],[3,1],[0,2],[2,2]],"sol":[[1,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout55: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,1,1],[1,2,2,2]]},
+  layout56: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[3,0],[0,1],[1,1],[2,1],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,2,1],[1,2,2,2]]},
+  layout57: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[3,1],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[1,2,2,2]]},
+  layout58: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[3,1],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[1,2,2,2]]},
+  layout59: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[0,1],[1,1],[0,2],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,1,1],[0,2,2,2]]},
+  layout60: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[1,0],[2,0],[3,0],[0,1],[2,1],[0,2],[1,2],[2,2]],"sol":[[1,0,3,0],[0,1,2,1],[0,2,2,2]]},
+  layout61: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]],"sol":[[0,0,2,0],[0,1,2,1],[0,2,2,2]]},
+  layout62: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[3,0],[0,1],[3,1],[0,2],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout63: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[2,0],[3,0],[1,1],[3,1],[0,2],[1,2],[2,2]],"sol":[[0,0,3,0],[1,1,3,1],[0,2,2,2]]},
+  layout64: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[2,1],[3,1],[0,2],[1,2],[2,2]],"sol":[[0,0,2,0],[2,1,3,1],[0,2,2,2]]},
+  layout65: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[3,0],[0,1],[2,1],[3,1],[0,2],[1,2],[2,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,2,2]]},
+  layout66: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[3,0],[0,1],[1,1],[0,2],[3,2]],"sol":[[0,0,3,0],[0,1,1,1],[0,2,3,2]]},
+  layout67: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1],[0,2],[3,2]],"sol":[[0,0,3,0],[1,1,2,1],[0,2,3,2]]},
+  layout68: {"lv":2,"limit":3,"s":22,"ox":17,"oy":23,"dots":[[0,0],[3,0],[0,1],[1,1],[3,1],[0,2],[3,2]],"sol":[[0,0,3,0],[0,1,3,1],[0,2,3,2]]}
+});
 const distSeg = (p, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy; let t = l2 ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy)); };
 registerGame({
   id: 'lines', subject: 'brain', icon: '🧩', title: B('Few Lines Puzzle', '선 몇 개로 잇기'), sub: B('Connect every dot', '모든 점을 이어요'),
   area: AREA_BRAIN('Problem solving'),
   play() {
-    const keys = Object.keys(LINE_PUZZLES).filter(k => lvl('lines') === 2 ? k !== 'four' : LINE_PUZZLES[k].lv === 1), key = pick(keys);
-    if (dup(this, key)) return this.play();
+    const keys = Object.keys(LINE_PUZZLES).filter(k => LINE_PUZZLES[k].lv === lvl('lines')), key = pick(keys);
+    if (dup(this, JSON.stringify(['lines', LINE_PUZZLES[key].dots, LINE_PUZZLES[key].limit]))) return this.play();
     const P = LINE_PUZZLES[key], D = P.dots.map(d => [P.ox + d[0] * P.s, P.oy + d[1] * P.s]), toXY = (g) => [P.ox + g[0] * P.s, P.oy + g[1] * P.s];
     const ask = B(`Connect ALL the dots with only ${P.limit} straight lines!`, `곧은 선 ${P.limit}개만으로 모든 점을 이어요!`);
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
@@ -136,6 +238,7 @@ registerGame({
   area: AREA_BRAIN('Mazes'),
   play() {
     const n = lvl('maze') === 1 ? 4 : 6, m = genMaze(n), ask = B('Help the mouse find the cheese! Drag or tap the arrows.', '생쥐가 치즈를 찾게 도와요! 끌거나 화살표를 눌러요.');
+    if (dup(this, JSON.stringify(['maze', m.map(row => row.map(c => [c.t, c.r, c.b, c.l]))]))) return this.play();
     view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
       <div class="maze" id="mz" style="--n:${n}">${m.map((row, r) => row.map((c, k) => `<div class="mc2 ${c.t ? 'wt' : ''} ${c.r ? 'wr' : ''} ${c.b ? 'wb' : ''} ${c.l ? 'wl' : ''}" data-r="${r}" data-c="${k}"></div>`).join('')).join('')}</div>
       <div class="dpad"><button class="pill" data-d="u">⬆️</button><div><button class="pill" data-d="l">⬅️</button><button class="pill" data-d="d">⬇️</button><button class="pill" data-d="r">➡️</button></div></div>
@@ -202,6 +305,7 @@ registerGame({
   area: AREA_BRAIN('Memory'),
   play() {
     const len = lvl('simon') === 1 ? 3 : 4 + rnd(2), seq = Array.from({ length: len }, () => rnd(4)), tok = ++simonTok, sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    if (dup(this, JSON.stringify(['simon', seq]))) return this.play();
     view().innerHTML = `<div class="prompt" id="st">${T().watch}</div>
       <div class="pads">${PADS.map((p, i) => `<button class="pad" data-i="${i}" style="background:${p[0]}" aria-label="color ${i + 1}"></button>`).join('')}</div>
       <div><button class="pill" id="rep">👂 ${T().replay}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
