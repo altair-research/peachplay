@@ -19,6 +19,7 @@
   const picture = (role, s) => role === 0
     ? `<span class="g3b-work g3b-words" aria-hidden="true">📝✏️</span>`
     : `<span class="g3b-work" aria-hidden="true">${role === 1 ? '🖍️ ' + s[2] : '📖'}</span>`;
+  // silent89: a ✍️❓ / 🖍️❓ card shows which job the question asks about, and the L2 swap is drawn with the two portraits.
   registerGame({
     id: 'bookmakersK', grade: 'K', subject: 'read', icon: '📚',
     title: B('Book Makers', '책을 만든 사람'), sub: B('Words and pictures', '글과 그림'),
@@ -38,7 +39,8 @@
         show: `<section class="g3b-stage" aria-label="${L(B('Made-up book workshop', '가상 책 작업실'))}">
           <div class="g3b-scenes">${order.map((role, i) => `<div class="g3b-scene"><strong><span aria-hidden="true">${portraits[i]}</span> ${L(names[i])}</strong>${picture(role, scene)}<span class="g3b-job" aria-label="${L(jobs[role])}">${L(roleTags[role])}</span><button class="say g3b-listen" data-g3b="${i}" aria-label="${L(B('Listen to ', '듣기: '))}${L(names[i])}">🔊</button></div>`).join('')}</div>
           <div class="g3b-cover" aria-label="${L(B('Made-up book', '가상의 책'))}"><span aria-hidden="true">${scene[2]}</span> ${L(B(scene[0], scene[1]))}</div>
-          ${swap ? `<div class="g3b-swap" aria-label="${L(change)}">${L(names[person(0)])} ⇄ ${L(names[person(1)])} 📘</div>` : ''}
+          ${swap ? `<div class="g3b-swap" aria-label="${L(change)}"><span aria-hidden="true">${portraits[person(0)]} ⇄ ${portraits[person(1)]} 📘</span></div>` : ''}
+          <div class="g3b-swap" aria-hidden="true">${swap ? '📘 ' : ''}${target === 0 ? '✍️' : '🖍️'}❓</div>
         </section>`,
         opts: names.map((n, i) => ({html: `<span class="word"><span aria-hidden="true">${portraits[i]}</span> ${L(n)}</span>`, ok: i === answer, category: 'book-person'})),
         cls: 'g3b-options',

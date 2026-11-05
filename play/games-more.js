@@ -330,12 +330,14 @@ registerGame({
     const cell = (x, y) => document.querySelector(`.rc[data-x="${x}"][data-y="${y}"]`);
     let prog = [], x = sx, y = sy, busy = false, solved = false, missed = false; const arrows = { u: '⬆️', d: '⬇️', l: '⬅️', r: '➡️' };
     const paint = () => { $$('.rc').forEach(c => { c.textContent = ''; }); cell(tx, ty).textContent = '⭐'; cell(x, y).textContent = '🤖'; };
-    const showProg = () => { $('#rprog').innerHTML = prog.map(k => `<span>${arrows[k]}</span>`).join('') || `<em>${T().addArrows}</em>`; };
+    // silent89: an empty program shows dashed empty slots and 👇 toward the arrow keys; Run on an empty program lights the keys.
+    const showProg = () => { $('#rprog').innerHTML = prog.map(k => `<span>${arrows[k]}</span>`).join('') || `<em style="white-space:nowrap;font-size:min(1em,3.4vw)"><span aria-hidden="true" style="letter-spacing:2px;color:#b9a27f">⬚⬚⬚</span> 👇 ${T().addArrows}</em>`; };
+    const nudgeKeys = () => $$('.rkeys .pill').forEach((k, i) => { k.style.animation = 'none'; void k.offsetWidth; k.style.animation = `pop .4s ${i * 0.12}s 2`; k.style.boxShadow = '0 0 0 4px #ffd35d'; setTimeout(() => { k.style.boxShadow = ''; }, 1600); });
     paint(); showProg();
     $$('.rkeys .pill').forEach(b => b.onclick = () => { if (busy || solved || prog.length >= 10) return; prog.push(b.dataset.k); showProg(); say('', 'en-US'); });
     $('#rclr').onclick = () => { if (busy || solved) return; prog = []; x = sx; y = sy; paint(); showProg(); $('#cheer').textContent = ''; };
     $('#rrun').onclick = async () => {
-      if (busy || solved || !prog.length) return; busy = true; x = sx; y = sy; paint();
+      if (busy || solved) return; if (!prog.length) { nudgeKeys(); return; } busy = true; x = sx; y = sy; paint();
       const alive = () => !!document.getElementById('rrun');
       for (const k of prog) { await new Promise(r => setTimeout(r, 380)); if (!alive()) return; const nx = x + D[k][0], ny = y + D[k][1]; if (nx >= 0 && ny >= 0 && nx < N && ny < N) { x = nx; y = ny; paint(); } }
       busy = false; if (!alive()) return;

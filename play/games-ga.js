@@ -67,24 +67,39 @@
      'Lincoln Memorial':[B('A seated president is inside.','안에 앉아 있는 대통령 조각상이 있어요.'),B('Tall columns surround the hall.','높은 기둥들이 건물을 둘러싸요.'),B('Wide steps lead up to it.','넓은 계단을 올라가요.'),B('Its statue is under a roof.','조각상이 지붕 아래에 있어요.')],
      'Washington Monument':[B('Its stone top is pointed.','돌탑 꼭대기가 뾰족해요.'),B('It looks like a giant pencil.','아주 큰 연필처럼 생겼어요.'),B('It is very, very tall.','아주아주 높아요.'),B('Flags circle its bottom.','밑부분을 깃발들이 둘러싸요.')]
     },c=clues[t[0].en],a=rnd(4),b=pick([0,1,2,3].filter(x=>x!==a)),story=lv===1?c[a]:B(`${c[a].en} ${c[b].en}`,`${c[a].ko} ${c[b].ko}`);
+    // silent89: each clue is also a small picture of that one feature (never the whole place), so a child who cannot read sees it.
+    const svgClue=(d,label)=>`<svg viewBox="0 0 40 32" style="width:clamp(38px,7.5dvh,56px);height:auto;vertical-align:middle" role="img" aria-label="${label}">${d}</svg>`;
+    const columns=svgClue('<path d="M4 28H36M6 8H34" stroke="#6b6355" stroke-width="2.5"/>'+[8,15,22,29].map(x=>`<rect x="${x}" y="9" width="3.5" height="19" fill="#eee7da" stroke="#6b6355"/>`).join(''),'columns'),
+     steps=svgClue('<path d="M3 29H37V24H31V19H25V14H19V9H13" fill="none" stroke="#6b6355" stroke-width="2.5" stroke-linejoin="round"/>','steps'),
+     roof=svgClue('<path d="M4 13L20 4L36 13Z" fill="#eee7da" stroke="#6b6355" stroke-width="2"/><text x="20" y="29" text-anchor="middle" font-size="14">🪑</text>','roof'),
+     tip=svgClue('<path d="M14 30L17 12L20 3L23 12L26 30" fill="#eee7da" stroke="#6b6355" stroke-width="2"/><circle cx="20" cy="5" r="5" fill="none" stroke="#e0703a" stroke-width="2"/>','pointed top');
+    const cluePics={'Statue of Liberty':['🔥✋','👑','🏝️','✋📋'],'Lincoln Memorial':['🪑',columns,steps,roof],'Washington Monument':[tip,'✏️','⬆️⬆️⬆️','🚩🚩🚩']}[t[0].en];
+    const pics=lv===1?cluePics[a]:cluePics[a]+' + '+cluePics[b];
     const obelisk='<svg viewBox="0 0 40 80" style="width:clamp(30px,6dvh,44px);height:auto" role="img" aria-label="Washington Monument"><path d="M14 76L17 16L20 5L23 16L26 76Z" fill="#eee7da" stroke="#6b6355" stroke-width="2"/><path d="M4 76H36" stroke="#6b6355" stroke-width="3"/></svg>',monPic={'Statue of Liberty':'🗽','Lincoln Memorial':'🏛️','Washington Monument':obelisk};
-    return {ask:B(lv===1?'Which place fits the clue?':'Which place fits BOTH clues?',lv===1?'단서에 맞는 곳은?':'두 단서에 맞는 곳은?'),show:card(L(story)),askExtra:{t:L(story)},opts:[pic(monPic[t[0].en],t[0],true),...ds.map(x=>pic(monPic[x[0].en],x[0],false))],cls:'shapes'};
+    return {ask:B(lv===1?'Which place fits the clue?':'Which place fits BOTH clues?',lv===1?'단서에 맞는 곳은?':'두 단서에 맞는 곳은?'),show:`<div style="font-size:clamp(28px,5.5dvh,42px);line-height:1.2;white-space:nowrap">${pics}</div><div style="font-size:clamp(14px,2.5dvh,18px);line-height:1.2">${L(story)}</div>`,askExtra:{t:L(story)},opts:[pic(monPic[t[0].en],t[0],true),...ds.map(x=>pic(monPic[x[0].en],x[0],false))],cls:'shapes'};
   });
   const holidays=[
     [B('Christmas Day','성탄절'),B('December 25','12월 25일'),B('A holiday observed by many Christians','많은 기독교인이 기념하는 날'),'🎄'],
     [B('Columbus Day','콜럼버스의 날'),B('Second Monday in October','10월 둘째 월요일'),B('A federal holiday named for Columbus','콜럼버스의 이름을 붙인 연방 공휴일'),'⛵'],
     [B('Juneteenth','준틴스'),B('June 19','6월 19일'),B('Remembers freedom from slavery','노예제에서 벗어난 자유를 기념해요'),'🕊️'],
-    [B('Martin Luther King Jr. Day','마틴 루서 킹 주니어의 날'),B('Third Monday in January','1월 셋째 월요일'),B('Honors a leader for equal rights','평등한 권리를 위해 힘쓴 지도자를 기려요'),'🤝'],
-    [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','군 복무 중 목숨을 잃은 분들을 기억해요'),'🌺'],
+    [B('Martin Luther King Jr. Day','마틴 루서 킹 주니어의 날'),B('Third Monday in January','1월 셋째 월요일'),B('Honors a leader for equal rights','평등을 위해 힘쓴 지도자를 기려요'),'🤝'],
+    [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','나라를 지키다 숨진 분들을 기억해요'),'🌺'],
     [B("Washington’s Birthday",'워싱턴 탄생일'),B('Third Monday in February','2월 셋째 월요일'),B('Honors the first U.S. president','미국의 첫 대통령을 기려요'),'🇺🇸🎂']
   ];
+  // silent89: the date is a small calendar page (season picture, month, the day or which Monday is lit: one box per Monday of the month) and the meaning
+  // is a picture that differs from the holiday card (PF2), so a child who cannot read still has a clue to look at.
+  const holidayDate=[{s:'❄️',m:B('Dec','12월'),day:25},{s:'🍂',m:B('Oct','10월'),nth:2},{s:'☀️',m:B('Jun','6월'),day:19},{s:'❄️',m:B('Jan','1월'),nth:3},{s:'🌸',m:B('May','5월'),nth:5},{s:'❄️',m:B('Feb','2월'),nth:3}];
+  const holidayMeaning=['⛪','🧭🌊','⛓️✂️','🎤⚖️','🪖🕯️','🥇'];
+  const calendar=d=>`<span style="display:inline-flex;flex-direction:column;align-items:center;border:2px solid #b9a27f;border-radius:8px;background:#fff;min-width:clamp(56px,11dvh,72px);vertical-align:middle;overflow:hidden;line-height:1.15"><span style="background:#e0703a;color:#fff;align-self:stretch;text-align:center;font-size:clamp(12px,2.2dvh,16px)">${d.s} ${L(d.m)}</span>${d.day?`<b style="font-size:clamp(20px,4dvh,30px)">${d.day}</b>`:`<span style="display:flex;gap:2px;padding:4px">${[1,2,3,4,5].map(i=>`<i style="display:block;width:clamp(7px,1.4dvh,10px);height:clamp(10px,2dvh,14px);border:1px solid #b9a27f;border-radius:2px;background:${i===d.nth?'#e0703a':i<d.nth?'#f6e3d6':'#fff'}"></i>`).join('')}</span>`}</span>`;
   add('holidayclues',B('Holiday Stories','기념일 이야기'),'📅',B('Social Studies · Holidays','사회 · 기념일'),lv=>{
     // People are shown by a place or role picture, never a face: 🥇 first president, 🏛️ his memorial, 🏠 the White House now.
     if(rnd(4)===0){const p=pick(people),ds=people.filter(x=>x!==p);return {ask:lv===1?B('Who is this?','누구일까요?'):B(`Which picture goes with ${p[0].en}?`,`${p[0].ko}와 맞는 그림은?`),show:lv===1?card(L(p[1])):'',askExtra:lv===1?{t:L(p[1])}:undefined,opts:[p,...ds].map(x=>pic(x[2],lv===1?x[0]:x[1],x===p)),cls:'shapes'};}
     const t=pick(holidays),which=1+rnd(2),ds=shuffle(holidays.filter(x=>x!==t)).slice(0,2),clue=lv===1?L(t[which]):which===1?`${L(t[1])} · ${L(t[2])}`:`${L(t[2])} · ${L(t[1])}`;
     const extra=t===holidays[1]?B('Indigenous peoples already lived in the Americas. Families and communities observe different days.','아메리카에는 이미 원주민들이 살고 있었어요. 가정과 공동체마다 기념하는 날이 달라요.'):t===holidays[0]?B('Families may celebrate this holiday, another holiday, or none.','이 날을 기념하는 가정도, 다른 날을 기념하거나 기념하지 않는 가정도 있어요.'):B('People remember history in different ways.','사람들은 여러 방법으로 역사를 기억해요.');
     // The clue is spoken and shown without the holiday picture (PF2); L2 gives the date AND the meaning to combine.
-    return {ask:lv===1?B('Which holiday fits this clue?','이 단서에 맞는 날은?'):B('Which holiday fits BOTH clues?','두 단서에 맞는 날은?'),show:card(clue),askExtra:{t:clue},opts:[t,...ds].map(x=>pic(x[3],x[0],x===t)),cls:'shapes',after:extra};
+    const hi=holidays.indexOf(t),datePic=calendar(holidayDate[hi]),meanPic=`<span style="font-size:clamp(30px,6dvh,44px);vertical-align:middle">${holidayMeaning[hi]}</span>`;
+    const cluePic=lv===1?(which===1?datePic:meanPic):`${datePic} ${meanPic}`;
+    return {ask:lv===1?B('Which holiday fits this clue?','이 단서에 맞는 날은?'):B('Which holiday fits BOTH clues?','두 단서에 맞는 날은?'),show:`<div style="display:flex;gap:10px;align-items:center;justify-content:center">${cluePic}</div><div style="font-size:clamp(14px,2.5dvh,18px);line-height:1.2">${clue}</div>`,askExtra:{t:clue},opts:[t,...ds].map(x=>pic(x[3],x[0],x===t)),cls:'shapes',after:extra};
   });
   const routines=[B('read a story','이야기를 읽어요'),B('draw a picture','그림을 그려요'),B('play with blocks','블록으로 놀아요'),B('visit a park','공원에 가요'),B('sing a song','노래해요'),B('plant a seed','씨앗을 심어요')];
   const customs=[
@@ -258,26 +273,28 @@ const CITIZEN = [
   [['🗑️', B('trash away', '통에 버려요')], ['🍬', B('littering', '바닥에 버려요')]],
   [['🙋', B('raising hand', '손 들기')], ['📢', B('shouting', '소리치기')]],
   [['🚶', B('walking inside', '복도에서 걸어요')], ['🏃', B('running inside', '복도에서 뛰어요')]],
-  [['🙏', B('saying thanks', '고맙다고 말해요')], ['🙊', B('being rude', '무례하게 말해요')]],
-  [['🧸', B('cleaning up', '정리해요')], ['🛋️', B('leaving mess', '어질러요')]],
+  [['🙏', B('saying thanks', '고맙다고 말해요')], ['😝', B('being rude', '무례하게 말해요')]],
+  [['🧸➡️📦', B('cleaning up', '정리해요')], ['🧦🧩🧸', B('leaving mess', '어질러요')]],
   [['👂', B('listening', '잘 들어요')], ['🗣️', B('loud talk', '떠들어요')]],
-  [['🪑', B('chair in', '의자 넣어요')], ['🪑', B('chair out', '그냥 둬요')]],
-  [['🧍', B('taking turns', '차례 지켜요')], ['🚷', B('cutting line', '새치기해요')]],
+  [['🪑⬅️🍽️', B('chair in', '의자 넣어요')], ['🪑💥🚶', B('chair out', '그냥 둬요')]],
+  [['🧍🧍🧍', B('taking turns', '차례 지켜요')], ['🧍↪️🧍🧍', B('cutting line', '새치기해요')]],
   [['🩹', B('helping friend', '친구 도와요')], ['😆', B('laughing at', '비웃어요')]],
-  [['📚', B('returning book', '책 돌려줘요')], ['📚', B('keeping book', '안 돌려줘요')]],
-  [['🚰', B('tap off', '물 잠가요')], ['🚰', B('tap left on', '물 낭비해요')]]
+  [['📚➡️🏫', B('returning book', '책 돌려줘요')], ['📚🔒🏠', B('keeping book', '안 돌려줘요')]],
+  [['🚰✋', B('tap off', '물 잠가요')], ['🚰💦💦', B('tap left on', '물 낭비해요')]]
 ];
+// silent89: the thumb shows which kind to find (👍 good, 👎 NOT good) without reading, and each pair has two different action pictures.
+const cueCard = e => `<div class="emo" aria-hidden="true" style="font-size:clamp(34px,6.5dvh,46px);line-height:1.1">${e}</div>`;
 registerGame({
   id: 'citizen', subject: 'ss', icon: '🌟', title: B('Good Citizens', '착한 시민'), sub: B('Kind and fair', '친절하고 공정하게'),
   area: AREA_SS('Citizenship'),
   play() {
     if(lvl('citizen')===2){
       const p=pick(CITIZEN),wrong=pick(CITIZEN.filter(x=>x!==p))[1];
-      quiz(this,{ask:B('Which action helps our shared space?','함께 쓰는 곳에 도움이 되는 행동은?'),opts:[p[0],p[1],wrong].map((x,i)=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`,ok:i===0})),cls:'shapes'});return;
+      quiz(this,{ask:B('Which action helps our shared space?','함께 쓰는 곳에 도움이 되는 행동은?'),show:cueCard('🏫👍'),opts:[p[0],p[1],wrong].map((x,i)=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`,ok:i===0})),cls:'shapes'});return;
     }
     const p = pick(CITIZEN), notQ = rnd(3) === 0;
     quiz(this, {
-      ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'),
+      ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'), show: cueCard(notQ ? '👎' : '👍'),
       opts: [{ html: `<span class="emo">${p[0][0]}</span><span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `<span class="emo">${p[1][0]}</span><span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups',
       after: B('Good citizens are kind and follow the rules!', '좋은 시민은 친절하고 규칙을 지켜요!'), vocab: 'Good citizens follow the rules!'
     });
@@ -286,26 +303,28 @@ registerGame({
 
 // ---------- 6. Community workers (Labor Day) ----------
 const JOBS = [
-  { e: '🧑‍🚒', n: B('firefighter', '소방관'), q: B('Who puts out fires?', '불을 끄는 사람은 누구일까요?') },
-  { e: '👮', n: B('police officer', '경찰관'), q: B('Who keeps people safe on roads?', '길에서 사람들을 안전하게 지키는 사람은?') },
-  { e: '🧑‍🏫', n: B('teacher', '선생님'), q: B('Who teaches children at school?', '학교에서 아이들을 가르치는 사람은?') },
-  { e: '🧑‍⚕️', n: B('doctor', '의사'), q: B('Who helps sick people feel better?', '아픈 사람을 낫게 도와주는 사람은?') },
-  { e: '🧑‍🌾', n: B('farmer', '농부'), q: B('Who grows food on a farm?', '농장에서 먹거리를 키우는 사람은?') },
-  { e: '👷', n: B('builder', '건축 노동자'), q: B('Who builds houses and buildings?', '집과 건물을 짓는 사람은?') },
-  { e: '🧑‍🍳', n: B('cook', '요리사'), q: B('Who cooks food in a restaurant?', '식당에서 음식을 만드는 사람은?') },
-  { e: '🧑‍✈️', n: B('pilot', '조종사'), q: B('Who flies an airplane?', '비행기를 조종하는 사람은?') }
+  { e: '🧑‍🚒', n: B('firefighter', '소방관'), q: B('Who puts out fires?', '불을 끄는 사람은 누구일까요?') , sc: '🔥🏠' },
+  { e: '👮', n: B('police officer', '경찰관'), q: B('Who keeps people safe on roads?', '길에서 사람들을 안전하게 지키는 사람은?') , sc: '🚦🚗' },
+  { e: '🧑‍🏫', n: B('teacher', '선생님'), q: B('Who teaches children at school?', '학교에서 아이들을 가르치는 사람은?') , sc: '🏫📚' },
+  { e: '🧑‍⚕️', n: B('doctor', '의사'), q: B('Who helps sick people feel better?', '아픈 사람을 낫게 도와주는 사람은?') , sc: '🤒🩺' },
+  { e: '🧑‍🌾', n: B('farmer', '농부'), q: B('Who grows food on a farm?', '농장에서 먹거리를 키우는 사람은?') , sc: '🚜🌽' },
+  { e: '👷', n: B('builder', '건축 노동자'), q: B('Who builds houses and buildings?', '집과 건물을 짓는 사람은?') , sc: '🧱🏗️' },
+  { e: '🧑‍🍳', n: B('cook', '요리사'), q: B('Who cooks food in a restaurant?', '식당에서 음식을 만드는 사람은?') , sc: '🍳🍲' },
+  { e: '🧑‍✈️', n: B('pilot', '조종사'), q: B('Who flies an airplane?', '비행기를 조종하는 사람은?') , sc: '✈️☁️' }
 ];
+// silent89: a work scene (what the job does: fire, road, class, sick child...) never shows the worker picture itself (PF2).
+const jobScene = j => `<div class="emo" aria-hidden="true" style="font-size:clamp(32px,6dvh,46px);line-height:1.1;white-space:nowrap">${j.sc}</div>`;
 registerGame({
   id: 'jobs', subject: 'ss', icon: '👷', title: B('Who Helps Us?', '누가 도와줄까?'), sub: B('Workers & Labor Day', '일하는 사람들과 노동절'),
   area: AREA_SS('Labor Day & jobs'),
   play() {
     const t = pick(JOBS), ds = others(JOBS, t, lvl('jobs') === 2 ? 3 : 2);
     if (rnd(2)) {
-      quiz(this, { ask: B('What is this worker called?', '이 일을 하는 사람의 이름을 골라요.'), askExtra: { t: L(t.q) }, show: `<div style="font-size:clamp(16px,3dvh,22px)">${L(t.q)}</div>`, opts: [t, ...ds].map(j => ({ html: `<span class="emo">${j.e}</span>`, label: j.n, ok: j === t })), cls: 'shapes', vocab: t.n.en });
+      quiz(this, { ask: B('What is this worker called?', '이 일을 하는 사람의 이름을 골라요.'), askExtra: { t: L(t.q) }, show: jobScene(t) + `<div style="font-size:clamp(15px,2.7dvh,20px)">${L(t.q)}</div>`, opts: [t, ...ds].map(j => ({ html: `<span class="emo">${j.e}</span>`, label: j.n, ok: j === t })), cls: 'shapes', vocab: t.n.en });
       return;
     }
     const o = (j) => ({ html: `<span class="emo">${j.e}</span>`, label: j.n, ok: j === t });
-    quiz(this, { ask: t.q, opts: [o(t), ...ds.map(o)], after: B(`A ${t.n.en} helps our community!`, `${t.n.ko}은(는) 우리 마을을 도와줘요!`), vocab: t.n.en });
+    quiz(this, { ask: t.q, show: jobScene(t), opts: [o(t), ...ds.map(o)], after: B(`A ${t.n.en} helps our community!`, `${t.n.ko}은(는) 우리 마을을 도와줘요!`), vocab: t.n.en });
   }
 });
 
@@ -408,7 +427,7 @@ registerGame({
   quiz(this,{ask:B(`Which pair matches Georgia's ${t.q.en} and ${u.q.en}?`,`조지아 상징: ${t.q.ko}·${u.q.ko} 짝은?`),opts:[pic(t.e+u.e,pair(t.n,u.n),true),pic(sameKindPic[i][0]+u.e,pair(sameKind[i][0],u.n),false),pic(t.e+sameKindPic[j][0],pair(t.n,sameKind[j][0]),false)],cls:'shapes'});
  };
  const jobs=GAMES.find(g=>g.id==='jobs'),old=jobs.play;
- jobs.play=function(){if(lvl(this.id)===1)return old.call(this);const a=pick(JOBS),b=pick(JOBS.filter(x=>x!==a)),c=pick(JOBS.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.n.en} + ${y.n.en}`,`${x.n.ko} + ${y.n.ko}`);quiz(this,{ask:B('Which pair can do BOTH jobs in order?','두 일을 차례로 하는 사람들의 짝은?'),show:`<div class="storytext">${L(a.q)}<br>${L(b.q)}</div>`,askExtra:{t:`${L(a.q)} ${L(b.q)}`},opts:[[a,b],[a,c],[c,b]].map(([x,y],i)=>pic(x.e+y.e,pair(x,y),i===0)),cls:'shapes'});};
+ jobs.play=function(){if(lvl(this.id)===1)return old.call(this);const a=pick(JOBS),b=pick(JOBS.filter(x=>x!==a)),c=pick(JOBS.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.n.en} + ${y.n.en}`,`${x.n.ko} + ${y.n.ko}`);quiz(this,{ask:B('Which pair can do BOTH jobs in order?','두 일을 차례로 하는 사람들의 짝은?'),show:`<div class="emo" aria-hidden="true" style="font-size:clamp(28px,5.5dvh,42px);white-space:nowrap">1 ${a.sc} ➜ 2 ${b.sc}</div><div class="storytext">${L(a.q)}<br>${L(b.q)}</div>`,askExtra:{t:`${L(a.q)} ${L(b.q)}`},opts:[[a,b],[a,c],[c,b]].map(([x,y],i)=>pic(x.e+y.e,pair(x,y),i===0)),cls:'shapes'});};
  const holidays=GAMES.find(g=>g.id==='holidays'),prior=holidays.play;
  const days=[
  [B('Labor Day','노동절'),B('workers','일하는 사람들')],

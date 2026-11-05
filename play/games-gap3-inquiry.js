@@ -66,14 +66,14 @@
     [0,"What can a bird use to build a nest?","새가 둥지를 만드는 데 쓸 것은?","🐦",["🪵","twigs","나뭇가지"],["🧊","ice","얼음"],["🧼","soap","비누"]],
     [0,"Where can a frog swim?","개구리가 헤엄칠 수 있는 곳은?","🐸",["💧","pond","연못"],["🌳","tree","나무"],["🪨","rock","돌"]],
     [0,"Which picture shows something a squirrel can eat?","다람쥐가 먹을 수 있는 것은?","🐿️",["🌰","nut","열매"],["🍂","leaf","잎"],["🪵","log","통나무"]],
-    [0,"What animal could leave hoofprints?","발굽 자국을 남길 수 있는 동물은?","🐾",["🐴","horse","말"],["🐱","cat","고양이"],["🐶","dog","강아지"]],
+    [0,"What animal could leave hoofprints?","발굽 자국을 남길 수 있는 동물은?",'<svg viewBox="0 0 44 26" style="width:1.6em;height:1em;vertical-align:middle" role="img" aria-label="hoofprints"><path d="M4 24C1 13 4 4 10 4S19 13 16 24H13C14 15 12 10 10 10S6 15 7 24Z M26 22C23 11 26 2 32 2S41 11 38 22H35C36 13 34 8 32 8S28 13 29 22Z" fill="#6b4b2a"/></svg>',["🐴","horse","말"],["🐱","cat","고양이"],["🐶","dog","강아지"]],
     [0,"Which baby hatches from a hen’s egg?","암탉이 낳은 알에서 나오는 아기는?","🥚",["🐤","chick","병아리"],["🐱","kitten","새끼 고양이"],["🐶","puppy","강아지"]],
     [1,"What can keep your head dry in rain?","비가 올 때 머리가 젖지 않게 해 주는 것은?","🌧️",["☂️","umbrella","우산"],["🧤","mittens","장갑"],["👟","shoes","신발"]],
     [1,"What can slide down a snowy hill?","눈 덮인 언덕에서 타고 내려오는 것은?","❄️",["🛷","sled","썰매"],["🛴","scooter","킥보드"],["🚲","bike","자전거"]],
     [1,"What helps you see on a dark walk?","어두운 길에서 앞을 보는 데 도움이 되는 것은?","🌌",["🔦","flashlight","손전등"],["🔔","bell","방울"],["🧭","compass","나침반"]],
     [1,"What can float on a puddle?","물웅덩이에 띄울 수 있는 것은?","💧",["⛵","boat","배"],["🔑","key","열쇠"],["🪙","coin","동전"]],
-    [1,"What shows that it rained?","비가 왔다는 단서가 되는 것은?","❔",["💧","puddle","물웅덩이"],["🍂","dry leaf","마른 잎"],["🌵","cactus","선인장"]],
-    [1,"What forms on cold glass?","아주 추운 날 창문에 생길 수 있는 것은?","🪟",["❄️","frost","서리"],["🌱","sprout","새싹"],["🕸️","web","거미줄"]],
+    [1,"What shows that it rained?","비가 왔다는 단서가 되는 것은?","🔍",["💧","puddle","물웅덩이"],["🍂","dry leaf","마른 잎"],["🌵","cactus","선인장"]],
+    [1,"What forms on cold glass?","추운 날 창문에 생기는 것은?","🪟",["❄️","frost","서리"],["🌱","sprout","새싹"],["🕸️","web","거미줄"]],
     [1,"What lights up the sky during a storm?","폭풍 속 하늘을 번쩍 밝히는 것은?","⛈️",["⚡","lightning","번개"],["🌧️","rain","비"],["🌬️","wind","바람"]],
     [1,"Which tool shows how warm it is outside?","밖이 얼마나 따뜻한지 알려 주는 도구는?","☀️",["🌡️","thermometer","온도계"],["📏","ruler","자"],["🧭","compass","나침반"]],
     [2,"What can you peel and eat?","껍질을 벗겨 먹을 수 있는 것은?","🍽️",["🍌","banana","바나나"],["🍞","bread","빵"],["🍚","rice","밥"]],
@@ -86,6 +86,9 @@
     [2,"What can keep a drink cold?","음료를 차게 해 주는 것은?","🥤",["🧊","ice","얼음"],["🍯","honey","꿀"],["🧂","salt","소금"]]];
   // Keep the open-activity menu short; these cards are for scored practice.
   const kPractice = [...kItems, ...kExtra.map(([topic, en, ko, icon, ...opts]) => [topic, b(en, ko), b(en, ko), icon, opts])];
+  // silent89: a relation picture beside the wonder picture says what the question asks about (eat 🍽️, home 🏠, sleep 💤,
+  // make 🛠️, swim 🏊...). One per kPractice row, in order; none of them is the right answer's picture (PF2).
+  const kRelation = ['🍽️','🏠','🎲','💤','🍽️','🍽️','🦶','🤲','👦','↗️','😋','🎁','⬇️','📍','🛠️','📍','🏊','🛡️','🛠️','🏊','🍽️','🔍','👶','👦','↘️','👀','〰️','🌧️','🥶','💡','♨️','🤏','⬇️','👄','🔪','➰','🛠️','🥄','🥶'];
   // K level 2: two pictures differ in exactly one feature (0 number, 1 color, 2 size).
   const hue = (e, deg) => `<span style="filter:hue-rotate(${deg}deg)">${e}</span>`, sized = (e, em) => `<span style="font-size:${em}em">${e}</span>`;
   const kChanges = [
@@ -111,7 +114,7 @@
     if(level===1) {
       const r=pick(kPractice);
       ask=r[1];notes=[r[1]];
-      show=`<div class="g3a-material g3k"><button type="button" class="g3a-note g3k-wonder" data-g3a-note="0" aria-label="${esc(t(b('Hear our question','우리 질문 듣기')))}"><span class="g3k-pic" aria-hidden="true">${r[3]}❓</span> 🔊</button></div>`;
+      show=`<div class="g3a-material g3k"><button type="button" class="g3a-note g3k-wonder" data-g3a-note="0" aria-label="${esc(t(b('Hear our question','우리 질문 듣기')))}"><span class="g3k-pic" aria-hidden="true">${r[3]}${kRelation[kPractice.indexOf(r)]}❓</span> 🔊</button></div>`;
       opts=r[4].map((o,i)=>({html:kOpt(o[0],b(o[1],o[2])),ok:i===0,category:'picture'}));
       after=b('This picture answers our question.','이 그림이 우리 질문에 답해 줘요.');
     } else {
@@ -130,6 +133,9 @@
     return {ask,show,opts,after,notes};
   }
   const button = (id, text) => `<button type="button" id="${id}">${esc(t(text))}</button>`;
+  // silent89: K menu buttons lead with an action picture so a child who cannot read can tell them apart.
+  const kIcon = {'g3a-practice':'✏️','g3a-open':'🔎','g3a-next':'➡️','g3a-hear':'','g3a-edit':'↩️','g3a-exit':'🚪'};
+  const kButton = (k, id, text) => k && kIcon[id] ? button(id, b(`${kIcon[id]} ${text.en}`, `${kIcon[id]} ${text.ko}`)) : button(id, text);
   function speak(text) { say(t(text), S.lang === 'ko' ? 'ko-KR' : 'en-US'); }
   function cards(notes, names = labels) {
     return notes.map((x,i) => `<button type="button" class="g3a-note" data-g3a-note="${i}"><strong>${esc(t(names[i]))}</strong> 🔊<span>${esc(t(x))}</span></button>`).join('');
@@ -141,7 +147,7 @@
   }
   function entry(game) {
     const s = state.get(game.id);
-    frame(b('What shall we explore?','무엇을 알아볼까요?'), `<p>${esc(t(b('Choose a topic. No points here.','주제를 골라요. 점수는 없어요.')))}</p><div class="g3a-topics">${(game.grade==="K"?kTopics:topics).map((x,i)=>`<button type="button" data-g3a-topic="${i}" aria-pressed="${s.topic===i}">${esc(t(x))}${s.topic===i?' ✓':''}</button>`).join('')}</div><p>${esc(t(game.grade==='K'?b('Pretend pictures · Tap 🔊 to hear.','가상 그림 · 🔊를 눌러 들어요.'):b('Invented records · Read with an adult when sound is off.','가상 기록 · 무음일 때는 어른과 함께 읽어요.')))}</p>${button('g3a-practice',b('Practice · 10 questions','연습 · 10문제'))}${button('g3a-open',b('Investigate together · no score','함께 조사 · 점수 없음'))}`);
+    frame(b('What shall we explore?','무엇을 알아볼까요?'), `<p>${esc(t(b('Choose a topic. No points here.','주제를 골라요. 점수는 없어요.')))}</p><div class="g3a-topics">${(game.grade==="K"?kTopics:topics).map((x,i)=>`<button type="button" data-g3a-topic="${i}" aria-pressed="${s.topic===i}">${esc(t(x))}${s.topic===i?' ✓':''}</button>`).join('')}</div><p>${esc(t(game.grade==='K'?b('Pretend pictures · Tap 🔊 to hear.','가상 그림 · 🔊를 눌러 들어요.'):b('Invented records · Read with an adult when sound is off.','가상 기록 · 무음일 때는 어른과 함께 읽어요.')))}</p>${kButton(game.grade==='K','g3a-practice',b('Practice · 10 questions','연습 · 10문제'))}${kButton(game.grade==='K','g3a-open',b('Investigate together · no score','함께 조사 · 점수 없음'))}`);
     $$('[data-g3a-topic]').forEach(e=>e.onclick=()=>{s.topic=Number(e.dataset.g3aTopic);speak((game.grade==="K"?kTopics:topics)[s.topic]);entry(game);});
     $('#g3a-practice').onclick=()=>{s.practice=true; SESSION.rounds=10;game.play();};
     $('#g3a-open').onclick=()=>investigate(game);
@@ -163,10 +169,10 @@
       const q=k?pool[question][1]:b(`What can we find out about ${t(pool[question][1])}?`,`${t(pool[question][1])}에 대해 무엇을 알아볼까요?`);
       const help=k?b('Find pictures for your question.','내 질문에 맞는 그림을 찾아요.'):b('Choose your question, sort the notes, then share in your own words.','질문을 고르고 기록을 나눈 뒤 내 말로 알려 줘요.');
       let html=`<p>${esc(t(help))}</p>`;
-      if(stage===0) html+=`<p>${esc(t(k?b('Pick a question card.','질문 카드를 골라요.'):b('Choose a question card; say your own question to someone too.','질문 카드를 골라요. 나만의 질문도 직접 말해 봐요.')))}</p><div class="g3a-choices">${pool.map((r,i)=>`<button data-g3a-q="${i}" aria-pressed="${question===i}">${esc(qName(r))}${question===i?' ✓':''}</button>`).join('')}</div>${button('g3a-next',b('Collect and sort','모아서 나누기'))}`;
-      else if(stage===1) html+=`<p>${esc(t(q))}</p><div class="g3a-bins">${names.map((x,i)=>`<button data-g3a-bin="${i}" aria-pressed="${slot===i}">${esc(t(x))}${slot===i?' ✓':''} (${bins[i].length})</button>`).join('')}</div><p>${esc(t(k?b('Tap a box, then a picture.','칸을 누르고 그림을 눌러요.'):b('Tap a box, then a note. Tap a selected note to remove it.','칸을 고르고 기록을 눌러요. 고른 기록을 다시 누르면 빼요.')))}</p><div class="g3a-collection">${notes.map((x,i)=>`<button data-g3a-collect="${i}" aria-pressed="${bins.some(a=>a.includes(i))}">${esc(noteText(i))}${bins[0].includes(i)?' [1]':bins[1].includes(i)?' [2]':''}</button>`).join('')}</div>${button('g3a-next',b('Share my board','정리판으로 알려 주기'))}`;
-      else html+=`<p>${esc(t(q))}</p><div class="g3a-summary">${names.map((x,i)=>`<div><strong>${esc(t(x))}</strong><p>${bins[i].map(n=>esc(noteText(n))).join('<br>')||esc(t(b('No cards yet','아직 카드가 없어요')))}</p></div>`).join('')}</div><p>${esc(t(k?b('Tell someone what you found.','알아낸 것을 말해 봐요.'):b('Tell someone your question and what these notes show. This activity is not a mastery score.','질문과 기록에서 알아낸 것을 직접 말해 봐요. 이 활동은 실력 점수가 아니에요.')))}</p>${button('g3a-hear',b('🔊 Hear my board','🔊 정리판 듣기'))}${button('g3a-edit',b('Change my board','정리판 고치기'))}`;
-      frame(b('Our investigation · no score','우리 조사 · 점수 없음'),html+button('g3a-exit',b('Finish · discard cards','마치기 · 카드 지우기')));
+      if(stage===0) html+=`<p>${esc(t(k?b('Pick a question card.','질문 카드를 골라요.'):b('Choose a question card; say your own question to someone too.','질문 카드를 골라요. 나만의 질문도 직접 말해 봐요.')))}</p><div class="g3a-choices">${pool.map((r,i)=>`<button data-g3a-q="${i}" aria-pressed="${question===i}">${esc(qName(r))}${question===i?' ✓':''}</button>`).join('')}</div>${kButton(k,'g3a-next',b('Collect and sort','모아서 나누기'))}`;
+      else if(stage===1) html+=`<p>${esc(t(q))}</p><div class="g3a-bins">${names.map((x,i)=>`<button data-g3a-bin="${i}" aria-pressed="${slot===i}">${esc(t(x))}${slot===i?' ✓':''} (${bins[i].length})</button>`).join('')}</div><p>${esc(t(k?b('Tap a box, then a picture.','칸을 누르고 그림을 눌러요.'):b('Tap a box, then a note. Tap a selected note to remove it.','칸을 고르고 기록을 눌러요. 고른 기록을 다시 누르면 빼요.')))}</p><div class="g3a-collection">${notes.map((x,i)=>`<button data-g3a-collect="${i}" aria-pressed="${bins.some(a=>a.includes(i))}">${esc(noteText(i))}${bins[0].includes(i)?' [1]':bins[1].includes(i)?' [2]':''}</button>`).join('')}</div>${kButton(k,'g3a-next',b('Share my board','정리판으로 알려 주기'))}`;
+      else html+=`<p>${esc(t(q))}</p><div class="g3a-summary">${names.map((x,i)=>`<div><strong>${esc(t(x))}</strong><p>${bins[i].map(n=>esc(noteText(n))).join('<br>')||esc(t(b('No cards yet','아직 카드가 없어요')))}</p></div>`).join('')}</div><p>${esc(t(k?b('Tell someone what you found.','알아낸 것을 말해 봐요.'):b('Tell someone your question and what these notes show. This activity is not a mastery score.','질문과 기록에서 알아낸 것을 직접 말해 봐요. 이 활동은 실력 점수가 아니에요.')))}</p>${button('g3a-hear',b('🔊 Hear my board','🔊 정리판 듣기'))}${kButton(k,'g3a-edit',b('Change my board','정리판 고치기'))}`;
+      frame(b('Our investigation · no score','우리 조사 · 점수 없음'),html+kButton(k,'g3a-exit',b('Finish · discard cards','마치기 · 카드 지우기')));
       $$('[data-g3a-q]').forEach(e=>e.onclick=()=>{question=Number(e.dataset.g3aQ);updateNotes();speak(pool[question][1]);render();});
       $$('[data-g3a-bin]').forEach(e=>e.onclick=()=>{slot=Number(e.dataset.g3aBin);render();});
       $$('[data-g3a-collect]').forEach(e=>e.onclick=()=>{const n=Number(e.dataset.g3aCollect),was=bins[slot].includes(n);bins=bins.map(a=>a.filter(x=>x!==n));if(!was)bins[slot].push(n);speak(notes[n]);render();});
@@ -179,7 +185,7 @@
   }
   function menuButton(game) {
     if(DIAG.active||SESSION.review)return;
-    const el=document.createElement('button');el.className='g3a-menu';el.textContent=t(b('Topics / investigate','주제 / 함께 조사'));el.onclick=()=>{window.LearnLog.leave();state.get(game.id).practice=false;entry(game);};$('.g3a-material').prepend(el);
+    const el=document.createElement('button');el.className='g3a-menu';el.textContent=(game.grade==='K'?'🏠 ':'')+t(b('Topics / investigate','주제 / 함께 조사'));el.onclick=()=>{window.LearnLog.leave();state.get(game.id).practice=false;entry(game);};$('.g3a-material').prepend(el);
   }
   function makeItem(game) {
     if(game.grade==='K') {

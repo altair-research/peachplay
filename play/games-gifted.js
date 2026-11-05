@@ -160,6 +160,7 @@ registerGame({
 
 // ---------- 9. Who is tallest? (deductive reasoning) ----------
 const NAMES = [['Ben', '벤'], ['Mia', '미아'], ['Sam', '샘'], ['Zoe', '조이'], ['Leo', '레오'], ['Ava', '아바']];
+const LOGIC_DOT = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠'];
 const COMP = [['taller', '키가 커요', 'tallest', '키가 가장 큰 사람은'], ['faster', '더 빨라요', 'fastest', '가장 빠른 사람은'], ['older', '나이가 더 많아요', 'oldest', '나이가 가장 많은 사람은']];
 registerGame({
   id: 'logic', subject: 'gifted', icon: '🧠', title: B('Who Is It?', '누구일까?'), sub: B('Think it through', '차근차근 생각해요'),
@@ -167,10 +168,18 @@ registerGame({
   play() {
     const n = lvl('logic') === 1 ? 3 : 4, ppl = shuffle(NAMES).slice(0, n), c = pick(COMP), lines = ppl.slice(0, n - 1).map((p, i) => [p, ppl[i + 1]]);
     const en = lines.map(([a, b]) => `${a[0]} is ${c[0]} than ${b[0]}.`).join(' '), ko = lines.map(([a, b]) => `${a[1]}는 ${b[1]}보다 ${c[1]}.`).join(' ');
+    // silent89: each clue is also a picture of ONE pair (taller drawn taller, faster one nearer the 🏁 the runners face, older one with more
+    // candles), and every person keeps one color dot. The pairs never show the whole order, so the child still chains them.
+    const dot = p => LOGIC_DOT[NAMES.indexOf(p)];
+    const pairPic = ([a, b]) => `<span class="logicpair" style="display:inline-flex;align-items:flex-end;gap:2px;border:2px solid #d9c7b0;border-radius:8px;padding:1px 4px;background:#fff">${c[0] === 'faster' ? '<span style="align-self:center;font-size:clamp(12px,2.2dvh,16px)">🏁</span>' : ''}${[a, b].map((p, i) => {
+      const big = i === 0, fig = `<span style="display:block;font-size:${c[0] === 'taller' ? (big ? 'clamp(17px,3.2dvh,30px)' : 'clamp(12px,2.3dvh,20px)') : 'clamp(15px,2.9dvh,24px)'};line-height:1">${c[0] === 'faster' ? '🏃' : '🧍'}</span>`;
+      const extra = c[0] === 'older' ? `<span style="font-size:clamp(8px,1.5dvh,11px);line-height:1;letter-spacing:-3px">${'🕯️'.repeat(big ? 3 : 1)}</span>` : c[0] === 'faster' && big ? '<span style="font-size:clamp(9px,1.6dvh,12px)">💨</span>' : '';
+      return `<span style="display:flex;flex-direction:column;align-items:center"><span style="display:flex;align-items:flex-end">${fig}${extra}</span><span style="font-size:clamp(10px,1.8dvh,13px);line-height:1.1">${dot(p)}</span></span>`;
+    }).join('')}</span>`;
     const ds = ppl.slice(1);
     quiz(this, {
-      ask: B(`Who is the ${c[2]}?`, `${c[3]} 누구일까요?`), show: `<div class="logictext">${L(B(en, ko))}</div>`,
-      opts: ppl.map(p => ({ html: `<span class="word">${p[0]}${S.lang === 'ko' ? ' · ' + p[1] : ''}</span>`, ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
+      ask: B(`Who is the ${c[2]}?`, `${c[3]} 누구일까요?`), show: `<div style="display:flex;gap:4px;justify-content:center">${lines.map(pairPic).join('')}</div><div class="logictext" style="font-size:clamp(13px,min(4.2vw,2.6dvh),23px);padding:5px 10px;line-height:1.3">${L(B(en, ko))}</div>`,
+      opts: ppl.map(p => ({ html: `<span class="word">${dot(p)} ${p[0]}${S.lang === 'ko' ? ' · ' + p[1] : ''}</span>`, ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
     });
   }
 });

@@ -5,27 +5,29 @@
   const fiction = pair('Made-up town records', '가상 마을 기록');
   const listen = pair('Hear this record', '이 기록 듣기');
   const letters = ['A', 'B', 'C'];
+  // silent89: record cards lead with a picture of how they were made (👀 was there, 📚 later book comparing, ✂️ later shortening)
+  // and are kept to grade-1 length; the event name moves to the heading's label for screen readers.
   // Each event has a different kind of first-hand evidence and a different research purpose.
   // Later sources explicitly use the older record; media alone never determines the answer.
   const sources = [
     [pair('Town fair', '마을 축제'), pair('Mia: diary, fair day', '미아: 축제 당일 일기'), pair('I felt happy at the fair.', '축제에서 행복했어요.'), pair('Which record gives Mia’s own feelings?', '그날 미아의 느낌을 직접 볼 기록은?'), false],
     [pair('Market day', '장터 날'), pair('Bo: sales book, market day', '보: 장터 당일 장부'), pair('I sold six apples.', '사과 여섯 개를 팔았어요.'), pair('Which record lists that day’s sales?', '그날 판매를 직접 적은 기록은?'), false],
     [pair('Bridge opening', '다리 개통'), pair('Ari: letter, opening day', '아리: 개통 당일 편지'), pair('I walked across the new bridge.', '새 다리를 걸어서 건넜어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true],
-    [pair('Garden planting', '정원 심기'), pair('Cia: photo, planting day', '시아: 심은 당일 사진'), pair('My photo shows three planted rows.', '내 사진에 심은 세 줄이 보여요.'), pair('Which record shows the rows that day?', '그날 심은 줄을 직접 보여 주는 기록은?'), false],
+    [pair('Garden planting', '정원 심기'), pair('Cia: photo, planting day', '시아: 심은 당일 사진'), pair('My photo shows three planted rows.', '심은 세 줄이 보여요.'), pair('Which record shows the rows that day?', '그날 심은 줄을 직접 보여 주는 기록은?'), false],
     [pair('School play', '학교 연극'), pair('Leo: recording, play day', '레오: 연극 당일 녹음'), pair('I recorded the actors singing.', '배우들의 노래를 녹음했어요.'), pair('Which record lets us hear the actors?', '배우들의 목소리를 직접 들을 기록은?'), false],
-    [pair('Bus launch', '버스 첫 운행'), pair('Nia: ticket, first ride', '니아: 첫 운행 때의 표'), pair('I kept my ticket from the first ride.', '첫 운행 때 탄 표를 간직했어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true],
-    [pair('Library opening', '도서실 개관'), pair('Ava: news, opening day', '에이바: 개관 당일 기사'), pair('I was there and wrote about the crowd.', '현장에 가서 모인 사람들 기사를 썼어요.'), pair('Which record describes a reporter’s visit?', '기자가 직접 가서 남긴 기록은?'), false],
+    [pair('Bus launch', '버스 첫 운행'), pair('Nia: ticket, first ride', '니아: 첫 운행 날 표'), pair('I kept my first-ride ticket.', '그날 탄 표를 간직했어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true],
+    [pair('Library opening', '도서실 개관'), pair('Ava: news, opening day', '에이바: 개관 당일 기사'), pair('I wrote about the crowd there.', '모인 사람들을 기사로 썼어요.'), pair('Which record describes a reporter’s visit?', '기자가 직접 가서 남긴 기록은?'), false],
     [pair('Park cleanup', '공원 청소'), pair('Ben: list, cleanup day', '벤: 청소 당일 목록'), pair('I counted four bags of litter.', '쓰레기 네 봉지를 세었어요.'), pair('Which record gives the helper’s count?', '도운 사람이 직접 센 수를 적은 기록은?'), false],
     [pair('Town parade', '마을 행진'), pair('May: drawing, parade day', '메이: 행진 당일 그림'), pair('I drew the flags I saw.', '내가 본 깃발을 그렸어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true],
-    [pair('Pond visit', '연못 방문'), pair('Jay: notes, visit day', '제이: 방문 당일 메모'), pair('I saw two ducks by the pond.', '연못 곁에서 오리 두 마리를 봤어요.'), pair('Which record gives the visitor’s count?', '방문자가 직접 센 수를 적은 기록은?'), false],
+    [pair('Pond visit', '연못 방문'), pair('Jay: notes, visit day', '제이: 방문 당일 메모'), pair('I saw two ducks there.', '오리 두 마리를 봤어요.'), pair('Which record gives the visitor’s count?', '방문자가 직접 센 수를 적은 기록은?'), false],
     [pair('Town concert', '마을 음악회'), pair('Sam: video, concert day', '샘: 음악회 당일 영상'), pair('I filmed the band playing.', '연주하는 악단을 찍었어요.'), pair('Which record shows the band moving?', '악단의 움직임을 직접 보여 주는 기록은?'), false],
-    [pair('Bread sale', '빵 판매'), pair('Kim: recipe, sale day', '김: 판매 당일 조리법'), pair('I wrote down how I baked the bread.', '내가 빵 만든 방법을 적었어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true]
+    [pair('Bread sale', '빵 판매'), pair('Kim: recipe, sale day', '김: 판매 당일 조리법'), pair('I wrote how I baked bread.', '빵 만든 방법을 적었어요.'), pair('Which text compares older records?', '옛 기록을 비교해 설명한 글은?'), true]
   ];
   const sourceQuestion = pair('Which record is from someone who was there?', '현장에 있던 사람이 남긴 기록은?');
   const laterMedia = [pair('diary', '일기'), pair('book', '책'), pair('letter', '편지'), pair('photo essay', '사진 해설'), pair('recording', '녹음'), pair('book', '책'), pair('news', '기사'), pair('report', '보고서'), pair('picture book', '그림책'), pair('notes', '메모'), pair('video', '영상'), pair('book', '책')];
-  const summary = pair('✍️ 2 years later', '✍️ 두 해 뒤');
-  const explanation = pair('I compared old records.', '옛 기록들을 비교했어요.');
-  const shortened = pair('I shortened that text.', '그 글을 줄였어요.');
+  const summary = pair('✂️ later', '✂️ 나중');
+  const explanation = pair('Compares old records', '기록 비교');
+  const shortened = pair('Shortens', '줄임');
   const speech = text => say(text, S.lang === 'ko' ? 'ko-KR' : 'en-US');
   function bindAudio(lines) {
     document.querySelectorAll('[data-g3s-read]').forEach(btn => {
@@ -39,9 +41,9 @@
     play() {
       const s = pick(sources), level2 = lvl(this.id) === 2;
       const media = laterMedia[sources.indexOf(s)];
-      const later = pair(`✍️ ${media.en}, next year`, `✍️ 다음 해 ${media.ko}`);
+      const later = pair(`📚 ${media.en}, later`, `📚 나중 ${media.ko}`);
       const ordered = shuffle([
-        {kind: 0, maker: s[1], text: s[2]},
+        {kind: 0, maker: pair(`👀 ${s[1].en}`, `👀 ${s[1].ko}`), text: s[2]},
         {kind: 1, maker: later, text: explanation},
         {kind: 2, maker: summary, text: shortened}
       ]);
@@ -51,7 +53,7 @@
       const lines = ordered.map((c, i) => `${letters[i]}. ${L(c.maker)}. ${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}`);
       quiz(this, {
         ask: level2 ? s[3] : sourceQuestion,
-        show: `<section class="g3s-stage"><div class="g3s-heading" aria-label="${L(fiction)}">${L(pair('Made-up', '가상'))} · ${L(s[0])}</div><div class="g3s-records">${ordered.map((c, i) => `<article class="g3s-record"><strong>${letters[i]} · ${L(c.maker)}</strong><span>${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}</span><button class="say" data-g3s-read="${i}" aria-label="${L(listen)} ${letters[i]}">🔊</button></article>`).join('')}</div></section>`,
+        show: `<section class="g3s-stage"><div class="g3s-heading" aria-label="${L(fiction)} · ${L(s[0])}">${L(pair('Made-up', '가상'))}</div><div class="g3s-records">${ordered.map((c, i) => `<article class="g3s-record"><strong>${letters[i]} · ${L(c.maker)}</strong><span>${L(c.text)}${c.kind === 1 ? ' (' + oldLabel + ')' : c.kind === 2 ? ' (' + laterLabel + ')' : ''}</span><button class="say" data-g3s-read="${i}" aria-label="${L(listen)} ${letters[i]}">🔊</button></article>`).join('')}</div></section>`,
         opts: ordered.map((c, i) => ({html: `<span class="word">${letters[i]}</span>`, ok: c.kind === target, category: 'record-card'})),
         cls: 'g3s-options',
         after: target === 0 ? pair('This person made a record of their own visit.', '직접 겪은 사람이 남긴 기록이에요.') : pair('This writer compared older records.', '옛 기록을 비교해서 쓴 글이에요.'),
@@ -96,7 +98,7 @@
       if (level2) lines.push(`${L(row[4])}: ${members.map(i => L(row[i])).join(', ')}.`);
       quiz(this, {
         ask,
-        show: `<section class="g3s-stage"><div class="g3s-heading">${L(fiction)} · ${L(mode === 1 ? pair('Date table', '날짜 표') : pair('Timeline · order only', '연표 · 순서만 표시'))}</div><div class="g3s-dates ${mode === 1 ? '' : 'g3s-timeline'}">${display.map((i,n) => `<div class="g3s-date"><strong>${years[i]}</strong><span>${L(row[i])}</span><button class="say" data-g3s-read="${n}" aria-label="${L(listen)} ${years[i]}">🔊</button></div>`).join('')}</div>${level2 ? `<table class="g3s-table"><caption>${L(pair('Group table', '분류 표'))}</caption><tbody><tr><th scope="row">${L(row[4])}</th><td>${members.map(i => L(row[i])).join(' · ')}</td></tr></tbody></table><button class="say g3s-group-audio" data-g3s-read="3" aria-label="${L(pair('Hear the group table', '분류 표 듣기'))}">🔊</button>` : ''}</section>`,
+        show: `<section class="g3s-stage"><div class="g3s-heading">${L(pair('Made-up', '가상'))} · ${L(mode === 1 ? pair('Date table', '날짜 표') : pair('Timeline', '연표'))}</div><div class="g3s-dates ${mode === 1 ? '' : 'g3s-timeline'}">${display.map((i,n) => `<div class="g3s-date"><strong>${years[i]}</strong><span>${L(row[i])}</span><button class="say" data-g3s-read="${n}" aria-label="${L(listen)} ${years[i]}">🔊</button></div>`).join('')}</div>${level2 ? `<table class="g3s-table"><caption>${L(pair('Group table', '분류 표'))}</caption><tbody><tr><th scope="row">${L(row[4])}</th><td>${members.map(i => L(row[i])).join(' · ')}</td></tr></tbody></table><button class="say g3s-group-audio" data-g3s-read="3" aria-label="${L(pair('Hear the group table', '분류 표 듣기'))}">🔊</button>` : ''}</section>`,
         opts: [0,1,2].map(i => ({html: `<span class="word">${L(row[i])}</span>`, ok: i === target, category: 'town-event'})),
         cls: 'g3s-options',
         after: level2 ? pair('The date and group both fit.', '날짜와 분류가 둘 다 맞아요.') : pair(`${years[target]}: ${row[target].en}.`, `${years[target]}년: ${row[target].ko}.`),

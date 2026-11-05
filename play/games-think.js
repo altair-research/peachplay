@@ -14,7 +14,9 @@ registerGame({
     let seq; do { seq = Array.from({ length: N }, (_, i) => (i < 2 || rnd(100) >= 30) ? go : nogo); } while (seq.filter(x => x === nogo).length < 3);
     if (dup(this, JSON.stringify(['gonogo', seq.map(x => x === go ? 1 : 0)]))) return this.play();
     const ask = B(`Tap only the ${go}! Do NOT tap the ${nogo}.`, `${go}만 눌러요! ${nogo}는 누르지 않아요.`);
-    view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>
+    // silent89: a picture legend says the rule without words: go picture + 👆✓ (green), stop picture + ✋ (red).
+    const legend = `<div class="gnglegend" aria-hidden="true" style="display:flex;gap:14px;justify-content:center;font-size:clamp(22px,4.4dvh,32px);line-height:1.15;margin:2px 0"><span style="border:3px solid #2a9d8f;border-radius:10px;padding:0 8px;background:#e7f7f1">${go} 👆✓</span><span style="border:3px solid #d62828;border-radius:10px;padding:0 8px;background:#fdeaea">${nogo} ✋</span></div>`;
+    view().innerHTML = `<div class="prompt">${L(ask)}<button class="say" id="sp">🔊</button></div>${legend}
       <div class="gdots" id="gdots">${seq.map(() => '<i></i>').join('')}</div>
       <button class="gstage" id="gstage" aria-label="tap"></button><div class="gfb" id="gfb"></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     $('#sp').onclick = () => say(L(ask)); say(L(ask));
@@ -46,14 +48,18 @@ registerGame({
     const trials = phases.flatMap(([rule, n], pi) => Array.from({ length: n }, () => ({ rule, pi, card: pick([['red', 'star'], ['blue', 'circle']]) })));
     if (dup(this, JSON.stringify(['sortcards', trials.map(t => [t.rule, t.card[1]])]))) return this.play();
     const rt = { color: B('COLOR game! Match the COLOR.', '색깔 게임! 같은 색깔 상자에 넣어요.'), shape: B('SHAPE game! Match the SHAPE.', '모양 게임! 같은 모양 상자에 넣어요.') };
-    view().innerHTML = `<div class="prompt" id="rule"></div><div class="gdots" id="gdots">${trials.map(() => '<i></i>').join('')}</div>
+    // silent89: the current rule is also a picture: a palette with two color patches, or two plain shape outlines (no color).
+    const badge = rule => rule === 'color'
+      ? `🎨 <svg viewBox="0 0 44 20" width="76" height="35" style="vertical-align:middle"><rect x="1" y="1" width="18" height="18" rx="4" fill="${CARD_COL.blue}"/><rect x="25" y="1" width="18" height="18" rx="4" fill="${CARD_COL.red}"/></svg>`
+      : `<svg viewBox="0 0 44 20" width="76" height="35" style="vertical-align:middle"><polygon points="10,1 12.6,7 19,7.4 14,11.6 15.6,18.6 10,14.8 4.4,18.6 6,11.6 1,7.4 7.4,7" fill="none" stroke="#1d3557" stroke-width="1.8"/><circle cx="34" cy="10" r="8.5" fill="none" stroke="#1d3557" stroke-width="1.8"/></svg>`;
+    view().innerHTML = `<div class="prompt" id="rule"></div><div id="rulebadge" aria-hidden="true" style="display:inline-block;font-size:clamp(20px,4dvh,28px);line-height:1.1;border:3px solid #e0703a;border-radius:10px;padding:1px 10px;background:#fff7ef;margin:2px auto"></div><div class="gdots" id="gdots">${trials.map(() => '<i></i>').join('')}</div>
       <div class="cardstage" id="cardstage"></div>
       <div class="boxes"><button class="cbox" data-s="left">${cardSvg('blue', 'star', 64)}</button><button class="cbox" data-s="right">${cardSvg('red', 'circle', 64)}</button></div>
       <div class="gfb" id="gfb"></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
     let i = 0, lock = true, post = [], lastRule = null;
     const show = () => {
       const t = trials[i]; if (!t) return fin();
-      if (t.rule !== lastRule) { $('#rule').textContent = L(rt[t.rule]); say(L(rt[t.rule])); lastRule = t.rule; }
+      if (t.rule !== lastRule) { $('#rule').textContent = L(rt[t.rule]); const rb = $('#rulebadge'); rb.innerHTML = badge(t.rule); rb.style.animation = 'none'; void rb.offsetWidth; rb.style.animation = 'pop .35s 2'; say(L(rt[t.rule])); lastRule = t.rule; }
       $('#cardstage').innerHTML = cardSvg(t.card[0], t.card[1], 96); lock = false;
     };
     const fin = () => { const acc = post.filter(Boolean).length / (post.length || 1), good = acc >= 0.75; record('sortcards', good); if (good) addPeach(); $('#cardstage').innerHTML = ''; $('#cheer').textContent = good ? pick(T().right) : T().again; nextButton(() => this.play()); };

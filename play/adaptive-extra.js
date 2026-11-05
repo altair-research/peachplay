@@ -362,13 +362,26 @@
     const text = lv === 1 ? `${name} has a ${obj[0]}. ${name} takes it home.` : `${name} sees a ${others[0][0]}. ${name} finds a ${obj[0]}.`;
     const round = textRound(text, B(`What does ${name} ${lv === 1 ? 'have' : 'find'}?`, `이야기에서 ${lv === 1 ? '가지고 있는' : '찾은'} 물건을 골라요.`), obj[0], others.map(o => o[0]), B(`The story tells us: ${obj[0]}.`, `이야기에 나온 물건을 확인해요: ${obj[0]}.`));
     round.opts = [obj, ...others].map((o, i) => ({ html: `<span class="word">${o[1]} ${o[0]}</span>`, ok: i === 0 }));
+    if (grade !== 'K') return round;
+    // silent89: a picture strip of the story. Objects are dark shapes (the colored picture stays an answer), and at L2 both
+    // panels are shapes, so the 🔍 in the question still has to be matched to the "finds" panel, not the "sees" one.
+    const shape = e => `<span style="filter:brightness(0);opacity:.72">${e}</span>`;
+    const panel = (n, act, e) => `<span style="display:inline-flex;align-items:center;gap:2px;border:2px solid #d9c7b0;border-radius:8px;padding:1px 6px;white-space:nowrap;background:#fff">${n ? `<small style="font-size:.45em">${n}</small>` : ''}🧒${act}${shape(e)}</span>`;
+    round.show = `<div class="emo" aria-hidden="true" style="display:flex;gap:6px;justify-content:center;align-items:center;font-size:clamp(22px,4.4dvh,34px);line-height:1.1;white-space:nowrap">${lv === 1 ? `${panel(0, '🤲', obj[1])}➜🏠` : `${panel(1, '👀', others[0][1])}➜${panel(2, '🔍', obj[1])}`}</div>` + round.show;
+    round.ask = lv === 1 ? B(`🤲 What does ${name} have?`, '🤲 이야기에서 가지고 있는 물건을 골라요.') : B(`🔍 What does ${name} find?`, '🔍 이야기에서 찾은 물건을 골라요.');
+    round.askSay = lv === 1 ? B(`What does ${name} have?`, '이야기에서 가지고 있는 물건을 골라요.') : B(`What does ${name} find?`, '이야기에서 찾은 물건을 골라요.');
     return round;
   });
   add('adstoryorderK', 'K', B('First and Next', '처음과 다음'), B('Comprehension: Literature', '이해: 이야기'), lv => {
     const name = pick(names), obj = pick(objects);
     const text = `${name} finds a ${obj[0]}. ${name} packs it away.`;
     const first = B('🔍 Finds it', '🔍 찾아요'), next = B('📦 Packs it', '📦 넣어 둬요');
-    return textRound(text, lv === 1 ? B('What happens first?', '먼저 일어난 일을 골라요.') : B('What happens next?', '그다음 일어난 일을 골라요.'), lv === 1 ? first : next, [lv === 1 ? next : first, B('😴 Sleeps', '😴 자요')], B(text, text));
+    const round = textRound(text, lv === 1 ? B('What happens first?', '먼저 일어난 일을 골라요.') : B('What happens next?', '그다음 일어난 일을 골라요.'), lv === 1 ? first : next, [lv === 1 ? next : first, B('😴 Sleeps', '😴 자요')], B(text, text));
+    // silent89: numbered story panels (1 the child spots it on the ground, 2 it goes into the bag). The panels use other
+    // pictures than the answer icons (🔍 📦), and the asked panel is ringed, so the child reads the picture story, not a match.
+    const panel = (n, body, asked) => `<span style="display:inline-flex;align-items:center;gap:2px;border:${asked ? '3px solid #e0703a' : '2px solid #d9c7b0'};border-radius:8px;padding:1px 6px;white-space:nowrap;background:${asked ? '#fff3ea' : '#fff'}"><small style="font-size:.45em">${n}</small>${body}</span>`;
+    round.show = `<div class="emo" aria-hidden="true" style="display:flex;gap:6px;justify-content:center;align-items:center;font-size:clamp(22px,4.4dvh,34px);line-height:1.1;white-space:nowrap">${panel(1, `🧒👀<span style="font-size:.7em;align-self:flex-end">${obj[1]}</span>`, lv === 1)}➜${panel(2, `${obj[1]}➡️🎒`, lv === 2)}</div>` + round.show;
+    return round;
   });
   // 70b: picture step cards with two-word labels, so K children can use the pictures and read-aloud
   // instead of decoding a full procedure. [title, title picture, steps [picture, short label, spoken form]].
