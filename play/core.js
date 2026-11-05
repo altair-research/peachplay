@@ -165,6 +165,8 @@ function translateLiveScreen(from) {
 }
 
 const B = (en, ko) => ({ en, ko });
+// art90: finished action pictures (src/art/*.svg, precached in sw.js). alt is a short B(en, ko); h is the CSS height of the slot.
+const artPic = (name, alt, h = 'clamp(52px,10dvh,80px)') => `<img class="artpic" src="art/${name}.svg" alt="${L(alt).replace(/"/g, '&quot;')}" draggable="false" style="height:${h};width:auto;max-width:100%;vertical-align:middle">`;
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const view = () => $('#view');

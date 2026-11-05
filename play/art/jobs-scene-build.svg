@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="title">
+  <title id="title">벽돌 벽과 벽돌을 들어 올리는 크레인이 있는 공사장</title>
+  <g stroke="#3a2a22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="11" y="61" width="39" height="27" rx="1" fill="#f6a57a"/><path d="M11 70 H50 M11 79 H50 M24 61 V70 M38 61 V70 M18 70 V79 M33 70 V79 M45 70 V79 M25 79 V88 M40 79 V88" fill="none" /><path d="M68 87 V10 H78 V87 M68 15 L78 26 68 37 78 48 68 59 78 70 68 81" fill="#ffd166" /><path d="M24 16 H91 V25 H24 Z" fill="#ffd166" /><path d="M25 16 L37 25 49 16 61 25 73 16 85 25 M31 16 L71 5 89 16" fill="none" /><path d="M35 25 V39 Q35 45 40 42" fill="none" /><rect x="26" y="45" width="22" height="9" rx="1" fill="#f6a57a"/><path d="M29 45 L36 40 45 45" fill="none" /><rect x="61" y="80" width="24" height="8" rx="1" fill="#adb5bd"/><rect x="55" y="89" width="35" height="3" rx="1" fill="#adb5bd"/>
+  </g>
+</svg>

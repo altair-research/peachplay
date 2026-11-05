@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="title">
+  <title id="title">펌프 손잡이를 눌러 자전거 바퀴에 바람을 넣는 장면</title>
+  <g stroke="#3a2a22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="29" cy="65" r="23" fill="#adb5bd" /><circle cx="29" cy="65" r="17" fill="none" /><path d="M29 48 V82 M12 65 H46 M17 53 L41 77 M17 77 L41 53" fill="none" stroke-width="1.5"/><path d="M29 65 L42 34 59 65 H29 L20 34 H42 M20 34 L16 25" fill="none" stroke="#95d5b2" stroke-width="4"/><path d="M10 25 H23 M42 34 L47 22 H55" fill="none" /><circle cx="59" cy="65" r="4" fill="#ffd166" /><path d="M51 63 Q55 89 67 84 Q77 81 77 69" fill="none" stroke-width="3"/><rect x="72" y="40" width="11" height="34" rx="3" fill="#8ecae6"/><path d="M77 40 V21 M66 21 H88 M66 77 H89" fill="none" stroke-width="4"/><path d="M92 8 L84 18" fill="none" stroke-width="6"/><path d="M92 8 L84 18" fill="none" stroke="#f6a57a" stroke-width="3"/><path d="M84 18 L80 15 Q77 13 75 17 L72 20 Q70 23 74 25 H84 L90 19" fill="#f6a57a" /><path d="M63 31 V47 M59 42 L63 48 67 42" fill="none" stroke-width="2.5"/>
+  </g>
+</svg>

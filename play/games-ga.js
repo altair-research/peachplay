@@ -279,9 +279,11 @@ const CITIZEN = [
   [['🪑⬅️🍽️', B('chair in', '의자 넣어요')], ['🪑💥🚶', B('chair out', '그냥 둬요')]],
   [['🧍🧍🧍', B('taking turns', '차례 지켜요')], ['🧍↪️🧍🧍', B('cutting line', '새치기해요')]],
   [['🩹', B('helping friend', '친구 도와요')], ['😆', B('laughing at', '비웃어요')]],
-  [['📚➡️🏫', B('returning book', '책 돌려줘요')], ['📚🔒🏠', B('keeping book', '안 돌려줘요')]],
-  [['🚰✋', B('tap off', '물 잠가요')], ['🚰💦💦', B('tap left on', '물 낭비해요')]]
+  [['📚➡️🏫', B('returning book', '책 돌려줘요'), 'citizen-book-return'], ['📚🔒🏠', B('keeping book', '안 돌려줘요'), 'citizen-book-keep']],
+  [['🚰✋', B('tap off', '물 잠가요'), 'citizen-tap-off'], ['🚰💦💦', B('tap left on', '물 낭비해요'), 'citizen-tap-on']]
 ];
+// art90: x[2] names a drawn action picture (src/art/); it takes the emoji's slot and the label stays under it. Others keep the emoji.
+const citizenPic = (x, h) => x[2] ? artPic(x[2], x[1], h) : `<span class="emo">${x[0]}</span>`;
 // silent89: the thumb shows which kind to find (👍 good, 👎 NOT good) without reading, and each pair has two different action pictures.
 const cueCard = e => `<div class="emo" aria-hidden="true" style="font-size:clamp(34px,6.5dvh,46px);line-height:1.1">${e}</div>`;
 registerGame({
@@ -290,12 +292,12 @@ registerGame({
   play() {
     if(lvl('citizen')===2){
       const p=pick(CITIZEN),wrong=pick(CITIZEN.filter(x=>x!==p))[1];
-      quiz(this,{ask:B('Which action helps our shared space?','함께 쓰는 곳에 도움이 되는 행동은?'),show:cueCard('🏫👍'),opts:[p[0],p[1],wrong].map((x,i)=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`,ok:i===0})),cls:'shapes'});return;
+      quiz(this,{ask:B('Which action helps our shared space?','함께 쓰는 곳에 도움이 되는 행동은?'),show:cueCard('🏫👍'),opts:[p[0],p[1],wrong].map((x,i)=>({html:`${citizenPic(x,'clamp(44px,8dvh,60px)')}<span class="ol">${L(x[1])}</span>`,ok:i===0})),cls:'shapes'});return;
     }
     const p = pick(CITIZEN), notQ = rnd(3) === 0;
     quiz(this, {
       ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'), show: cueCard(notQ ? '👎' : '👍'),
-      opts: [{ html: `<span class="emo">${p[0][0]}</span><span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `<span class="emo">${p[1][0]}</span><span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups',
+      opts: [{ html: `${citizenPic(p[0])}<span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `${citizenPic(p[1])}<span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups',
       after: B('Good citizens are kind and follow the rules!', '좋은 시민은 친절하고 규칙을 지켜요!'), vocab: 'Good citizens follow the rules!'
     });
   }
@@ -303,17 +305,19 @@ registerGame({
 
 // ---------- 6. Community workers (Labor Day) ----------
 const JOBS = [
-  { e: '🧑‍🚒', n: B('firefighter', '소방관'), q: B('Who puts out fires?', '불을 끄는 사람은 누구일까요?') , sc: '🔥🏠' },
+  { e: '🧑‍🚒', n: B('firefighter', '소방관'), q: B('Who puts out fires?', '불을 끄는 사람은 누구일까요?') , sc: '🔥🏠', art: ['jobs-scene-fire', B('A house on fire', '불이 난 집')] },
   { e: '👮', n: B('police officer', '경찰관'), q: B('Who keeps people safe on roads?', '길에서 사람들을 안전하게 지키는 사람은?') , sc: '🚦🚗' },
   { e: '🧑‍🏫', n: B('teacher', '선생님'), q: B('Who teaches children at school?', '학교에서 아이들을 가르치는 사람은?') , sc: '🏫📚' },
   { e: '🧑‍⚕️', n: B('doctor', '의사'), q: B('Who helps sick people feel better?', '아픈 사람을 낫게 도와주는 사람은?') , sc: '🤒🩺' },
   { e: '🧑‍🌾', n: B('farmer', '농부'), q: B('Who grows food on a farm?', '농장에서 먹거리를 키우는 사람은?') , sc: '🚜🌽' },
-  { e: '👷', n: B('builder', '건축 노동자'), q: B('Who builds houses and buildings?', '집과 건물을 짓는 사람은?') , sc: '🧱🏗️' },
+  { e: '👷', n: B('builder', '건축 노동자'), q: B('Who builds houses and buildings?', '집과 건물을 짓는 사람은?') , sc: '🧱🏗️', art: ['jobs-scene-build', B('A building site with a crane', '크레인이 있는 공사장')] },
   { e: '🧑‍🍳', n: B('cook', '요리사'), q: B('Who cooks food in a restaurant?', '식당에서 음식을 만드는 사람은?') , sc: '🍳🍲' },
   { e: '🧑‍✈️', n: B('pilot', '조종사'), q: B('Who flies an airplane?', '비행기를 조종하는 사람은?') , sc: '✈️☁️' }
 ];
 // silent89: a work scene (what the job does: fire, road, class, sick child...) never shows the worker picture itself (PF2).
-const jobScene = j => `<div class="emo" aria-hidden="true" style="font-size:clamp(32px,6dvh,46px);line-height:1.1;white-space:nowrap">${j.sc}</div>`;
+// art90: j.art = [drawn scene with no person, alt] replaces the emoji scene where it exists; jobSceneInline is the small one for the L2 strip.
+const jobSceneInline = (j, h) => j.art ? artPic(j.art[0], j.art[1], h) : j.sc;
+const jobScene = j => j.art ? `<div>${artPic(j.art[0], j.art[1], 'clamp(56px,11dvh,88px)')}</div>` : `<div class="emo" aria-hidden="true" style="font-size:clamp(32px,6dvh,46px);line-height:1.1;white-space:nowrap">${j.sc}</div>`;
 registerGame({
   id: 'jobs', subject: 'ss', icon: '👷', title: B('Who Helps Us?', '누가 도와줄까?'), sub: B('Workers & Labor Day', '일하는 사람들과 노동절'),
   area: AREA_SS('Labor Day & jobs'),
@@ -427,7 +431,7 @@ registerGame({
   quiz(this,{ask:B(`Which pair matches Georgia's ${t.q.en} and ${u.q.en}?`,`조지아 상징: ${t.q.ko}·${u.q.ko} 짝은?`),opts:[pic(t.e+u.e,pair(t.n,u.n),true),pic(sameKindPic[i][0]+u.e,pair(sameKind[i][0],u.n),false),pic(t.e+sameKindPic[j][0],pair(t.n,sameKind[j][0]),false)],cls:'shapes'});
  };
  const jobs=GAMES.find(g=>g.id==='jobs'),old=jobs.play;
- jobs.play=function(){if(lvl(this.id)===1)return old.call(this);const a=pick(JOBS),b=pick(JOBS.filter(x=>x!==a)),c=pick(JOBS.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.n.en} + ${y.n.en}`,`${x.n.ko} + ${y.n.ko}`);quiz(this,{ask:B('Which pair can do BOTH jobs in order?','두 일을 차례로 하는 사람들의 짝은?'),show:`<div class="emo" aria-hidden="true" style="font-size:clamp(28px,5.5dvh,42px);white-space:nowrap">1 ${a.sc} ➜ 2 ${b.sc}</div><div class="storytext">${L(a.q)}<br>${L(b.q)}</div>`,askExtra:{t:`${L(a.q)} ${L(b.q)}`},opts:[[a,b],[a,c],[c,b]].map(([x,y],i)=>pic(x.e+y.e,pair(x,y),i===0)),cls:'shapes'});};
+ jobs.play=function(){if(lvl(this.id)===1)return old.call(this);const a=pick(JOBS),b=pick(JOBS.filter(x=>x!==a)),c=pick(JOBS.filter(x=>x!==a&&x!==b)),pair=(x,y)=>B(`${x.n.en} + ${y.n.en}`,`${x.n.ko} + ${y.n.ko}`);quiz(this,{ask:B('Which pair can do BOTH jobs in order?','두 일을 차례로 하는 사람들의 짝은?'),show:`<div class="emo" aria-hidden="true" style="font-size:clamp(28px,5.5dvh,42px);white-space:nowrap">1 ${jobSceneInline(a,'clamp(36px,7dvh,52px)')} ➜ 2 ${jobSceneInline(b,'clamp(36px,7dvh,52px)')}</div><div class="storytext">${L(a.q)}<br>${L(b.q)}</div>`,askExtra:{t:`${L(a.q)} ${L(b.q)}`},opts:[[a,b],[a,c],[c,b]].map(([x,y],i)=>pic(x.e+y.e,pair(x,y),i===0)),cls:'shapes'});};
  const holidays=GAMES.find(g=>g.id==='holidays'),prior=holidays.play;
  const days=[
  [B('Labor Day','노동절'),B('workers','일하는 사람들')],

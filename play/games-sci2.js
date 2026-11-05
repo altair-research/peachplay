@@ -33,17 +33,19 @@
   });
   // [picture, short place name, material, clue]. 70a: the clue is shown (and read) as material; question stays one short sentence.
   const earth=[
-    ['💧',B('water cup','컵 속 물'),'water',B('It fills a cup and pours out.','컵에 담겨 있고 기울이면 쏟아져요.'),'🥤🫗'],['💧',B('puddle water','웅덩이 물'),'water',B('After rain it sits in a low spot.','비가 온 뒤 낮은 곳에 고여요.'),'🌧️👢'],['💧',B('river water','강물'),'water',B('It flows between two banks.','양쪽 둑 사이로 흘러요.'),'🏞️'],
+    ['💧',B('water cup','컵 속 물'),'water',B('It fills a cup and pours out.','컵에 담겨 있고 기울이면 쏟아져요.'),'🥤🫗',['earth-pour-water',B('A cup tipped over a plant','화분 위로 기울인 컵')]],['💧',B('puddle water','웅덩이 물'),'water',B('After rain it sits in a low spot.','비가 온 뒤 낮은 곳에 고여요.'),'🌧️👢'],['💧',B('river water','강물'),'water',B('It flows between two banks.','양쪽 둑 사이로 흘러요.'),'🏞️'],
     ['🪨',B('path rock','길가 바위'),'rock',B('A hard piece lies by a path.','길가에 단단한 덩어리가 있어요.'),'🛤️'],['🪨',B('small pebble','작은 자갈'),'rock',B('A tiny hard piece keeps its shape.','작고 단단한 덩어리가 모양 그대로예요.'),'🤏'],['🪨',B('big boulder','큰 바위'),'rock',B('A huge hard piece is too heavy to lift.','너무 크고 단단해서 들 수 없어요.'),'🏋️'],
     ['🌱',B('plant soil','식물 흙'),'soil',B('Roots spread through loose ground.','부드러운 땅속으로 뿌리가 뻗어요.'),'🌿⬇️'],['🌱',B('garden soil','정원 흙'),'soil',B('A gardener digs loose ground for seeds.','씨앗을 심으려고 부드러운 땅을 파요.'),'🧑‍🌾🌰'],['🌱',B('pot soil','화분 흙'),'soil',B('Roots grow in tiny grains in a pot.','화분 속 작은 알갱이 사이로 뿌리가 자라요.'),'🪴'],
-    ['🎈',B('balloon air','풍선 공기'),'air',B('Something you cannot see fills a balloon.','보이지 않는 것이 풍선을 채워요.'),'🎈'],['💨',B('pinwheel air','바람개비 공기'),'air',B('Something you cannot see turns a pinwheel.','보이지 않는 것이 바람개비를 돌려요.'),'🌬️🎡'],['🛞',B('tire air','타이어 공기'),'air',B('Something you cannot see is pumped into a tire.','펌프로 보이지 않는 것을 타이어에 넣어요.'),'🛞⬅️']
+    ['🎈',B('balloon air','풍선 공기'),'air',B('Something you cannot see fills a balloon.','보이지 않는 것이 풍선을 채워요.'),'🎈'],['💨',B('pinwheel air','바람개비 공기'),'air',B('Something you cannot see turns a pinwheel.','보이지 않는 것이 바람개비를 돌려요.'),'🌬️🎡',['earth-pinwheel',B('A pinwheel turning','돌아가는 바람개비')]],['🛞',B('tire air','타이어 공기'),'air',B('Something you cannot see is pumped into a tire.','펌프로 보이지 않는 것을 타이어에 넣어요.'),'🛞⬅️',['earth-tire-pump',B('A pump on a bike tire','자전거 바퀴와 펌프')]]
   ];
   const earthNames={water:B('Water','물'),rock:B('Rock','암석'),soil:B('Soil','흙'),air:B('Air','공기')},earthPic={Water:'💧',Rock:'🪨',Soil:'🟫',Air:'💨'};
   // silent89: t[4] is the scene (pour, rain boots, river, path...) shown above the clue; it never uses the answer picture.
+  // art90: t[5] = [drawn action picture, alt]; where there is one it replaces the emoji scene (same slot, no answer picture in it).
   add('earthstuff',B('Earth Materials','지구의 물질'),'🌱',lv=>{
     const t=pick(earth),same=pick(earth.filter(x=>x!==t&&x[2]===t[2])),ds=shuffle(earth.filter(x=>x[2]!==t[2])).slice(0,2);
     const place=x=>({html:`<span class="emo">${x[0]}</span><span class="ol">${L(x[1])}</span>`});
-    return {...withClue(lv===1?B('Which material is it?','어떤 물질일까요?'):B('Where else is this material?','이 물질이 또 있는 곳은?'),t[3]),show:`<div class="emo" aria-hidden="true" style="font-size:clamp(34px,6.5dvh,48px);line-height:1.1;white-space:nowrap">${t[4]}</div><div style="font-size:clamp(15px,2.6dvh,20px)">${L(t[3])}</div>`,opts:lv===1?pics(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k]),x=>earthPic[x.en]):[same,...ds].map((x,i)=>({...place(x),ok:i===0})),cls:'shapes'};
+    const scene=t[5]?`<div>${artPic(t[5][0],t[5][1],'clamp(56px,11dvh,88px)')}</div>`:`<div class="emo" aria-hidden="true" style="font-size:clamp(34px,6.5dvh,48px);line-height:1.1;white-space:nowrap">${t[4]}</div>`;
+    return {...withClue(lv===1?B('Which material is it?','어떤 물질일까요?'):B('Where else is this material?','이 물질이 또 있는 곳은?'),t[3]),show:`${scene}<div style="font-size:clamp(15px,2.6dvh,20px)">${L(t[3])}</div>`,opts:lv===1?pics(earthNames[t[2]],shuffle(Object.keys(earthNames).filter(k=>k!==t[2])).slice(0,2).map(k=>earthNames[k]),x=>earthPic[x.en]):[same,...ds].map((x,i)=>({...place(x),ok:i===0})),cls:'shapes'};
   });
   add('rocksort',B('Rock and Earth Clues','암석과 지구 물질'),'🌎',lv=>{
     const colors=[['#b96742',B('red-brown','적갈색')],['#adb5bd',B('gray','회색')],['#e5cc88',B('tan','황갈색')]],ci=rnd(3),big=!!rnd(2),dots=!!rnd(2),c=colors[ci];
@@ -160,7 +162,12 @@ registerGame({
    :(full?'<rect x="16" y="26" width="28" height="7" rx="3" fill="#e9d5f2"/>':'');
   const body=k<2?`<path d="M6 24H54L48 40H12Z" fill="${full?'#fff':'none'}" stroke="${col}" stroke-width="2.5"${dash}/>`:`<path d="M8 22L30 6L52 22V40H8Z" fill="${full?'#fff':'none'}" stroke="${col}" stroke-width="2.5"${dash}/>`;
   return `<svg viewBox="0 0 60 44" style="width:${w};height:auto" aria-hidden="true">${body}${inside}${full?'':`<text x="30" y="${k<2?37:36}" text-anchor="middle" font-size="12" font-weight="700" fill="#e0703a">?</text>`}</svg>`;};
- needs.play=function(){const [n,e]=pick(species),qi=rnd(needCases.length),q=needCases[qi],lv=lvl(this.id),story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);
+ // art90: each drawn picture has its own animal (dog/water, cat/food, rabbit/home). At L1, when the round's animal is that
+ // picture's animal (forced half the time) the picture replaces the strip; other animals keep the strip so the K bank
+ // (ten different rounds in a row) still has enough rounds. L2 keeps the three-thing strip: the child finds which one is missing.
+ const needArt=[['needs-water-empty',1,B('A dog beside an empty bowl','빈 그릇 옆 강아지')],['needs-food-empty',2,B('A cat beside an empty bowl','빈 그릇 옆 고양이')],['needs-shelter-empty',0,B('A rabbit in the rain, no home','비 맞는 토끼, 집이 없어요')]];
+ needs.play=function(){const qi=rnd(needCases.length),q=needCases[qi],lv=lvl(this.id),si=lv===1&&rnd(2)?needArt[qi][1]:rnd(species.length),art=lv===1&&si===needArt[qi][1]?needArt[qi]:null,[n,e]=species[si],story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);
   const strip=(lv===1?[qi]:[0,1,2]).map(k=>careSvg(k,k!==qi)).join('');
-  quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`<div style="display:flex;align-items:flex-end;justify-content:center;gap:8px"><span class="emo" aria-hidden="true" style="font-size:clamp(34px,6dvh,46px)">${e}</span>${strip}</div><div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:q[2].map((x,i)=>({html:`<span class="emo">${x[0]}</span>`,label:x[1],ok:i===0})),cls:'shapes'});};
+  const scene=art?`<div>${artPic(art[0],art[2],'clamp(64px,13dvh,104px)')}</div>`:`<div style="display:flex;align-items:flex-end;justify-content:center;gap:8px"><span class="emo" aria-hidden="true" style="font-size:clamp(34px,6dvh,46px)">${e}</span>${strip}</div>`;
+  quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`${scene}<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:q[2].map((x,i)=>({html:`<span class="emo">${x[0]}</span>`,label:x[1],ok:i===0})),cls:'shapes'});};
 })();

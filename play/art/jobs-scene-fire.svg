@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="title">
+  <title id="title">사람 없이 창문과 지붕에 불이 난 집</title>
+  <g stroke="#3a2a22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M51 19 Q39 14 45 8 Q49 3 57 7 Q61 11 56 15 M62 27 Q72 25 68 17 Q65 11 73 6" fill="none" stroke="#adb5bd" stroke-width="6"/><rect x="17" y="43" width="65" height="45" rx="2" fill="#8ecae6"/><path d="M10 44 L48 18 89 44 Z" fill="#adb5bd" /><rect x="27" y="53" width="17" height="19" rx="1" fill="#ffd166"/><path d="M35 54 V71 M28 62 H43" fill="none" /><rect x="56" y="59" width="15" height="29" rx="1" fill="#f6a57a"/><path d="M60 49 Q47 40 58 27 Q58 35 63 33 Q65 23 71 20 Q69 31 77 35 Q86 49 72 55 Z" fill="#f6a57a" /><path d="M64 51 Q60 45 65 39 Q67 45 72 41 Q78 50 70 54 Z" fill="#ffd166" /><path d="M14 87 Q4 78 12 66 Q13 74 19 71 Q20 62 26 58 Q25 68 31 73 Q39 85 29 89 Z" fill="#f6a57a" /><path d="M18 87 Q13 82 19 76 Q21 81 25 80 Q29 88 24 89 Z" fill="#ffd166" />
+  </g>
+</svg>

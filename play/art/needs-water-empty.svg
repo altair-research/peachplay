@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-labelledby="title">
+  <title id="title">강아지 옆 빈 물그릇과 점선 물결</title>
+  <g stroke="#3a2a22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M42 63 Q55 57 56 43" fill="none" stroke="#f6a57a" stroke-width="8"/><ellipse cx="30" cy="60" rx="17" ry="19" fill="#f6a57a" /><path d="M21 66 V79 H31 M37 66 V79 H45" fill="none" /><path d="M16 26 Q8 26 9 46 Q12 51 18 43 M40 26 Q48 26 47 46 Q44 51 38 43" fill="#adb5bd" /><ellipse cx="28" cy="34" rx="15" ry="15" fill="#f6a57a" /><ellipse cx="28" cy="42" rx="8" ry="6" fill="#ffd166" /><circle cx="22" cy="33" r="1" fill="#3a2a22" stroke="none"/><circle cx="34" cy="33" r="1" fill="#3a2a22" stroke="none"/><path d="M25 39 H31 L28 42 Z" fill="#3a2a22" /><path d="M25 46 H31" fill="none" stroke-width="1.4"/><path d="M17 50 Q28 55 39 50" fill="none" stroke="#95d5b2" stroke-width="4"/><path d="M54 69 L58 82 Q72 88 86 82 L90 69" fill="#8ecae6" /><ellipse cx="72" cy="69" rx="18" ry="6" fill="none" /><path d="M60 69 q3 -3 6 0 t6 0 t6 0 t6 0" fill="none" stroke="#8ecae6" stroke-width="2" stroke-dasharray="2 4"/>
+  </g>
+</svg>
