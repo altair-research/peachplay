@@ -19,7 +19,12 @@
 .m-play .m-tools>.m-btn{flex:1;max-width:150px}
 .m-play .m-tray>.m-btn>span{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:6px}
 .m-play .m-feedback{font-size:16px;line-height:1.2;min-height:58px;margin:0;display:flex;align-items:center;justify-content:center}
-.m-play .m-cubes{display:grid;grid-template-columns:repeat(5,44px);grid-template-rows:repeat(4,44px);gap:4px}
+.m-play .m-cubes{display:grid;grid-template-columns:repeat(5,44px);grid-template-rows:repeat(4,44px);gap:4px;position:relative}
+/* fix91: Level 1/2 goal drawn full size on the board: dashed outline over the cells, faint pattern in empty goal cells. */
+.m-play .m-cubes>.m-goal{position:absolute;left:-2px;top:-2px;width:calc(100% + 4px);height:calc(100% + 4px);pointer-events:none;z-index:3;overflow:visible}
+.m-play .m-cubes .m-ghost-mark{opacity:.45}
+/* fix91: a free-play idea's picture (🪁 kite) is shown big, not as a small sample at text size. */
+.m-play .m-topic-pic{font-size:38px;line-height:1;margin-left:6px}
 .m-play .m-cubes .m-btn{position:relative;background:var(--m-color);font-size:25px;padding:0}
 .m-play .m-cubes .m-btn[data-east="true"]::after{content:'';position:absolute;width:9px;height:10px;right:-7px;top:15px;background:#344958;z-index:1;pointer-events:none}
 .m-play .m-cubes .m-btn[data-south="true"]::before{content:'';position:absolute;width:10px;height:9px;bottom:-7px;left:15px;background:#344958;z-index:1;pointer-events:none}

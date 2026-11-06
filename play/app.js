@@ -295,7 +295,7 @@ $('#stkChip').onclick = () => { quitDiag(); stickerBook(); };
 $('#langBtn').onclick = () => {
   if (DIAG.active && !confirm(T().languageEndsPractice)) return;
   const from = S.lang, diagnostic = DIAG.active;
-  S.lang = from === 'en' ? 'ko' : 'en'; save();
+  S.lang = from === 'en' ? 'ko' : 'en'; keptLang = null; save();
   try { speechSynthesis.cancel(); } catch (_) {}
   if (diagnostic) { quitDiag(); home(); return; }
   if (LANGUAGE_SCREEN && LANGUAGE_SCREEN.root === view().firstElementChild) {
@@ -331,11 +331,12 @@ try {
   if (!['en', 'ko'].includes(saved.lang) && ['en', 'ko'].includes(landing)) S.lang = landing;
 } catch (_) {}
 renderPeaches(); renderProfBtn();
-// Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language.
+// Review link: index.html?game=<id> opens one game directly (for teachers and reviewers; works for hidden grades too). ?lang=ko|en sets the language for this visit only.
 (() => {
   const q = new URLSearchParams(location.search), g = q.get('game') && gameById(q.get('game')), lg = q.get('lang');
   if (q.get('example') === '1') { Example.open(0, lg); return; }
-  if (lg === 'en' || lg === 'ko') { S.lang = lg; save(); }
+  // A link's language is for this visit only; save() keeps the saved/Settings language (fix91).
+  if ((lg === 'en' || lg === 'ko') && lg !== S.lang) { keptLang = S.lang; S.lang = lg; }
   document.documentElement.lang = S.lang;
   $('#langBtn').textContent = T().switchTo; renderNav();
   // &lv=1|2 (sample review links): start that game at the given level so a reviewer sees the exact screen being judged.

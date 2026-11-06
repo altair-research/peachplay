@@ -94,6 +94,8 @@
         run++; finger.getAnimations().forEach(x => x.cancel()); S.demoSeen ||= {}; S.demoSeen[demoId] = true; save();
         pending = {id: demoId, key, tries: 0}; game.play();
       };
+      // fix91: the example pictures look tappable; a tap starts the real question like My turn. Nothing is scored.
+      root.querySelector('.demo-options').onclick = e => { if (e.target.closest('.demo-option')) $('#demoGo').click(); };
       requestAnimationFrame(replay); $('#demoGo').focus();
       return true;
     },

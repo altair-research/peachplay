@@ -166,8 +166,9 @@ registerGame({
   id: 'logic', subject: 'gifted', icon: '🧠', title: B('Who Is It?', '누구일까?'), sub: B('Think it through', '차근차근 생각해요'),
   area: AREA_CH('Verbal reasoning'),
   play() {
-    const n = lvl('logic') === 1 ? 3 : 4, ppl = shuffle(NAMES).slice(0, n), c = pick(COMP), lines = ppl.slice(0, n - 1).map((p, i) => [p, ppl[i + 1]]);
+    const n = lvl('logic') === 1 ? 3 : 4, ppl = shuffle(NAMES).slice(0, n), c = pick(COMP), lines = shuffle(ppl.slice(0, n - 1).map((p, i) => [p, ppl[i + 1]]));
     const en = lines.map(([a, b]) => `${a[0]} is ${c[0]} than ${b[0]}.`).join(' '), ko = lines.map(([a, b]) => `${a[1]}는 ${b[1]}보다 ${c[1]}.`).join(' ');
+    // fix91: clue order is shuffled (text and pictures together), so the answer is not always the first or leftmost one.
     // silent89: each clue is also a picture of ONE pair (taller drawn taller, faster one nearer the 🏁 the runners face, older one with more
     // candles), and every person keeps one color dot. The pairs never show the whole order, so the child still chains them.
     const dot = p => LOGIC_DOT[NAMES.indexOf(p)];

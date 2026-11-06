@@ -75,7 +75,10 @@ const today = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1)
 const freshStat = () => ({ right: 0, wrong: 0, streak: 0, level: 1 });
 let S = { lang: 'en', peaches: 0, stats: {}, addr: { street: '', city: '' } };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, cleanState(JSON.parse(raw))); } catch (e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+// fix91: a ?lang= link changes the language for this visit only. keptLang holds the language to save
+// (chosen in Settings, or English); the language button clears it because that is a real choice.
+let keptLang = null;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(keptLang ? { ...S, lang: keptLang } : S)); } catch (e) {} };
 const T = () => I18N[S.lang];
 // Remember bilingual render strings so language changes can preserve live controls,
 // closures, drawings, option order and pending answer/next-button state.

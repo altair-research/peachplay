@@ -125,7 +125,8 @@ const NEEDS = [
   { q: B('What do PEOPLE need to live?', '사람이 살려면 무엇이 필요할까요?'), good: [['🍎', B('food', '음식')], ['💧', B('water', '물')], ['🌬️', B('air', '공기')]], bad: [['🎮', B('video game', '게임')], ['🧸', B('toys', '장난감')], ['🍬', B('candy', '사탕')]] }
 ];
 registerGame({
-  id: 'needs', subject: 'sci', icon: '💧', title: B('What Do They Need?', '무엇이 필요할까?'), sub: B('Plants, animals, people', '식물, 동물, 사람'),
+  // fix91: basic needs of animals is Georgia grade-1 science (S1L1.b), so this game sits in grade 1.
+  id: 'needs', grade: '1', subject: 'sci', icon: '💧', title: B('What Do They Need?', '무엇이 필요할까?'), sub: B('Plants, animals, people', '식물, 동물, 사람'),
   area: AREA_SCI('Needs of living things'),
   play() {
     const n = pick(NEEDS), g = pick(n.good), bs = shuffle(n.bad).slice(0, lvl('needs') === 2 ? 3 : 2), o = (x, ok) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok });
@@ -163,10 +164,10 @@ registerGame({
   const body=k<2?`<path d="M6 24H54L48 40H12Z" fill="${full?'#fff':'none'}" stroke="${col}" stroke-width="2.5"${dash}/>`:`<path d="M8 22L30 6L52 22V40H8Z" fill="${full?'#fff':'none'}" stroke="${col}" stroke-width="2.5"${dash}/>`;
   return `<svg viewBox="0 0 60 44" style="width:${w};height:auto" aria-hidden="true">${body}${inside}${full?'':`<text x="30" y="${k<2?37:36}" text-anchor="middle" font-size="12" font-weight="700" fill="#e0703a">?</text>`}</svg>`;};
  // art90: each drawn picture has its own animal (dog/water, cat/food, rabbit/home). At L1, when the round's animal is that
- // picture's animal (forced half the time) the picture replaces the strip; other animals keep the strip so the K bank
+ // picture's animal (forced half the time) the picture replaces the strip; other animals keep the strip so the bank
  // (ten different rounds in a row) still has enough rounds. L2 keeps the three-thing strip: the child finds which one is missing.
  const needArt=[['needs-water-empty',1,B('A dog beside an empty bowl','빈 그릇 옆 강아지')],['needs-food-empty',2,B('A cat beside an empty bowl','빈 그릇 옆 고양이')],['needs-shelter-empty',0,B('A rabbit in the rain, no home','비 맞는 토끼, 집이 없어요')]];
- needs.play=function(){const qi=rnd(needCases.length),q=needCases[qi],lv=lvl(this.id),si=lv===1&&rnd(2)?needArt[qi][1]:rnd(species.length),art=lv===1&&si===needArt[qi][1]?needArt[qi]:null,[n,e]=species[si],story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);
+ needs.play=function(){const qi=rnd(needCases.length),q=needCases[qi],lv=lvl(this.id),si=lv===1&&!rnd(3)?needArt[qi][1]:rnd(species.length),art=lv===1&&si===needArt[qi][1]?needArt[qi]:null,[n,e]=species[si],story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);
   const strip=(lv===1?[qi]:[0,1,2]).map(k=>careSvg(k,k!==qi)).join('');
   const scene=art?`<div>${artPic(art[0],art[2],'clamp(64px,13dvh,104px)')}</div>`:`<div style="display:flex;align-items:flex-end;justify-content:center;gap:8px"><span class="emo" aria-hidden="true" style="font-size:clamp(34px,6dvh,46px)">${e}</span>${strip}</div>`;
   quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`${scene}<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:q[2].map((x,i)=>({html:`<span class="emo">${x[0]}</span>`,label:x[1],ok:i===0})),cls:'shapes'});};

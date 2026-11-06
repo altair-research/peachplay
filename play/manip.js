@@ -55,7 +55,7 @@
     function draw(focusKey) {
       root.innerHTML = `<div class="m-heading"><strong>${esc(text(tool.title))}</strong>${act('listen', words.listen, '', '🔊')}</div>
         <div class="m-modes">${[words.free, words.one, words.two].map((w, i) => act(`mode-${i}`, w, `aria-pressed="${mode === i}"`)).join('')}</div>
-        <p class="m-prompt">${esc(text(prompt(mode)))}</p>
+        <p class="m-prompt">${esc(text(prompt(mode))).replace(/\s(\p{Extended_Pictographic}\S*)$/u, ' <span class="m-topic-pic">$1</span>')}</p>
         <div class="m-work">${tool.render(ctx())}</div>
         <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(words.help))}</p>
         <div class="m-footer">${act('undo', words.undo, history.length ? '' : 'disabled')}${act('reset', words.reset)}${mode ? act('check', words.check) : act('help', B('How to', '사용법'))}</div>`;
@@ -150,7 +150,7 @@
       e.stopImmediatePropagation();
       if (drag) endDrag({ pointerId: drag.id }, true);
       swallowClick = false;
-      S.lang = S.lang === 'en' ? 'ko' : 'en'; save();
+      S.lang = S.lang === 'en' ? 'ko' : 'en'; keptLang = null; save();
       languageButton.textContent = S.lang === 'en' ? '한국어' : 'English';
       feedback = ''; root.setAttribute('aria-label', text(tool.title)); draw(); say(text(prompt(mode)));
     };
@@ -181,12 +181,14 @@
     help: B('Matching neighbors connect. Tap a cube to move, split or remove it.', '같은 무늬끼리 이웃하면 이어져요. 골라서 옮기거나 떼요.'),
     init: () => ({ cells: Array(20).fill(null) }),
     prompt: m => m === 1 ? B('Make 7 cubes in 2 connected groups.', '큐브 7개를 이어서 두 묶음으로 만들어요.') : m === 2 ? B('Make 3 rows of 4 cubes: a rectangle.', '4개씩 3줄인 직사각형을 만들어요.') : B('Build your own cube picture.', '큐브로 자유롭게 만들어요.'),
-    render({ state: s, chosen }) {
-      const n = s.cells.filter(Boolean).length;
+    render({ state: s, mode, chosen }) {
+      const n = s.cells.filter(Boolean).length, goal = mode && s.task ? cubeGoal(s.task, mode) : null;
       return `<div class="m-meter">${text(B('Cubes', '큐브'))}: ${n} · ${text(B('Groups', '묶음'))}: ${groups(s.cells)}</div><div class="m-cubes">${s.cells.map((c, i) => {
         const linked = q => c && !c.split && s.cells[q] && !s.cells[q].split && s.cells[q].color === c.color;
-        return target(`c${i}`, B(`Place ${i + 1}${c ? ', cube ' + marks[c.color] : ', empty'}`, `${i + 1}번 칸${c ? ', 큐브 ' + marks[c.color] : ', 빈칸'}`), c ? `<span>${marks[c.color]}</span>` : '·', `style="--m-color:${c ? colors[c.color] : '#fff'}" aria-pressed="${chosen === `c${i}`}" data-filled="${!!c}" data-east="${i % 5 < 4 && linked(i + 1)}" data-south="${i < 15 && linked(i + 5)}"`);
-      }).join('')}</div><div class="m-tray">${colors.map((_, i) => source(`color${i}`, B(`Cube ${marks[i]}`, `${marks[i]} 큐브`), `<span style="background:${colors[i]}">${marks[i]}</span>`, chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('join', B('Connect', '연결'))}${act('split', B('Separate', '떼기'))}${act('remove', words.remove)}</div>`;
+        // fix91: an empty goal cell shows its pattern faintly, so the child fills the outline in place.
+        const g = goal?.[i] ?? null, ghost = !c && g !== null;
+        return target(`c${i}`, B(`Place ${i + 1}${c ? ', cube ' + marks[c.color] : ghost ? ', goal ' + marks[g] : ', empty'}`, `${i + 1}번 칸${c ? ', 큐브 ' + marks[c.color] : ghost ? ', 목표 ' + marks[g] : ', 빈칸'}`), c ? `<span>${marks[c.color]}</span>` : ghost ? `<span class="m-ghost-mark">${marks[g]}</span>` : '·', `style="--m-color:${c ? colors[c.color] : ghost ? `color-mix(in srgb,${colors[g]} 40%,#fff)` : '#fff'}" aria-pressed="${chosen === `c${i}`}" data-filled="${!!c}" data-east="${i % 5 < 4 && linked(i + 1)}" data-south="${i < 15 && linked(i + 5)}"`);
+      }).join('')}${goal ? goalOutline(goal) : ''}</div><div class="m-tray">${colors.map((_, i) => source(`color${i}`, B(`Cube ${marks[i]}`, `${marks[i]} 큐브`), `<span style="background:${colors[i]}">${marks[i]}</span>`, chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('join', B('Connect', '연결'))}${act('split', B('Separate', '떼기'))}${act('remove', words.remove)}</div>`;
     },
     select: (s, d) => d?.startsWith('c') && s.cells[+d.slice(1)] ? d : null,
     drop(s, src, dest) {
@@ -241,8 +243,10 @@
     prompt: m => m === 1 ? B('Fill the outline with 2 triangles.', '삼각형 2개로 점선 안을 채워요.') : m === 2 ? B('Fill the rectangle with 2 or more pieces.', '조각 2개 이상으로 직사각형을 채워요.') : B('Make a mosaic. Try turning the shapes.', '도형을 돌려 모자이크를 만들어요.'),
     render({ state: s, mode, chosen }) {
       const t = s.task;
-      const outline = mode ? `<rect x="${t.x * 44}" y="${t.y * 44}" width="${t.w * 44}" height="${t.h * 44}" fill="#eef3fa" stroke="#334155" stroke-width="2" stroke-dasharray="5 4"/>` : '';
-      return `<div class="m-meter">${text(B('Pieces', '조각'))}: ${s.pieces.length}/12 ${s.selected >= 0 ? `· ${s.selected + 1}` : ''}</div><div class="m-pattern-board">${svg(outline + s.pieces.map((p, i) => `<polygon points="${polygon(p).map(([x, y]) => `${x * 44},${y * 44}`).join(' ')}" fill="${colors[p.kind % 4]}" fill-opacity=".85" stroke="${i === s.selected ? '#1d4ed8' : '#344958'}" stroke-width="${i === s.selected ? 4 : 2}"/>`).join(''))}<div class="m-grid">${Array.from({ length: 24 }, (_, i) => target(`p${i}`, B(`Place at row ${Math.floor(i / 6) + 1}, column ${i % 6 + 1}`, `${Math.floor(i / 6) + 1}행 ${i % 6 + 1}열에 놓기`), '·')).join('')}</div></div><div class="m-tray">${shapes.map((s, i) => source(`shape${i}`, s.n, shapeSVG(i, colors[i % 4]), chosen === `shape${i}`)).join('')}</div><div class="m-tools">${act('nextpiece', B('Next piece', '다음 조각'))}${act('turn', B('Turn', '돌리기'))}${act('flip', B('Flip', '뒤집기'))}${act('remove', words.remove)}</div>`;
+      const outline = mode ? `<rect x="${t.x * 44}" y="${t.y * 44}" width="${t.w * 44}" height="${t.h * 44}" fill="#fff4e6" stroke="#e8590c" stroke-width="3" stroke-dasharray="7 5"/>` : '';
+      // fix91: thin dashed lines show where the guided pieces go inside the outline, at full board size.
+      const guide = mode && t ? patternPlan(t, mode).map(p => `<polygon points="${polygon(p).map(([x, y]) => `${x * 44},${y * 44}`).join(' ')}" fill="none" stroke="#e8590c" stroke-opacity=".55" stroke-width="1.5" stroke-dasharray="4 4"/>`).join('') : '';
+      return `<div class="m-meter">${text(B('Pieces', '조각'))}: ${s.pieces.length}/12 ${s.selected >= 0 ? `· ${s.selected + 1}` : ''}</div><div class="m-pattern-board">${svg(outline + guide + s.pieces.map((p, i) => `<polygon points="${polygon(p).map(([x, y]) => `${x * 44},${y * 44}`).join(' ')}" fill="${colors[p.kind % 4]}" fill-opacity=".85" stroke="${i === s.selected ? '#1d4ed8' : '#344958'}" stroke-width="${i === s.selected ? 4 : 2}"/>`).join(''))}<div class="m-grid">${Array.from({ length: 24 }, (_, i) => target(`p${i}`, B(`Place at row ${Math.floor(i / 6) + 1}, column ${i % 6 + 1}`, `${Math.floor(i / 6) + 1}행 ${i % 6 + 1}열에 놓기`), '·')).join('')}</div></div><div class="m-tray">${shapes.map((s, i) => source(`shape${i}`, s.n, shapeSVG(i, colors[i % 4]), chosen === `shape${i}`)).join('')}</div><div class="m-tools">${act('nextpiece', B('Next piece', '다음 조각'))}${act('turn', B('Turn', '돌리기'))}${act('flip', B('Flip', '뒤집기'))}${act('remove', words.remove)}</div>`;
     },
     select: s => s.selected >= 0 ? `piece${s.selected}` : null,
     drop(s, src, dest, msg) {
@@ -513,14 +517,34 @@
     }
     return true;
   });
-  cubes.hint = (s, m, chosen) => {
-    if (!m) return null;
-    if (cubes.check(s, m)) return 'check';
-    const t = s.task, goal = Array(20).fill(null);
+  // The goal picture: the cells to fill and each cell's pattern. Shared by hint() and the dashed outline.
+  function cubeGoal(t, m) {
+    const goal = Array(20).fill(null);
     if (m === 1) {
       // A snake visits neighboring cells; each group has its own pattern.
       for (let k = 0; k < t.n; k++) { const y = Math.floor(k / 5), x = y % 2 ? 4 - k % 5 : k % 5; goal[y * 5 + x] = Math.floor(k * t.g / t.n); }
     } else for (let y = 0; y < t.rows; y++) for (let x = 0; x < t.cols; x++) goal[y * 5 + x] = t.stripes ? y % 2 : 0;
+    return goal;
+  }
+  // fix91: a big dashed outline on the board itself (44px cells, 4px gaps). A line is drawn where a goal cell meets
+  // a non-goal cell or a different group's pattern, so each group is its own outlined shape.
+  function goalOutline(goal) {
+    const segs = [];
+    goal.forEach((g, i) => {
+      if (g === null) return;
+      const x = i % 5, y = Math.floor(i / 5), l = x * 48 - 2, r = l + 48, t = y * 48 - 2, b = t + 48;
+      const other = q => q < 0 || goal[q] !== g;
+      if (y === 0 || other(i - 5)) segs.push(`M${l} ${t}H${r}`);
+      if (y === 3 || other(i + 5)) segs.push(`M${l} ${b}H${r}`);
+      if (x === 0 || other(i - 1)) segs.push(`M${l} ${t}V${b}`);
+      if (x === 4 || other(i + 1)) segs.push(`M${r} ${t}V${b}`);
+    });
+    return `<svg class="m-goal" viewBox="-2 -2 240 192" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="${segs.join('')}" fill="none" stroke="#e8590c" stroke-width="3" stroke-dasharray="7 5" stroke-linecap="round"/></svg>`;
+  }
+  cubes.hint = (s, m, chosen) => {
+    if (!m) return null;
+    if (cubes.check(s, m)) return 'check';
+    const goal = cubeGoal(s.task, m);
     for (let i = 0; i < 20; i++) {
       if (goal[i] === null && s.cells[i]) return chosen === `c${i}` ? 'remove' : chosen ? clearChoice(chosen) : `drop-c${i}`;
       if (goal[i] !== null && (!s.cells[i] || s.cells[i].color !== goal[i] || s.cells[i].split)) return placeHint(chosen, `color${goal[i]}`, `c${i}`);
