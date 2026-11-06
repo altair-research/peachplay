@@ -59,6 +59,7 @@ const clockSvg = (h) => { let s = '<circle cx="50" cy="50" r="46" fill="#fff" st
 registerGame({
   id: 'clock', subject: 'math', icon: '🕒', title: B('What Time Is It?', '몇 시일까?'), sub: B("O'clock times", '정각 읽기'),
   area: AREA_MATH('Time (enrichment)'),
+  retired: true,   // K audit 11-05: clocks are grade 1 (1.MDR.6.2); grade 1 has clock1. Still opens by ?game=clock.
   play() {
     if(lvl('clock')===2){const h=1+rnd(12),step=1+rnd(2),a=(h+step-1)%12+1;quiz(this,{ask:B(`What time is it ${step} hour${step>1?'s':''} later?`,`${step}시간 뒤는 몇 시일까요?`),askSay:B(`Look at the clock. What time is it ${step} hour${step>1?'s':''} later?`,`시계를 보세요. ${step}시간 뒤는 몇 시일까요?`),show:clockSvg(h),opts:[a,h,(h-step+11)%12+1].map(v=>({html:`<span class="num eq">${v}:00</span>`,ok:v===a})),cls:'shapes'});return;}
     const h = 1 + rnd(12), set = new Set([h]); while (set.size < (lvl('clock') === 2 ? 4 : 3)) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
@@ -69,19 +70,20 @@ registerGame({
   }
 });
 
-// ---------- 4. Days of the week and seasons ----------
+// ---------- 4. Days of the week ----------
 const DAYS = [['Sunday', '일요일'], ['Monday', '월요일'], ['Tuesday', '화요일'], ['Wednesday', '수요일'], ['Thursday', '목요일'], ['Friday', '금요일'], ['Saturday', '토요일']];
-const SEASONS = [['winter', '겨울', '⛄', B('It is cold and snowy.', '춥고 눈이 와요.')], ['spring', '봄', '🌷', B('Flowers bloom.', '꽃이 피어요.')], ['summer', '여름', '🏖️', B('It is hot and sunny.', '덥고 햇살이 강해요.')], ['fall', '가을', '🍂', B('Leaves turn orange and drop from trees.', '나뭇잎이 떨어져요.')]];
 registerGame({
-  id: 'days', subject: 'life', icon: '📅', title: B('Days & Seasons', '요일과 계절'), sub: B('What comes next?', '다음은 무엇일까?'),
+  id: 'days', subject: 'life', icon: '📅', title: B('Days of the Week', '요일'), sub: B('What comes next?', '다음은 무엇일까?'),
   area: AREA_LIFE('Calendar'),
   play() {
-    if (rnd(2) === 0 && lvl('days') === 2 || rnd(3) === 0) {                         // seasons
-      const t = pick(SEASONS), ds = others(SEASONS, t, 2), o = (s) => ({ html: `<span class="emo">${s[2]}</span>`, label: B(s[0], s[1]), ok: s === t });
-      quiz(this, { ask: B('Which season is this?', '어느 계절일까요?'), askSay: B(`${t[3].en} Which season is this?`, `${t[3].ko} 어느 계절일까요?`), show: `<div class="bigword" style="font-size:clamp(18px,3dvh,24px)">${L(t[3])}</div>`, opts: [o(t), ...ds.map(o)], cls: 'shapes', after: B(`It is ${t[0]}!`, `${t[1]}이에요!`), vocab: t[0] });
+    // K audit 11-05: season questions moved out (seasons are grade 1 S1E1.d; grade 1 has seasons1).
+    // L1: next/previous day and the weekend. L2 adds the day between two others (two clues to hold at once).
+    const i = rnd(7), kind = pick(lvl('days') === 1 ? ['after', 'after', 'before', 'weekend'] : ['after', 'before', 'between', 'between', 'weekend']);
+    if (kind === 'between') {
+      const ans = (i + 1) % 7, a = i, c = (i + 2) % 7, ds = others([0, 1, 2, 3, 4, 5, 6].filter(d => d !== ans && d !== a && d !== c), -1, 3);
+      quiz(this, { ask: B(`What day comes between ${DAYS[a][0]} and ${DAYS[c][0]}?`, `${DAYS[a][1]}과 ${DAYS[c][1]} 사이의 요일은?`), opts: [ans, ...ds].map(d => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: S.lang === 'ko' ? DAYS[d][1] : null, ok: d === ans })), cls: 'words', after: B(`${DAYS[a][0]}, ${DAYS[ans][0]}, ${DAYS[c][0]}.`, `${DAYS[a][1]}, ${DAYS[ans][1]}, ${DAYS[c][1]}.`), vocab: DAYS[ans][0] });
       return;
     }
-    const i = rnd(7), kind = pick(lvl('days') === 1 ? ['after', 'after', 'weekend'] : ['after', 'before', 'weekend']);
     if (kind === 'weekend') {
       const good = pick([0, 6]), bad = others([1, 2, 3, 4, 5], -1, 2), o = (d, ok) => ({ html: `<span class="word">${DAYS[d][0]}</span>`, label: S.lang === 'ko' ? DAYS[d][1] : null, ok });
       quiz(this, { ask: B('Which day is part of the weekend?', '주말인 요일은 무엇일까요?'), opts: [o(good, true), ...bad.map(d => o(d, false))], cls: 'words', after: B('Saturday and Sunday are the weekend.', '토요일과 일요일이 주말이에요.') });

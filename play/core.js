@@ -683,5 +683,5 @@ const gradeOf = (g) => g.grade || (['brain', 'create', 'gifted'].includes(g.subj
 const GRADES = ['P', 'K', '1', '2', '3', '4', '5'];
 const kidGrade = () => (GRADES.includes(curKid().grade) ? curKid().grade : 'K');
 const prevGrade = (g) => GRADES[GRADES.indexOf(g) - 1] || null;
-const heldGame = (g) => (g.grade === 'P' && !PREK_READY) || g.grade === '5' && g.subject === 'ss' && !(typeof GRADE5_SS_READY !== 'undefined' && GRADE5_SS_READY);   // opened later; still reachable by ?game= for review
+const heldGame = (g) => g.retired || (g.grade === 'P' && !PREK_READY) || g.grade === '5' && g.subject === 'ss' && !(typeof GRADE5_SS_READY !== 'undefined' && GRADE5_SS_READY);   // opened later; still reachable by ?game= for review
 const visibleGames = () => GAMES.filter(g => { const gr = gradeOf(g); return !heldGame(g) && (kidGrade() === 'P' ? gr === 'P' : (gr === 'both' || gr === kidGrade() || (S.showK && gr === prevGrade(kidGrade())))); });
