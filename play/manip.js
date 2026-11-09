@@ -27,6 +27,9 @@
     let task = null;
     const prompt = mode => !mode && topic ? topic : tool.prompt(mode, task);
     let mode = 0, state = tool.init(0), chosen = null, history = [], feedback = '', drag = null, swallowClick = false;
+    // cbn93: a picture idea that carries a number map (color by number) travels in the free state, so reset/undo keep it.
+    if (topic?.pic) state.pic = topic.pic;
+    const helpFor = () => !mode && state.pic && tool.picHelp ? tool.picHelp : tool.help || words.help;
     const initial = copy(state);
     const keyFor = m => JSON.stringify([tool.id, m, m ? task.id : topic?.en || tool.prompt(0).en, !m ? state : null]);
     if (dup(game, keyFor(0))) return mount(tool, game);
@@ -54,10 +57,10 @@
     }
     function draw(focusKey) {
       root.innerHTML = `<div class="m-heading"><strong>${esc(text(tool.title))}</strong>${act('listen', words.listen, '', '🔊')}</div>
-        <div class="m-modes">${[words.free, words.one, words.two].map((w, i) => act(`mode-${i}`, w, `aria-pressed="${mode === i}"`)).join('')}</div>
+        <div class="m-modes">${[tool.freeLabel || words.free, words.one, words.two].map((w, i) => act(`mode-${i}`, w, `aria-pressed="${mode === i}"`)).join('')}</div>
         <p class="m-prompt">${esc(text(prompt(mode))).replace(/\s(\p{Extended_Pictographic}\S*)$/u, ' <span class="m-topic-pic">$1</span>')}</p>
         <div class="m-work">${tool.render(ctx())}</div>
-        <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(words.help))}</p>
+        <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(!mode && state.pic ? helpFor() : words.help))}</p>
         <div class="m-footer">${act('undo', words.undo, history.length ? '' : 'disabled')}${act('reset', words.reset)}${mode ? act('check', words.check) : act('help', B('How to', '사용법'))}</div>`;
       // Glow the one button that moves toward the goal, so a child who cannot read the labels still sees what to press.
       const hint = tool.hint?.(state, mode, chosen, prompt(mode));
@@ -75,7 +78,7 @@
       if (action?.startsWith('mode-')) {
         mode = +action.slice(5); challenge(mode); chosen = null; history = []; feedback = ''; draw(key); say(text(prompt(mode))); return;
       }
-      if (action === 'listen' || action === 'help') { message(tool.help || words.help); say(`${text(prompt(mode))} ${text(tool.help || words.help)}`); }
+      if (action === 'listen' || action === 'help') { message(helpFor()); say(`${text(prompt(mode))} ${text(helpFor())}`); }
       else if (action === 'undo') { if (history.length) state = history.pop(); chosen = null; feedback = ''; }
       else if (action === 'reset') { change(() => { state = mode ? tool.init(mode, task) : copy(initial); }); chosen = null; }
       else if (action === 'check') { message(tool.check(state, mode) ? words.good : words.retry); say(feedback); }
@@ -159,7 +162,7 @@
       if (!root.isConnected) { languageButton.removeEventListener('click', language, true); observer.disconnect(); drag = null; try { speechSynthesis.cancel(); } catch (_) {} }
     });
     observer.observe(view(), { childList: true });
-    draw(); say(`${text(prompt(mode))} ${text(tool.help || words.help)}`);
+    draw(); say(`${text(prompt(mode))} ${text(helpFor())}`);
   }
 
   function groups(cells) {
@@ -451,7 +454,41 @@
 
   // 84: optional free-play invitations. Same tools and controls; no target answer or new score.
   const freeBuildIdeas = [["🐍","snake","뱀"],["🏠","house","집"],["🌻","flower","꽃"],["🌳","tree","나무"],["🚂","train","기차"],["🚗","car","자동차"],["🚀","rocket","로켓"],["⛵","boat","배"],["🌉","bridge","다리"],["🏰","castle","성"],["🤖","robot","로봇"],["🐟","fish","물고기"],["🐱","cat","고양이"],["🐶","dog","강아지"],["🦋","butterfly","나비"],["🐢","turtle","거북이"],["🐰","rabbit","토끼"],["🪑","chair","의자"],["🪜","ladder","사다리"],["👑","crown","왕관"],["🪁","kite","연"],["☀️","sun","해"],["🦖","dinosaur","공룡"],["🎸","guitar","기타"],["🍎","apple","사과"],["☂️","umbrella","우산"],["🐘","elephant","코끼리"],["🦒","giraffe","기린"],["🌈","rainbow","무지개"],["🛝","slide","미끄럼틀"]];
-  cubes.topics = freeBuildIdeas.map(([e, en, ko]) => B(`Make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en} with cubes. ${e}`, `큐브로 ${ko} 모양을 만들어요. ${e}`));
+  // cbn93 (user 11-09): the cube pictures are color by number. Each cell shows 1-4, the chart says which color each
+  // number is, and a cube goes on a number only in that number's color. Plain outline filling was too easy.
+  const cubePics93 = {snake:'144../..4../..444/....4',house:'..1../.111./.222./.232.',flower:'.121./.111./..4../.44..',tree:'.414./44144/..2../..2..',
+    train:'1..../11333/11333/.2.2.',car:'...../.333./11111/.2.2.',rocket:'..1../.333./.333./2.2.2',boat:'..4../.22../11111/.111.',
+    bridge:'...../11111/3.3.3/3.3.3',castle:'3.3.3/22222/22.22/22.22',robot:'.333./32323/.333./.1.1.',fish:'...../.33.1/32333/.33.1',
+    cat:'2...2/22222/23232/.212.',dog:'1..../22232/.2222/.2..2',butterfly:'11.11/12321/.131./33.33',turtle:'...../..434/24444/.4.4.',
+    rabbit:'.2.2./.1.1./.323./.222.',chair:'1..../1..../33333/1...1',ladder:'1...1/12221/1...1/12221',crown:'...../1.3.1/22222/22222',
+    kite:'..1../.121./.343./..3..',sun:'.222./21212/22122/.222.',dinosaur:'...44/..434/2444./.4.4.',guitar:'..1../..1../.222./.232.',
+    apple:'..4../.111./11121/.111.',umbrella:'.111./13131/..2../.22..',elephant:'.333./32133/3333./3.3..',giraffe:'22.../.2.../.2121/.2..2',
+    rainbow:'.111./12221/23.32/3...3',slide:'1..../13.../1.3../1..33'};
+  const picColors = ['#e5484d', '#f7c948', '#3f7fe8', '#3aa864'];
+  const picNames = [B('red', '빨강'), B('yellow', '노랑'), B('blue', '파랑'), B('green', '초록')];
+  cubes.topics = freeBuildIdeas.map(([e, en, ko]) => Object.assign(B(`Color by number: make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en}. ${e}`, `번호대로 색칠해서 ${ko}${(ko.charCodeAt(ko.length - 1) - 0xac00) % 28 ? '을' : '를'} 완성해요. ${e}`), { pic: cubePics93[en].replace(/\//g, '').split('').map(ch => ch === '.' ? null : +ch - 1) }));
+  cubes.freeLabel = B('Picture', '그림');
+  cubes.picHelp = B("Find the number's color in the chart. Put that color cube on the number.", '숫자의 색을 색깔표에서 찾아요. 그 색 큐브를 숫자 위에 놓아요.');
+  const picDone = s => s.pic.every((g, i) => g === null || s.cells[i]?.color === g);
+  const cubeRender93 = cubes.render, cubeDrop93 = cubes.drop;
+  cubes.render = c => {
+    const s = c.state; if (c.mode || !s.pic) return cubeRender93(c);
+    const total = s.pic.filter(g => g !== null).length, n = s.pic.filter((g, i) => g !== null && s.cells[i]).length;
+    return `<div class="m-legend" aria-label="${esc(text(B('Color chart', '색깔표')))}">${picColors.map((col, i) => `<span><b>${i + 1}</b><i style="background:${col}"></i></span>`).join('')}<span class="m-count">🧊 ${n}/${total}</span></div><div class="m-cubes m-pic${picDone(s) ? ' m-pic-done' : ''}">${s.pic.map((g, i) => {
+      const cell = s.cells[i];
+      if (g === null) return `<span class="m-off" aria-hidden="true"></span>`;
+      return target(`c${i}`, B(`Place ${i + 1}, ${cell ? text(picNames[cell.color]) + ' cube' : 'number ' + (g + 1)}`, `${i + 1}번 칸, ${cell ? text(picNames[cell.color]) + ' 큐브' : '숫자 ' + (g + 1)}`), cell ? '<span></span>' : `<span class="m-num">${g + 1}</span>`, `style="--m-color:${cell ? picColors[cell.color] : '#fff'}" aria-pressed="${c.chosen === `c${i}`}" data-filled="${!!cell}"`);
+    }).join('')}</div><div class="m-tray">${picColors.map((col, i) => source(`color${i}`, B(`${text(picNames[i])} cube`, `${text(picNames[i])} 큐브`), `<span style="background:${col}"></span>`, c.chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('remove', words.remove)}</div>`;
+  };
+  cubes.drop = (s, src, dest, msg) => {
+    if (s.task || !s.pic) return cubeDrop93(s, src, dest, msg);
+    const i = +dest.slice(1), g = s.pic[i];
+    if (!dest.startsWith('c') || !Number.isInteger(i) || g == null || !src.startsWith('color')) return;
+    const color = +src.slice(5);
+    if (color !== g) { s.miss = i; msg(B(`Look at the chart. Number ${g + 1} is ${text(picNames[g])}.`, `색깔표를 봐요. ${g + 1}번은 ${text(picNames[g])}이에요.`)); say(text(B('Look at the chart again.', '색깔표를 다시 봐요.'))); return; }
+    s.cells[i] = { color, split: false }; delete s.miss;
+    if (picDone(s)) { msg(words.good); say(text(words.good)); }
+  };
   patterns.topics = freeBuildIdeas.map(([e, en, ko]) => B(`Make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en} with shapes. ${e}`, `도형으로 ${ko} 모양을 만들어요. ${e}`));
   baseten.topics = Array.from({ length: 30 }, (_, i) => { const n = 12 + i * 3; return B(`Explore ${n}. Try bundling and unbundling.`, `${n}을 만들고 묶거나 풀어 봐요.`); });
   clock.topics = Array.from({ length: 24 }, (_, i) => B(`Explore ${timeText(i * 30)}. Move both hands.`, `${Math.floor(i / 2) || 12}시${i % 2 ? ' 30분' : ''}를 만들고 바늘을 움직여 봐요.`));
@@ -542,7 +579,8 @@
     return `<svg class="m-goal" viewBox="-2 -2 240 192" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="${segs.join('')}" fill="none" stroke="#e8590c" stroke-width="3" stroke-dasharray="7 5" stroke-linecap="round"/></svg>`;
   }
   cubes.hint = (s, m, chosen) => {
-    if (!m) return null;
+    // cbn93: in a picture, glow the right color only after a wrong try (the chart is the first help).
+    if (!m) return s.pic && s.miss != null && !s.cells[s.miss] ? placeHint(chosen, `color${s.pic[s.miss]}`, `c${s.miss}`) : null;
     if (cubes.check(s, m)) return 'check';
     const goal = cubeGoal(s.task, m);
     for (let i = 0; i < 20; i++) {
