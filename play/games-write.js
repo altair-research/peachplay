@@ -6,7 +6,7 @@ const AREA_WRITE = (u) => B(`Writing · ${u}`, `쓰기 · ${u}`);
 function tileRound(game, cfg) {
   if (dup(game, cfg.target.join(' '))) return game.play();
   const tokens = shuffle([...cfg.target, ...cfg.extra]);
-  if (cfg.oneRow === undefined && tokens.length <= 7 && tokens.every(t => String(t).length <= 2)) cfg.oneRow = true;   // letter tiles stay on one line
+  if (cfg.oneRow === undefined && tokens.length <= 7 && tokens.every(t => String(t).length <= 3)) cfg.oneRow = true;   // letter/chunk tiles stay on one line (11-10: a 3-letter chunk like 'ing' made spell1 stack into 4 rows and overflow 19px at 360x640)
   view().innerHTML = `
     <div class="prompt">${L(cfg.ask)}<button class="say" id="sp" aria-label="${T().listen}">🔊</button></div>
     <div class="show">${cfg.show || ''}</div>
