@@ -31,7 +31,7 @@
   }
   register('oppositeP','read','Opposite partners','반대 짝꿍','CLL2',banks((lv,i)=>{
     const kinds=lv===1?['door','box','book','curtain','jar','window','chest','gate','cabinet','folder','envelope','case']:['towel','rock','leaf','cup','flower','sock','hat','chair','boat','tree','ball','apple'],k=kinds[i%kinds.length],state=Math.floor(i/kinds.length)%2;
-    return task(lv===1?`This picture is ${state?'open':'closed'}. Find the ${state?'closed':'open'} picture.`:`This picture is ${state?'wet':'dry'}. Find the ${state?'dry':'wet'} picture.`,lv===1?`이 그림은 ${state?'열려':'닫혀'} 있어요. ${state?'닫힌':'열린'} 그림을 찾아요.`:`이 그림은 ${state?'물방울이 맺혀':'말라'} 있어요. ${state?'마른':'물방울이 맺힌'} 그림을 찾아요.`,opposite(k,state),opposite(k,!state),opposite(k,state));
+    return task(lv===1?`This picture is ${state?'open':'closed'}. Find the ${state?'closed':'open'} picture.`:`This picture is ${state?'wet':'dry'}. Find the ${state?'dry':'wet'} picture.`,lv===1?`이 그림은 ${state?'열려':'닫혀'} 있어요. ${state?'닫힌':'열린'} 그림을 찾아요.`:`이 그림은 ${state?'물방울이 맺혀':'말라'} 있어요. ${state?'마른':'물방울이 맺힌'} 그림을 찾아요.`,opposite(k,state),opposite(kinds[(i+1)%kinds.length],!state),opposite(kinds[(i+1)%kinds.length],state));   // 11-11 sweep: choices use another object, so the copy of the prompt is never simply the wrong one
   }));
   register('storyP','read','A little picture story','작은 그림 이야기','CLL6',banks((lv,i)=>{
     const animals=['cat','dog','bear','duck'],a=animals[i%4],obj=['ball','book','flower','hat','cup','apple'][Math.floor(i/4)],other=objects[(objects.indexOf(obj)+3)%12];

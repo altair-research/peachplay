@@ -9,6 +9,9 @@
 .pk-scene > .pk-arrow { flex: 0 0 16px; width: 16px; height: 20px; }
 .pk-pattern { display: flex; justify-content: center; align-items: center; max-width: 400px; margin: auto; }
 .pk-pattern .pk-picture { width: 20%; height: 12dvh; }
+/* 11-11: patterns now show up to 7 pictures; they share the row instead of overflowing. */
+.pk-pattern .pk-picture { flex: 1 1 0; min-width: 0; max-width: 20%; }
+.pk-pattern > span { flex: 0 0 auto; font-size: clamp(34px, 6dvh, 60px); font-weight: 800; color: var(--peach, #f08a5d); }
 .pk-turn { display: flex; justify-content: space-around; }
 .pk-turn > div { position: relative; width: 48%; border: 2px solid #d9c8ae; border-radius: 8px; }
 .pk-turn .pk-picture + .pk-picture { width: 35%; position: absolute; bottom: 0; right: 0; }

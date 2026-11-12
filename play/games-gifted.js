@@ -33,7 +33,8 @@ registerGame({
     const cell = (e) => `<span class="ac">${e}</span>`;
     quiz(this, {
       ask: B('These two go together. Which picture goes with the third?', '위의 두 그림은 짝이에요. 아래 그림의 짝은?'),
-      show: `<div class="ag">${cell(a[0])}${cell(a[1])}${cell(b[0])}<span class="ac q">?</span></div>`,
+      // 11-11 (user): a 2x2 grid hid that each ROW is a pair; now each row is one pair with an arrow (the level 2 look).
+      show: `<div class="ag ag-pairs"><div class="ag-row">${cell(a[0])}<span class="ag-arrow" aria-hidden="true">→</span>${cell(a[1])}</div><div class="ag-row">${cell(b[0])}<span class="ag-arrow" aria-hidden="true">→</span><span class="ac q">?</span></div></div>`,
       opts: [b[1], ...ds].map(e => ({ html: `<span class="emo">${e}</span>`, ok: e === b[1] })), cls: 'shapes', after: B(`${a[0]} goes with ${a[1]}, so ${b[0]} goes with ${b[1]}!`, `${a[0]}-${a[1]}처럼 ${b[0]}-${b[1]}!`),
       onCorrect() { $('.ag .q').outerHTML = cell(b[1]); }
     });
@@ -65,16 +66,19 @@ registerGame({
   play() {
     if (lvl('classify') === 2) {
       const shape=pick(SHP4), color=pick(FIGC), otherShape=pick(SHP4.filter(x=>x!==shape)), otherColor=pick(FIGC.filter(x=>x!==color));
-      const ans={shape,color,size:1}, candidates=[ans,{shape,color:otherColor,size:1},{shape:otherShape,color,size:1}];
+      // 11-11 (user's child found it): the two wrong answers were the two pictures in the question, so "the one not shown"
+      // was always right. Now every wrong answer is new: the swapped pair, the right color on a new shape, the right shape in a new color.
+      const thirdShape=pick(SHP4.filter(x=>x!==shape&&x!==otherShape)), thirdColor=pick(FIGC.filter(x=>x!==color&&x!==otherColor));
+      const ans={shape,color,size:1}, candidates=shuffle([ans,{shape:otherShape,color:otherColor,size:1},{shape:thirdShape,color,size:1},{shape,color:thirdColor,size:1}]);
       quiz(this,{ask:B('Match BOTH the shape of the first and the color of the second.','첫 그림의 모양과 둘째 그림의 색을 모두 맞춰요.'),show:figSvg({shape,color:otherColor,size:1})+' + '+figSvg({shape:otherShape,color,size:1}),opts:candidates.map(f=>({html:figSvg(f,58),ok:f===ans})),cls:'shapes'});return;
     }
     const rule = pick(lvl('classify') === 1 ? ['shape', 'color'] : ['shape', 'color', 'size']), sizes = [0.6, 1], rv = { shape: pick(SHP4), color: pick(FIGC), size: pick(sizes) };
     const mk = (keep) => { const f = { shape: pick(SHP4), color: pick(FIGC), size: pick(sizes) }; if (keep) f[rule] = rv[rule]; else { const o = rule === 'shape' ? SHP4.filter(s => s !== rv.shape) : rule === 'color' ? FIGC.filter(c => c !== rv.color) : sizes.filter(s => s !== rv.size); f[rule] = pick(o); } return f; };
     const fk = (f) => `${f.shape}${f.color}${f.size}`; let ex, ans, ds, guard = 0;
-    do { ex = Array.from({ length: 3 }, () => mk(true)); ans = mk(true); ds = [mk(false), mk(false)]; if (rule === 'shape' || rule === 'color') [ans, ...ds, ...ex].forEach(f => { f.size = 1; }); } while (new Set([ans, ...ds].map(fk)).size < 3 && guard++ < 60);
+    do { ex = Array.from({ length: 3 }, () => mk(true)); ans = mk(true); ds = [mk(false), mk(false)]; if (rule === 'shape' || rule === 'color') [ans, ...ds, ...ex].forEach(f => { f.size = 1; }); } while ((new Set([ans, ...ds].map(fk)).size < 3 || new Set(ex.map(fk)).size < 3 || ex.some(f => fk(f) === fk(ans)) || ds.some(d => ex.some(f => fk(f) === fk(d)))) && guard++ < 200);   // 11-11: the answer (and wrong answers) are never a copy of a picture in the group
     quiz(this, {
-      ask: B('Look at these three. Which picture belongs with them?', '이 세 그림을 보세요. 어느 그림이 같은 무리일까요?'), show: `<div class="ag">${ex.map(f => `<span class="ac">${figSvg(f, 54)}</span>`).join('')}<span class="ac q">?</span></div>`,
-      opts: [ans, ...ds].map(f => ({ html: figSvg(f, 58), ok: f === ans })), cls: 'shapes', after: rule === 'shape' ? B('They all have the same shape!', '모두 같은 모양이에요!') : rule === 'color' ? B('They are all the same color!', '모두 같은 색이에요!') : B('They are all the same size!', '모두 같은 크기예요!')
+      ask: B('Look at these three. Which picture belongs with them?', '이 세 그림을 보세요. 어느 그림이 같은 무리일까요?'), show: `<div class="ag ag-group">${ex.map(f => `<span class="ac">${figSvg(f, 48)}</span>`).join('')}<span class="ac q">?</span></div>`,   // 11-11 (user): one row in one group box, not a 2x2 that looks like a pattern grid
+      opts: [ans, ...ds].map(f => ({ html: figSvg(f, 58), ok: f === ans })), cls: 'shapes', onCorrect() { const q = $('.ag .q'); if (q) q.outerHTML = `<span class="ac">${figSvg(ans, 48)}</span>`; }, after: rule === 'shape' ? B('They all have the same shape!', '모두 같은 모양이에요!') : rule === 'color' ? B('They are all the same color!', '모두 같은 색이에요!') : B('They are all the same size!', '모두 같은 크기예요!')
     });
   }
 });
@@ -172,15 +176,15 @@ registerGame({
     // silent89: each clue is also a picture of ONE pair (taller drawn taller, faster one nearer the 🏁 the runners face, older one with more
     // candles), and every person keeps one color dot. The pairs never show the whole order, so the child still chains them.
     const dot = p => LOGIC_DOT[NAMES.indexOf(p)];
-    const pairPic = ([a, b]) => `<span class="logicpair" style="display:inline-flex;align-items:flex-end;gap:2px;border:2px solid #d9c7b0;border-radius:8px;padding:1px 4px;background:#fff">${c[0] === 'faster' ? '<span style="align-self:center;font-size:clamp(12px,2.2dvh,16px)">🏁</span>' : ''}${[a, b].map((p, i) => {
-      const big = i === 0, fig = `<span style="display:block;font-size:${c[0] === 'taller' ? (big ? 'clamp(17px,3.2dvh,30px)' : 'clamp(12px,2.3dvh,20px)') : 'clamp(15px,2.9dvh,24px)'};line-height:1">${c[0] === 'faster' ? '🏃' : '🧍'}</span>`;
-      const extra = c[0] === 'older' ? `<span style="font-size:clamp(8px,1.5dvh,11px);line-height:1;letter-spacing:-3px">${'🕯️'.repeat(big ? 3 : 1)}</span>` : c[0] === 'faster' && big ? '<span style="font-size:clamp(9px,1.6dvh,12px)">💨</span>' : '';
-      return `<span style="display:flex;flex-direction:column;align-items:center"><span style="display:flex;align-items:flex-end">${fig}${extra}</span><span style="font-size:clamp(10px,1.8dvh,13px);line-height:1.1">${dot(p)}</span></span>`;
+    const pairPic = ([a, b]) => `<span class="logicpair" style="display:inline-flex;align-items:flex-end;gap:2px;border:2px solid #d9c7b0;border-radius:8px;padding:2px 6px;background:#fff">${c[0] === 'faster' ? '<span style="align-self:center;font-size:clamp(15px,min(5vw,3dvh),26px)">🏁</span>' : ''}${[a, b].map((p, i) => {
+      const big = i === 0, fig = `<span style="display:block;font-size:${c[0] === 'taller' ? (big ? `clamp(19px,min(${lines.length > 2 ? 5.4 : 9}vw,${lines.length > 2 ? 4 : 4.8}dvh),46px)` : `clamp(13px,min(${lines.length > 2 ? 3.6 : 6}vw,${lines.length > 2 ? 2.7 : 3.2}dvh),30px)`) : `clamp(16px,min(${lines.length > 2 ? 4.6 : 7.5}vw,${lines.length > 2 ? 3.4 : 4}dvh),38px)`};line-height:1">${c[0] === 'faster' ? '🏃' : '🧍'}</span>`;
+      const extra = c[0] === 'older' ? `<span style="font-size:clamp(10px,min(3vw,2dvh),16px);line-height:1;letter-spacing:-3px">${'🕯️'.repeat(big ? 3 : 1)}</span>` : c[0] === 'faster' && big ? '<span style="font-size:clamp(11px,min(3.4vw,2.2dvh),18px)">💨</span>' : '';
+      return `<span style="display:flex;flex-direction:column;align-items:center"><span style="display:flex;align-items:flex-end">${fig}${extra}</span><span style="font-size:clamp(12px,min(3.6vw,2.2dvh),18px);line-height:1.1">${dot(p)}</span></span>`;
     }).join('')}</span>`;
     const ds = ppl.slice(1);
     quiz(this, {
-      ask: B(`Who is the ${c[2]}?`, `${c[3]} 누구일까요?`), show: `<div style="display:flex;gap:4px;justify-content:center">${lines.map(pairPic).join('')}</div><div class="logictext" style="font-size:clamp(13px,min(4.2vw,2.6dvh),23px);padding:5px 10px;line-height:1.3">${L(B(en, ko))}</div>`,
-      opts: ppl.map(p => ({ html: `<span class="word">${dot(p)} ${p[0]}${S.lang === 'ko' ? ' · ' + p[1] : ''}</span>`, ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
+      ask: B(`Who is the ${c[2]}?`, `${c[3]} 누구일까요?`), show: `<div style="display:flex;gap:6px;justify-content:center">${lines.map(pairPic).join('')}</div><div class="logictext" style="font-size:clamp(13px,min(4.2vw,2.6dvh),23px);padding:3px 10px;line-height:1.22">${L(B(en, ko))}</div>`,
+      opts: ppl.map(p => ({ html: `<span class="word">${dot(p)} <span class="nowrap">${p[0]}</span>${S.lang === 'ko' ? ' · <span class="nowrap">' + p[1] + '</span>' : ''}</span>`, ok: p === ppl[0] })), cls: 'words', after: B(`${ppl[0][0]} is the ${c[2]}!`, `${ppl[0][1]}!`), vocab: `${ppl[0][0]} is the ${c[2]}!`
     });
   }
 });

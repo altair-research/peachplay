@@ -29,9 +29,13 @@
     const k=i%3,foil=(k+1+Math.floor(i/3)%2)%3,size=18+Math.floor(i/6)*4,bySize=lv===2&&i%2===0;
     return task(bySize?'Find the same size.':'Find the same shape.',bySize?'크기가 같은 모양을 찾아요.':'모양이 같은 친구를 찾아요.',shape(k,size),shape(k,size),shape(bySize?k:foil,bySize?size+12:size));
   }));
+  // 11-11 (user: "always four, too easy"): level 1 was always A B A B, so the answer was always the first picture.
+  // Level 1: A B taking turns, 3-6 shown (the answer is A or B). Level 2: A A B, A B B or A B C, 5-7 shown. Still two choices.
   register('patternP','math','Next picture','다음 무늬','CD-MA6',banks((lv,i)=>{
-    const all=['ball','cup','book','flower','cat','fish'],a=i%6,b=(a+1+Math.floor(i/6)%5)%6,last=i%2===0,seq=lv===1?(last?[a,b,a,b]:[b,a,b,a]):(last?[a,a,b,a,a,b]:[a,b,b,a,b,b]);
-    return task('The pictures take turns. What comes next?','그림이 번갈아 나와요. 다음 그림은 무엇일까요?',`<div class="pk-pattern">${seq.map(x=>art(all[x])).join('')}<span>?</span></div>`,art(all[lv===1?(last?a:b):a]),art(all[lv===1?(last?b:a):b]));
+    const all=['ball','cup','book','flower','cat','fish'],a=i%6,b=(a+1+Math.floor(i/6)%5)%6,c=[0,1,2,3,4,5].find(x=>x!==a&&x!==b&&x===(b+1+i%3)%6)??[0,1,2,3,4,5].find(x=>x!==a&&x!==b);
+    const unit=lv===1?[a,b]:[[a,a,b],[a,b,b],[a,b,c]][i%3], len=lv===1?3+i%4:5+Math.floor(i/3)%3, seq=Array.from({length:len},(_,k)=>unit[k%unit.length]), next=unit[len%unit.length];
+    const wrong=unit.filter(x=>x!==next)[Math.floor(i/6)%unit.filter(x=>x!==next).length];
+    return task('Look at the order. What comes next?','어떤 순서로 나오는지 보고 다음 그림을 찾아요.',`<div class="pk-pattern">${seq.map(x=>art(all[x])).join('')}<span>?</span></div>`,art(all[next]),art(all[wrong]));
   }));
   register('positionP','math','Where is it?','어디에 있나요','CD-MA8',banks((lv,i)=>{
     const pair=lv===1?['inside','outside']:['above','below'],n=i%2,k=examples[Math.floor(i/2)%examples.length],words={inside:B('inside','안'),outside:B('outside','밖'),above:B('above','위'),below:B('below','아래')};

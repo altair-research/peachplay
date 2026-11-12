@@ -8,7 +8,7 @@ const take=(id,lv,n)=>{const k=`${typeof curKid==='function'?curKid().id:'test'}
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const panel=s=>`<div class="g4-math-model">${s}</div>`,eq=s=>panel(`<div class="g4-math-equation">${esc(s)}</div>`);
 const q=(ask,show,a,w)=>({ask,askSay:B(ask.en,speechKo(ask.ko).ko),askExtra:S.lang==='ko'?speechKo(ask.ko).extra:undefined,show,opts:[a,...w].map((s,i)=>({html:`<span class="word">${esc(typeof s==='object'?L(s):s)}</span>`,ok:i===0})),cls:'words g4-math-options',after:B(String(typeof a==='object'?a.en:a),String(typeof a==='object'?a.ko:a))});
-const nq=(ask,show,a)=>q(ask,show,a,[a+1,a+10]);
+const nq=(ask,show,a)=>q(ask,show,a,spreadNums(a));   // 11-11: was always [a+1,a+10] (answer always smallest)
 const scopes={"addsub4":["Calculate sums and differences; no error explanation","합과 차 계산 · 오류 설명 제외"],"multistep4":["Calculate a given expression; no planning or estimation","주어진 식 계산 · 계획과 어림 검산 제외"],"factors4":["Factor pairs; no separate multiples task","약수 짝 · 배수 과제 제외"]};
 const scope=id=>{const [en,ko]=scopes[id]||["Model and calculation choices; no full standard assessment","모형과 계산 선택 · 표준 전체 평가 제외"];return B('Partial practice: '+en,'부분 연습: '+ko);};
 const reg=(id,en,ko,code,make,n=12)=>registerGame({id,grade:'4',subject:'math',icon:'🧮',title:B(en,ko),sub:scope(id),area:B(`Grade 4 Math · ${code} · ${scope(id).en}`,`4학년 수학 · ${code} · ${scope(id).ko}`),play(){const lv=lvl(id),i=take(id,lv,n),it=make(i,lv);if(n===12&&i>=10){it.bankGrowth=true;it.cls+=' bank-growth-options';}it.itemKey=`${id}:${lv}:${i}`;it.standardCodes=code;quiz(this,it);}});

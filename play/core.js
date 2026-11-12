@@ -193,6 +193,31 @@ function say(text, lang, keepQueue) {
   } catch (e) {}
 }
 
+// 11-11 (sweep after the user's child found shortcuts): generic number distractors were always on the same side
+// (answer +1/+10 -> always the smallest; answer +-step -> always the middle). spreadNums gives two distractors at the
+// same distances but on a random side, so the answer's place in size order changes. Never below 0, never a duplicate.
+function spreadNums(a, step = 1, big = 10) {
+  const r = x => Math.round(x * 1e6) / 1e6;
+  const sets = big ? [[step, big], [-step, big], [-step, -big], [step, -big]] : [[step, -step], [step, 2 * step], [-step, -2 * step]];
+  const ok = shuffle(sets).map(([x, y]) => [r(a + x), r(a + y)]).filter(([x, y]) => x >= 0 && y >= 0 && x !== a && y !== a && x !== y);
+  return ok[0] || [r(a + step), r(a + (big || 2 * step))];
+}
+
+// 11-11 (user: sight word "pronunciation is not good"): a lone short word (to, do, of) said once by a speech
+// voice is clipped. Say it twice, a little slower, as two separate utterances so there is a natural pause.
+function sayWord(word, keepQueue) {
+  try {
+    if (S.muted || S.voiceOff || !('speechSynthesis' in window) || !word) return;
+    if (!keepQueue) speechSynthesis.cancel();
+    for (let k = 0; k < 2; k++) {
+      const u = new SpeechSynthesisUtterance(word); u.lang = 'en-US';
+      if (window.Voice) window.Voice.apply(u, 'en-US');
+      u.rate = Math.max(0.6, (u.rate || 0.85) * 0.8);
+      speechSynthesis.speak(u);
+    }
+  } catch (e) {}
+}
+
 function renderPeaches() {
   const b = Math.floor(S.peaches / 10), r = S.peaches % 10;
   $('#peaches').textContent = (b ? `🧺${b} ` : '') + `🍑${r}`;
@@ -479,7 +504,7 @@ function nextButton(fn, opts = {}) {
     if (opts.auto !== false && !DIAG.active) {
       const f = $('#fact'), t0 = Date.now(); let waited = false;
       const talking = () => { try { return speechSynthesis.speaking || speechSynthesis.pending; } catch (e) { return false; } };
-      const wait = () => { if (tok !== NEXT_TOK) return; if (talking() && Date.now() - t0 < 15000) { waited = true; return setTimeout(wait, 250); } setTimeout(go, waited && !talking() ? 600 : 0); };
+      const wait = () => { if (tok !== NEXT_TOK) return; if (talking() && Date.now() - t0 < 15000) { waited = true; return setTimeout(wait, 250); } setTimeout(go, waited && !talking() ? (opts.tail || 600) : 0); };
       setTimeout(wait, opts.auto || Math.min(4200, 1300 + 45 * (f ? f.textContent.length : 0)));
     }
   }, 450);
@@ -516,12 +541,38 @@ function scaffoldStep(game, type) {
 }
 function scaffoldNote(game, type, ok) { const k = game.id + ':' + type; SCAFFOLD[k] = ok ? Math.min(9, (SCAFFOLD[k] || 0) + 1) : 0; }
 
+// 11-11 sweep (after the user's child found shortcuts): in many number questions the wrong numbers were always on the
+// same side of the answer, so "always the middle" or "always the smallest" was right without the math (answer-skew.js).
+// When every choice is a plain number, keep each wrong number's distance from the answer but pick the side at random:
+// as written, mirrored, all above or all below. Never below 0, never a duplicate; decimals keep their places.
+// Only the games answer-skew.js flagged (11-11): other number games may use look-alike numbers (6/9) on purpose.
+const BALANCE_IDS = new Set(['ruler', 'round3', 'ladder', 'count120', 'tenmoreless', 'equalgroups', 'phonemes1', 'place3', 'addsub3', 'barstory3', 'array3', 'divide3', 'factfamily3', 'splitmultiply3', 'multiplytens3', 'multpattern3', 'multstory3', 'elapsed3', 'graph3', 'sundata3', 'market3', 'round4', 'decimal4', 'daylight4', 'budget4', 'decimalround5']);
+function balanceNumberOptions(item, id) {
+  if (!item || item.__bal || !BALANCE_IDS.has(id) || !Array.isArray(item.opts) || item.opts.length < 3 || item.keepNumbers) return;
+  item.__bal = true;
+  const txt = h => String(h ?? '').replace(/<[^>]*>/g, '').trim();
+  if (item.opts.some(o => o.label || !/^\d+(\.\d+)?$/.test(txt(o.html)))) return;
+  const right = item.opts.find(o => o.ok); if (!right || item.opts.filter(o => o.ok).length !== 1) return;
+  const a = +txt(right.html), wrong = item.opts.filter(o => !o.ok), w = wrong.map(o => +txt(o.html));
+  const dec = Math.max(...item.opts.map(o => (txt(o.html).split('.')[1] || '').length)), r = x => Math.round(x * 1e6) / 1e6;
+  // Every choice of side for every wrong number (same distance; a repeated distance doubles so it never collides).
+  const d = w.map(v => Math.abs(v - a)), ways = [];
+  for (let m = 0; m < 1 << d.length; m++) ways.push(d.map((x, i) => { const sign = m >> i & 1 ? -1 : 1, same = d.slice(0, i).filter((y, j) => y === x && (m >> j & 1 ? -1 : 1) === sign).length; return r(a + sign * x * (1 + same)); }));
+  for (let k = ways.length - 1; k >= 0; k--) if (!ways[k].every(x => x >= 0 && x !== a) || new Set(ways[k]).size !== ways[k].length) ways.splice(k, 1);
+  const pickd = ways[rnd(ways.length)]; if (!pickd) return;
+  wrong.forEach((o, i) => {
+    const t = txt(o.html), n = dec ? pickd[i].toFixed(dec) : String(pickd[i]), h = String(o.html);
+    o.html = /</.test(h) ? h.replace('>' + t + '<', '>' + n + '<') : n;
+  });
+}
+
 // Generic multiple-choice round.
 // item: { ask, show?, opts:[{html,label?,ok?}], after?, vocab?, onRender?, onCorrect?, cls?, fade?, sd? }
 // ctx (engine only): { step: originalItem } = the smaller step; { resume: true } = the original question again after it.
 function quiz(game, item, ctx = {}) {
   const follow = !!(ctx.step || ctx.resume);         // same question continues: no new dup/log entry, misses kept
   if (!follow && window.MathThinking?.eligible(game)) item = window.MathThinking.build(game);
+  if (!follow) balanceNumberOptions(item, game.id);
   if (!follow && window.PictureDemo?.intercept(game, item)) return;
   confetti.clear?.();
   const pk=game.grade === 'P';
@@ -549,7 +600,7 @@ function quiz(game, item, ctx = {}) {
     if (S.lang === 'en') LANGUAGE_PAIRS.forEach((ko, en) => { if (/[가-힣]/.test(ko) && !/[가-힣]/.test(en)) text = text.replaceAll(ko, en); });
     return text;
   };
-  const ask = () => { say(item.askSay ? question(item.askSay) : heading() + question(item.ask)); if (item.askExtra && S.lang === 'ko') say(item.askExtra.t, item.askExtra.lang, true); };
+  const ask = () => { say(item.askSay ? question(item.askSay) : heading() + question(item.ask)); if (item.askExtra && S.lang === 'ko') (item.askExtra.word ? sayWord(item.askExtra.t, true) : say(item.askExtra.t, item.askExtra.lang, true)); };
   $('#sp').onclick = ask; ask();
   if (!ctx.step) addPrevButton();
   const root = view().firstElementChild, still = () => view().firstElementChild === root;
@@ -647,7 +698,10 @@ function quiz(game, item, ctx = {}) {
       if (item.vocab && S.lang !== 'en' && item.after) say(L(item.after), undefined, true);
       $$('.opt').forEach(o => o.disabled = true);
       if (item.onCorrect) item.onCorrect();
-      nextButton(() => game.play(), pk ? {auto:false} : {});
+      // 11-11 (user): a Pre-K pattern's "?" gets the chosen picture, so the row looks finished.
+      if (pk) { const q = [...$$('.show span')].find(e => !e.children.length && e.textContent.trim() === '?'); if (q) q.outerHTML = opts[+btn.dataset.i].html; }
+      // 11-11 (user: "it does not move on by itself"): Pre-K moves on too, a little slower than K (praise, then 1.5 s). Next still works any time.
+      nextButton(() => game.play(), pk ? { auto: 2200, tail: 1500 } : {});
     } else {
       if (pk) { $('#cheer').textContent=T().prekAgain; say(T().prekAgain); return; }
       if (!thinking) SESSION.cleanStreak = 0; showStreak();

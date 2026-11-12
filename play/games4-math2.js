@@ -11,7 +11,7 @@ const svg=(s,h=140)=>panel(`<svg viewBox="0 0 320 ${h}" role="img">${s}</svg>`),
 const opts=(a,w)=>[a,...w].map((s,i)=>({html:`<span class="word">${esc(typeof s==='object'?L(s):s)}</span>`,ok:i===0}));
 const spokenKo=ask=>ask.replace(/\b(AM|PM|km|cm|mm|kg|mL|L|g|m)\b/g,s=>({AM:'오전',PM:'오후',km:'킬로미터',cm:'센티미터',mm:'밀리미터',kg:'킬로그램',mL:'밀리리터',L:'리터',g:'그램',m:'미터'}[s]));
 const q=(ask,show,a,w)=>({ask,askSay:B(ask.en,speechKo(spokenKo(ask.ko)).ko),askExtra:S.lang==='ko'?speechKo(spokenKo(ask.ko)).extra:undefined,show,opts:opts(a,w),cls:'words g4-geometry-options',after:B(String(typeof a==='object'?a.en:a),String(typeof a==='object'?a.ko:a))});
-const nq=(ask,show,a)=>q(ask,show,a,[a+1,a+10]);
+const nq=(ask,show,a)=>q(ask,show,a,spreadNums(a));   // 11-11: was always [a+1,a+10] (answer always smallest)
 const scopes={"dotplot4":["Read plots and build plots from practice measurements; no data collection","점 도표 읽기·가상 측정값 배치 · 직접 자료 수집 제외"]};
 const scope=id=>{const [en,ko]=scopes[id]||["Model and calculation choices; no full standard assessment","모형과 계산 선택 · 표준 전체 평가 제외"];return B('Partial practice: '+en,'부분 연습: '+ko);};
 const reg=(id,en,ko,code,make,n=12)=>registerGame({id,grade:'4',subject:'math',icon:'📐',title:B(en,ko),sub:scope(id),area:B(`Grade 4 Math · ${code} · ${scope(id).en}`,`4학년 수학 · ${code} · ${scope(id).ko}`),play(){const lv=lvl(id),i=take(id,lv,n),it=make(i,lv);if(n===12&&i>=10){it.bankGrowth=true;it.cls+=' bank-growth-options';}it.itemKey=`${id}:${lv}:${i}`;it.standardCodes=code;quiz(this,it);}});

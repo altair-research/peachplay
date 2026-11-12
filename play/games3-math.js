@@ -11,7 +11,7 @@ const fresh = (id, level, make) => {
  throw new Error(`Insufficient distinct questions: ${id}/${level}`);
 };
 const reg=(id,en,ko,code,make)=>registerGame({id,grade:'3',subject:'math',icon:'🧮',title:B(en,ko),sub:B('Explore numbers and explain your thinking','수를 살펴보고 생각을 설명해요'),area:B(`Grade 3 Math · ${code}`,`3학년 수학 · ${code}`),play(){quiz(this,fresh(id,lvl(id),make));}});
-const nums=(a,w=[])=>[...new Set([a,...w,a+1,a+10,Math.max(0,a-1)])].filter(n=>Number.isInteger(n)&&n>=0).slice(0,3).map(n=>({html:`<span class="num">${n}</span>`,ok:n===a}));
+const nums=(a,w=[])=>[...new Set([a,...w,...spreadNums(a),a+1,a+10,Math.max(0,a-1)])].filter(n=>Number.isInteger(n)&&n>=0).slice(0,3).map(n=>({html:`<span class="num">${n}</span>`,ok:n===a}));
 const panel=s=>`<div class="g3-math-model">${s}</div>`;
 const eq=s=>panel(`<div class="g3-equation">${s}</div>`);
 const dots=(r,c,split=0)=>panel(`<svg viewBox="0 0 ${c*20+12} ${r*20+12}" role="img" aria-label="${r} × ${c}">${Array.from({length:r*c},(_,i)=>`<circle cx="${i%c*20+16}" cy="${Math.floor(i/c)*20+16}" r="6" fill="${split&&Math.floor(i/c)>=split?'#ba4a22':'#276e96'}"/>`).join('')}${split?`<path d="M4 ${split*20+6} H${c*20+8}" stroke="currentColor" stroke-dasharray="3 3"/>`:''}</svg>`);
@@ -53,7 +53,7 @@ reg('array3','Multiplication Arrays','곱셈 배열','3.PAR.3.2',lv=>{
 });
 reg('divide3','Share and Group','똑같이 나누기','3.PAR.3.2 · 3.PAR.3.6',lv=>{
  const g=2+rnd(7),e=2+rnd(7),t=g*e,share=lv===1||!!rnd(2);
- return q(share?B(`Share ${t} counters equally among ${g} children. How many for each?`,`토큰 ${t}개를 어린이 ${g}명에게 똑같이 나누어 줘요. 한 명이 몇 개씩 가질까요?`):B(`Put ${t} counters in groups of ${e}. How many groups?`,`토큰 ${t}개를 ${e}개씩 묶어요. 몇 묶음일까요?`),eq(`${t} ÷ ${share?g:e} = ?`),share?e:g,[t,t+1]);
+ return q(share?B(`Share ${t} counters equally among ${g} children. How many for each?`,`토큰 ${t}개를 어린이 ${g}명에게 똑같이 나누어 줘요. 한 명이 몇 개씩 가질까요?`):B(`Put ${t} counters in groups of ${e}. How many groups?`,`토큰 ${t}개를 ${e}개씩 묶어요. 몇 묶음일까요?`),eq(`${t} ÷ ${share?g:e} = ?`),share?e:g,[t,(share?g:e)===(share?e:g)?(share?e:g)+1:(share?g:e)]);   // 11-11 sweep: was [t,t+1] (answer always smallest); now the total or the divisor, two real mix-ups
 });
 reg('factfamily3','Related Facts','곱셈과 나눗셈의 관계','3.PAR.3.2',lv=>{
  const a=1+rnd(9),b=1+rnd(9),p=a*b,d=lv>1&&rnd(2);

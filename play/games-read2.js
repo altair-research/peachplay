@@ -84,9 +84,9 @@ function showSightMap(w, box) {
   new MutationObserver(() => {
     const h = v.querySelector('.show [data-sight]'); if (!h || h.dataset.wired) return;
     h.dataset.wired = '1'; const t = h.dataset.sight, slots = v.querySelector('.slots');
-    h.onclick = () => say(t, 'en-US');
-    say(t, 'en-US', true);   // the word is only heard, never written (Q1)
-    const sp = v.querySelector('#sp'); if (sp) { const old = sp.onclick; sp.onclick = () => { if (old) old(); say(t, 'en-US', true); }; }
+    h.onclick = () => sayWord(t);
+    sayWord(t, true);   // the word is only heard, never written (Q1)
+    const sp = v.querySelector('#sp'); if (sp) { const old = sp.onclick; sp.onclick = () => { if (old) old(); sayWord(t, true); }; }
     if (slots) { const mo = new MutationObserver(() => { if (!slots.isConnected) return mo.disconnect(); if (slots.querySelectorAll('.slot.filled').length === t.length) { mo.disconnect(); showSightMap(t, v.querySelector('.show')); } }); mo.observe(slots, { subtree: true, attributes: true, attributeFilter: ['class'] }); }
   }).observe(v, { childList: true });
 })();
@@ -109,14 +109,14 @@ registerGame({
     // Two look-alike words: only the whole spelling tells them apart.
     const ds = shuffle(SIGHT_LOOK[t].filter(w => w !== t)).slice(0, 2);
     quiz(this, {
-      ask: B('Listen; find it!', '듣고 그 낱말을 눌러요.'), askExtra: { t, lang: 'en-US' },
+      ask: B('Listen; find it!', '듣고 그 낱말을 눌러요.'), askExtra: { t, lang: 'en-US', word: true },
       show: hear,
       opts: [t, ...ds].map(w => ({ html: `<span class="num" lang="en">${w}</span>`, ok: w === t })), cls: 'shapes',
       after: B(`${t}!`, `${t}!`),
       onRender() {
         // quiz() speaks askExtra only in Korean; English needs the word queued too (on start and on 🔊 replay).
-        $('#hear').onclick = () => say(t, 'en-US');
-        if (S.lang === 'en') { say(t, 'en-US', true); const sp = $('#sp'), old = sp.onclick; sp.onclick = () => { old(); say(t, 'en-US', true); }; }
+        $('#hear').onclick = () => sayWord(t);
+        if (S.lang === 'en') { sayWord(t, true); const sp = $('#sp'), old = sp.onclick; sp.onclick = () => { old(); sayWord(t, true); }; }
       },
       onCorrect() { showSightMap(t, $('.show')); }
     });

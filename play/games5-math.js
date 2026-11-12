@@ -8,7 +8,7 @@ const gcd=(a,b)=>b?gcd(b,a%b):a;
 const f=(n,d)=>{const g=gcd(n,d);return d/g===1?String(n/g):`${n/g}/${d/g}`;};
 const clean=x=>typeof x==='number'?String(Number(x.toFixed(8))):String(x);
 const q=(ask,show,a,w,after)=>({ask,show,opts:[...new Set([clean(a),...w.map(clean)])].slice(0,3).map((x,i)=>({html:`<span class="word">${esc(x)}</span>`,ok:i===0})),cls:'words g5-math-options',after:after||B(`Answer: ${clean(a)}`,`정답: ${clean(a)}`)});
-const nq=(ask,show,a,step=1,after)=>q(ask,show,a,[a+step,a-step],after);
+const nq=(ask,show,a,step=1,after)=>q(ask,show,a,spreadNums(a,step,0),after);   // 11-11: was always [a+step,a-step] (answer always middle)
 const strip=(n,d)=>`<div class="g5-math-strip" aria-label="${n}/${d}">${Array.from({length:d},(_,i)=>`<span class="${i<n?'filled':''}"></span>`).join('')}</div>`;
 const support={};
 const scopeFor=id=>support[id];

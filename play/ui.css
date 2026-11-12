@@ -604,3 +604,21 @@ select{min-height:44px;font-size:16px;border-radius:10px;padding:4px 8px}
 @media (orientation:landscape) and (max-height:430px){#view{padding-bottom:6px}#fact:empty,#cheer:empty{display:none}}  /* "play anyway" landscape: the game fits one screen */
 /* 11-04 user: English by default; the language choice lives in Settings, so the top-bar switch is hidden (still used by Settings and QA). */
 header #langBtn{display:none}
+/* 11-11 (user): picture analogies show each row as one pair with an arrow; "which one belongs" shows the group in one row. */
+.ag.ag-pairs{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ag-row{display:flex;align-items:center;gap:8px;background:#fff1e3;border-radius:24px;padding:6px 10px}
+.ag-arrow{font-size:clamp(26px,8vw,38px);font-weight:800;color:var(--peach);line-height:1}
+.ag-pairs .ag-row:first-child .ag-arrow{animation:agpulse 1s ease-in-out 2}
+.ag-pairs .ag-row:last-child .ag-arrow{animation:agpulse 1s ease-in-out 2s 2}
+@keyframes agpulse{50%{transform:scale(1.35)}}
+.ag.ag-group{display:flex;gap:8px;background:#fff1e3;border:3px solid #f3c9a6;border-radius:24px;padding:8px 10px}
+.ag-group .ac{width:clamp(58px,18vw,88px);height:clamp(58px,18vw,88px)}
+@media (prefers-reduced-motion:reduce){.ag-arrow{animation:none!important}}
+body.calm .ag-arrow{animation:none!important}
+/* 11-11 (user: "아바" split as 아/바): Korean breaks only between words; a word longer than the box may still break. */
+.opt,.prompt,.show,.logictext{word-break:keep-all;overflow-wrap:break-word}
+.nowrap{white-space:nowrap}
+/* 11-11 (user): a back button next to Home, only when there is somewhere to go back to (nav.js). */
+header .hleft{display:flex;align-items:center;gap:4px}
+#backBtn{display:none;font-weight:800}
+body.can-back #backBtn{display:inline-flex;align-items:center;justify-content:center}

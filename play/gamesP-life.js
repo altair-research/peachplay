@@ -27,7 +27,7 @@
   function turnPicture(which,object) { return `<div class="pk-turn"><div>${person('happy',0)}${which===0?art(object):''}</div><div>${person('happy',2)}${which===1?art(object):''}</div></div>`; }
   register('turnP','life','Take turns','차례차례 놀아요','SED5 · APL5',banks((lv,i)=>{
     const first=i%2,object=playthings[Math.floor(i/2)%12],next=1-first;
-    return task('These two friends take turns. The friend holding the toy just played. Find whose turn comes next.','두 친구가 번갈아 놀아요. 장난감을 든 친구가 방금 놀았어요. 다음 차례를 찾아요.',lv===1?turnPicture(first,object):scene([turnPicture(next,object),turnPicture(first,object)]),turnPicture(next,object),turnPicture(first,object),{pkSound:true});
+    return task('These two friends take turns. The friend holding the toy just played. Find whose turn comes next.','두 친구가 번갈아 놀아요. 장난감을 든 친구가 방금 놀았어요. 다음 차례를 찾아요.',lv===1?turnPicture(first,object):scene([turnPicture(next,object),turnPicture(first,object)]),turnPicture(next,playthings[(Math.floor(i/2)+1)%12]),turnPicture(first,playthings[(Math.floor(i/2)+1)%12]),{pkSound:true});   // 11-11 sweep: another toy in the choices, so the wrong choice is not a copy of the prompt
   }));
   function helpScene(object,tone,ask) { return scene([position('above',object),person('happy',tone),ask?svg('<path d="M14 15h88v45H68L49 79V60H14z" fill="#b7dce7" stroke="#436cb5" stroke-width="2"/><text x="60" y="49" text-anchor="middle" font-size="26">?</text>'):art('chair')]); }
   register('helpP','life','Ask for help','도움을 부탁해요','SED4',banks((lv,i)=>{

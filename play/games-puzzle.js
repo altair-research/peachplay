@@ -9,7 +9,9 @@
   const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const text = s => `<span class="z-number">${s}</span>`;
   const { grid, bits, line, turn, mirror, pyramid } = window.PuzzleVisuals;
-  const nums = answer => shuffle([answer, answer + 1, answer + 2, Math.max(0, answer - 1)]).filter((v, i, a) => a.indexOf(v) === i);
+  // 11-11 (user found a shortcut): the old choices were always answer-1, answer, answer+1, answer+2, so the answer was
+  // always the second smallest. Now four numbers in a row with the answer at a random place (not below 0).
+  const nums = answer => { const start = Math.max(0, answer - rnd(4)); return shuffle([start, start + 1, start + 2, start + 3]); };
   function item(ask, show, candidates, valid, hint, render = text) {
     const options = [...new Map(candidates.map(v => [JSON.stringify(v), v])).values()];
     const answers = options.filter(valid);
@@ -199,15 +201,26 @@
     return d;
   }
   // 2026-10-28 sample S4: walls are rocks a child can name, open cells stay empty, and kindergarten gets one short sentence without the key step.
-  const pathCell = (v, i, len, key = -1) => i === 0 ? '🍑' : i === key ? '🔑' : i === len - 1 ? '🚩' : v ? '🪨' : '';
+  // 11-11 (user: "too many 4s"): the peach and flag were always in opposite corners, so a 3x3 board almost always answered 4.
+  // Now both move: pick a start, choose a distance among those the board allows (not the same as last round), then a flag at that distance.
+  const pathCell = (v, i, s, f, key = -1) => i === s ? '🍑' : i === key ? '🔑' : i === f ? '🚩' : v ? '🪨' : '';
+  let zLast = -1;
   register('zpath', '🗺️', 'Shortest Walk', '가장 짧은 길', t => {
-    const n = Math.min(6, 3 + Math.floor(t / 2)), young = kidGrade() === 'K'; let a, ds;
-    do { a = seq(n * n).map(i => i === 0 || i === n * n - 1 ? 0 : rnd(4) === 0 ? 1 : 0); ds = distances(a, n); } while (ds[a.length - 1] < 0);
-    if (lvl('zpath') === 2 && !young) {
-      const key = pick(seq(a.length).filter(i => i > 0 && i < a.length - 1 && ds[i] >= 0)), fromKey = distances(a, n, key);
-      return numberItem(B('Collect the key, then reach the flag. Move up/down/left/right. Fewest steps?', '먼저 열쇠를 얻은 뒤 깃발로 가요. 상하좌우로 가는 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, a.length, key)), n), ds[key] + fromKey[a.length - 1], B('Find the shortest walk to the key, then from the key to the flag.', '열쇠까지와 열쇠에서 깃발까지의 가장 짧은 길을 각각 찾아요.'));
+    const n = Math.min(6, 3 + Math.floor(t / 2)), young = kidGrade() === 'K', two = lvl('zpath') === 2 && !young;
+    for (let tries = 0; ; tries++) {
+      const a = seq(n * n).map(() => rnd(4) === 0 ? 1 : 0), open = seq(n * n).filter(i => !a[i]);
+      if (open.length < 4) continue;
+      const s = pick(open), ds = distances(a, n, s), far = open.filter(i => ds[i] >= 2);
+      if (two) {
+        const pairs = []; far.forEach(f => open.filter(k => k !== s && k !== f && ds[k] > 0).forEach(k => { const fk = distances(a, n, k)[f]; if (fk > 0) pairs.push([k, f, ds[k] + fk]); }));
+        const totals = [...new Set(pairs.map(p => p[2]))].filter(v => v !== zLast || tries > 30); if (!totals.length) continue;
+        const want = pick(totals), [key, f, ans] = pick(pairs.filter(p => p[2] === want)); zLast = ans;
+        return numberItem(B('Collect the key, then reach the flag. Move up/down/left/right. Fewest steps?', '먼저 열쇠를 얻은 뒤 깃발로 가요. 상하좌우로 가는 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, s, f, key)), n), ans, B('Find the shortest walk to the key, then from the key to the flag.', '열쇠까지와 열쇠에서 깃발까지의 가장 짧은 길을 각각 찾아요.'));
+      }
+      const steps = [...new Set(far.map(i => ds[i]))].filter(v => v !== zLast || tries > 30); if (!steps.length) continue;
+      const want = pick(steps), f = pick(far.filter(i => ds[i] === want)); zLast = want;
+      return numberItem(young ? B('How many steps from 🍑 to 🚩? Rocks 🪨 block the way.', '🍑에서 🚩까지 몇 걸음? 🪨는 못 지나가요.') : B('Walk from peach to flag, up/down/left/right. Fewest steps?', '복숭아에서 깃발까지 상하좌우로 가요. 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, s, f)), n), want, B('Label nearby open cells 1, then their neighbors 2.', '옆의 빈칸에 1, 그다음 빈칸에 2를 붙여 생각해요.'));
     }
-    return numberItem(young ? B('How many steps from 🍑 to 🚩? Rocks 🪨 block the way.', '🍑에서 🚩까지 몇 걸음? 🪨는 못 지나가요.') : B('Walk from peach to flag, up/down/left/right. Fewest steps?', '복숭아에서 깃발까지 상하좌우로 가요. 가장 적은 걸음 수는?'), grid(a.map((v, i) => pathCell(v, i, a.length)), n), ds[a.length - 1], B('Label nearby open cells 1, then their neighbors 2.', '옆의 빈칸에 1, 그다음 빈칸에 2를 붙여 생각해요.'));
   });
 
   register('zcode', '🔐', 'Shape Code', '모양 암호', t => {
