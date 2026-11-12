@@ -546,7 +546,7 @@ function scaffoldNote(game, type, ok) { const k = game.id + ':' + type; SCAFFOLD
 // When every choice is a plain number, keep each wrong number's distance from the answer but pick the side at random:
 // as written, mirrored, all above or all below. Never below 0, never a duplicate; decimals keep their places.
 // Only the games answer-skew.js flagged (11-11): other number games may use look-alike numbers (6/9) on purpose.
-const BALANCE_IDS = new Set(['ruler', 'round3', 'ladder', 'count120', 'tenmoreless', 'equalgroups', 'phonemes1', 'place3', 'addsub3', 'barstory3', 'array3', 'divide3', 'factfamily3', 'splitmultiply3', 'multiplytens3', 'multpattern3', 'multstory3', 'elapsed3', 'graph3', 'sundata3', 'market3', 'round4', 'decimal4', 'daylight4', 'budget4', 'decimalround5']);
+const BALANCE_IDS = new Set(['ruler', 'round3', 'ladder', 'arrays', 'count120', 'tenmoreless', 'equalgroups', 'phonemes1', 'place3', 'addsub3', 'barstory3', 'array3', 'divide3', 'factfamily3', 'splitmultiply3', 'multiplytens3', 'multpattern3', 'multstory3', 'elapsed3', 'graph3', 'sundata3', 'market3', 'round4', 'decimal4', 'daylight4', 'budget4', 'decimalround5']);
 function balanceNumberOptions(item, id) {
   if (!item || item.__bal || !BALANCE_IDS.has(id) || !Array.isArray(item.opts) || item.opts.length < 3 || item.keepNumbers) return;
   item.__bal = true;

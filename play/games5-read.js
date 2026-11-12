@@ -153,13 +153,13 @@ annual: happening once each year|once per year|once per hour|once in a lifetime
 fertile: able to support plant growth|good for growing plants|hard to dig into|without minerals
 predict: say what may happen|describe a possible future|describe a past event|copy a result
 precise: exact and careful|exact|uncertain|very large`):rows(`bank: 1 money business; 2 land along water; 3 tilt while turning. We sat by the stream on the bank.|2|1|3
-bat: 1 flying mammal; 2 sports club; 3 hit at something. The bat slept in the cave.|1|2|3
-crane: 1 bird; 2 lifting machine; 3 stretch the neck. The crane moved the beam.|2|1|3
+bat: 1 flying mammal; 2 sports club; 3 hit at something. The kitten likes to bat at the string.|3|1|2
+crane: 1 bird; 2 lifting machine; 3 stretch the neck. We had to crane our necks to see the stage.|3|1|2
 light: 1 illumination; 2 not heavy; 3 ignite. The light bag was easy to lift.|2|1|3
 scale: 1 weighing device; 2 fish covering; 3 climb. We weighed flour on the scale.|1|2|3
 current: 1 water flow; 2 happening now; 3 electric charge flow. The raft followed the current.|1|2|3
-seal: 1 marine mammal; 2 close tightly; 3 an official stamp. Seal the jar.|2|1|3
-spring: 1 season; 2 elastic coil; 3 leap. The spring in the chair broke.|2|1|3
+seal: 1 marine mammal; 2 close tightly; 3 an official stamp. The letter carried the mayor's seal.|3|1|2
+spring: 1 season; 2 elastic coil; 3 leap. Frogs spring out of the water.|3|1|2
 rock: 1 stone; 2 move back and forth; 3 a music style. The waves rock the boat.|2|1|3
 charge: 1 ask a price; 2 rush forward; 3 fill a battery. The shop will charge five dollars.|1|2|3`))[i];return item(B(lv===1?'Use the original glossary. Choose the meaning.':'Which numbered definition fits?',lv===1?'이 용어 풀이에 맞는 뜻을 골라요.':'문장에 맞는 뜻의 번호를 골라요.'),r[0],r[1],r.slice(2));});
 bank('sentence5','Connect Ideas','문장 뜻 잇기','5.L.GC.2 · 5.T.SS.1.c–d',[B('Keep the stated relation.','설명한 관계에 맞는 연결어를 골라요.'),B('Preserve both ideas.','두 생각을 모두 살린 문장을 골라요.')],[rows(`Cause: We stayed inside __ rain began.|because|although|unless
@@ -470,7 +470,7 @@ const bankGrowthRows={
 ],
 "2": [
 {"ask":{"en":"Use the entry and context to choose the definition number.","ko":"풀이와 문맥을 함께 보고 뜻의 번호를 골라요."},"show":{"en":"draft: 1 a rough written version; 2 a flow of air; 3 select for a team. A cold draft slipped under the door.","ko":"draft: 1 a rough written version; 2 a flow of air; 3 select for a team. A cold draft slipped under the door."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"1","ko":"1"},{"en":"3","ko":"3"}]},
-{"ask":{"en":"Use the entry and context to choose the definition number.","ko":"풀이와 문맥을 함께 보고 뜻의 번호를 골라요."},"show":{"en":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. The flute produced a high pitch.","ko":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. The flute produced a high pitch."},"right":{"en":"2","ko":"2"},"wrong":[{"en":"1","ko":"1"},{"en":"3","ko":"3"}]}
+{"ask":{"en":"Use the entry and context to choose the definition number.","ko":"풀이와 문맥을 함께 보고 뜻의 번호를 골라요."},"show":{"en":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. We will pitch the tent near the lake.","ko":"pitch: 1 throw a ball; 2 how high or low a sound is; 3 put up a tent. We will pitch the tent near the lake."},"right":{"en":"3","ko":"3"},"wrong":[{"en":"1","ko":"1"},{"en":"2","ko":"2"}]}
 ]
 },
 "sentence5": {

@@ -142,11 +142,17 @@
   register('ztruth', '💬', 'Count True Clues', '참인 단서 세기', t => {
     const n = Math.min(5, 3 + Math.floor(t / 2)), icons = ['🐱', '🐶', '🐰', '🐸', '🐻'].slice(0, n), target = rnd(n);
     // Evaluate all candidate holders; choose a truth count that singles out one.
-    const other = seq(n).filter(i => i !== target), claims = [{ who: target, no: false }];
-    for (const who of other.slice(0, -1)) claims.push({ who, no: true });
-    const evaluate = v => claims.filter(c => c.no ? v !== c.who : v === c.who).length;
-    // Choose the truth count by exhaustive evaluation. Reject ambiguous constructions.
-    const counts = seq(n).map(evaluate), distinct = seq(n).filter(v => counts.filter(c => c === counts[v]).length === 1);
+    // 2026-11-12 (answer-skew): one friend used to be left out of every clue and was the answer about half the time
+    // ("pick the friend nobody talks about"). Now every friend appears in a clue; harder levels add one more clue,
+    // so one friend gets two clues. The answer is any friend whose truth count is unique (checked exhaustively).
+    let claims, evaluate, counts, distinct, guard = 0;
+    do {
+      claims = shuffle(seq(n)).map(who => ({ who, no: rnd(2) === 0 }));
+      if (t >= 2) { const who = rnd(n), no = !claims.find(c => c.who === who).no; claims.push({ who, no }); }
+      evaluate = v => claims.filter(c => c.no ? v !== c.who : v === c.who).length;
+      counts = seq(n).map(evaluate); distinct = seq(n).filter(v => counts.filter(c => c === counts[v]).length === 1);
+    } while (!distinct.length && ++guard < 200);
+    if (!distinct.length) throw new Error('No unique truth count');
     const ans = pick(distinct), count = counts[ans];
     return item(B(`One friend has the peach. Exactly ${count} clues are true. Who has it?`, `복숭아를 가진 친구는 한 명이에요. 참인 단서는 ${count}개예요. 누구일까요?`), `<div class="z-clues">${shuffle(claims).map(c => line(`${c.no ? '🍑 ≠' : '🍑 ='} ${icons[c.who]}`)).join('')}</div>`, seq(n), v => evaluate(v) === count, B('Try one friend and count how many clues would be true.', '친구 한 명을 가정하고 참인 단서를 세어 봐요.'), v => text(icons[v]));
   });

@@ -439,7 +439,7 @@ registerGame({
  const ON='👆⬆️',OFF='👆⬇️',TAPON='🤚↪️',TAPOFF='🤚↩️';
  // [before, action, sentence, [result pic, name] correct first]
  const rows=[
-  ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['⚽💨',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')]]],
+  ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['⚽💨',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')],['🤚⚽',B('It moves to the hand','손 쪽으로 와요')]]],
   ['⬛',ON,B('The room is dark. The light is switched on.','방이 어두워요. 불을 켜요.'),[['🔆',B('Bright','밝아져요')],['⬛',B('Still dark','그대로 어두워요')]]],
   ['🚰',TAPON,B('A tap is closed. It is turned on.','수도꼭지가 잠겨 있어요. 틀어요.'),[['🚰💧',B('Water comes out','물이 나와요')],['🚰',B('No water','물이 안 나와요')]]],
   [small('🎈'),'🫁💨',B('A small balloon. Air is blown in.','작은 풍선이에요. 바람을 불어 넣어요.'),[[big('🎈'),B('Bigger','커져요')],[small('🎈'),B('Same size','그대로예요')]]],
@@ -459,7 +459,7 @@ registerGame({
   [big('🎈'),'🤏💨',B('A big balloon has its air let out.','큰 풍선에서 공기를 빼요.'),[[small('🎈'),B('Smaller','작아져요')],[big('🎈'),B('Same size','그대로예요')]]],
   [stack(2),'🧱⬇️',B('Two blocks are stacked. Add one on top.','쌓인 블록 두 개 위에 하나를 더 놓아요.'),[[stack(3),B('Taller','높아져요')],[stack(1),B('Shorter','낮아져요')],[stack(2),B('Same height','그대로예요')]]],
   ['🔔🎵','✋',B('A ringing bell is held still.','울리는 종을 잡아서 멈춰요.'),[['🔕',B('Quiet','조용해져요')],['🔔🎵',B('Ringing','울려요')]]],
-  ['💧','❄️',B('Water stays in a cold freezer until frozen.','물을 냉동실에 두고 얼 때까지 기다려요.'),[['🧊',B('Ice','얼음')],['💧',B('Still liquid','그대로 물')]]],
+  ['💧','❄️',B('Water stays in a cold freezer until frozen.','물을 냉동실에 두고 얼 때까지 기다려요.'),[['🧊',B('Ice','얼음')],['💧',B('Still liquid','그대로 물')],['♨️',B('Hot water','뜨거운 물')]]],
   [paper(),'✂️',B('Scissors cut paper all the way across.','가위로 종이를 끝까지 잘라요.'),[[paper(true),B('Two pieces','두 조각')],[paper(),B('One piece','한 조각')]]],
   ['📕','🤲',B('Hands pull a closed book apart at its covers.','닫힌 책의 표지를 양쪽으로 펼쳐요.'),[['📖',B('Open book','펼친 책')],['📕',B('Closed book','덮인 책')]]],
   ['📖','🤲➡️⬅️',B('Hands bring the two book covers together.','책의 양쪽 표지를 맞대요.'),[['📕',B('Closed book','덮인 책')],['📖',B('Open book','펼친 책')]]],
@@ -492,15 +492,29 @@ registerGame({
  const strip=s=>`<span style="display:inline-flex;gap:1px;align-items:center">${s.map(box).join('')}</span>`;
  const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.join('<span class="op">➜</span>')}</div>`;
  const line=t=>`<div style="font-size:clamp(15px,2.5dvh,19px);line-height:1.2;margin-top:4px">${L(t)}</div>`;
+ // 2026-11-12 (answer-skew): when the only wrong picture was "it stays the same" (= the picture already on screen),
+ // a child could win by "pick the one that is not shown". Some actions now leave the thing as it is, so the shown picture is sometimes right.
+ const stay=[
+  ['🧊','❄️',B('An ice cube stays in a cold freezer.','얼음을 차가운 냉동실에 그대로 둬요.'),[['🧊',B('Stays ice','그대로 얼음')],['💧',B('It melts','녹아요')]]],
+  ['⚽','🚫🤚',B('A ball is still. Nobody touches it.','공이 멈춰 있어요. 아무도 건드리지 않아요.'),[['⚽',B('It stays still','그대로 있어요')],['⚽💨',B('It rolls','굴러가요')]]],
+  ['🔕','🚫👋',B('A bell is quiet. Nobody shakes it.','종이 조용해요. 아무도 흔들지 않아요.'),[['🔕',B('Still quiet','조용해요')],['🔔🎵',B('It rings','소리가 나요')]]],
+  [stack(3),'🚫✋',B('Three blocks. Nobody touches them.','블록 세 개예요. 아무도 건드리지 않아요.'),[[stack(3),B('Same height','그대로예요')],[stack(2),B('Shorter','낮아져요')],[stack(4),B('Taller','높아져요')]]],
+  ['🧽','☀️',B('A dry sponge sits in the sun.','마른 스펀지가 햇볕에 있어요.'),[['🧽',B('Stays dry','그대로 말라 있어요')],['🧽💦',B('Wet','젖어요')]]],
+  ['📕','🚫🤲',B('A closed book. Nobody opens it.','덮인 책이에요. 아무도 펴지 않아요.'),[['📕',B('Still closed','덮인 채예요')],['📖',B('Open book','펼친 책')]]],
+  ['🌂','🚫🤲',B('A folded umbrella. Nobody opens it.','접힌 우산이에요. 아무도 펴지 않아요.'),[['🌂',B('Still folded','접힌 채예요')],['☂️',B('Open','펼침')]]]
+ ];
  game.play=function(){
-  if(lvl(this.id)!==2){const r=pick(rows);
+  if(lvl(this.id)!==2){const r=rnd(2)?pick(stay):pick(rows);
    quiz(this,{ask:B('What happens next?','그다음에는 어떻게 될까요?'),askSay:B(`${r[2].en} What happens next?`,`${r[2].ko} 그다음에는 어떻게 될까요?`),show:scene([r[0],r[1],'<span class="qbox">?</span>'])+line(r[2]),quietShow:true,
     opts:r[3].map((x,i)=>pic(x[0],x[1],i===0)),cls:'shapes',after:B(`${r[2].en} ${r[3][0][1].en}!`,`${r[2].ko} ${r[3][0][1].ko}!`)});return;}
   const t=pick(two),flip=rnd(2),[a,b,go,back]=flip?[t[1],t[0],t[3],t[2]]:[t[0],t[1],t[2],t[3]],[n1,n2]=flip?[t[5],t[4]]:[t[4],t[5]],[sa,sb]=flip?[t[7],t[6]]:[t[6],t[7]];
-  const seqs=[[a,b,a],[a,a,b],[b,a,b]];
-  quiz(this,{ask:B('Which picture row shows both changes?','두 번 바뀌는 순서에 맞는 그림 줄은?'),askSay:B(`First ${n1.en}, then ${n2.en}. Which picture row shows the changes, in order?`,`먼저 ${n1.ko}, 그다음 ${n2.ko}. 바뀌는 순서에 맞는 그림 줄은?`),
-   show:scene([a,go,back,'<span class="qbox">?</span>'])+line(B(`${n1.en} → ${n2.en}`,`${n1.ko} → ${n2.ko}`)),quietShow:true,
-   opts:seqs.map((s,i)=>({html:strip(s),ok:i===0})),cls:'shapes',after:B(`${sa.en} → ${sb.en} → ${sa.en}`,`${sa.ko} → ${sb.ko} → ${sa.ko}`)});
+  // 2026-11-12 (answer-skew): the answer was always "back to the start" (A B A). Half the time the same action now happens twice (A B B).
+  // Adding a block twice really changes the stack again, so that row always goes and comes back.
+  const again=t[4].en!=='add a block'&&rnd(2),second=again?go:back,m2=again?B(`${n1.en} again`,`또 ${n1.ko}`):n2;
+  const seqs=again?[[a,b,b],[a,b,a],[a,a,b]]:[[a,b,a],[a,a,b],[b,a,b]],end=again?sb:sa;
+  quiz(this,{ask:B('Which picture row fits both actions?','두 행동 뒤 모습에 맞는 그림 줄은?'),askSay:B(`First ${n1.en}, then ${m2.en}. Which picture row shows the changes, in order?`,`먼저 ${n1.ko}, 그다음 ${m2.ko}. 바뀌는 순서에 맞는 그림 줄은?`),
+   show:scene([a,go,second,'<span class="qbox">?</span>'])+line(B(`${n1.en} → ${m2.en}`,`${n1.ko} → ${m2.ko}`)),quietShow:true,
+   opts:seqs.map((s,i)=>({html:strip(s),ok:i===0})),cls:'shapes',after:B(`${sa.en} → ${sb.en} → ${end.en}`,`${sa.ko} → ${sb.ko} → ${end.ko}`)});
  };
 })();
 
