@@ -29,7 +29,7 @@
     let mode = 0, state = tool.init(0), chosen = null, history = [], feedback = '', drag = null, swallowClick = false;
     // cbn93: a picture idea that carries a number map (color by number) travels in the free state, so reset/undo keep it.
     if (topic?.pic) state.pic = topic.pic;
-    const helpFor = () => !mode && state.pic && tool.picHelp ? tool.picHelp : tool.help || words.help;
+    const helpFor = () => (!mode && state.pic || mode && tool.levelPic) && tool.picHelp ? tool.picHelp : tool.help || words.help;
     const initial = copy(state);
     const keyFor = m => JSON.stringify([tool.id, m, m ? task.id : topic?.en || tool.prompt(0).en, !m ? state : null]);
     if (dup(game, keyFor(0))) return mount(tool, game);
@@ -60,7 +60,7 @@
         <div class="m-modes">${[tool.freeLabel || words.free, words.one, words.two].map((w, i) => act(`mode-${i}`, w, `aria-pressed="${mode === i}"`)).join('')}</div>
         <p class="m-prompt">${esc(text(prompt(mode))).replace(/\s(\p{Extended_Pictographic}\S*)$/u, ' <span class="m-topic-pic">$1</span>')}</p>
         <div class="m-work">${tool.render(ctx())}</div>
-        <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(!mode && state.pic ? helpFor() : words.help))}</p>
+        <p class="m-feedback" role="status" aria-live="polite">${esc(feedback || text(!mode && state.pic || mode && tool.levelPic ? helpFor() : words.help))}</p>
         <div class="m-footer">${act('undo', words.undo, history.length ? '' : 'disabled')}${act('reset', words.reset)}${mode ? act('check', words.check) : act('help', B('How to', '사용법'))}</div>`;
       // Glow the one button that moves toward the goal, so a child who cannot read the labels still sees what to press.
       const hint = tool.hint?.(state, mode, chosen, prompt(mode));
@@ -560,7 +560,7 @@
     if (m === 1) {
       // A snake visits neighboring cells; each group has its own pattern.
       for (let k = 0; k < t.n; k++) { const y = Math.floor(k / 5), x = y % 2 ? 4 - k % 5 : k % 5; goal[y * 5 + x] = Math.floor(k * t.g / t.n); }
-    } else for (let y = 0; y < t.rows; y++) for (let x = 0; x < t.cols; x++) goal[y * 5 + x] = t.stripes ? y % 2 : 0;
+    } else for (let y = 0; y < t.rows; y++) for (let x = 0; x < t.cols; x++) goal[y * 5 + x] = t.stripes ? y % 2 : (x + y) % 3;   // 11-12: a plain rectangle is a 3-color diagonal pattern, so every number needs its own look-up
     return goal;
   }
   // fix91: a big dashed outline on the board itself (44px cells, 4px gaps). A line is drawn where a goal cell meets
@@ -582,12 +582,39 @@
     // cbn93: in a picture, glow the right color only after a wrong try (the chart is the first help).
     if (!m) return s.pic && s.miss != null && !s.cells[s.miss] ? placeHint(chosen, `color${s.pic[s.miss]}`, `c${s.miss}`) : null;
     if (cubes.check(s, m)) return 'check';
+    // 11-12: levels are number charts now; like the pictures, the right color glows only after a wrong try.
+    if (cubes.levelPic) return s.miss != null && !s.cells[s.miss] ? placeHint(chosen, `color${cubeGoal(s.task, m)[s.miss]}`, `c${s.miss}`) : null;
     const goal = cubeGoal(s.task, m);
     for (let i = 0; i < 20; i++) {
       if (goal[i] === null && s.cells[i]) return chosen === `c${i}` ? 'remove' : chosen ? clearChoice(chosen) : `drop-c${i}`;
       if (goal[i] !== null && (!s.cells[i] || s.cells[i].color !== goal[i] || s.cells[i].split)) return placeHint(chosen, `color${goal[i]}`, `c${i}`);
     }
     return null;
+  };
+
+  // 11-12 (user, sample 50): levels 1-2 were "fill the dashed outline", which a child does by copying the shape.
+  // They now use the same number chart as the pictures: each goal cell shows a number and only that number's color fits.
+  // The math goal (how many cubes, how many groups, rows x columns) stays in the prompt and the meter.
+  cubes.levelPic = true;
+  const cubeRender97 = cubes.render, cubeDrop97 = cubes.drop, taskMode = t => t.rows ? 2 : 1;
+  cubes.render = c => {
+    const s = c.state; if (!c.mode || !s.task) return cubeRender97(c);
+    const goal = cubeGoal(s.task, c.mode), total = goal.filter(g => g !== null).length, n = s.cells.filter(Boolean).length;
+    const used = [...new Set(goal.filter(g => g !== null))].sort();
+    return `<div class="m-legend" aria-label="${esc(text(B('Color chart', '색깔표')))}">${used.map(i => `<span><b>${i + 1}</b><i style="background:${picColors[i]}"></i></span>`).join('')}<span class="m-count">🧊 ${n}/${total} · ${text(B('Groups', '묶음'))} ${groups(s.cells)}</span></div><div class="m-cubes m-pic">${goal.map((g, i) => {
+      const cell = s.cells[i];
+      if (g === null && !cell) return `<span class="m-off" aria-hidden="true"></span>`;
+      return target(`c${i}`, B(`Place ${i + 1}, ${cell ? text(picNames[cell.color]) + ' cube' : 'number ' + (g + 1)}`, `${i + 1}번 칸, ${cell ? text(picNames[cell.color]) + ' 큐브' : '숫자 ' + (g + 1)}`), cell ? '<span></span>' : `<span class="m-num">${g + 1}</span>`, `style="--m-color:${cell ? picColors[cell.color] : '#fff'}" aria-pressed="${c.chosen === `c${i}`}" data-filled="${!!cell}"`);
+    }).join('')}</div><div class="m-tray">${used.map(i => source(`color${i}`, B(`${text(picNames[i])} cube`, `${text(picNames[i])} 큐브`), `<span style="background:${picColors[i]}"></span>`, c.chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('remove', words.remove)}</div>`;
+  };
+  cubes.drop = (s, src, dest, msg) => {
+    if (!s.task) return cubeDrop97(s, src, dest, msg);
+    const goal = cubeGoal(s.task, taskMode(s.task)), i = +dest.slice(1), g = goal[i];
+    if (!dest.startsWith('c') || !Number.isInteger(i) || g == null || !src.startsWith('color')) return;
+    const color = +src.slice(5);
+    if (color !== g) { s.miss = i; msg(B(`Look at the chart. Number ${g + 1} is ${text(picNames[g])}.`, `색깔표를 봐요. ${g + 1}번은 ${text(picNames[g])}이에요.`)); say(text(B('Look at the chart again.', '색깔표를 다시 봐요.'))); return; }
+    s.cells[i] = { color, split: false }; delete s.miss;
+    if (goal.every((q, k) => q === null || s.cells[k]?.color === q)) { const t = B(`All filled! Tap ${text(words.check)}.`, `다 채웠어요! ${text(words.check)}을 눌러요.`); msg(t); say(text(t)); }
   };
 
   const patternOne = [{ x: 2, y: 1, w: 2, h: 2, kind: 0 }], patternTwo = [{ x: 1, y: 1, w: 4, h: 2, mixed: false }];

@@ -450,7 +450,7 @@ registerGame({
   ['🧽','💧',B('A dry sponge goes into water.','마른 스펀지를 물에 넣어요.'),[['🧽💦',B('Wet','젖어요')],['🧽',B('Dry','말라요')]]],
   ['🌽','🔥',B('Corn kernels are heated.','옥수수 알을 뜨겁게 데워요.'),[['🍿',B('Popcorn','팝콘이 돼요')],['🌽',B('Stays corn','그대로예요')]]],
   ['🌧️','⏳',B('It rains for a long time.','비가 오래 와요.'),[['💦',B('Puddles','물웅덩이')],['🏜️',B('Dry ground','땅이 말라요')]]],
-  ['🥚','🍳🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
+  ['🥚','🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
  ];
  rows.push(
   ['⚽💨','✋',B('A rolling ball meets a hand that holds it.','구르는 공을 손으로 잡아요.'),[['⚽',B('It stops','멈춰요')],['⚽💨',B('Keeps rolling','계속 굴러요')]]],
@@ -490,7 +490,16 @@ registerGame({
  const pic=(e,label,ok)=>({html:/^</.test(e)?e:`<span class="emo" style="white-space:nowrap;font-size:clamp(20px,min(${[...e].length>2?'6.5vw':'9vw'},5.5dvh),44px)">${e}</span>`,label,ok});
  const box=e=>`<span style="display:inline-grid;place-items:center;min-width:clamp(20px,min(6vw,5dvh),40px);height:clamp(28px,min(8vw,6dvh),46px);padding:0 1px;border:2px solid #b9a27f;border-radius:6px;background:#fff;font-size:clamp(10px,min(3.3vw,3dvh),22px);letter-spacing:-2px;white-space:nowrap">${e}</span>`;
  const strip=s=>`<span style="display:inline-flex;gap:1px;align-items:center">${s.map(box).join('')}</span>`;
- const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.join('<span class="op">➜</span>')}</div>`;
+ // 11-12 (user, sample 57: "the balloon picture shows a heart-like thing and air going the wrong way"): two emoji glued with an
+ // arrow did not read as an action. Each action is now ONE moving picture: the hand pushes, the switch finger presses,
+ // air flows into the balloon, water drips, fire flickers. "Nobody touches it" is a still hand with a red no-sign.
+ const ACT={'🤚➡️':['✋','push'],[ON]:['👆','up'],[OFF]:['👇','down'],[TAPON]:['🤚','turn'],[TAPOFF]:['🤚','turnback'],'🫁💨':['😗<i>💨</i>','blow'],
+  '✋⬆️':['✋','up'],'👋':['👋','shake'],'☀️':['☀️','glow'],'💧☀️':['💧☀️','drip'],'💧':['💧','drip'],'🔥':['🔥','flicker'],'⏳':['⏳','turn'],
+  '✋':['✋','hold'],'🤏💨':['🤏<i>💨</i>','out'],'🧱⬇️':['🧱','drop'],'❄️':['❄️','glow'],'✂️':['✂️','snip'],'🤲':['🤲','spread'],'🤲➡️⬅️':['🤲','squeeze'],
+  '🔑↪️':['🔑','turn'],'🤏⬇️':['👇','down'],'🤲⬆️':['✋','up'],'🤲⬇️':['✋','down'],'🤚⬇️':['🤚','down'],'🤚⬆️':['🤚','up'],'☀️⏳':['☀️','glow'],
+  '⬇️':['👄','down'],'⬆️':['👄','up'],'🚫🤚':['✋','none'],'🚫👋':['👋','none'],'🚫✋':['✋','none'],'🚫🤲':['🤲','none']};
+ const act=a=>ACT[a]?`<span class="cz-act cz-${ACT[a][1]}" aria-hidden="true">${ACT[a][0]}</span>`:a;
+ const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.map((x,i)=>i&&i<parts.length-1?act(x):x).join('<span class="op">➜</span>')}</div>`;
  const line=t=>`<div style="font-size:clamp(15px,2.5dvh,19px);line-height:1.2;margin-top:4px">${L(t)}</div>`;
  // 2026-11-12 (answer-skew): when the only wrong picture was "it stays the same" (= the picture already on screen),
  // a child could win by "pick the one that is not shown". Some actions now leave the thing as it is, so the shown picture is sometimes right.

@@ -139,7 +139,7 @@
     return item(B(`Each friend has a different item. What does ${animals[at]} have?`, `친구마다 서로 다른 물건을 하나씩 가졌어요. ${animals[at]}의 물건은?`), line(animals.join(' ')) + `<div class="z-clues">${clues.map(k => `${animals[Math.floor(k / n)]} ≠ ${objects[k % n]}`).join('　')}</div>`, seq(n), v => v === solutions[0][at], B('Cross out the items a friend cannot have.', '가질 수 없는 물건부터 지워 생각해요.'), v => text(objects[v]));
   });
 
-  register('ztruth', '💬', 'Count True Clues', '참인 단서 세기', t => {
+  register('ztruth', '🃏', 'Count the Right Cards', '맞는 카드 세기', t => {
     const n = Math.min(5, 3 + Math.floor(t / 2)), icons = ['🐱', '🐶', '🐰', '🐸', '🐻'].slice(0, n), target = rnd(n);
     // Evaluate all candidate holders; choose a truth count that singles out one.
     // 2026-11-12 (answer-skew): one friend used to be left out of every clue and was the answer about half the time
@@ -154,7 +154,14 @@
     } while (!distinct.length && ++guard < 200);
     if (!distinct.length) throw new Error('No unique truth count');
     const ans = pick(distinct), count = counts[ans];
-    return item(B(`One friend has the peach. Exactly ${count} clues are true. Who has it?`, `복숭아를 가진 친구는 한 명이에요. 참인 단서는 ${count}개예요. 누구일까요?`), `<div class="z-clues">${shuffle(claims).map(c => line(`${c.no ? '🍑 ≠' : '🍑 ='} ${icons[c.who]}`)).join('')}</div>`, seq(n), v => evaluate(v) === count, B('Try one friend and count how many clues would be true.', '친구 한 명을 가정하고 참인 단서를 세어 봐요.'), v => text(icons[v]));
+    // 11-12 (user, sample 58: "good idea, but the ≠ and 'exactly N clues are true' are hard to take in"): each clue is a picture
+    // card (friend + peach, or friend + crossed-out peach), and the number of right cards is shown as green ticks.
+    const card = c => `<span class="zt-card">${icons[c.who]}<span class="zt-peach${c.no ? ' zt-no' : ''}">🍑</span></span>`;
+    const ticks = count ? '<b class="zt-tick">✔</b>'.repeat(count) : '<b class="zt-zero">0</b>';
+    const lc = no => `<span class="zt-card">🙂<span class="zt-peach${no ? ' zt-no' : ''}">🍑</span></span>`;
+    const legend = `<div class="zt-legend">${lc(false)} ${L(B('= has it', '= 가졌어요'))} · ${lc(true)} ${L(B('= does not have it', '= 안 가졌어요'))}</div>`;
+    return item(count ? B(`One friend has the peach. Only ${count} ${count === 1 ? 'card is' : 'cards are'} right. Who has it?`, `복숭아는 한 친구만 가졌어요. 맞는 카드는 ${count}장뿐이에요. 누구일까요?`) : B('One friend has the peach. No card is right. Who has it?', '복숭아는 한 친구만 가졌어요. 맞는 카드가 하나도 없어요. 누구일까요?'),
+      `<div class="zt-wrap"><div class="zt-cards">${shuffle(claims).map(card).join('')}</div><div class="zt-right">${L(B('Right cards:', '맞는 카드:'))} ${ticks}</div>${legend}</div>`, seq(n), v => evaluate(v) === count, B('Pretend one friend has it, then count the right cards.', '한 친구가 가졌다고 생각하고, 맞는 카드를 세어 봐요.'), v => text(icons[v]));
   });
 
   register('zpyramid', '🔺', 'Number Pyramid', '숫자 피라미드', t => {

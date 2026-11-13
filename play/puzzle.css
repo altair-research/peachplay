@@ -39,3 +39,15 @@
 .z-cell.z-empty { background: #fff; outline: 2px dashed #e0703a; outline-offset: -3px; animation: zEmpty 1.4s ease-in-out infinite; }
 .z-cell.z-empty.z-drop { min-width: 0; min-height: 0; border-radius: 0; font-size: inherit; }
 @media (prefers-reduced-motion: reduce) { .z-cell.z-empty { animation: none; } }
+
+/* 11-12 (sample 58): picture clue cards instead of ≠; the number of right cards as green ticks. */
+.zt-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.zt-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 360px; }
+.zt-card { display: inline-flex; align-items: center; gap: 2px; padding: 4px 8px; border: 2px solid #d9c8ae; border-radius: 12px; background: #fff; font-size: clamp(22px, 6.5vw, 34px); line-height: 1; }
+.zt-peach { position: relative; display: inline-block; }
+.zt-no::after { content: ''; position: absolute; inset: -8%; border: .09em solid #e03131; border-radius: 50%; background: linear-gradient(135deg, transparent 45%, #e03131 45%, #e03131 55%, transparent 55%); }
+.zt-right { font-size: clamp(16px, 4.4vw, 21px); font-weight: 700; }
+.zt-tick { color: #2f9e44; font-size: 1.25em; margin-left: 2px; }
+.zt-zero { color: #c92a2a; font-size: 1.2em; }
+.zt-legend { font-size: clamp(12px, 3.4vw, 15px); opacity: .85; }
+.zt-legend .zt-card { font-size: 16px; padding: 1px 4px; border-width: 1px; border-radius: 8px; }

@@ -66,16 +66,21 @@ const sightParts = w => SIGHT_PARTS[w].split('|').map(p => ({ g: p.replace('*', 
 // Sound boxes under the word; heart parts are red with ❤️, plain sounds blue. Boxes light up one by one.
 function sightMap(w) {
   const parts = sightParts(w), hearts = parts.some(p => p.heart);
-  const note = hearts ? B('❤️ = remember by heart', '❤️ = 마음으로 외워요') : B('🔤 Sound it out!', '🔤 소리로 읽어 봐요!');
+  // 11-12 (user: "two squares and a heart pop up — what do they mean?"): say what the colors mean, and draw the boxes as flat
+  // color bars under the letters so they never look like buttons to press.
+  const note = hearts ? B('Blue: sound it out · ❤️ red: remember by heart', '파란 칸은 소리로 읽어요 · ❤️ 빨간 칸은 외워요') : B('All blue: sound it out!', '모두 파란 칸: 소리로 읽어요!');
   return `<div class="sight-map" lang="en" style="display:flex;flex-direction:column;align-items:center;gap:.3em">
     <div style="display:flex;gap:.25em;align-items:flex-end">${parts.map((p, i) => `<span class="sm-part" data-i="${i}" style="display:inline-flex;flex-direction:column;align-items:center;gap:.15em">
       <span style="font-size:clamp(30px,7dvh,52px);font-weight:700;line-height:1;color:${p.heart ? '#c2334d' : '#24456e'}">${p.g}</span>
-      <span class="sm-box" style="display:inline-flex;align-items:center;justify-content:center;min-width:1.6em;height:1.6em;border-radius:6px;font-size:clamp(14px,3dvh,22px);${p.heart ? 'background:#ffe3e8;border:2px solid #e0475b' : 'background:#dceaff;border:2px solid #4a7bd0'}">${p.heart ? '❤️' : ''}</span></span>`).join('')}</div>
+      <span class="sm-box" aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:1.2em;height:1.1em;border-radius:3px;font-size:clamp(12px,2.4dvh,18px);pointer-events:none;box-shadow:none;${p.heart ? 'background:#f6b6c1' : 'background:#b9d2f5'}">${p.heart ? '❤️' : ''}</span></span>`).join('')}</div>
     <div class="sm-note" style="font-size:clamp(14px,2.6dvh,19px)">${L(note)}</div></div>`;
 }
 function showSightMap(w, box) {
   if (!box) return;
   box.innerHTML = sightMap(w);
+  const hearts = sightParts(w).some(p => p.heart);
+  const pickL = o => o[S.lang] || o.en;
+  say(pickL(hearts ? B('Sound out the blue part. Remember the red heart part by heart.', '파란 칸은 소리로 읽고, 빨간 하트 칸은 외워요.') : B('Every part is blue. You can sound it out.', '모두 파란 칸이에요. 소리로 읽을 수 있어요.')), undefined, true);
   box.querySelectorAll('.sm-box').forEach((b, i) => { try { b.animate([{ transform: 'scale(.6)', opacity: .3 }, { transform: 'scale(1.15)', opacity: 1 }, { transform: 'scale(1)', opacity: 1 }], { duration: 420, delay: 250 + i * 380, fill: 'backwards' }); } catch (e) {} });
 }
 // Tile rounds have no onRender/onCorrect hooks: when a sight tile round appears in #view, speak the word, wire 🔊 and show the sound boxes once the word is spelled.

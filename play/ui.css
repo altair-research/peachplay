@@ -622,3 +622,56 @@ body.calm .ag-arrow{animation:none!important}
 header .hleft{display:flex;align-items:center;gap:4px}
 #backBtn{display:none;font-weight:800}
 body.can-back #backBtn{display:inline-flex;align-items:center;justify-content:center}
+#fwdBtn{display:none}
+body.can-fwd #fwdBtn{display:inline-flex;align-items:center;justify-content:center}
+/* 11-12 (user): where am I — Home › subject › game (grade), each step tappable; the previous question is one tap away. */
+#crumbs{display:flex;align-items:center;gap:2px;height:24px;padding:0 10px;font-size:13px;line-height:1;white-space:nowrap;overflow:hidden;color:#6b4a3a}
+#crumbs[hidden]{display:none}
+#crumbs button{background:none;border:0;margin:0;padding:3px 4px;min-height:24px;font:inherit;color:#9a4a22;text-decoration:underline;text-underline-offset:2px;cursor:pointer;flex:none}
+#crumbs .cr-sep{opacity:.55;flex:none}
+#crumbs .cr-here{padding:3px 4px;flex:none}
+#crumbs .cr-game{font-weight:700;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#crumbs .cr-grade{flex:none;font-size:11px;background:#ffe3d3;border-radius:99px;padding:2px 6px;margin-left:2px}
+#crumbs .cr-prev{margin-left:auto;text-decoration:none;border:1px solid #e6c3ae;border-radius:99px;padding:2px 8px;background:#fff}
+body.has-crumbs #view:has(> .prompt){min-height:calc(100dvh - 96px)}   /* 11-12: the 24px trail row comes out of the game area so the game still fits one screen */
+/* 11-12: on short phones the trail costs height; flatten the header a little while it shows. */
+@media (max-height:700px){
+  body.has-crumbs header{padding-top:max(2px,env(safe-area-inset-top));padding-bottom:2px}
+  body.has-crumbs header .icon,body.has-crumbs #muteBtn{width:34px;height:34px;font-size:17px}
+  body.has-crumbs #crumbs{height:20px;font-size:12px}
+  body.has-crumbs #crumbs button,body.has-crumbs #crumbs .cr-here{min-height:20px;padding-top:1px;padding-bottom:1px}
+  body.has-crumbs #view:has(> .prompt){min-height:calc(100dvh - 80px)}
+}
+
+/* 11-12 (sample 57): cause-and-effect actions move once you look at them; still for reduced motion. */
+.cz-act{display:inline-block;position:relative;transform-origin:50% 80%;animation-duration:1.1s;animation-timing-function:ease-in-out;animation-iteration-count:4}
+.cz-act i{display:inline-block;font-style:normal;animation:czblow 1.1s ease-in-out 4}
+.cz-push{animation-name:czpush}.cz-up{animation-name:czup}.cz-down{animation-name:czdown}.cz-turn{animation-name:czturn}.cz-turnback{animation-name:czturnback}
+.cz-shake{animation-name:czshake}.cz-glow{animation-name:czglow}.cz-drip{animation-name:czdrip}.cz-flicker{animation-name:czglow;animation-duration:.6s;animation-iteration-count:7}
+.cz-hold{animation-name:czglow}.cz-drop{animation-name:czdrip}.cz-snip{animation-name:czturn}.cz-spread{animation-name:czspread}.cz-squeeze{animation-name:czsqueeze}
+.cz-out i{animation-name:czout}
+.cz-none{opacity:.85}
+.cz-none::after{content:'';position:absolute;inset:-6%;border:.08em solid #e03131;border-radius:50%;background:linear-gradient(135deg,transparent 46%,#e03131 46%,#e03131 54%,transparent 54%)}
+@keyframes czpush{50%{transform:translateX(.25em)}}
+@keyframes czup{50%{transform:translateY(-.22em)}}
+@keyframes czdown{50%{transform:translateY(.22em)}}
+@keyframes czturn{50%{transform:rotate(35deg)}}
+@keyframes czturnback{50%{transform:rotate(-35deg)}}
+@keyframes czshake{25%{transform:rotate(-18deg)}75%{transform:rotate(18deg)}}
+@keyframes czglow{50%{transform:scale(1.18)}}
+@keyframes czdrip{0%{transform:translateY(-.2em);opacity:.4}60%{transform:translateY(.15em);opacity:1}}
+@keyframes czspread{50%{transform:scaleX(1.3)}}
+@keyframes czsqueeze{50%{transform:scaleX(.7)}}
+@keyframes czblow{0%{transform:translateX(-.15em);opacity:.3}70%{transform:translateX(.3em);opacity:1}}
+@keyframes czout{0%{transform:translateX(0);opacity:1}70%{transform:translateX(.4em);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.cz-act,.cz-act i{animation:none!important}}
+/* 11-13 (run-all: draw, compass, scene, mcubes, mclock overflowed 3-11px with the trail row):
+   wide screens put the trail inside the header's empty left space, so it takes no row;
+   on screens without the dots row, the hidden progress bar no longer keeps its 10px. */
+@media (min-width:900px){
+  #crumbs{position:fixed;top:0;left:100px;height:58px;max-width:calc(50vw - 260px);z-index:31;padding:0 4px;pointer-events:auto}
+  body.has-crumbs #view:has(> .prompt){min-height:calc(100dvh - 72px)}
+}
+body.has-crumbs:not(:has(#view > .prompt)) #sbar{display:none}
+@media (max-height:700px){body.has-crumbs #crumbs{height:18px}body.has-crumbs #crumbs button,body.has-crumbs #crumbs .cr-here{min-height:18px}}
+@media(max-height:700px){body.has-crumbs .scene{width:min(100%,440px,calc(26dvh * 1.25))}}   /* 11-13: room for the trail row */
