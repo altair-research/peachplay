@@ -1,3 +1,3 @@
 // Single place for the app version. Bump it with every publish so it is easy to see whether a device has the newest build.
-const APP_VERSION = '4.99', APP_BUILD = '2026-11-14';
+const APP_VERSION = '5.00', APP_BUILD = '2026-11-14';
 const verText = () => `PeachPlay v${APP_VERSION} · ${APP_BUILD}`;

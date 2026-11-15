@@ -37,9 +37,8 @@
   const dayNow = () => today();
   const st = () => { const t = clean(S.today) || { d: '', step: 0, a: '', b: '', done: [] }; S.today = t; return t; };
   let active = false;                                      // true only while a Today step is running in this page
-  // 11-14 (AI 결정, 지안): Follow the Book asks in text only and its level 1 arrow points at the answer (user panel 11-13).
-  // Kept out of Today's 10 minutes until it is rebuilt as a picture book; remove 'bookway' here to put it back.
-  const TODAY_SKIP = ['bookway'];
+  // Games kept out of Today's 10 minutes. 11-14: bookway was here until it was rebuilt as a picture book the same night.
+  const TODAY_SKIP = [];
   const skipId = id => id === 'blockpuzzle' || TODAY_SKIP.includes(id) || (typeof CHECK_SKIP !== 'undefined' && CHECK_SKIP.includes(id));
   const pool = () => visibleGames().filter(g => !skipId(g.id) && gradeOf(g) !== 'P' && typeof g.play === 'function');
   const acc = id => { const s = S.stats[id]; const n = s ? s.right + s.wrong : 0; return n ? s.right / n : null; };

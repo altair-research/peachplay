@@ -57,7 +57,10 @@ reg('divide3','Share and Group','똑같이 나누기','3.PAR.3.2 · 3.PAR.3.6',l
 });
 reg('factfamily3','Related Facts','곱셈과 나눗셈의 관계','3.PAR.3.2',lv=>{
  const a=1+rnd(9),b=1+rnd(9),p=a*b,d=lv>1&&rnd(2);
- return q(B('Use the related fact to find n.','곱셈식과 나눗셈식의 관계를 이용해 n을 구해요.'),eq(d?`${p} ÷ n = ${b}`:`${a} × n = ${p}`),d?a:b,[p,a+b]);
+ // 11-14 (answer-skew): the answer was nearly always the smallest choice (wrong ones were the product and a+b). Now one wrong
+ // choice is the other number in the fact (a copying mistake), so the answer is the smaller one only about half the time.
+ const ans=d?a:b,shown=d?b:a;
+ return q(B('Use the related fact to find n.','곱셈식과 나눗셈식의 관계를 이용해 n을 구해요.'),eq(d?`${p} ÷ n = ${b}`:`${a} × n = ${p}`),ans,[p,shown!==ans?shown:ans+1]);
 });
 reg('splitmultiply3','Split to Multiply','쪼개서 곱하기','3.PAR.3.3',lv=>{
  if(lv===2){const a=2+rnd(3),b=1+rnd(3),c=2+rnd(7),ans=b*c;return q(B(`There are ${a+b} rows of ${c}, and the top ${a} rows are packed away. How many dots remain?`,`한 줄에 ${c}개씩 ${a+b}줄이에요. 위 ${a}줄을 치우면 몇 개가 남나요?`),dots(a+b,c,a),ans,[(a+b)*c,a*c],B(`${a+b} × ${c} − ${a} × ${c} = ${ans}`,`${a+b} × ${c} − ${a} × ${c} = ${ans}`));}

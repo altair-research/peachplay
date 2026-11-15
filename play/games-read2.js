@@ -10,13 +10,37 @@
     quiz(this,{ask:lv===1?B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'):B('Listen and take away the first word.','듣고 앞 낱말 소리를 빼요.'),askExtra:{t:spoken,lang:'en-US'},show:`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${lv===1?`${t[0]} + ${t[1]}`:`${t[2]} − ${t[0]}`}</div>`,opts:[t,...ds].map((x,i)=>({html:`<span class="emo" style="font-size:clamp(28px,5dvh,44px)" aria-hidden="true">${lv===1?wholePicture(x):partPicture[x[1]]}</span><span class="word" lang="en">${lv===1?x[2]:x[1]}</span>`,ok:i===0})),cls:'words',vocab:right,
       onRender(){const rb=$('#spo');if(rb)rb.onclick=()=>$$('.opt .word').forEach((e,i)=>say(e.textContent,'en-US',i>0));},after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
   }});
+  // 11-14 (P-bookway98, user panel 11-13): rebuilt as a picture book. The old page asked in text only and its level 1 arrow
+  // pointed at the answer box. Now a page of picture words: the words already read are faded with ✓, 👆 rests on the last one read,
+  // and the child taps the picture that comes next. Level 1: one page, 2 lines (the jump to the next line is the key step).
+  // Level 2: two facing pages, 2 lines each (page by page: the left page ends before the right page starts). GA ELAGSEKRF1a.
+  const BW_WORDS=[['🐶','dog'],['🐱','cat'],['🐟','fish'],['☀️','sun'],['🚗','car'],['🍎','apple'],['🐝','bee'],['🌳','tree'],['🎈','balloon'],['🐸','frog'],['🦆','duck'],['⭐','star'],['🌙','moon'],['🐷','pig'],['🧢','hat'],['🚌','bus']];
   registerGame({id:'bookway',grade:'K',subject:'read',icon:'📖',title:B('Follow the Book','책 읽는 방향'),sub:B('English books: start and follow','영어 책의 시작과 순서'),area:B('Reading · Book direction','읽기 · 책 방향'),play(){
-    const lv=lvl('bookway'),rows=3,cols=2+rnd(4),row=rnd(3),col=rnd(cols-1),next=row*cols+col+1;
-    const cells=Array.from({length:rows*cols},(_,i)=>{const x=12+(i%cols)*36,y=15+Math.floor(i/cols)*25;return `<rect x="${x}" y="${y}" width="36" height="18" rx="3" fill="${lv===2&&i===row*cols+col?'#ffd166':'#edf3f7'}" stroke="#435269"/><text x="${x+18}" y="${y+13}" text-anchor="middle" font-size="12">${i+1}</text>`;}).join('');
-    // L1: row indicated by arrow; L2: next print box after yellow marker.
-    const target=lv===1?row*cols:next;
-    const right=String(target+1),wrong=shuffle(Array.from({length:rows*cols},(_,i)=>String(i+1)).filter(x=>x!==right)).slice(0,lv===1?2:3);
-    quiz(this,{ask:lv===1?B(`English book: where does row ${row+1} start?`,`영어 책의 ${row+1}번째 줄은 어디서 시작할까요?`):B('English book: after yellow, which box?','영어 책: 노란 칸 다음 칸은?'),show:`<svg viewBox="0 0 205 100" style="width:205px;height:min(100px,17dvh)" role="img" aria-label="${L(B('Three rows of numbered print boxes','숫자가 있는 글 칸 세 줄'))}"><rect x="2" y="2" width="200" height="96" rx="4" fill="white" stroke="#435269"/>${cells}${lv===1?`<text x="2" y="${29+row*25}" font-size="12">➜</text>`:''}</svg>`,opts:[right,...wrong].map((x,i)=>({html:`<span class="num">${x}</span>`,ok:i===0})),after:B('In an English book, follow print left to right.','영어 책은 글을 왼쪽에서 오른쪽으로 따라가요.')});
+    const lv=lvl('bookway'),pages=lv===1?1:2,rows=2,cols=lv===1?3:2,per=rows*cols,n=pages*per;
+    const words=shuffle(BW_WORDS.slice()).slice(0,n);
+    const cell=i=>({p:Math.floor(i/per),r:Math.floor(i%per/cols),c:i%cols});   // reading order index -> page, line, place
+    const at=(p,r,c)=>p<pages&&r<rows&&c<cols&&p>=0&&r>=0&&c>=0?p*per+r*cols+c:-1;
+    // last word read: -1 = nothing yet (where do we start?). Weight the steps that teach something: line end, page end.
+    const keys=lv===1?[-1,0,1,2,2,2,3,4]:[0,1,1,2,3,3,3,4,5,6];
+    const k=pick(keys),ans=k+1;
+    const C=cell(ans),L0=k>=0?cell(k):null,cand=[];
+    // Mistakes children really make: start top-right, go down a column, read across the spread, skip, go back.
+    if(k<0)cand.push(at(0,0,cols-1),at(0,rows-1,0),n-1);
+    else{
+      cand.push(at(L0.p,L0.r+1,L0.c));                       // straight down from the last word
+      if(L0.c===cols-1&&L0.p+1<pages)cand.push(at(L0.p+1,L0.r,0)); // across the spine on the same line
+      if(L0.c===cols-1)cand.push(at(L0.p,L0.r+1,cols-1));    // next line, but the right end
+      if(C.r===rows-1&&C.c===0&&C.p+1<pages)cand.push(at(C.p+1,0,0));
+      cand.push(ans+1,k,k-1);
+    }
+    const want=lv===1?3:4,opts=[ans];
+    for(const x of [...cand,...shuffle(Array.from({length:n},(_,i)=>i))])if(x>=0&&x<n&&!opts.includes(x)&&opts.length<want)opts.push(x);
+    const cellHtml=i=>`<div class="bw-cell${i<k?' bw-read':i===k?' bw-last':''}"><span class="bw-e">${words[i][0]}</span><span class="bw-w">${words[i][1]}</span>${i===k?'<span class="bw-f" aria-hidden="true">👆</span>':''}${i<k?'<span class="bw-ok" aria-hidden="true">✓</span>':''}</div>`;
+    const page=p=>`<div class="bw-page" style="--bw-cols:${cols}">${Array.from({length:per},(_,j)=>cellHtml(p*per+j)).join('')}</div>`;
+    const show=`<div class="bw-book${pages>1?' bw-spread':''}" role="img" aria-label="${L(B(pages>1?'An open book with two pages of picture words':'A book page with two lines of picture words','그림 낱말이 있는 책'+(pages>1?' 두 쪽':' 한 쪽')))}">${Array.from({length:pages},(_,p)=>page(p)).join('')}</div>`;
+    const ask=k<0?B('Where do we start reading?','어디부터 읽을까요?'):B('We read up to 👆. What comes next?','👆까지 읽었어요. 다음은?');
+    const after=pages>1&&C.p===1&&C.r===0&&C.c===0&&k>=0?B('Finish the left page, then go to the right page.','왼쪽 쪽을 다 읽고 오른쪽 쪽으로 가요.'):C.c===0&&C.r>0?B('At the end of a line, go down to the start of the next line.','줄 끝에서는 다음 줄 처음으로 내려가요.'):B('In an English book, read left to right, top to bottom.','영어 책은 왼쪽에서 오른쪽, 위에서 아래로 읽어요.');
+    quiz(this,{ask,show,cls:'shapes',opts:opts.map(i=>({html:`<span class="emo">${words[i][0]}</span>`,label:words[i][1],ok:i===ans})),after});
   }});
 })();
 // Reading extension: read & match, sight words, syllables, letter memory.
@@ -149,7 +173,8 @@ registerGame({
   id: 'syllable', subject: 'read', icon: '👏', title: B('Clap the Parts', '박수로 음절 세기'), sub: B('How many parts?', '몇 개로 나뉠까?'),
   area: AREA_READ('Syllables'),
   play() {
-    const t = pick(SYL.filter(x => x[2] <= 2));
+    // 11-14 (answer-skew): pick the number of parts first so 1 and 2 come up evenly (was 31 one-part words to 25); level 2 adds 3-part words.
+    const parts = lvl('syllable') === 1 ? 1 + rnd(2) : 1 + rnd(3), t = pick(SYL.filter(x => x[2] === parts));
     quiz(this, {
       ask: B('Say the word and clap: how many parts?', '말하며 박수 치면 몇 부분일까요?'),
       show: `<div class="bigword"><span class="emo">${t[1]}</span> ${t[0]} <button class="say" id="hear">🔊</button></div><button class="pill" id="clap">👏 <span id="cl">0</span></button>`,
