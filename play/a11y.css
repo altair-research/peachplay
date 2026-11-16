@@ -202,3 +202,5 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
 #view>.opts.tiles.ws-tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 #view>.show .coinsvg{width:min(64px,12dvh);height:auto}
 }
+/* 11-17 (user panel): the screen heading gets script focus as a reading start; it is not a control, so no box around the question. */
+#view .prompt[tabindex="-1"]:focus,#view h1[tabindex="-1"]:focus,#view .bphead[tabindex="-1"]:focus{outline:none}

@@ -167,7 +167,13 @@ function translateLiveScreen(from) {
   }
 }
 
-const B = (en, ko) => ({ en, ko });
+// 11-17 (user panel, sample 38): "분수은(는)" showed the placeholder particle. Pick the right one from the last syllable.
+const KO_PARTICLES = { '은(는)': ['은', '는'], '는(은)': ['은', '는'], '을(를)': ['을', '를'], '를(을)': ['을', '를'], '이(가)': ['이', '가'], '가(이)': ['이', '가'], '과(와)': ['과', '와'], '와(과)': ['과', '와'], '(으)로': ['으로', '로'], '으로(로)': ['으로', '로'] };
+const koParticles = ko => typeof ko !== 'string' || !ko.includes('(') ? ko : ko.replace(/([가-힣])(은\(는\)|는\(은\)|을\(를\)|를\(을\)|이\(가\)|가\(이\)|과\(와\)|와\(과\)|\(으\)로|으로\(로\))/g, (m, c, p) => {
+  const jong = (c.charCodeAt(0) - 0xac00) % 28, [a, b] = KO_PARTICLES[p];
+  return c + (a === '으로' ? (jong === 0 || jong === 8 ? b : a) : jong ? a : b);
+});
+const B = (en, ko) => ({ en, ko: koParticles(ko) });
 // art90: finished action pictures (src/art/*.svg, precached in sw.js). alt is a short B(en, ko); h is the CSS height of the slot.
 const artPic = (name, alt, h = 'clamp(52px,10dvh,80px)') => `<img class="artpic" src="art/${name}.svg" alt="${L(alt).replace(/"/g, '&quot;')}" draggable="false" style="height:${h};width:auto;max-width:100%;vertical-align:middle">`;
 const $ = (s) => document.querySelector(s);

@@ -104,11 +104,11 @@ function sightMap(w) {
   const parts = sightParts(w), hearts = parts.some(p => p.heart);
   // 11-12 (user: "two squares and a heart pop up — what do they mean?"): say what the colors mean, and draw the boxes as flat
   // color bars under the letters so they never look like buttons to press.
-  const note = hearts ? B('Blue: sound it out · ❤️ red: remember by heart', '파란 칸은 소리로 읽어요 · ❤️ 빨간 칸은 외워요') : B('All blue: sound it out!', '모두 파란 칸: 소리로 읽어요!');
+  const note = hearts ? B('👄 Blue: sound it out · ❤️ red: remember by heart', '👄 파란 칸은 소리로 읽어요 · ❤️ 빨간 칸은 외워요') : B('👄 All blue: sound it out!', '👄 모두 파란 칸: 소리로 읽어요!');
   return `<div class="sight-map" lang="en" style="display:flex;flex-direction:column;align-items:center;gap:.3em">
     <div style="display:flex;gap:.25em;align-items:flex-end">${parts.map((p, i) => `<span class="sm-part" data-i="${i}" style="display:inline-flex;flex-direction:column;align-items:center;gap:.15em">
       <span style="font-size:clamp(30px,7dvh,52px);font-weight:700;line-height:1;color:${p.heart ? '#c2334d' : '#24456e'}">${p.g}</span>
-      <span class="sm-box" aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:1.2em;height:1.1em;border-radius:3px;font-size:clamp(12px,2.4dvh,18px);pointer-events:none;box-shadow:none;${p.heart ? 'background:#f6b6c1' : 'background:#b9d2f5'}">${p.heart ? '❤️' : ''}</span></span>`).join('')}</div>
+      <span class="sm-box" aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:1.2em;height:1.1em;border-radius:3px;font-size:clamp(12px,2.4dvh,18px);pointer-events:none;box-shadow:none;${p.heart ? 'background:#f6b6c1' : 'background:#b9d2f5'}">${p.heart ? '❤️' : '👄'}</span></span>`).join('')}</div>
     <div class="sm-note" style="font-size:clamp(14px,2.6dvh,19px)">${L(note)}</div></div>`;
 }
 function showSightMap(w, box) {

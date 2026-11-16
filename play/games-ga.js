@@ -137,9 +137,11 @@
     return {ask:lv===1?B('Which rule helps here?','어떤 규칙이 도움이 될까요?'):B('Why use this rule here?','왜 이 규칙을 쓸까요?'),show:card(t[3]+(lv===2?' ➜ '+t[4]:''))+card(L(t[0])+(lv===2?'<br>'+L(t[1]):'')),askExtra:{t:L(t[0])+(lv===2?' '+L(t[1]):'')},opts:lv===1?[pic(t[4],t[1],true),pic(r(1)[4],r(1)[1],false),pic(r(2)[4],r(2)[1],false)]:[pic(t[5],t[2],true),pic(r(1)[5],r(1)[2],false),pic(r(2)[5],r(2)[2],false)],cls:'shapes',after:B('People can discuss a shared problem and agree on a helpful rule.','함께 겪는 문제를 의논하고 도움이 되는 규칙을 정할 수 있어요.')};
   });
   const people=[
-    [B('George Washington','조지 워싱턴'),B('The first U.S. president','미국의 첫 번째 대통령'),'🥇🇺🇸'],
-    [B('Abraham Lincoln','에이브러햄 링컨'),B('The president in the Lincoln Memorial','링컨 기념관에서 기리는 대통령'),'🏛️'],
-    [B('Donald Trump','도널드 트럼프'),B('The U.S. president on October 16, 2026','2026년 10월 16일의 미국 대통령'),'🏠🇺🇸']
+    // 11-17 (user panel 44, 지안 decision): short picture labels; the current president is "the president now", not a dated sentence.
+    // SSKH1.i asks for the current president. After 2029-01-20 (next inauguration) change the name on this line.
+    [B('George Washington','조지 워싱턴'),B('1st president','첫 대통령'),'🥇🇺🇸'],
+    [B('Abraham Lincoln','에이브러햄 링컨'),B('Lincoln Memorial','링컨 기념관'),'🏛️'],
+    [B('Donald Trump','도널드 트럼프'),B('president now','지금 대통령'),'🏠🇺🇸']
   ];
 
 })();

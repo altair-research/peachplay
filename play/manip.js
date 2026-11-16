@@ -89,7 +89,7 @@
         if (action === 'remove') chosen = null;
         if (action === 'nextpiece') chosen = tool.select(state, '');
       }
-      else if (b.dataset.source !== undefined) { chosen = chosen === b.dataset.source ? null : b.dataset.source; feedback = chosen ? b.getAttribute('aria-label') : ''; }
+      else if (b.dataset.source !== undefined) { tool.lastCard = b.dataset.card; chosen = chosen === b.dataset.source ? null : b.dataset.source; feedback = chosen ? b.getAttribute('aria-label') : ''; }
       else if (b.dataset.drop !== undefined) {
         if (chosen !== null) put(chosen, b.dataset.drop);
         else if (tool.tap && b.dataset.drop.startsWith('board')) change(() => tool.tap(state, b.dataset.drop));
@@ -105,7 +105,7 @@
       if (b.hasAttribute('data-clock')) {
         drag = { id: e.pointerId, x: e.clientX, y: e.clientY, clock: true, before: copy(state), angle: tool.angle(b, e), value: state.minutes, moved: false };
       } else {
-        const src = b.dataset.source ?? tool.select?.(state, b.dataset.drop);
+        const src = b.dataset.source ?? tool.select?.(state, b.dataset.drop); if (b.dataset.card) tool.lastCard = b.dataset.card;
         if (src == null) return;
         drag = { id: e.pointerId, x: e.clientX, y: e.clientY, src, moved: false, label: b.getAttribute('aria-label') };
       }
@@ -476,9 +476,10 @@
     const per = Math.max(2, Math.ceil(8 / used.length)), cards = used.flatMap(col => Array(per).fill(col)).slice(0, 10);
     const slots = Array.from({ length: 10 }, (_, i) => i);
     for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
+    const cc = /^color\d$/.test(chosen || '') ? +chosen.slice(5) : -1, held = cc < 0 ? -1 : cards[cubes.lastCard] === cc ? +cubes.lastCard : cards.indexOf(cc);
     return `<div class="m-floorrow"><div class="m-floor">${cards.map((col, k) => {
       const s = slots[k], x = 11 + (s % 5) * 19.5 + (r() - .5) * 6, y = (Math.floor(s / 5) + .5 + (r() - .5) * .35) * 50, rot = Math.round((r() - .5) * 40);
-      return source(`color${col}`, B(`${text(picNames[col])} cube`, `${text(picNames[col])} 큐브`), `<span style="background:${picColors[col]}"></span>`, chosen === `color${col}`).replace('<button ', `<button style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--m-rot:${rot}deg" `);
+      return source(`color${col}`, B(`${text(picNames[col])} cube`, `${text(picNames[col])} 큐브`), `<span style="background:${picColors[col]}"></span>`, chosen === `color${col}`).replace('<button ', `<button data-card="${k}"${k === held ? ' data-held="true"' : ''} style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--m-rot:${rot}deg" `);
     }).join('')}</div><div class="m-tools">${tools}</div></div>`;
   }
   cubes.topics = freeBuildIdeas.map(([e, en, ko]) => Object.assign(B(`Color by number: make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en}. ${e}`, `번호대로 색칠해서 ${ko}${(ko.charCodeAt(ko.length - 1) - 0xac00) % 28 ? '을' : '를'} 완성해요. ${e}`), { pic: cubePics93[en].replace(/\//g, '').split('').map(ch => ch === '.' ? null : +ch - 1) }));
