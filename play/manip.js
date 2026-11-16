@@ -64,7 +64,8 @@
         <div class="m-footer">${act('undo', words.undo, history.length ? '' : 'disabled')}${act('reset', words.reset)}${mode ? act('check', words.check) : act('help', B('How to', '사용법'))}</div>`;
       // Glow the one button that moves toward the goal, so a child who cannot read the labels still sees what to press.
       const hint = tool.hint?.(state, mode, chosen, prompt(mode));
-      if (hint) [...root.querySelectorAll('[data-key]')].find(b => b.dataset.key === hint)?.classList.add('m-next');
+      // Every card of that color glows (the cube floor has several cards per color).
+      if (hint) [...root.querySelectorAll('[data-key]')].filter(b => b.dataset.key === hint).forEach(b => b.classList.add('m-next'));
       if (focusKey) [...root.querySelectorAll('[data-key]')].find(b => b.dataset.key === focusKey)?.focus({ preventScroll: true });
     }
     function put(src, dest) {
@@ -467,6 +468,19 @@
     rainbow:'.111./12221/23.32/3...3',slide:'1..../13.../1.3../1..33'};
   const picColors = ['#e5484d', '#f7c948', '#3f7fe8', '#3aa864'];
   const picNames = [B('red', '빨강'), B('yellow', '노랑'), B('blue', '파랑'), B('green', '초록')];
+  // 11-16 (대표): the colors are not a neat row of buttons any more. Color cards lie scattered on a floor and the child
+  // picks one up and puts it in. The layout is seeded by the picture/task, so it does not jump on every tap.
+  function cubeFloor(used, chosen, key, tools) {
+    let h = 2166136261; for (const ch of key) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    const r = () => { h = h + 0x6d2b79f5 | 0; let t = Math.imul(h ^ h >>> 15, 1 | h); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const per = Math.max(2, Math.ceil(8 / used.length)), cards = used.flatMap(col => Array(per).fill(col)).slice(0, 10);
+    const slots = Array.from({ length: 10 }, (_, i) => i);
+    for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; }
+    return `<div class="m-floorrow"><div class="m-floor">${cards.map((col, k) => {
+      const s = slots[k], x = 11 + (s % 5) * 19.5 + (r() - .5) * 6, y = (Math.floor(s / 5) + .5 + (r() - .5) * .35) * 50, rot = Math.round((r() - .5) * 40);
+      return source(`color${col}`, B(`${text(picNames[col])} cube`, `${text(picNames[col])} 큐브`), `<span style="background:${picColors[col]}"></span>`, chosen === `color${col}`).replace('<button ', `<button style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--m-rot:${rot}deg" `);
+    }).join('')}</div><div class="m-tools">${tools}</div></div>`;
+  }
   cubes.topics = freeBuildIdeas.map(([e, en, ko]) => Object.assign(B(`Color by number: make ${en === 'apple' || en === 'umbrella' || en === 'elephant' ? 'an' : 'a'} ${en}. ${e}`, `번호대로 색칠해서 ${ko}${(ko.charCodeAt(ko.length - 1) - 0xac00) % 28 ? '을' : '를'} 완성해요. ${e}`), { pic: cubePics93[en].replace(/\//g, '').split('').map(ch => ch === '.' ? null : +ch - 1) }));
   cubes.freeLabel = B('Picture', '그림');
   cubes.picHelp = B("Find the number's color in the chart. Put that color cube on the number.", '숫자의 색을 색깔표에서 찾아요. 그 색 큐브를 숫자 위에 놓아요.');
@@ -479,7 +493,7 @@
       const cell = s.cells[i];
       if (g === null) return `<span class="m-off" aria-hidden="true"></span>`;
       return target(`c${i}`, B(`Place ${i + 1}, ${cell ? text(picNames[cell.color]) + ' cube' : 'number ' + (g + 1)}`, `${i + 1}번 칸, ${cell ? text(picNames[cell.color]) + ' 큐브' : '숫자 ' + (g + 1)}`), cell ? '<span></span>' : `<span class="m-num">${g + 1}</span>`, `style="--m-color:${cell ? picColors[cell.color] : '#fff'}" aria-pressed="${c.chosen === `c${i}`}" data-filled="${!!cell}"`);
-    }).join('')}</div><div class="m-tray">${picColors.map((col, i) => source(`color${i}`, B(`${text(picNames[i])} cube`, `${text(picNames[i])} 큐브`), `<span style="background:${col}"></span>`, c.chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('remove', words.remove)}</div>`;
+    }).join('')}</div>${cubeFloor([0, 1, 2, 3], c.chosen, s.pic.join(), act('remove', words.remove))}`;
   };
   cubes.drop = (s, src, dest, msg) => {
     if (s.task || !s.pic) return cubeDrop93(s, src, dest, msg);
@@ -606,7 +620,7 @@
       const cell = s.cells[i];
       if (g === null && !cell) return `<span class="m-off" aria-hidden="true"></span>`;
       return target(`c${i}`, B(`Place ${i + 1}, ${cell ? text(picNames[cell.color]) + ' cube' : 'number ' + (g + 1)}`, `${i + 1}번 칸, ${cell ? text(picNames[cell.color]) + ' 큐브' : '숫자 ' + (g + 1)}`), cell ? '<span></span>' : `<span class="m-num">${g + 1}</span>`, `style="--m-color:${cell ? picColors[cell.color] : '#fff'}" aria-pressed="${c.chosen === `c${i}`}" data-filled="${!!cell}"`);
-    }).join('')}</div><div class="m-tray">${used.map(i => source(`color${i}`, B(`${text(picNames[i])} cube`, `${text(picNames[i])} 큐브`), `<span style="background:${picColors[i]}"></span>`, c.chosen === `color${i}`)).join('')}</div><div class="m-tools">${act('remove', words.remove)}</div>`;
+    }).join('')}</div>${cubeFloor(used, c.chosen, s.task.id, act('remove', words.remove))}`;
   };
   cubes.drop = (s, src, dest, msg) => {
     if (!s.task) return cubeDrop97(s, src, dest, msg);
