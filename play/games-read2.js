@@ -15,32 +15,44 @@
   // and the child taps the picture that comes next. Level 1: one page, 2 lines (the jump to the next line is the key step).
   // Level 2: two facing pages, 2 lines each (page by page: the left page ends before the right page starts). GA ELAGSEKRF1a.
   const BW_WORDS=[['🐶','dog'],['🐱','cat'],['🐟','fish'],['☀️','sun'],['🚗','car'],['🍎','apple'],['🐝','bee'],['🌳','tree'],['🎈','balloon'],['🐸','frog'],['🦆','duck'],['⭐','star'],['🌙','moon'],['🐷','pig'],['🧢','hat'],['🚌','bus']];
+  // 11-15 (user panel on v5.00): the last word read (👆) is no longer a choice — it was the brightest thing on the page and the
+  // first trap for a child who cannot read. More line ends and page ends per round. Two misses open a smaller step: the same
+  // page with the reading order numbered 1, 2, 3…, then back to the question.
+  function bwShow(words,k,pages,cols,nums){
+    const per=2*cols;
+    const cellHtml=i=>`<div class="bw-cell${i<k?' bw-read':i===k?' bw-last':''}">${nums?`<span class="bw-n" aria-hidden="true">${i+1}</span>`:''}<span class="bw-e">${words[i][0]}</span><span class="bw-w">${words[i][1]}</span>${i===k?'<span class="bw-f" aria-hidden="true">👆</span>':''}${i<k?'<span class="bw-ok" aria-hidden="true">✓</span>':''}</div>`;
+    const page=p=>`<div class="bw-page" style="--bw-cols:${cols}">${Array.from({length:per},(_,j)=>cellHtml(p*per+j)).join('')}</div>`;
+    return `<div class="bw-book${pages>1?' bw-spread':''}${nums?' bw-nums':''}" role="img" aria-label="${L(B(pages>1?'An open book with two pages of picture words':'A book page with two lines of picture words','그림 낱말이 있는 책'+(pages>1?' 두 쪽':' 한 쪽')))}">${Array.from({length:pages},(_,p)=>page(p)).join('')}</div>`;
+  }
   registerGame({id:'bookway',grade:'K',subject:'read',icon:'📖',title:B('Follow the Book','책 읽는 방향'),sub:B('English books: start and follow','영어 책의 시작과 순서'),area:B('Reading · Book direction','읽기 · 책 방향'),play(){
     const lv=lvl('bookway'),pages=lv===1?1:2,rows=2,cols=lv===1?3:2,per=rows*cols,n=pages*per;
     const words=shuffle(BW_WORDS.slice()).slice(0,n);
     const cell=i=>({p:Math.floor(i/per),r:Math.floor(i%per/cols),c:i%cols});   // reading order index -> page, line, place
     const at=(p,r,c)=>p<pages&&r<rows&&c<cols&&p>=0&&r>=0&&c>=0?p*per+r*cols+c:-1;
-    // last word read: -1 = nothing yet (where do we start?). Weight the steps that teach something: line end, page end.
-    const keys=lv===1?[-1,0,1,2,2,2,3,4]:[0,1,1,2,3,3,3,4,5,6];
+    // last word read: -1 = nothing yet (where do we start?). About half the questions are a line end or a page end.
+    const keys=lv===1?[-1,0,1,2,2,2,2,3]:[0,1,1,1,2,3,3,3,3,4,5,5];
     const k=pick(keys),ans=k+1;
     const C=cell(ans),L0=k>=0?cell(k):null,cand=[];
-    // Mistakes children really make: start top-right, go down a column, read across the spread, skip, go back.
+    // Mistakes children really make: start top-right, go down a column, read across the spread, skip ahead.
     if(k<0)cand.push(at(0,0,cols-1),at(0,rows-1,0),n-1);
     else{
       cand.push(at(L0.p,L0.r+1,L0.c));                       // straight down from the last word
       if(L0.c===cols-1&&L0.p+1<pages)cand.push(at(L0.p+1,L0.r,0)); // across the spine on the same line
       if(L0.c===cols-1)cand.push(at(L0.p,L0.r+1,cols-1));    // next line, but the right end
       if(C.r===rows-1&&C.c===0&&C.p+1<pages)cand.push(at(C.p+1,0,0));
-      cand.push(ans+1,k,k-1);
+      cand.push(ans+1);
     }
-    const want=lv===1?3:4,opts=[ans];
-    for(const x of [...cand,...shuffle(Array.from({length:n},(_,i)=>i))])if(x>=0&&x<n&&!opts.includes(x)&&opts.length<want)opts.push(x);
-    const cellHtml=i=>`<div class="bw-cell${i<k?' bw-read':i===k?' bw-last':''}"><span class="bw-e">${words[i][0]}</span><span class="bw-w">${words[i][1]}</span>${i===k?'<span class="bw-f" aria-hidden="true">👆</span>':''}${i<k?'<span class="bw-ok" aria-hidden="true">✓</span>':''}</div>`;
-    const page=p=>`<div class="bw-page" style="--bw-cols:${cols}">${Array.from({length:per},(_,j)=>cellHtml(p*per+j)).join('')}</div>`;
-    const show=`<div class="bw-book${pages>1?' bw-spread':''}" role="img" aria-label="${L(B(pages>1?'An open book with two pages of picture words':'A book page with two lines of picture words','그림 낱말이 있는 책'+(pages>1?' 두 쪽':' 한 쪽')))}">${Array.from({length:pages},(_,p)=>page(p)).join('')}</div>`;
+    // Choices are words not read yet; only near the end of the book, a faded word already read fills in. Never the 👆 word.
+    const want=lv===1?3:4,opts=[ans],all=[...cand,...shuffle(Array.from({length:n},(_,i)=>i))];
+    for(const ok of [x=>x>k&&x<n,x=>x>=0&&x<k])for(const x of all)if(ok(x)&&!opts.includes(x)&&opts.length<want)opts.push(x);
     const ask=k<0?B('Where do we start reading?','어디부터 읽을까요?'):B('We read up to 👆. What comes next?','👆까지 읽었어요. 다음은?');
     const after=pages>1&&C.p===1&&C.r===0&&C.c===0&&k>=0?B('Finish the left page, then go to the right page.','왼쪽 쪽을 다 읽고 오른쪽 쪽으로 가요.'):C.c===0&&C.r>0?B('At the end of a line, go down to the start of the next line.','줄 끝에서는 다음 줄 처음으로 내려가요.'):B('In an English book, read left to right, top to bottom.','영어 책은 왼쪽에서 오른쪽, 위에서 아래로 읽어요.');
-    quiz(this,{ask,show,cls:'shapes',opts:opts.map(i=>({html:`<span class="emo">${words[i][0]}</span>`,label:words[i][1],ok:i===ans})),after});
+    const choice=i=>({html:`<span class="emo">${words[i][0]}</span>`,label:words[i][1],ok:i===ans});
+    quiz(this,{ask,show:bwShow(words,k,pages,cols,false),cls:'shapes',opts:opts.map(choice),after,sd:{words,k,pages,cols,opts:opts.map(choice)}});
+  },
+  stepDown(item){
+    const d=item.sd; if(!d)return null;
+    return {ask:B('Follow the numbers 1, 2, 3… Which picture is next?','번호 1, 2, 3…을 따라가요. 다음 그림은?'),show:bwShow(d.words,d.k,d.pages,d.cols,true),cls:'shapes',opts:d.opts};
   }});
 })();
 // Reading extension: read & match, sight words, syllables, letter memory.

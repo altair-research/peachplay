@@ -69,7 +69,8 @@
     }
     function put(src, dest) {
       change(() => tool.drop(state, src, dest, message));
-      chosen = null;
+      // 11-16 (user panel, sample 59): cubes keep the chosen color for the next square, so a level 2 picture is not 2 taps per cube.
+      chosen = tool.stickySource && /^color\d/.test(src) ? src : null;
     }
     root.onclick = e => {
       if (swallowClick) { swallowClick = false; if (e.detail !== 0) return; }
@@ -595,7 +596,7 @@
   // 11-12 (user, sample 50): levels 1-2 were "fill the dashed outline", which a child does by copying the shape.
   // They now use the same number chart as the pictures: each goal cell shows a number and only that number's color fits.
   // The math goal (how many cubes, how many groups, rows x columns) stays in the prompt and the meter.
-  cubes.levelPic = true;
+  cubes.levelPic = true; cubes.stickySource = true;
   const cubeRender97 = cubes.render, cubeDrop97 = cubes.drop, taskMode = t => t.rows ? 2 : 1;
   cubes.render = c => {
     const s = c.state; if (!c.mode || !s.task) return cubeRender97(c);
