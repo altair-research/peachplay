@@ -292,7 +292,7 @@ registerGame({
   area: AREA_SCI('Colors & art'),
   play() {
     const t = pick(MIX), ds = others(MIX, t, 2), o = (m, ok) => ({ html: CDOT(m[2]), label: m[5], ok });
-    quiz(this, { ask: B(`${t[3].en[0].toUpperCase() + t[3].en.slice(1)} and ${t[4].en} make what color?`, `${t[3].ko}과 ${t[4].ko}을 섞으면 무슨 색?`), show: `<div class="mixrow">${CDOT(t[0])}<span class="op">+</span>${CDOT(t[1])}<span class="op">=</span><span class="qbox">?</span></div>`,
+    quiz(this, { ask: B(`${t[3].en[0].toUpperCase() + t[3].en.slice(1)} and ${t[4].en} make what color?`, `${t[3].ko}과(와) ${t[4].ko}을(를) 섞으면 무슨 색?`), show: `<div class="mixrow">${CDOT(t[0])}<span class="op">+</span>${CDOT(t[1])}<span class="op">=</span><span class="qbox">?</span></div>`,
       opts: [o(t, true), ...ds.map(m => o(m, false))], cls: 'shapes', after: B(`${t[3].en} and ${t[4].en} make ${t[5].en}!`, `${t[3].ko}과 ${t[4].ko}을 섞으면 ${t[5].ko}!`), vocab: t[5].en, onCorrect() { $('.mixrow .qbox').outerHTML = CDOT(t[2]); } });
   }
 });
