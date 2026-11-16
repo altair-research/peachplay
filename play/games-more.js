@@ -498,7 +498,9 @@ registerGame({
   '✋':['✋','hold'],'🤏💨':['🤏<i>💨</i>','out'],'🧱⬇️':['🧱','drop'],'❄️':['❄️','glow'],'✂️':['✂️','snip'],'🤲':['🤲','spread'],'🤲➡️⬅️':['🤲','squeeze'],
   '🔑↪️':['🔑','turn'],'🤏⬇️':['👇','down'],'🤲⬆️':['✋','up'],'🤲⬇️':['✋','down'],'🤚⬇️':['🤚','down'],'🤚⬆️':['🤚','up'],'☀️⏳':['☀️','glow'],
   '⬇️':['👄','down'],'⬆️':['👄','up'],'🚫🤚':['✋','none'],'🚫👋':['👋','none'],'🚫✋':['✋','none'],'🚫🤲':['🤲','none']};
- const act=a=>ACT[a]?`<span class="cz-act cz-${ACT[a][1]}" aria-hidden="true">${ACT[a][0]}</span>`:a;
+ // 11-17 (user panel 61): a still frame lost the direction ("pushed up" was a flat palm). A small arrow keeps it.
+ const DIR={up:'⬆️',down:'⬇️',push:'➡️'};
+ const act=a=>ACT[a]?`<span class="cz-act cz-${ACT[a][1]}" aria-hidden="true">${ACT[a][0]}</span>${DIR[ACT[a][1]]?`<span aria-hidden="true" style="font-size:.5em;align-self:center">${DIR[ACT[a][1]]}</span>`:''}`:a;
  const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.map((x,i)=>i&&i<parts.length-1?act(x):x).join('<span class="op">➜</span>')}</div>`;
  const line=t=>`<div style="font-size:clamp(15px,2.5dvh,19px);line-height:1.2;margin-top:4px">${L(t)}</div>`;
  // 2026-11-12 (answer-skew): when the only wrong picture was "it stays the same" (= the picture already on screen),
