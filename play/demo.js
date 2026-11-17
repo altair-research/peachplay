@@ -67,10 +67,15 @@
         }
         return steps;
       };
+      // panel 11-17 (서연 64): after the finger taps, the example shows its result — the tapped picture gets a ✓ and, when the
+      // game gives item.demoShow (the material one step later, e.g. the book with ✓ and 👆 moved on), the material changes to it.
+      const material = root.querySelector('.demo-material'), firstShow = material.innerHTML;
+      const resetResult = () => { root.querySelectorAll('.demo-picked').forEach(e => e.classList.remove('demo-picked')); if (item.demoShow && material.innerHTML !== firstShow) { material.innerHTML = firstShow; fit(); } material.classList.remove('demo-changed'); };
+      const showResult = el => { el.classList.add('demo-picked'); if (item.demoShow) { material.innerHTML = item.demoShow; material.classList.add('demo-changed'); fit(); } };
       const resetPairs = () => { if (!board) return; board.querySelector('.pair-lines').innerHTML = ''; board.querySelectorAll('.pair-token').forEach(e => { e.classList.remove('paired', 'pair-leftover'); e.setAttribute('aria-pressed', 'false'); }); };
       const replay = async () => {
         if (!root.isConnected) return;
-        const me = ++run; finger.getAnimations().forEach(x => x.cancel()); resetPairs();
+        const me = ++run; finger.getAnimations().forEach(x => x.cancel()); resetPairs(); resetResult();
         const target = root.querySelectorAll('.demo-option')[item.opts.findIndex(o => o.ok)];
         if (!target) return;
         const calm = S.calm || matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,7 +89,7 @@
             { duration: calm ? 900 : (steps.length > 1 ? (last ? 1800 : 700) : 3000), fill: 'forwards' });
           try { await animation.finished; } catch (e) { return; }
           if (me !== run || !root.isConnected) return;
-          st.tap?.(); from = end;
+          st.tap?.(); if (last && !board) showResult(st.el); from = end;
           if (st.tap && k === steps.length - 2) await new Promise(r => setTimeout(r, 900));   // let the leftover glow be seen
         }
       };

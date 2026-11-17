@@ -48,7 +48,7 @@
     const ask=k<0?B('Where do we start reading?','어디부터 읽을까요?'):B('We read up to 👆. What comes next?','👆까지 읽었어요. 다음은?');
     const after=pages>1&&C.p===1&&C.r===0&&C.c===0&&k>=0?B('Finish the left page, then go to the right page.','왼쪽 쪽을 다 읽고 오른쪽 쪽으로 가요.'):C.c===0&&C.r>0?B('At the end of a line, go down to the start of the next line.','줄 끝에서는 다음 줄 처음으로 내려가요.'):B('In an English book, read left to right, top to bottom.','영어 책은 왼쪽에서 오른쪽, 위에서 아래로 읽어요.');
     const choice=i=>({html:`<span class="emo">${words[i][0]}</span>`,label:words[i][1],ok:i===ans});
-    quiz(this,{ask,show:bwShow(words,k,pages,cols,false),cls:'shapes',opts:opts.map(choice),after,sd:{words,k,pages,cols,opts:opts.map(choice)}});
+    quiz(this,{ask,show:bwShow(words,k,pages,cols,false),demoShow:bwShow(words,ans,pages,cols,false),cls:'shapes',opts:opts.map(choice),after,sd:{words,k,pages,cols,opts:opts.map(choice)}});
   },
   stepDown(item){
     const d=item.sd; if(!d)return null;

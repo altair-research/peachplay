@@ -660,7 +660,10 @@ function quiz(game, item, ctx = {}) {
   if (!pk && !skipShow && !item.quietShow && showBox && !hasReplay(showBox) && /\p{L}/u.test(speakable(showBox))) {
     const mb = document.createElement('button'); mb.className = 'say auto-say auto-show'; mb.id = 'sps'; mb.textContent = '🔊'; mb.setAttribute('aria-label', L(B('Read this aloud', '자료 읽어 주기')));
     mb.onclick = e => { e.stopPropagation(); const t = speakable(showBox); if (t) say(t, speechLang(t)); };
-    showBox.classList.add('auto-say-host'); showBox.prepend(mb);
+    showBox.classList.add('auto-say-host');
+    const cap = showBox.lastElementChild;   // a text-only box under the picture takes the button, so it never covers the picture
+    if (cap && cap !== mb && !cap.querySelector('img,svg,canvas,button,input,.emo') && /\p{L}/u.test(cap.innerText || '')) { cap.classList.add('auto-cap'); cap.after(mb); const place = () => { if (!mb.isConnected) return removeEventListener('resize', place); const r = showBox.getBoundingClientRect(), c = cap.getBoundingClientRect(); mb.style.right = Math.max(0, r.right - c.right + 6) + 'px'; mb.style.bottom = Math.max(0, r.bottom - c.bottom + Math.max(2, (c.height - 32) / 2)) + 'px'; }; requestAnimationFrame(place); addEventListener('resize', place); }
+    else showBox.prepend(mb);
   }
   const showStreak = () => {
     const chip = $('#cleanStreak'); if (!chip) return;

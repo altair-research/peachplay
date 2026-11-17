@@ -312,11 +312,15 @@
   words[3].push(...grade3Extra.map(r=>r.slice(0,3)));
   sentences[3].push(...grade3Extra.map(r=>r[3]));
   const grade3ContextWrong = ['never','between','these','Many','during','between','until','difference','Despite','nobody','among','until',...grade3Extra.map(r=>r[4])];
+  // panel 11-17 (서연 39): grade 3 level 1 left the middle of the screen empty. Words that can be drawn get their picture; the rest
+  // (always, between…) get a big listen card, since this level is about hearing the word, never seeing its spelling.
+  const ADW_PIC={drink:'🥤',eight:'8️⃣',fall:'🍂',grow:'🌱',laugh:'😂',light:'💡',start:'🏁',today:'📅',draw:'🖍️',clean:'🧼',together:'👫',long:'📏',hold:'🤲',full:'🥛'};
+  const adwCue=w=>`<div style="display:flex;align-items:center;justify-content:center;gap:16px">${ADW_PIC[w]?`<span class="emo" aria-hidden="true" style="font-size:clamp(48px,10dvh,84px)">${ADW_PIC[w]}</span>`:''}<button class="say" id="adwListen" style="width:auto;height:auto;padding:10px 22px;font-size:clamp(28px,5dvh,40px);border-radius:20px" aria-label="${L(B('Hear the word','낱말 듣기'))}">🔊 👂</button></div>`;
   for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
     const familiar = grade === '2' ? pick(G2_WORD77) : grade === '1' && rnd(3) !== 0 ? pick(kWordPractice) : null;
     const t = familiar ? familiar.slice(0, 3) : pick(words[grade]);
     const index = words[grade].indexOf(t), sentence = familiar ? familiar[3] : sentences[grade][index];
-    if(lv===1)return {ask:B(['K', '1'].includes(grade) ? 'Spell it.' : 'Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),...(grade==='2'?{askSay:B('Listen and spell: '+t[0], '소리를 듣고 맞는 철자를 골라요.')} : {}),...(grade==='3'?{readGoal:'opts',onRender(){if(S.lang==='en')say(t[0],'en-US',true);const sp=$('#sp'),old=sp.onclick;sp.onclick=()=>{old();if(S.lang==='en')say(t[0],'en-US',true);};}}:{}),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
+    if(lv===1)return {ask:B(['K', '1'].includes(grade) ? 'Spell it.' : 'Listen and choose.','소리를 듣고 맞는 철자를 골라요.'),...(grade==='2'?{askSay:B('Listen and spell: '+t[0], '소리를 듣고 맞는 철자를 골라요.')} : {}),...(grade==='3'?{readGoal:'opts',show:adwCue(t[0]),quietShow:true,onRender(){if(S.lang==='en')say(t[0],'en-US',true);const sp=$('#sp'),old=sp.onclick;sp.onclick=()=>{old();if(S.lang==='en')say(t[0],'en-US',true);};const big=$('#adwListen');if(big)big.onclick=()=>say(t[0],'en-US');}}:{}),askExtra:{t:t[0],lang:'en-US'},opts:choices(t[0],t.slice(1)),cls:'words',after:B(t[0],t[0])};
     const contextWrong={K:['an','is','we','say','is','two','Them','has','comes','many','hear','few'],3:grade3ContextWrong};
     const alternatives=lv===2?[t[1],familiar?.[4]||(contextWrong[grade]||[])[index]|| (grade === 'K' ? kWordPractice[index - 12][4] : null) ||({'1':['was','their','who','who','there','must','am','was','doing','much','twice','four'],'2':['during','person','friendly','empty','never','think','though','answered','hear','always','all','another']}[grade]||['before','until'])[grade==='3'?index-10:index]]:t.slice(1);
     return { ...(grade==='3'?{readGoal:'opts'}:{}), ask: B(['K', '1'].includes(grade) ? 'Fill this blank.' : grade === '2' ? 'Pick the word that fits, with correct spelling.' : 'Which word fits and is spelled right?', '문장에 맞는 낱말의 올바른 철자를 골라요.'),

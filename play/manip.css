@@ -117,3 +117,15 @@ body.calm .m-play .m-btn.m-next{animation:none}
 @media(orientation:landscape) and (max-height:430px){.m-play .m-floor{height:78px}}
 .m-play .m-legend .m-count{font-size:16px;margin-left:4px}
 @media(max-height:700px){.m-play .m-legend{line-height:24px;font-size:18px}.m-play .m-legend i{width:22px;height:22px}}
+/* panel 11-17 (서연 36): the color chart is the key clue — bigger chips that look like the numbered cells, each pointing to its cube */
+.m-play .m-legend{flex-wrap:wrap;row-gap:4px}
+.m-play .m-legend>span:not(.m-count){background:#fff;border:2px solid #d8cbb8;border-radius:12px;padding:3px 8px;gap:6px}
+.m-play .m-legend b{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid #344958;border-radius:8px;font-size:22px;font-weight:800;color:#344958}
+.m-play .m-legend i{width:34px;height:34px;border-radius:8px;box-shadow:0 3px 0 #00000033}
+.m-play .m-legend>span:not(.m-count) b+i{margin-left:14px;position:relative}
+.m-play .m-legend>span:not(.m-count) b+i::before{content:'→';position:absolute;left:-17px;top:50%;transform:translateY(-50%);font-size:16px;color:#7a6a5a}
+@media(max-height:700px){.m-play .m-legend b{width:28px;height:28px;font-size:18px}.m-play .m-legend i{width:28px;height:28px}}
+@media(orientation:landscape) and (max-height:430px){.m-play .m-legend>span:not(.m-count){padding:1px 6px}.m-play .m-legend b{width:22px;height:22px;font-size:15px}.m-play .m-legend i{width:22px;height:22px}}
+@media(max-width:400px){.m-play .m-legend{gap:5px}.m-play .m-legend>span:not(.m-count){padding:2px 4px;gap:3px}.m-play .m-legend>span:not(.m-count) b+i{margin-left:0}.m-play .m-legend>span:not(.m-count) b+i::before{content:none}.m-play .m-legend b,.m-play .m-legend i{width:26px;height:26px}.m-play .m-legend b{font-size:18px}.m-play .m-legend .m-count{font-size:14px;margin-left:0}}
+/* short screens keep the old compact chart (the page must fit without scrolling) */
+@media(max-height:700px),(max-width:400px){.m-play .m-legend{gap:10px}.m-play .m-legend>span:not(.m-count){background:none;border:none;padding:0;gap:4px}.m-play .m-legend b{width:auto;height:auto;border:none;font-size:18px}.m-play .m-legend>span:not(.m-count) b+i{margin-left:0}.m-play .m-legend>span:not(.m-count) b+i::before{content:none}.m-play .m-legend i{width:24px;height:24px;border-radius:6px}.m-play .m-legend .m-count{font-size:16px;margin-left:4px}}

@@ -432,6 +432,9 @@ registerGame({
 // Distractors stay about the same object (it stays the same / the opposite change). L2 follows two actions on one object as 3-box strips.
 (() => {
  const game=GAMES.find(g=>g.id==='cause');
+ // panel 11-17 (서연 61): the sponge emoji read as bread or a cookie; a drawn sponge with holes (blue and dripping when wet).
+ const SPG=wet=>`<svg viewBox="0 0 44 34" style="height:1em;width:auto;vertical-align:middle" aria-hidden="true"><rect x="2" y="3" width="40" height="22" rx="4" fill="${wet?'#9fd3f0':'#ffd84d'}" stroke="#8a6d1d" stroke-width="2"/><g fill="${wet?'#4f9fd0':'#d9a91a'}"><ellipse cx="10" cy="10" rx="3" ry="2"/><ellipse cx="22" cy="8" rx="2" ry="1.5"/><ellipse cx="33" cy="11" rx="3" ry="2"/><ellipse cx="15" cy="18" rx="2.5" ry="1.8"/><ellipse cx="28" cy="19" rx="3" ry="2"/><ellipse cx="37" cy="19" rx="1.5" ry="1.2"/></g>${wet?'<path d="M12 27q-2.5 3.5 0 6q2.5-2.5 0-6ZM24 27q-2.5 3.5 0 6q2.5-2.5 0-6ZM34 27q-2.5 3.5 0 6q2.5-2.5 0-6Z" fill="#2f8fd6"/>':''}</svg>`;
+ const sponge=t=>typeof t==='string'?t.replace(/🧽💦/g,SPG(true)).replace(/🧽/g,SPG(false)):t;
  const big=e=>`<span style="font-size:1.25em">${e}</span>`,small=e=>`<span style="font-size:.6em">${e}</span>`;
  const stack=n=>`<svg viewBox="0 0 22 46" style="height:clamp(30px,6.5dvh,52px);width:auto" aria-hidden="true">${Array.from({length:n},(_,i)=>`<rect x="2" y="${37-i*9}" width="18" height="8" rx="1.5" fill="#c9773e" stroke="#7a4524"/>`).join('')}</svg>`;
  const paper=(cut=false)=>`<svg viewBox="0 0 60 50" style="width:clamp(30px,8vw,50px);height:clamp(30px,6dvh,44px)" aria-hidden="true">${cut?'<path d="M3 5H25V45H3ZM35 5H57V45H35Z"/>':'<path d="M8 5H52V45H8Z"/>'}</svg>`;
@@ -439,7 +442,7 @@ registerGame({
  const ON='👆⬆️',OFF='👆⬇️',TAPON='🤚↪️',TAPOFF='🤚↩️';
  // [before, action, sentence, [result pic, name] correct first]
  const rows=[
-  ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['⚽💨',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')],['🤚⚽',B('It moves to the hand','손 쪽으로 와요')]]],
+  ['⚽','🤚➡️',B('A ball is still. A hand pushes it.','공이 멈춰 있어요. 손으로 밀어요.'),[['💨⚽➡️',B('It rolls','굴러가요')],['⚽',B('It stays still','그대로 있어요')],['🤚⚽',B('It moves to the hand','손 쪽으로 와요')]]],
   ['⬛',ON,B('The room is dark. The light is switched on.','방이 어두워요. 불을 켜요.'),[['🔆',B('Bright','밝아져요')],['⬛',B('Still dark','그대로 어두워요')]]],
   ['🚰',TAPON,B('A tap is closed. It is turned on.','수도꼭지가 잠겨 있어요. 틀어요.'),[['🚰💧',B('Water comes out','물이 나와요')],['🚰',B('No water','물이 안 나와요')]]],
   [small('🎈'),'🫁💨',B('A small balloon. Air is blown in.','작은 풍선이에요. 바람을 불어 넣어요.'),[[big('🎈'),B('Bigger','커져요')],[small('🎈'),B('Same size','그대로예요')]]],
@@ -453,7 +456,7 @@ registerGame({
   ['🥚','🔥',B('An egg is cooked in a pan.','달걀을 프라이팬에 익혀요.'),[['🍳',B('Fried egg','달걀 프라이')],['🥚',B('Stays raw','그대로 날달걀')],['🐣',B('A chick','병아리')]]]
  ];
  rows.push(
-  ['⚽💨','✋',B('A rolling ball meets a hand that holds it.','구르는 공을 손으로 잡아요.'),[['⚽',B('It stops','멈춰요')],['⚽💨',B('Keeps rolling','계속 굴러요')]]],
+  ['💨⚽➡️','✋',B('A rolling ball meets a hand that holds it.','구르는 공을 손으로 잡아요.'),[['⚽',B('It stops','멈춰요')],['💨⚽➡️',B('Keeps rolling','계속 굴러요')]]],
   ['🔆',OFF,B('A light is on. The switch is pressed down.','불이 켜져 있어요. 스위치를 내려요.'),[['⬛',B('Dark','어두워져요')],['🔆',B('Bright','밝아요')]]],
   ['🚰💧',TAPOFF,B('Water flows from a tap. The tap is closed.','수돗물이 흘러요. 수도꼭지를 잠가요.'),[['🚰',B('Water stops','물이 멈춰요')],['🚰💧',B('Keeps flowing','계속 흘러요')]]],
   [big('🎈'),'🤏💨',B('A big balloon has its air let out.','큰 풍선에서 공기를 빼요.'),[[small('🎈'),B('Smaller','작아져요')],[big('🎈'),B('Same size','그대로예요')]]],
@@ -472,7 +475,7 @@ registerGame({
  );
  // [state A, state B, action A→B, action B→A, names]
  const two=[
-  ['⚽','⚽💨','🤚➡️','✋',B('push','밀기'),B('stop','멈추기'),B('still','멈춤'),B('rolling','굴러감')],
+  ['⚽','💨⚽➡️','🤚➡️','✋',B('push','밀기'),B('stop','멈추기'),B('still','멈춤'),B('rolling','굴러감')],
   ['⬛','🔆',ON,OFF,B('switch on','켜기'),B('switch off','끄기'),B('dark','어두움'),B('bright','밝음')],
   ['🚰','🚰💧',TAPON,TAPOFF,B('turn on','틀기'),B('turn off','잠그기'),B('no water','물 없음'),B('water','물 나옴')],
   ['🧊','💧','☀️','❄️',B('warm it in the sun','햇볕에 두기'),B('put it in the freezer','얼리기'),B('ice','얼음'),B('water','물')],
@@ -487,8 +490,8 @@ registerGame({
   ['🌂','☂️','🤲⬆️','🤲⬇️',B('open the umbrella','우산 펴기'),B('fold it','우산 접기'),B('folded','접힘'),B('open','펼침')],
   [drawer(false),drawer(true),'🤚⬇️','🤚⬆️',B('pull the drawer','서랍 당기기'),B('push it back','서랍 밀기'),B('closed','닫힘'),B('open','열림')]
  );
- const pic=(e,label,ok)=>({html:/^</.test(e)?e:`<span class="emo" style="white-space:nowrap;font-size:clamp(20px,min(${[...e].length>2?'6.5vw':'9vw'},5.5dvh),44px)">${e}</span>`,label,ok});
- const box=e=>`<span style="display:inline-grid;place-items:center;min-width:clamp(20px,min(6vw,5dvh),40px);height:clamp(28px,min(8vw,6dvh),46px);padding:0 1px;border:2px solid #b9a27f;border-radius:6px;background:#fff;font-size:clamp(10px,min(3.3vw,3dvh),22px);letter-spacing:-2px;white-space:nowrap">${e}</span>`;
+ const pic=(e,label,ok)=>({html:/^</.test(e)?e:`<span class="emo" style="white-space:nowrap;font-size:clamp(20px,min(${[...e].length>2?'6.5vw':'9vw'},5.5dvh),44px)">${sponge(e)}</span>`,label,ok});
+ const box=e=>`<span style="display:inline-grid;place-items:center;min-width:clamp(20px,min(6vw,5dvh),40px);height:clamp(28px,min(8vw,6dvh),46px);padding:0 1px;border:2px solid #b9a27f;border-radius:6px;background:#fff;font-size:clamp(10px,min(3.3vw,3dvh),22px);letter-spacing:-2px;white-space:nowrap">${sponge(e)}</span>`;
  const strip=s=>`<span style="display:inline-flex;gap:1px;align-items:center">${s.map(box).join('')}</span>`;
  // 11-12 (user, sample 57: "the balloon picture shows a heart-like thing and air going the wrong way"): two emoji glued with an
  // arrow did not read as an action. Each action is now ONE moving picture: the hand pushes, the switch finger presses,
@@ -500,14 +503,14 @@ registerGame({
   '⬇️':['👄','down'],'⬆️':['👄','up'],'🚫🤚':['✋','none'],'🚫👋':['👋','none'],'🚫✋':['✋','none'],'🚫🤲':['🤲','none']};
  // 11-17 (user panel 61): a still frame lost the direction ("pushed up" was a flat palm). A small arrow keeps it.
  const DIR={up:'⬆️',down:'⬇️',push:'➡️'};
- const act=a=>ACT[a]?`<span class="cz-act cz-${ACT[a][1]}" aria-hidden="true">${ACT[a][0]}</span>${DIR[ACT[a][1]]?`<span aria-hidden="true" style="font-size:.5em;align-self:center">${DIR[ACT[a][1]]}</span>`:''}`:a;
- const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.map((x,i)=>i&&i<parts.length-1?act(x):x).join('<span class="op">➜</span>')}</div>`;
+ const act=a=>ACT[a]?`<span class="cz-act cz-${ACT[a][1]}" aria-hidden="true">${ACT[a][0]}</span>${DIR[ACT[a][1]]?`<span aria-hidden="true" style="font-size:.75em;align-self:center">${DIR[ACT[a][1]]}</span>`:''}`:a;
+ const scene=(parts)=>`<div class="mixrow" style="flex-wrap:nowrap;gap:clamp(4px,1.5vw,10px);font-size:clamp(28px,min(10vw,7dvh),56px);line-height:1">${parts.map((x,i)=>i&&i<parts.length-1?act(x):sponge(x)).join('<span class="op">➜</span>')}</div>`;
  const line=t=>`<div style="font-size:clamp(15px,2.5dvh,19px);line-height:1.2;margin-top:4px">${L(t)}</div>`;
  // 2026-11-12 (answer-skew): when the only wrong picture was "it stays the same" (= the picture already on screen),
  // a child could win by "pick the one that is not shown". Some actions now leave the thing as it is, so the shown picture is sometimes right.
  const stay=[
   ['🧊','❄️',B('An ice cube stays in a cold freezer.','얼음을 차가운 냉동실에 그대로 둬요.'),[['🧊',B('Stays ice','그대로 얼음')],['💧',B('It melts','녹아요')]]],
-  ['⚽','🚫🤚',B('A ball is still. Nobody touches it.','공이 멈춰 있어요. 아무도 건드리지 않아요.'),[['⚽',B('It stays still','그대로 있어요')],['⚽💨',B('It rolls','굴러가요')]]],
+  ['⚽','🚫🤚',B('A ball is still. Nobody touches it.','공이 멈춰 있어요. 아무도 건드리지 않아요.'),[['⚽',B('It stays still','그대로 있어요')],['💨⚽➡️',B('It rolls','굴러가요')]]],
   ['🔕','🚫👋',B('A bell is quiet. Nobody shakes it.','종이 조용해요. 아무도 흔들지 않아요.'),[['🔕',B('Still quiet','조용해요')],['🔔🎵',B('It rings','소리가 나요')]]],
   [stack(3),'🚫✋',B('Three blocks. Nobody touches them.','블록 세 개예요. 아무도 건드리지 않아요.'),[[stack(3),B('Same height','그대로예요')],[stack(2),B('Shorter','낮아져요')],[stack(4),B('Taller','높아져요')]]],
   ['🧽','☀️',B('A dry sponge sits in the sun.','마른 스펀지가 햇볕에 있어요.'),[['🧽',B('Stays dry','그대로 말라 있어요')],['🧽💦',B('Wet','젖어요')]]],

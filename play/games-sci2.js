@@ -149,7 +149,8 @@ registerGame({
  const needs=GAMES.find(g=>g.id==='needs');
  const species=[[B('rabbit','토끼'),'🐇'],[B('dog','강아지'),'🐕'],[B('cat','고양이'),'🐈'],[B('hamster','햄스터'),'🐹'],[B('guinea pig','기니피그'),'🐾'],[B('chicken','닭'),'🐔'],[B('duck','오리'),'🦆'],[B('goat','염소'),'🐐'],[B('sheep','양'),'🐑'],[B('horse','말'),'🐴']];
  // 70a: care choices are a picture plus a two-word name.
- const W=['💧',B('water bowl','물그릇')],F=['🥣',B('food bowl','먹이 그릇')],R=['🏠',B('safe bed','쉴 곳')];
+ // panel 11-17 (서연 41·47): choices are the same drawings as the scene (blue water tray, brown food tray, purple house), not other emoji.
+ const W=[0,B('water bowl','물그릇')],F=[1,B('food bowl','먹이 그릇')],R=[2,B('safe bed','쉴 곳')];
  const needCases=[
  [B('has an empty drinking bowl','마실 그릇이 비었어요'),B('has food but an empty drinking bowl','먹이는 있지만 마실 그릇이 비었어요'),[W,F,R]],
  [B('has an empty food bowl','먹이 그릇이 비었어요'),B('has water but an empty food bowl','물은 있지만 먹이 그릇이 비었어요'),[F,W,R]],
@@ -157,7 +158,7 @@ registerGame({
  ];
  // silent89: the animal's own things are drawn (blue water bowl, brown food bowl, roofed bed), not the answer emoji (PF2).
  // The missing one is dashed and empty with a "?"; L1 shows only that one, L2 shows all three so the child finds the gap.
- const careSvg=(k,full)=>{const dash=full?'':' stroke-dasharray="4 3"',col=['#2f7fc1','#9a6236','#7a5a8c'][k],w='clamp(40px,8dvh,58px)';
+ const careSvg=(k,full,w='clamp(44px,9.5dvh,72px)')=>{const dash=full?'':' stroke-dasharray="4 3"',col=['#2f7fc1','#9a6236','#7a5a8c'][k];
   const inside=k===0?(full?'<path d="M10 25H50L46 34H14Z" fill="#7cc4f2"/><path d="M18 27q4-3 8 0t8 0" fill="none" stroke="#fff" stroke-width="1.5"/>':'<path d="M30 12q-6 8 0 11q6-3 0-11Z" fill="none" stroke="#7cc4f2" stroke-width="1.5" stroke-dasharray="2 2"/>')
    :k===1?(full?[16,23,30,37,44,20,27,34,41].map((x,i)=>`<circle cx="${x}" cy="${i<5?27:23}" r="3" fill="#c98b4f"/>`).join(''):[22,30,38].map(x=>`<circle cx="${x}" cy="18" r="3" fill="none" stroke="#c98b4f" stroke-dasharray="2 2"/>`).join(''))
    :(full?'<rect x="16" y="26" width="28" height="7" rx="3" fill="#e9d5f2"/>':'');
@@ -169,6 +170,6 @@ registerGame({
  const needArt=[['needs-water-empty',1,B('A dog beside an empty bowl','빈 그릇 옆 강아지')],['needs-food-empty',2,B('A cat beside an empty bowl','빈 그릇 옆 고양이')],['needs-shelter-empty',0,B('A rabbit in the rain, no home','비 맞는 토끼, 집이 없어요')]];
  needs.play=function(){const qi=rnd(needCases.length),q=needCases[qi],lv=lvl(this.id),si=lv===1&&!rnd(3)?needArt[qi][1]:rnd(species.length),art=lv===1&&si===needArt[qi][1]?needArt[qi]:null,[n,e]=species[si],story=B(`The ${n.en} ${q[lv-1].en}.`,`${n.ko}: ${q[lv-1].ko}.`);
   const strip=(lv===1?[qi]:[0,1,2]).map(k=>careSvg(k,k!==qi)).join('');
-  const scene=art?`<div>${artPic(art[0],art[2],'clamp(64px,13dvh,104px)')}</div>`:`<div style="display:flex;align-items:flex-end;justify-content:center;gap:8px"><span class="emo" aria-hidden="true" style="font-size:clamp(34px,6dvh,46px)">${e}</span>${strip}</div>`;
-  quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`${scene}<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:q[2].map((x,i)=>({html:`<span class="emo">${x[0]}</span>`,label:x[1],ok:i===0})),cls:'shapes'});};
+  const scene=art?`<div>${artPic(art[0],art[2],'clamp(64px,13dvh,104px)')}</div>`:`<div style="display:flex;align-items:flex-end;justify-content:center;gap:8px"><span class="emo" aria-hidden="true" style="font-size:clamp(38px,8dvh,60px)">${e}</span>${strip}</div>`;
+  quiz(this,{ask:B('Which care helps now?','지금 어떤 돌봄이 도움이 될까요?'),show:`${scene}<div class="storytext">${L(story)}</div>`,askExtra:{t:L(story)},opts:q[2].map((x,i)=>({html:`<span class="emo">${careSvg(x[0],true,'clamp(56px,11dvh,90px)')}</span>`,label:x[1],ok:i===0})),cls:'shapes'});};
 })();

@@ -693,3 +693,19 @@ body.has-crumbs:not(:has(#view > .prompt)) #sbar{display:none}
 .bw-nums .bw-ok{display:none}
 @keyframes bw-tap{50%{transform:translateY(-5px)}}
 @media (prefers-reduced-motion:reduce){.bw-f{animation:none}}
+
+/* panel fix 11-17 (서연 41·42·43·38·62·64): speaker buttons never cover pictures or wrap alone */
+/* prompts that are plain text + speaker buttons: text column + buttons on the right, so a button never drops to its own line */
+#view .prompt:not(:has(> :not(.say))){display:flex;align-items:center;justify-content:center;gap:4px}
+#view .prompt:not(:has(> :not(.say))) > .say{flex:none;margin-left:2px}
+/* caption box under a picture: replay button sits inside the box, not on the picture above */
+.show>*+.storytext{margin-top:8px;padding-right:44px}
+.show>*+.storytext .say.rd{top:calc(50% - 16px);right:6px}
+/* auto "read this" button moves into a trailing text box when there is one */
+.show .auto-cap{position:relative}
+body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
+.show .auto-cap+.say.auto-show{top:auto;bottom:8px;right:6px}
+/* panel 11-17 (서연 64): a faint return mark at the end of the first line on every question — the same on every page, so it shows
+   the reading habit (end of a line → start of the next) without pointing at an answer */
+.bw-page{position:relative}
+.bw-page::after{content:'↵';position:absolute;right:1px;top:50%;transform:translateY(-50%);font-size:clamp(16px,3dvh,24px);font-weight:800;color:#b08968;pointer-events:none;line-height:1}

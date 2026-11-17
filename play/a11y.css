@@ -204,3 +204,6 @@ body:not(.skin-explorer):not(.theme-dark):not(.theme-system) .cheer{color:#176b5
 }
 /* 11-17 (user panel): the screen heading gets script focus as a reading start; it is not a control, so no box around the question. */
 #view .prompt[tabindex="-1"]:focus,#view h1[tabindex="-1"]:focus,#view .bphead[tabindex="-1"]:focus{outline:none}
+/* panel 11-17 (서연 60): the one-row chunk tiles touched both screen edges — keep an 8px margin, tiles shrink to 44px at most */
+#view .opts.tiles.onerow{width:min(460px,calc(100vw - 16px));gap:6px;justify-content:center;flex-wrap:nowrap}
+#view .opts.tiles.onerow .opt.tile{flex:0 1 54px;min-width:44px;padding-left:0;padding-right:0}
