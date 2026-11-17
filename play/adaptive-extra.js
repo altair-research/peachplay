@@ -381,10 +381,12 @@
     const text = `${name} finds a ${obj[0]}. ${name} packs it away.`;
     const first = B('🔍 Finds it', '🔍 찾아요'), next = B('📦 Packs it', '📦 넣어 둬요');
     const round = textRound(text, lv === 1 ? B('What happens first?', '먼저 일어난 일을 골라요.') : B('What happens next?', '그다음 일어난 일을 골라요.'), lv === 1 ? first : next, [lv === 1 ? next : first, B('😴 Sleeps', '😴 자요')], B(text, text));
+    // panel 11-17 (서연 43): the panels now use the same action pictures as the choices (🔍 finds, 📦 packs) so a child who
+    // cannot read links them; the whole panel is still not copied into a choice, and 😴 stays the third choice.
     // silent89: numbered story panels (1 the child spots it on the ground, 2 it goes into the bag). The panels use other
     // pictures than the answer icons (🔍 📦), and the asked panel is ringed, so the child reads the picture story, not a match.
     const panel = (n, body, asked) => `<span style="display:inline-flex;align-items:center;gap:2px;border:${asked ? '3px solid #e0703a' : '2px solid #d9c7b0'};border-radius:8px;padding:1px 6px;white-space:nowrap;background:${asked ? '#fff3ea' : '#fff'}"><small style="font-size:.45em">${n}</small>${body}</span>`;
-    round.show = `<div class="emo" aria-hidden="true" style="display:flex;gap:6px;justify-content:center;align-items:center;font-size:clamp(22px,4.4dvh,34px);line-height:1.1;white-space:nowrap">${panel(1, `🧒👀<span style="font-size:.7em;align-self:flex-end">${obj[1]}</span>`, lv === 1)}➜${panel(2, `${obj[1]}➡️🎒`, lv === 2)}</div>` + round.show;
+    round.show = `<div class="emo" aria-hidden="true" style="display:flex;gap:6px;justify-content:center;align-items:center;font-size:clamp(22px,4.4dvh,34px);line-height:1.1;white-space:nowrap">${panel(1, `🧒🔍<span style="font-size:.7em;align-self:flex-end">${obj[1]}</span>`, lv === 1)}➜${panel(2, `${obj[1]}➡️📦`, lv === 2)}</div>` + round.show;
     return round;
   });
   // 70b: picture step cards with two-word labels, so K children can use the pictures and read-aloud

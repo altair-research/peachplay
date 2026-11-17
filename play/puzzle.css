@@ -52,4 +52,7 @@
 .zt-legend { font-size: clamp(12px, 3.4vw, 15px); opacity: .85; }
 .zt-legend .zt-card { font-size: 16px; padding: 1px 4px; border-width: 1px; border-radius: 8px; }
 /* panel 11-17 (서연 62): the friend pictures on the answer buttons were tiny */
-#view:has(.zt-wrap) .z-options .opt{font-size:clamp(30px,min(9vw,6dvh),48px)!important;line-height:1}
+#view:has(.zt-wrap) .z-options .opt,#view:has(.zt-wrap) .z-options .z-number{font-size:clamp(34px,min(11vw,7dvh),60px)!important;line-height:1}
+#view:has(.zt-wrap) .z-options .opt{min-height:clamp(64px,12dvh,104px)!important}
+/* the card-row read-aloud sat right under the question's 🔊; it goes to the bottom right of the board instead */
+#view:has(.zt-wrap) .show .say.auto-show{top:auto;bottom:6px}
