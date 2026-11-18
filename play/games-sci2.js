@@ -12,7 +12,7 @@
   const add = (id,title,icon,make) => registerGame({id,grade:'K',subject:'sci',icon,title,sub:B('Look, listen, and compare','보고 듣고 비교해요'),area:B('Science · Observing properties','과학 · 특징 관찰'),play(){quiz(this,make(lvl(id)));}});
   const materials = [
     ['wooden spoon','나무 숟가락','🥄','wood','나무'],['wooden block','나무 블록','🧱','wood','나무'],['wooden chair','나무 의자','🪑','wood','나무'],
-    ['metal spoon','금속 숟가락','🥄','metal','금속'],['metal key','금속 열쇠','🔑','metal','금속'],['metal bell','금속 종','🔔','metal','금속'],
+    ['metal fork','금속 포크','🍴','metal','금속'],['metal key','금속 열쇠','🔑','metal','금속'],['metal bell','금속 종','🔔','metal','금속'],
     ['plastic cup','플라스틱 컵','🥤','plastic','플라스틱'],['plastic ruler','플라스틱 자','📏','plastic','플라스틱'],['plastic toy','플라스틱 장난감','🧸','plastic','플라스틱'],
     ['paper bag','종이 봉투','🛍️','paper','종이'],['paper card','종이 카드','💌','paper','종이'],['paper sheet','종이 낱장','📄','paper','종이']
   ];
@@ -35,7 +35,7 @@
   const earth=[
     ['💧',B('water cup','컵 속 물'),'water',B('It fills a cup and pours out.','컵에 담겨 있고 기울이면 쏟아져요.'),'🥤🫗',['earth-pour-water',B('A cup tipped over a plant','화분 위로 기울인 컵')]],['💧',B('puddle water','웅덩이 물'),'water',B('After rain it sits in a low spot.','비가 온 뒤 낮은 곳에 고여요.'),'🌧️👢'],['💧',B('river water','강물'),'water',B('It flows between two banks.','양쪽 둑 사이로 흘러요.'),'🏞️'],
     ['🪨',B('path rock','길가 바위'),'rock',B('A hard piece lies by a path.','길가에 단단한 덩어리가 있어요.'),'🛤️'],['🪨',B('small pebble','작은 자갈'),'rock',B('A tiny hard piece keeps its shape.','작고 단단한 덩어리가 모양 그대로예요.'),'🤏'],['🪨',B('big boulder','큰 바위'),'rock',B('A huge hard piece is too heavy to lift.','너무 크고 단단해서 들 수 없어요.'),'🏋️'],
-    ['🌱',B('plant soil','식물 흙'),'soil',B('Roots spread through loose ground.','부드러운 땅속으로 뿌리가 뻗어요.'),'🌿⬇️'],['🌱',B('garden soil','정원 흙'),'soil',B('A gardener digs loose ground for seeds.','씨앗을 심으려고 부드러운 땅을 파요.'),'🧑‍🌾🌰'],['🌱',B('pot soil','화분 흙'),'soil',B('Roots grow in tiny grains in a pot.','화분 속 작은 알갱이 사이로 뿌리가 자라요.'),'🪴'],
+    ['🟫',B('plant soil','식물 흙'),'soil',B('Roots spread through loose ground.','부드러운 땅속으로 뿌리가 뻗어요.'),'🌿⬇️'],['🟫',B('garden soil','정원 흙'),'soil',B('A gardener digs loose ground for seeds.','씨앗을 심으려고 부드러운 땅을 파요.'),'🧑‍🌾🌰'],['🟫',B('pot soil','화분 흙'),'soil',B('Roots grow in tiny grains in a pot.','화분 속 작은 알갱이 사이로 뿌리가 자라요.'),'🪴'],
     ['🎈',B('balloon air','풍선 공기'),'air',B('Something you cannot see fills a balloon.','보이지 않는 것이 풍선을 채워요.'),'🎈'],['💨',B('pinwheel air','바람개비 공기'),'air',B('Something you cannot see turns a pinwheel.','보이지 않는 것이 바람개비를 돌려요.'),'🌬️🎡',['earth-pinwheel',B('A pinwheel turning','돌아가는 바람개비')]],['🛞',B('tire air','타이어 공기'),'air',B('Something you cannot see is pumped into a tire.','펌프로 보이지 않는 것을 타이어에 넣어요.'),'🛞⬅️',['earth-tire-pump',B('A pump on a bike tire','자전거 바퀴와 펌프')]]
   ];
   const earthNames={water:B('Water','물'),rock:B('Rock','암석'),soil:B('Soil','흙'),air:B('Air','공기')},earthPic={Water:'💧',Rock:'🪨',Soil:'🟫',Air:'💨'};

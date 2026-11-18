@@ -139,7 +139,7 @@ const K_OPPOSITE_SCENES = [["hot","cold","🔥","🧊","cool","🌡️","The sou
   ["inside","outside","🏠","🌳","beside","↔️","I went through the door into the room.","문을 지나 방에 들어갔어요.","I went through the door into the yard.","문을 지나 마당에 나갔어요."],
   ["day","night","🌞","🌙","dawn","🌅","The sun lit up the playground.","해가 놀이터를 환하게 비췄어요.","Stars shone in the dark sky.","깜깜한 하늘에 별이 빛났어요."],
   ["on","off","💡","⚫","dim","🕯️","I flipped the switch and the lamp lit up.","스위치를 눌렀더니 등불이 켜졌어요.","I flipped the switch and the room went dark.","스위치를 눌렀더니 방이 어두워졌어요."],
-  ["clean","dirty","✨","🟫","muddy","🐾","I washed every spot off my boots.","장화에 묻은 얼룩을 다 씻었어요.","I walked through mud in my boots.","장화를 신고 진흙을 밟았어요."],
+  ["clean","dirty","✨","🟫","cold","🧊","I washed every spot off my boots.","장화에 묻은 얼룩을 다 씻었어요.","I walked through mud in my boots.","장화를 신고 진흙을 밟았어요."],
   ["happy","sad","😊","😢","calm","😌","I smiled when my friend came back.","친구가 돌아와서 웃었어요.","I cried when my friend went away.","친구가 떠나서 울었어요."],
   ["awake","asleep","👀","😴","tired","🥱","I opened my eyes and got up.","눈을 뜨고 일어났어요.","I closed my eyes and began to dream.","눈을 감고 꿈을 꾸기 시작했어요."],
   ["smooth","rough","🪞","🪨","flat","⬜","I rubbed the wood until the bumps were gone.","울퉁불퉁한 곳이 없어질 때까지 나무를 문질렀어요.","I felt bumps all over the bark.","나무 껍질 여기저기에 울퉁불퉁한 곳이 느껴졌어요."],

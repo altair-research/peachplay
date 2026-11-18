@@ -18,7 +18,7 @@
   const goods=[['🍎',B('apple','사과')],['📖',B('book','책')],['🧢',B('hat','모자')],['🖍️',B('crayon','크레용')],['⚽',B('ball','공')],['🧸',B('toy','장난감')]];
   add('workmoney',B('Work, Money, Choices','일과 돈과 선택'),'🛍️',lv=>{
     const a=pick(goods),b=pick(goods.filter(x=>x!==a)),price=1+rnd(4);
-    if(lv===1){const service=!!rnd(2),repair=pick([['🚲',B('fixes a bike','자전거를 고쳐 줘요')],['👞',B('mends a shoe','신발을 고쳐 줘요')],['⌚',B('fixes a watch','시계를 고쳐 줘요')],['👜',B('mends a bag','가방을 고쳐 줘요')],['💡',B('fixes a lamp','전등을 고쳐 줘요')],['👕',B('mends a shirt','옷을 고쳐 줘요')],['🦷',B('checks your teeth','이를 살펴 줘요')],['🚌',B('drives you to school','학교까지 태워 줘요')],['✂️',B('cuts your hair','머리를 잘라 줘요')],['📦',B('delivers a package','소포를 배달해요')],['🎹',B('teaches piano','피아노를 가르쳐요')],['🧹',B('cleans a room','방을 청소해 줘요')],['🪟',B('washes your window','창문을 닦아 줘요')],['🪴',B('waters your plants','화분에 물을 줘요')],['🐕',B('walks your dog','개를 산책시켜요')],['🧺',B('washes your clothes','빨래를 해 줘요')]]),story=service?B(`A worker ${repair[1].en}.`,repair[1].ko):B(`You buy a ${a[1].en}.`,`${a[1].ko} 구입이에요.`);return {ask:B('A thing or work for someone?','물건일까요, 해 주는 일일까요?'),show:text((service?repair[0]:a[0])+' '+L(story)),askExtra:{t:L(story)},opts:[[true,'🛠️',B('service','서비스')],[false,'📦',B('goods','재화')]].map(([v,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:v===service})),cls:'groups',after:B('Money buys goods and services.','돈으로 물건과 서비스를 사요.')};}
+    if(lv===1){const service=!!rnd(2),repair=pick([['🚲',B('fixes a bike','자전거를 고쳐 줘요')],['👞',B('mends a shoe','신발을 고쳐 줘요')],['⌚',B('fixes a watch','시계를 고쳐 줘요')],['👜',B('mends a bag','가방을 고쳐 줘요')],['💡',B('fixes a lamp','전등을 고쳐 줘요')],['👕',B('mends a shirt','옷을 고쳐 줘요')],['🦷',B('checks your teeth','이를 살펴 줘요')],['🚌',B('drives you to school','학교까지 태워 줘요')],['✂️',B('cuts your hair','머리를 잘라 줘요')],['🚚',B('delivers a package','소포를 배달해요')],['🎹',B('teaches piano','피아노를 가르쳐요')],['🧹',B('cleans a room','방을 청소해 줘요')],['🪟',B('washes your window','창문을 닦아 줘요')],['🪴',B('waters your plants','화분에 물을 줘요')],['🐕',B('walks your dog','개를 산책시켜요')],['🧺',B('washes your clothes','빨래를 해 줘요')]]),story=service?B(`A worker ${repair[1].en}.`,repair[1].ko):B(`You buy a ${a[1].en}.`,`${a[1].ko} 구입이에요.`);return {ask:B('A thing or work for someone?','물건일까요, 해 주는 일일까요?'),show:text((service?repair[0]:a[0])+' '+L(story)),askExtra:{t:L(story)},opts:[[true,'🛠️',B('service','서비스')],[false,'📦',B('goods','재화')]].map(([v,e,n])=>({html:`<span class="emo">${e}</span>`,label:n,ok:v===service})),cls:'groups',after:B('Money buys goods and services.','돈으로 물건과 서비스를 사요.')};}
     // Picture-first (2026-10-26): the money and the price are both drawn as bills, the answers are pictures of 1-3 items.
     const each=1+rnd(2),k=1+rnd(3),money=each*k,row=(e,n)=>e.repeat(n);
     return {ask:B(`How many ${a[1].en}s can you buy?`,`${a[1].ko}을(를) 몇 개 살 수 있을까요?`),askSay:B(`You have ${money} dollars. One ${a[1].en} costs ${each}. How many can you buy?`,`${money}달러가 있어요. ${a[1].ko} 하나는 ${each}달러예요. 몇 개 살 수 있을까요?`),
@@ -83,7 +83,7 @@
     [B('Columbus Day','콜럼버스의 날'),B('Second Monday in October','10월 둘째 월요일'),B('A federal holiday named for Columbus','콜럼버스의 이름을 붙인 연방 공휴일'),'⛵'],
     [B('Juneteenth','준틴스'),B('June 19','6월 19일'),B('Remembers freedom from slavery','노예제에서 벗어난 자유를 기념해요'),'🕊️'],
     [B('Martin Luther King Jr. Day','마틴 루서 킹 주니어의 날'),B('Third Monday in January','1월 셋째 월요일'),B('Honors a leader for equal rights','평등을 위해 힘쓴 지도자를 기려요'),'🤝'],
-    [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','나라를 지키다 숨진 분들을 기억해요'),'🌺'],
+    [B('Memorial Day','메모리얼 데이'),B('Last Monday in May','5월 마지막 월요일'),B('Remembers people who died in military service','나라를 지키다 숨진 분들을 기억해요'),'🇺🇸🎗️'],
     [B("Washington’s Birthday",'워싱턴 탄생일'),B('Third Monday in February','2월 셋째 월요일'),B('Honors the first U.S. president','미국의 첫 대통령을 기려요'),'🇺🇸🎂']
   ];
   // silent89: the date is a small calendar page (season picture, month, the day or which Monday is lit: one box per Monday of the month) and the meaning
@@ -93,7 +93,7 @@
   const calendar=d=>`<span style="display:inline-flex;flex-direction:column;align-items:center;border:2px solid #b9a27f;border-radius:8px;background:#fff;min-width:clamp(96px,20dvh,150px);vertical-align:middle;overflow:hidden;line-height:1.15"><span style="background:#e0703a;color:#fff;align-self:stretch;text-align:center;font-size:clamp(17px,3.6dvh,28px)">${d.s} ${L(d.m)}</span>${d.day?`<b style="font-size:clamp(34px,7.5dvh,60px)">${d.day}</b>`:`<span style="display:flex;gap:4px;padding:8px">${[1,2,3,4,5].map(i=>`<i style="display:block;width:clamp(13px,3dvh,23px);height:clamp(18px,4.2dvh,32px);border:1px solid #b9a27f;border-radius:2px;background:${i===d.nth?'#e0703a':i<d.nth?'#f6e3d6':'#fff'}"></i>`).join('')}</span>`}</span>`;
   add('holidayclues',B('Holiday Stories','기념일 이야기'),'📅',B('Social Studies · Holidays','사회 · 기념일'),lv=>{
     // People are shown by a place or role picture, never a face: 🥇 first president, 🏛️ his memorial, 🏠 the White House now.
-    if(rnd(4)===0){const p=pick(people),ds=people.filter(x=>x!==p);return {ask:lv===1?B('Who is this?','누구일까요?'):B(`Which picture goes with ${p[0].en}?`,`${p[0].ko}와(과) 맞는 그림은?`),show:lv===1?card(L(p[1])):'',askExtra:lv===1?{t:L(p[1])}:undefined,opts:[p,...ds].map(x=>pic(x[2],lv===1?x[0]:x[1],x===p)),cls:'shapes'};}
+    if(rnd(4)===0){const p=pick(people),ds=people.filter(x=>x!==p);return {ask:lv===1?B('Who is this?','누구일까요?'):B(`Which picture goes with ${p[0].en}?`,`${p[0].ko}와(과) 맞는 그림은?`),show:lv===1?card(L(p[1])):`<div class="emo" aria-hidden="true" style="font-size:clamp(44px,9dvh,72px);line-height:1.1">${p[3]}</div>`,askExtra:lv===1?{t:L(p[1])}:undefined,opts:[p,...ds].map(x=>pic(x[2],lv===1?x[0]:x[1],x===p)),cls:'shapes'};}
     const t=pick(holidays),which=1+rnd(2),ds=shuffle(holidays.filter(x=>x!==t)).slice(0,2),clue=lv===1?L(t[which]):which===1?`${L(t[1])} · ${L(t[2])}`:`${L(t[2])} · ${L(t[1])}`;
     const extra=t===holidays[1]?B('Indigenous peoples already lived in the Americas. Families and communities observe different days.','아메리카에는 이미 원주민들이 살고 있었어요. 가정과 공동체마다 기념하는 날이 달라요.'):t===holidays[0]?B('Families may celebrate this holiday, another holiday, or none.','이 날을 기념하는 가정도, 다른 날을 기념하거나 기념하지 않는 가정도 있어요.'):B('People remember history in different ways.','사람들은 여러 방법으로 역사를 기억해요.');
     // The clue is spoken and shown without the holiday picture (PF2); L2 gives the date AND the meaning to combine.
@@ -138,10 +138,12 @@
   });
   const people=[
     // 11-17 (user panel 44, 지안 decision): short picture labels; the current president is "the president now", not a dated sentence.
+    // x[3] (11-17 night, 서연 v5.08): a clue picture for level 2's empty top that is NOT the answer picture (PF2):
+    // Washington is on the $1 bill, Lincoln's tall hat, the president now was chosen by voting.
     // SSKH1.i asks for the current president. After 2029-01-20 (next inauguration) change the name on this line.
-    [B('George Washington','조지 워싱턴'),B('1st president','첫 대통령'),'🥇🇺🇸'],
-    [B('Abraham Lincoln','에이브러햄 링컨'),B('Lincoln Memorial','링컨 기념관'),'🏛️'],
-    [B('Donald Trump','도널드 트럼프'),B('president now','지금 대통령'),'🏠🇺🇸']
+    [B('George Washington','조지 워싱턴'),B('1st president','첫 대통령'),'🥇🇺🇸','💵'],
+    [B('Abraham Lincoln','에이브러햄 링컨'),B('Lincoln Memorial','링컨 기념관'),'🏛️','🎩'],
+    [B('Donald Trump','도널드 트럼프'),B('president now','지금 대통령'),'🏠🇺🇸','🗳️']
   ];
 
 })();
@@ -238,6 +240,20 @@ registerGame({
   }
 });
 
+// 11-17 night (서연 38): compass level 2 scene drawn without letters. A round floor with the child 🧒 in the middle, a thick
+// orange arrow for the way the child faces now, and `turns` big quarter-turn arrows (↻ right / ↺ left) to count.
+// The answer direction is never drawn (only the start), so the child still turns in the head.
+function compassTurnScene(start, right, turns) {
+  const big = 'clamp(104px,min(24dvh,40vw),170px)', small = 'clamp(40px,min(9dvh,15vw),64px)';
+  const floor = `<svg viewBox="0 0 100 100" style="width:${big};height:${big}" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#fff8ee" stroke="#b9a27f" stroke-width="3"/>`
+    + `<path d="M50 8V92M8 50H92" stroke="#e6d6bf" stroke-width="2" stroke-dasharray="4 4"/>`
+    + `<g transform="rotate(${start * 90} 50 50)"><rect x="44" y="20" width="12" height="22" rx="3" fill="#e0703a"/><polygon points="50,4 34,24 66,24" fill="#e0703a"/></g>`
+    + `<circle cx="50" cy="50" r="15" fill="#ffe3cf" stroke="#e0703a" stroke-width="2"/><text x="50" y="57" text-anchor="middle" font-size="20">🧒</text></svg>`;
+  const turn = `<svg viewBox="0 0 40 40" style="width:${small};height:${small}" aria-hidden="true"><g${right ? '' : ' transform="translate(40 0) scale(-1 1)"'}>`
+    + `<path d="M8 22A13 13 0 0 1 30 12" fill="none" stroke="#3a7bd5" stroke-width="5" stroke-linecap="round"/><polygon points="24,5 38,10 28,21" fill="#3a7bd5"/></g></svg>`;
+  return `<div style="display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,24px);flex-wrap:wrap">${floor}<div style="display:flex;gap:4px;align-items:center">${turn.repeat(turns)}</div></div>`;
+}
+
 // ---------- 4. Cardinal directions ----------
 registerGame({
   id: 'compass', subject: 'ss', icon: '🧭', title: B('Map Directions', '지도 방향'), sub: B('North, south, east, west', '북, 남, 동, 서'),
@@ -246,7 +262,9 @@ registerGame({
     if(lvl('compass')===2){
       const d=[B('North','북쪽'),B('East','동쪽'),B('South','남쪽'),B('West','서쪽')],start=rnd(4),right=!!rnd(2),turns=1+rnd(3),ans=(start+(right?turns:4-turns))%4;
       // 70a: one sentence; each quarter-turn is drawn as one arrow so the count is visible.
-      quiz(this,{ask:B(`Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}: which way?`,`${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),askSay:B(`Face ${d[start].en}. Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}. Which way now?`,`${d[start].ko}을 봐요. ${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),show:`<div style="display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:22px;line-height:1.2">N ↑<br>W ← · → E<br>S ↓</div><div style="font-size:28px" aria-hidden="true">🧍 ${['↑','→','↓','←'][start]} <small>${L(d[start])}</small><br>${(right?'↻':'↺').repeat(turns)}</div></div>`,opts:d.map((n,i)=>({html:`<span class="num">${['↑','→','↓','←'][i]}</span><span class="word">${L(n)}</span>`,ok:i===ans})),cls:'words'});return;
+      // 11-17 night (서연 38): the scene is a picture, not letters — a big arrow the child faces and one big curved arrow per turn.
+      // No direction word in the scene (the old "← West" matched an option word, a trap for non-readers).
+      quiz(this,{ask:B(`Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}: which way?`,`${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),askSay:B(`Face ${d[start].en}. Turn ${right?'right':'left'} ${turns} time${turns===1?'':'s'}. Which way now?`,`${d[start].ko}을 봐요. ${right?'오른쪽':'왼쪽'}으로 ${turns}번 돌면 어느 쪽일까요?`),show:compassTurnScene(start,right,turns),opts:d.map((n,i)=>({html:`<span class="num">${['↑','→','↓','←'][i]}</span><span class="word">${L(n)}</span>`,ok:i===ans})),cls:'words'});return;
     }
     const dirs = [['N', B('North', '북쪽'), [0, -1]], ['E', B('East', '동쪽'), [1, 0]], ['S', B('South', '남쪽'), [0, 1]], ['W', B('West', '서쪽'), [-1, 0]]];
     const N = 4, items = [['🏠', B('house', '집')], ['🏫', B('school', '학교')], ['🌳', B('tree', '나무')], ['🏪', B('store', '가게')], ['⛲', B('fountain', '분수')], ['🏥', B('hospital', '병원')]];
@@ -285,8 +303,10 @@ const CITIZEN = [
   [['🚰✋', B('tap off', '물 잠가요'), 'citizen-tap-off'], ['🚰💦💦', B('tap left on', '물 낭비해요'), 'citizen-tap-on']]
 ];
 // art90: x[2] names a drawn action picture (src/art/); it takes the emoji's slot and the label stays under it. Others keep the emoji.
-const citizenPic = (x, h) => x[2] ? artPic(x[2], x[1], h) : `<span class="emo">${x[0]}</span>`;
+const citizenPic = (x, h, fs) => x[2] ? artPic(x[2], x[1], h) : `<span class="emo"${fs ? ` style="font-size:${fs};line-height:1.1"` : ''}>${x[0]}</span>`;
 // silent89: the thumb shows which kind to find (👍 good, 👎 NOT good) without reading, and each pair has two different action pictures.
+const CIT_BIG = 'clamp(64px,min(30dvh,38vw),190px)', CIT_EMO = 'clamp(44px,min(20dvh,24vw),120px)', CIT_EMO_MANY = 'clamp(30px,min(10dvh,9vw),64px)';
+const citEmo = x => (x[0].match(/\p{Extended_Pictographic}/gu) || []).length > 1 ? CIT_EMO_MANY : CIT_EMO;
 const cueCard = e => `<div class="emo" aria-hidden="true" style="font-size:clamp(34px,6.5dvh,46px);line-height:1.1">${e}</div>`;
 registerGame({
   id: 'citizen', subject: 'ss', icon: '🌟', title: B('Good Citizens', '착한 시민'), sub: B('Kind and fair', '친절하고 공정하게'),
@@ -298,8 +318,11 @@ registerGame({
     }
     const p = pick(CITIZEN), notQ = rnd(3) === 0;
     quiz(this, {
+      // 11-17 night (서연 46-3): the two action pictures fill the empty middle (big cards), and the NOT question is said with a
+      // warning first ("This time find the one that is NOT good!") because Pre-K/K children often pick the good one out of habit.
       ask: notQ ? B('Who is NOT being a good citizen?', '누가 좋은 시민이 아닐까요?') : B('Who is being a good citizen?', '누가 좋은 시민일까요?'), show: cueCard(notQ ? '👎' : '👍'),
-      opts: [{ html: `${citizenPic(p[0])}<span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `${citizenPic(p[1])}<span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups',
+      askSay: notQ ? B('This time, find the one that is NOT good! Who is NOT being a good citizen?', '이번엔 좋지 않은 행동을 찾아요! 누가 좋은 시민이 아닐까요?') : undefined,
+      opts: [{ html: `${citizenPic(p[0], CIT_BIG, citEmo(p[0]))}<span class="ol">${L(p[0][1])}</span>`, ok: !notQ }, { html: `${citizenPic(p[1], CIT_BIG, citEmo(p[1]))}<span class="ol">${L(p[1][1])}</span>`, ok: notQ }], cls: 'groups citbig',
       after: B('Good citizens are kind and follow the rules!', '좋은 시민은 친절하고 규칙을 지켜요!'), vocab: 'Good citizens follow the rules!'
     });
   }
