@@ -48,7 +48,10 @@ reg('barstory3','Bar Stories','막대 그림 문제','3.PAR.2.2',lv=>{
 });
 reg('array3','Multiplication Arrays','곱셈 배열','3.PAR.3.2',lv=>{
  if(lv===2){const r=2+rnd(7),c=2+rnd(7),removed=1+rnd(c-1);return q(B(`Remove ${removed} dots from this array. How many remain?`,`이 배열에서 점 ${removed}개를 빼면 몇 개가 남나요?`),dots(r,c),r*c-removed,[r*c,r*c+removed]);}
- const r=2+rnd(lv===1?4:8),c=2+rnd(lv===1?4:8);
+ // 11-18 bank widening: rows 2-6 × 2-9 dots, and half the time "which multiplication matches this array?"
+ const r=2+rnd(5),c=2+rnd(8);
+ if(rnd(2)){const right=`${r} × ${c}`,wrong=shuffle([r+c!==r*c?`${r} + ${c}`:`${r} + ${c+1}`,`${r+1} × ${c}`,`${r} × ${c-1}`]).slice(0,2);
+  return {ask:B('Which multiplication matches this array? (rows × dots in each row)','이 배열에 맞는 곱셈식은? (줄 수 × 한 줄의 점 수)'),show:dots(r,c),opts:[right,...wrong].map((s,i)=>({html:`<span class="word">${s}</span>`,ok:i===0})),cls:'words g3-math-options',after:B(`${r} rows of ${c}: ${r} × ${c} = ${r*c}`,`${c}개씩 ${r}줄: ${r} × ${c} = ${r*c}`)};}
  return q(B(`${r} rows, ${c} dots in each row. How many dots?`,`점이 한 줄에 ${c}개씩 ${r}줄 있어요. 점은 모두 몇 개일까요?`),dots(r,c),r*c,[r+c,r*c+c],B(`${r} × ${c} = ${r*c}`,`${r} × ${c} = ${r*c}`));
 });
 reg('divide3','Share and Group','똑같이 나누기','3.PAR.3.2 · 3.PAR.3.6',lv=>{
@@ -63,19 +66,20 @@ reg('factfamily3','Related Facts','곱셈과 나눗셈의 관계','3.PAR.3.2',lv
  return q(B('Use the related fact to find n.','곱셈식과 나눗셈식의 관계를 이용해 n을 구해요.'),eq(d?`${p} ÷ n = ${b}`:`${a} × n = ${p}`),ans,[p,shown!==ans?shown:ans+1]);
 });
 reg('splitmultiply3','Split to Multiply','쪼개서 곱하기','3.PAR.3.3',lv=>{
- if(lv===2){const a=2+rnd(3),b=1+rnd(3),c=2+rnd(7),ans=b*c;return q(B(`There are ${a+b} rows of ${c}, and the top ${a} rows are packed away. How many dots remain?`,`한 줄에 ${c}개씩 ${a+b}줄이에요. 위 ${a}줄을 치우면 몇 개가 남나요?`),dots(a+b,c,a),ans,[(a+b)*c,a*c],B(`${a+b} × ${c} − ${a} × ${c} = ${ans}`,`${a+b} × ${c} − ${a} × ${c} = ${ans}`));}
- const a=2+rnd(3),b=1+rnd(3),c=2+rnd(lv===1?4:8);
+ if(lv===2){const a=2+rnd(4),b=1+rnd(4),c=2+rnd(8),ans=b*c;return q(B(`There are ${a+b} rows of ${c}, and the top ${a} rows are packed away. How many dots remain?`,`한 줄에 ${c}개씩 ${a+b}줄이에요. 위 ${a}줄을 치우면 몇 개가 남나요?`),dots(a+b,c,a),ans,[(a+b)*c,a*c],B(`${a+b} × ${c} − ${a} × ${c} = ${ans}`,`${a+b} × ${c} − ${a} × ${c} = ${ans}`));}
+ const a=2+rnd(4),b=1+rnd(4),c=2+rnd(5);   // 11-18: 2-5 rows + 1-4 rows, 2-6 in each row (was 36 distinct)
  return q(B('Add the two parts. How many dots altogether?','두 부분을 합쳐요. 점은 모두 몇 개일까요?'),dots(a+b,c,a),(a+b)*c,[a*c,b*c],B(`${a} × ${c} + ${b} × ${c} = ${(a+b)*c}`,`${a} × ${c} + ${b} × ${c} = ${(a+b)*c}`));
 });
 reg('multiplytens3','Multiply Tens','몇십 곱하기','3.PAR.3.5',lv=>{
  if(lv===2){const packs=2+rnd(7),each=10*(1+rnd(8)),used=1+rnd(9);return q(B(`${packs} packs hold ${each} sheets each, and you use ${used} sheets. How many remain?`,`${packs}묶음에 종이가 ${each}장씩 있어요. ${used}장을 쓰면 몇 장이 남나요?`),'',packs*each-used,[packs*each,packs*each+used]);}
- const a=1+rnd(9),b=10*(1+rnd(lv===1?2:9));
- return q(B('How many altogether?','모두 얼마일까요?'),eq(`${a} × ${b}`),a*b,[a*b/10,a+b],B(`${a} × ${b/10} tens = ${a*b}`,`${a} × (10이 ${b/10}개) = 10이 ${a*(b/10)}개 = ${a*b}`));
+ const a=2+rnd(8),b=10*(1+rnd(5)),flip=rnd(2);   // 11-18: 2-9 × 10-50, either order (was 18 distinct)
+ return q(B('How many altogether?','모두 얼마일까요?'),eq(flip?`${b} × ${a}`:`${a} × ${b}`),a*b,[a*b/10,a+b],B(`${a} × ${b/10} tens = ${a*b}`,`${a} × (10이 ${b/10}개) = 10이 ${a*(b/10)}개 = ${a*b}`));
 });
 reg('multpattern3','Multiplication Patterns','곱셈 규칙','3.PAR.3.1',lv=>{
- if(lv===2){const k=2+rnd(8),x=2+rnd(7),extra=1+rnd(5);return q(B(`Multiply an input by ${k}, then add ${extra}. What is the output for ${x}?`,`넣은 수에 ${k}를 곱한 뒤 ${extra}를 더해요. ${x}를 넣으면 얼마가 나오나요?`),eq(`${x} → ×${k} → +${extra} → ?`),x*k+extra,[x*k,(x+extra)*k]);}
- const k=2+rnd(lv===1?4:8),x=1+rnd(5),a=(x+3)*k;
- return q(B(`Rule: multiply the input by ${k}. Fill the last output.`,`규칙: 넣은 수 × ${k} = 나온 수. 마지막 칸의 나온 수를 구해요.`),panel(`<table><tr><th>${L(B('In','넣은 수'))}</th>${[x,x+1,x+2,x+3].map(n=>`<td>${n}</td>`).join('')}</tr><tr><th>${L(B('Out','나온 수'))}</th>${[x*k,(x+1)*k,(x+2)*k,'?'].map(n=>`<td>${n}</td>`).join('')}</tr></table>`),a,[a-k,a+k]);
+ if(lv===2){const k=2+rnd(8),x=2+rnd(7),extra=1+rnd(5);return q(B(`Multiply an input by ${k}, then add ${extra}. What is the output for ${x}?`,`넣은 수에 ${k}을(를) 곱한 뒤 ${extra}을(를) 더해요. ${x}을(를) 넣으면 얼마가 나오나요?`),eq(`${x} → ×${k} → +${extra} → ?`),x*k+extra,[x*k,(x+extra)*k]);}
+ // 11-18: inputs start at 1-6 and any one of the four outputs can be the missing one (was always the last; 20 distinct).
+ const k=2+rnd(4),x=1+rnd(6),miss=rnd(4),a=(x+miss)*k;
+ return q(B(`Rule: multiply the input by ${k}. Fill the missing output.`,`규칙: 넣은 수 × ${k} = 나온 수. 빈칸(?)의 나온 수를 구해요.`),panel(`<table><tr><th>${L(B('In','넣은 수'))}</th>${[x,x+1,x+2,x+3].map(n=>`<td>${n}</td>`).join('')}</tr><tr><th>${L(B('Out','나온 수'))}</th>${[0,1,2,3].map(i=>`<td>${i===miss?'?':(x+i)*k}</td>`).join('')}</tr></table>`),a,[a-k>0?a-k:a+2*k,a+k]);
 });
 reg('balance3','Equal Values','같은 값 저울','3.PAR.3.4',lv=>{
  const a=2+rnd(8),b=2+rnd(8),c=1+rnd(3),value=a*b,truth=!!rnd(2),right=value+(truth?0:pick([-1,1])),sub=lv>1&&rnd(2),expr=sub?`${right+c} − ${c}`:`${c} + ${right-c}`;

@@ -588,7 +588,10 @@ function quiz(game, item, ctx = {}) {
   const thinking = !!item.thinking;
   const heading = () => boss ? L(B('🐉 Boss question: ', '🐉 보스 문제: ')) : thinking ? L(B('🧩 Thinking question: ', '🧩 생각 문제: ')) : '';
   const askText = (ctx.step ? '👣 ' : '') + heading() + L(item.ask);
-  const key = item.itemKey || askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + item.opts.map(o => o.html + (o.ok ? '*' : '')).sort().join(',');
+  // 11-18 (user: "repeats"): the recent-item key is the question + material + RIGHT answer only. Before, the wrong options were
+  // part of the key, so the same question with reshuffled distractors counted as new and came back in the same round.
+  const right = item.opts.find(o => o.ok);
+  const key = item.itemKey || askText + '|' + (item.show || '').replace(/style="[^"]*"/g, '') + '|' + (right ? right.html + '|' + (right.label ? labelText(right.label) : '') : '');
   if (!follow && dup(game, key)) return game.play();
   if (!follow) window.PictureDemo?.accepted?.(game, item);
   if (DIAG.confirm) window.Learner.confirmOptions(item.opts.length);
