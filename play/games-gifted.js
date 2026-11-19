@@ -10,7 +10,7 @@ const figSvg = (f, px = 64) => {
   else if (f.shape === 'square') s = `<rect x="${30 - r}" y="${30 - r}" width="${2 * r}" height="${2 * r}" rx="3"`;
   else if (f.shape === 'triangle') s = `<polygon points="30,${30 - r} ${30 + r},${30 + r} ${30 - r},${30 + r}"`;
   else s = `<polygon points="${Array.from({ length: 10 }, (_, i) => { const a = (-90 + i * 36) * Math.PI / 180, rr = i % 2 ? r * 0.45 : r; return (30 + rr * Math.cos(a)).toFixed(1) + ',' + (31 + rr * Math.sin(a)).toFixed(1); }).join(' ')}"`;
-  return `<svg viewBox="0 0 60 60" width="${px}" height="${px}" class="fig">${s} fill="${c}" stroke="#1d3557" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+  return `<svg viewBox="0 0 60 60" width="${px}" height="${px}" class="figs">${s} fill="${c}" stroke="#1d3557" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 };
 const SHP4 = ['circle', 'square', 'triangle', 'star'];
 
@@ -26,8 +26,16 @@ registerGame({
   area: AREA_CH('Verbal reasoning'),
   play() {
     if (lvl('analogy') === 2) {
-      const sh=shuffle(SHP4), co=shuffle(FIGC), a={shape:sh[0],color:co[0],size:1}, b={shape:sh[0],color:co[1],size:.6}, c={shape:sh[1],color:co[0],size:1}, answer={shape:sh[1],color:co[1],size:.6};
-      quiz(this,{ask:B('Apply BOTH changes from the first pair to the third picture.','첫 짝에서 달라진 두 속성을 셋째 그림에도 적용해요.'),show:figSvg(a)+' → '+figSvg(b)+'<br>'+figSvg(c)+' → ?',opts:[answer,{...answer,size:1},{...answer,color:co[0]}].map(f=>({html:figSvg(f,58),ok:f===answer})),cls:'shapes'});return;
+      // 11-18 (대표: the child learned "always colour + big→small"): change TWO of shape/colour/size, picked at random,
+      // size goes either way, and the two rows differ in the third attribute. Each wrong option forgets ONE change.
+      const sh=shuffle(SHP4), co=shuffle(FIGC), big=rnd(2)===0, sz=[big?1:.62,big?.62:1];
+      const keep=pick(['shape','color','size']), vals={shape:sh,color:co,size:sz};
+      const a={shape:sh[0],color:co[0],size:sz[0]}, b={...a}, c={...a};
+      for(const k of ['shape','color','size'])if(k!==keep)b[k]=vals[k][1];
+      c[keep]=keep==='size'?sz[1]:vals[keep][2];
+      const answer={...c};for(const k of ['shape','color','size'])if(k!==keep)answer[k]=b[k];
+      const miss=['shape','color','size'].filter(k=>k!==keep).map(k=>({...answer,[k]:c[k]}));
+      quiz(this,{ask:B('Change the third picture the same way as the first pair.','첫 짝처럼 셋째 그림을 바꾸면?'),askSay:B('Look at what changed in the first pair. Change the third picture the same way.','첫 짝에서 무엇이 바뀌었는지 보고, 셋째 그림도 똑같이 바꿔요.'),show:figSvg(a)+' → '+figSvg(b)+'<br>'+figSvg(c)+' → ?',opts:[answer,...miss].map(f=>({html:figSvg(f,58),ok:f===answer})),cls:'shapes'});return;
     }
     const g = pick(ANALOGY), [a, b] = shuffle(g.p).slice(0, 2), others2 = ANALOGY.filter(x => x !== g).flatMap(x => x.p.map(q => q[1])), ds = shuffle([...new Set([a[1], ...others2])]).filter(e => e !== b[1]).slice(0, lvl('analogy') === 2 ? 3 : 2);
     const cell = (e) => `<span class="ac">${e}</span>`;
@@ -94,10 +102,25 @@ registerGame({
   id: 'rotate', subject: 'gifted', icon: '🔄', title: B('Turn the Shape', '모양 돌리기'), sub: B('Same shape, turned', '같은 모양, 돌려 놓은 것'),
   area: AREA_CH('Spatial reasoning'),
   play() {
-    const base = pick(lvl('rotate') === 1 ? CHIRAL.slice(0, 2) : CHIRAL), col = pick(FIGC), k = 1 + rnd(3), good = rotN(base, k), bads = [];
+    // 11-18 (대표): turns that look the same as the start (the S shape turned halfway) are left out — the answer looked "not turned".
+    const base = pick(lvl('rotate') === 1 ? CHIRAL.slice(0, 2) : CHIRAL), col = pick(FIGC), ks = [1, 2, 3].filter(t => keyC(rotN(base, t)) !== keyC(base)), k = pick(ks), good = rotN(base, k), bads = [];
     let guard = 0; while (bads.length < 2 && guard++ < 40) { const m = rotN(flipC(base), rnd(4)); if (keyC(m) !== keyC(good) && !bads.some(b => keyC(b) === keyC(m))) bads.push(m); }
     const o = (c, ok) => ({ html: gridC(c, col, 22), ok });
-    quiz(this, { ask: B('Which one is the SAME shape, just turned around?', '같은 모양을 돌려 놓은 것은 어느 것일까요?'), show: gridC(base, col, 26), opts: [o(good, true), ...bads.map(b => o(b, false))], cls: 'shapes', after: B('Turning does not change a shape!', '돌려도 모양은 그대로예요!') });
+    // 11-18 (대표: the child did not get what "turned" means): left/right buttons turn the example 90 degrees with a slow spin,
+    // and after the right answer the example spins to the answer's position.
+    const n0 = normC(base), side = Math.max(Math.max(...n0.map(p => p[0])), Math.max(...n0.map(p => p[1]))) + 1;
+    const btn = (d, t, lab) => `<button type="button" class="rotbtn" data-rot="${d}" aria-label="${L(lab)}">${t}</button>`;
+    quiz(this, {
+      ask: B('Which one is the SAME shape, just turned around?', '같은 모양을 돌려 놓은 것은 어느 것일까요?'),
+      askSay: B('Which one is the same shape, just turned around? Press the arrow buttons to turn the shape and see.', '같은 모양을 돌려 놓은 것은 어느 것일까요? 화살표 버튼을 누르면 모양을 돌려 볼 수 있어요.'),
+      show: `<div class="rotdemo"><div class="rotview" style="--side:${side};--px:26px"><div class="rotspin">${gridC(base, col, 26)}</div></div><div class="rotbtns">${btn(-90, '↺', B('Turn left', '왼쪽으로 돌리기'))}${btn(90, '↻', B('Turn right', '오른쪽으로 돌리기'))}</div></div>`,
+      opts: [o(good, true), ...bads.map(b => o(b, false))], cls: 'shapes', after: B('Turning does not change a shape!', '돌려도 모양은 그대로예요!'),
+      onRender() {
+        let deg = 0; const spin = document.querySelector('.rotspin');
+        document.querySelectorAll('.rotbtn').forEach(b => b.onclick = () => { deg += +b.dataset.rot; spin.dataset.deg = deg; spin.style.transform = `rotate(${deg}deg)`; });
+      },
+      onCorrect() { const spin = document.querySelector('.rotspin'); if (!spin) return; let deg = +(spin.dataset.deg || 0); deg += ((k * 90 - deg) % 360 + 360) % 360; spin.dataset.deg = deg; spin.style.transform = `rotate(${deg}deg)`; }
+    });
   }
 });
 
