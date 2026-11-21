@@ -316,7 +316,10 @@
   // (always, between…) get a big listen card, since this level is about hearing the word, never seeing its spelling.
   const ADW_PIC={drink:'🥤',eight:'8️⃣',fall:'🍂',grow:'🌱',laugh:'😂',light:'💡',start:'🏁',today:'📅',draw:'🖍️',clean:'🧼',together:'👫',long:'📏',hold:'🤲',full:'🥛'};
   const adwCue=w=>`<div style="display:flex;align-items:center;justify-content:center;gap:16px">${ADW_PIC[w]?`<span class="emo" aria-hidden="true" style="font-size:clamp(48px,10dvh,84px)">${ADW_PIC[w]}</span>`:''}<button class="say" id="adwListen" style="width:auto;height:auto;padding:10px 22px;font-size:clamp(28px,5dvh,40px);border-radius:20px" aria-label="${L(B('Hear the word','낱말 듣기'))}">🔊 👂</button></div>`;
-  for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv => {
+  for (const grade of ['K', '1', '2', '3']) add('adwords' + grade, grade, B('Familiar Word Spellings', '익숙한 낱말 철자'), wordArea, lv0 => {
+    // 11-20 (서연, 지안 decision): K spelling with letter tiles (this = 4 of 6 letters) was heavy for December K level 1 —
+    // K plays the sentence-blank question at level 1 and spelling at level 2 (grades 1-3 unchanged).
+    const lv = grade === 'K' ? 3 - lv0 : lv0;
     const familiar = grade === '2' ? pick(G2_WORD77) : grade === '1' && rnd(3) !== 0 ? pick(kWordPractice) : null;
     const t = familiar ? familiar.slice(0, 3) : pick(words[grade]);
     const index = words[grade].indexOf(t), sentence = familiar ? familiar[3] : sentences[grade][index];

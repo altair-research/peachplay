@@ -153,7 +153,7 @@ const RHYMES = [
   [['👃', 'nose'], ['🌹', 'rose']], [['🐔', 'hen'], ['🔟', 'ten'], ['🖊️', 'pen']], [['☀️', 'sun'], ['1️⃣', 'one'], ['🏃', 'run']],
   [['🚆', 'train'], ['✈️', 'plane']], [['🛏️', 'bed'], ['🛷', 'sled'], ['🍞', 'bread']], [['📦', 'box'], ['🦊', 'fox']],
   [['🪁', 'kite'], ['💡', 'light']], [['🏀', 'ball'], ['🧱', 'wall']], [['🐌', 'snail'], ['🐳', 'whale']],
-  [['🦆', 'duck'], ['🚚', 'truck']], [['🥚', 'egg'], ['🦵', 'leg']], [['🥜', 'nut'], ['🛖', 'hut']]
+  [['🦆', 'duck'], ['🚚', 'truck']], [['🥚', 'egg'], ['🦵', 'leg']]
 ];
 registerGame({
   id: 'rhyme', subject: 'read', icon: '🎵', title: B('Rhyme Time', '운율 맞추기'), sub: B('cat, hat, bat', 'cat, hat, bat'),

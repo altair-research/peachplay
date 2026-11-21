@@ -730,3 +730,5 @@ body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
 .cpd-say{display:flex;align-items:center;justify-content:center;gap:16px}.cpd-say .say.cpd{width:clamp(56px,9dvh,76px);height:clamp(56px,9dvh,76px);font-size:clamp(28px,4.5dvh,38px)}.cpd-say b{font-size:clamp(30px,5dvh,44px)}
 .sr-en{display:block;font-size:12px;font-weight:500;opacity:.7}
 .irk-area .menu{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}.irk-area{padding:10px 8px 12px}
+.irk-today{background:#fff6d6;border-radius:18px;padding:6px 10px 12px;margin:10px 0}.irk-today .irk-sub{margin:6px 0;display:flex;align-items:center;gap:8px}.irk-today .menu{grid-template-columns:repeat(2,minmax(0,1fr))}.irk-grown .pill{margin:4px 4px 4px 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .irk-today{background:#3a3220}}:root[data-theme="dark"] .irk-today{background:#3a3220}

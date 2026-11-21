@@ -423,6 +423,7 @@ function launch(game, mix) {
   try { updateBar(); game.play(); } finally { SESSION.easyLevel = false; }
 }
 function surprise() {
+  if (window.IReadyK && window.IReadyK.locked()) return window.IReadyK.open();   // 11-20: app locked to the i-Ready K section
   if (kidGrade() === 'P') { const pool=visibleGames(); if (!pool.length) return home(); SESSION.pkMixed=true; launch(pick(pool)); SESSION.pkMixed=true; return; }
   SESSION.pkMixed=false;                                // mixed run: different game every couple of rounds
   const picks = (typeof currentPicks === 'function' ? currentPicks(3) : []).map(p => p.id);

@@ -177,6 +177,7 @@ function continueHtml() {
   return `<div class="controw${kidGrade() === 'P' ? '' : ' home-primary'}"><button class="big cont ${g.subject}" data-id="${g.id}"><span class="gi">${shellIcon('play')}</span>${L(B('Continue', '이어서 하기'))}<small>${g.icon} ${L(g.title)}</small></button></div>`;
 }
 function subjectScreen(sub) {
+  if (window.IReadyK && window.IReadyK.locked()) return window.IReadyK.open();   // 11-20: app locked to the i-Ready K section
   const games = visibleGames().filter(g => g.subject === sub);
   view().innerHTML = `<h1>${shellIcon(sub)} ${T().subjects[sub]}</h1>
     ${(kidGrade() === 'P' || sub === 'brain' || sub === 'create') ? '' : `<div class="subjtools"><button class="chk" data-sub="${sub}">📋 ${T().checkBtn}</button></div>`}
