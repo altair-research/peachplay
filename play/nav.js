@@ -19,7 +19,7 @@
     const c = cur(), sub = c && (c.pp === 'subj' ? c.sub : c.pp === 'game' ? c.from || (GAMES.find(x => x.id === c.id) || {}).subject : null);
     if (!c || (c.pp !== 'subj' && c.pp !== 'game')) { crumbs.hidden = true; document.body.classList.remove('has-crumbs'); return; }
     const g = c.pp === 'game' ? GAMES.find(x => x.id === c.id) : null, sep = '<span class="cr-sep" aria-hidden="true">›</span>';
-    const subName = sub && T().subjects[sub] ? T().subjects[sub] : '';
+    const irk = !!(window.IReadyK && window.IReadyK.active() && g), subName = irk ? `📝 ${L(B('i-Ready K practice', 'i-Ready K 준비'))}` : sub && T().subjects[sub] ? T().subjects[sub] : '';
     let h = `<button class="cr-home" data-cr="home">🏠 ${L(B('Home', '홈'))}</button>`;
     if (subName) h += sep + (g ? `<button class="cr-sub" data-cr="sub">${subName}</button>` : `<span class="cr-here">${subName}</span>`);
     if (g) { const tag = gradeTag(gradeOf(g)); h += sep + `<span class="cr-here cr-game">${L(g.title)}</span>` + (tag ? `<span class="cr-grade">${tag}</span>` : ''); }
@@ -31,6 +31,7 @@
     const b = e.target.closest('[data-cr]'); if (!b) return;
     const c = cur(), sub = c && c.pp === 'game' ? c.from || (GAMES.find(x => x.id === c.id) || {}).subject : null;
     if (b.dataset.cr === 'home') window.home();
+    else if (b.dataset.cr === 'sub' && window.IReadyK && window.IReadyK.active()) window.IReadyK.open();
     else if (b.dataset.cr === 'sub') { if (c && c.pp === 'game' && c.from && depthNow() >= 2) history.back(); else if (sub) window.subjectScreen(sub); }
     else if (b.dataset.cr === 'prev') document.getElementById('prevQ')?.click();
   };

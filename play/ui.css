@@ -724,3 +724,9 @@ body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
 .irk-names small{font-size:12px;font-weight:500;opacity:.75}
 .irk-dot{margin-right:4px}
 @media (max-height:700px){.irk-pair:has(.irk-home){display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch}.irk-pair:has(.irk-home)>.controw{margin:8px 0 4px;display:flex}.irk-pair:has(.irk-home) .big{flex-direction:column!important;align-items:flex-start;justify-content:center;padding:8px 10px!important;gap:4px!important;font-size:18px}.irk-pair:has(.irk-home) .gi{font-size:24px!important}.irk-pair .irk-bt b{font-size:18px;white-space:normal}.irk-pair .irk-bt small,.irk-pair .cont small{font-size:12px}.irk-pair:has(.irk-home) .cont{font-size:19px!important;white-space:nowrap}body:has(.irk-home) .home-hero{display:none}}
+
+/* 11-20: spoken-only option names (read by 🔉, not shown) and heard word parts */
+.ow-say{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cpd-say{display:flex;align-items:center;justify-content:center;gap:16px}.cpd-say .say.cpd{width:clamp(56px,9dvh,76px);height:clamp(56px,9dvh,76px);font-size:clamp(28px,4.5dvh,38px)}.cpd-say b{font-size:clamp(30px,5dvh,44px)}
+.sr-en{display:block;font-size:12px;font-weight:500;opacity:.7}
+.irk-area .menu{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}.irk-area{padding:10px 8px 12px}

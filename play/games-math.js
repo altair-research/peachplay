@@ -310,6 +310,10 @@ const SOLIDS = {
   cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')], ['🎉', B('party popper', '파티 폭죽')], ['🥕', B('carrot', '당근')]] },
   cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('tin can', '깡통')], ['🔋', B('battery', '건전지')], ['🧻', B('paper roll', '휴지 심')], ['🥁', B('drum', '북')], ['🪵', B('log', '통나무')], ['🕯️', B('candle', '양초')]] }
 };
+// 11-20 (서연: "또 당근이야" — the same objects came back within one round): prefer objects not used in the last few questions.
+const SOLID_RECENT = [];
+function solidThing(list) { const fresh = list.filter(x => !SOLID_RECENT.includes(x[0])), x = pick(fresh.length ? fresh : list); SOLID_RECENT.push(x[0]); if (SOLID_RECENT.length > 8) SOLID_RECENT.shift(); return x; }
+function solidPair(list) { const a = solidThing(list), rest = list.filter(x => x !== a), b = rest.length ? solidThing(rest) : a; return [a, b, ...shuffle(list.filter(x => x !== a && x !== b))]; }
 // Plain line drawings of the four solids (no real object), used where the answer is the shape itself.
 function solidSvg(k) {
   const s = 'fill="#ffd9b8" stroke="#8a4b2a" stroke-width="3" stroke-linejoin="round"';
@@ -326,7 +330,7 @@ registerGame({
   area: AREA_MATH('3-D shapes'),
   play() {
     const keys = Object.keys(SOLIDS), t = pick(keys), ds = others(keys, t, 2);
-    const mk = (k, ok) => { const [html, label] = pick(SOLIDS[k].things); return { html: `<span class="emo">${html}</span>`, label, ok }; };
+    const mk = (k, ok) => { const [html, label] = solidThing(SOLIDS[k].things); return { html: `<span class="emo">${html}</span>`, label, ok }; };
     quiz(this, {
       ask: B(`Which one looks like a ${SOLIDS[t].n.en.toUpperCase()}?`, `${SOLIDS[t].n.ko} 모양은 어느 것일까요?`),
       askSay: B(`Which one looks like a ${SOLIDS[t].n.en}?`, `${SOLIDS[t].n.ko} 모양은 어느 것일까요?`),
@@ -385,7 +389,7 @@ registerGame({
   const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
   game.play = function () {
     if (!rnd(2)) return original.call(this);
-    const keys = Object.keys(SOLIDS), t = pick(keys), [e, name] = pick(SOLIDS[t].things);
+    const keys = Object.keys(SOLIDS), t = pick(keys), [e, name] = solidThing(SOLIDS[t].things);
     // 2026-10-28 (sample S5 verdict): K cannot read shape names, so each answer is a drawn solid with its name under it.
     quiz(this, { ask: B('What solid shape does this look like?', '어떤 입체 모양과 닮았을까요?'), askExtra: { t: L(name) }, show: '<span class="emo">' + e + '</span><div style="font-size:clamp(16px,3dvh,22px)">' + L(name) + '</div>', opts: [t, ...others(keys, t, 2)].map(k => ({ html: solidSvg(k), label: SOLIDS[k].n, ok: k === t })), cls: 'shapes', after: name, vocab: name.en });
   };
@@ -396,8 +400,8 @@ registerGame({
   const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
   game.play = function () {
     if (lvl(this.id) !== 1 || rnd(3)) return original.call(this);
-    const keys = Object.keys(SOLIDS), t = pick(keys), right = pick(SOLIDS[t].things);
-    const opts = [{ x: right, ok: true }, ...others(keys, t, 2).map(k => ({ x: pick(SOLIDS[k].things), ok: false }))];
+    const keys = Object.keys(SOLIDS), t = pick(keys), right = solidThing(SOLIDS[t].things);
+    const opts = [{ x: right, ok: true }, ...others(keys, t, 2).map(k => ({ x: solidThing(SOLIDS[k].things), ok: false }))];
     quiz(this, { ask: B('Which thing has this shape?', '이 모양인 물건은 어느 것일까요?'), show: solidSvg(t),
       opts: opts.map(o => ({ html: '<span class="emo">' + o.x[0] + '</span>', label: o.x[1], ok: o.ok })), cls: 'shapes',
       after: B(`The ${right[1].en} looks like a ${SOLIDS[t].n.en}.`, `${right[1].ko}: ${SOLIDS[t].n.ko} 모양이에요.`), vocab: SOLIDS[t].n.en });
@@ -409,8 +413,8 @@ registerGame({
   const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
   game.play = function () {
     if (lvl(this.id) === 1) return original.call(this);
-    const keys=Object.keys(SOLIDS), k=pick(keys), pair=shuffle(SOLIDS[k].things), source=pair[0];
-    const items=[{x:pair[1],ok:true},...keys.filter(j=>j!==k).map(j=>({x:pick(SOLIDS[j].things),ok:false}))];
+    const keys=Object.keys(SOLIDS), k=pick(keys), pair=solidPair(SOLIDS[k].things), source=pair[0];
+    const items=[{x:pair[1],ok:true},...keys.filter(j=>j!==k).map(j=>({x:solidThing(SOLIDS[j].things),ok:false}))];
     quiz(this,{ask:B('Which other object has the same solid shape?','입체 모양이 같은 다른 물건을 찾아요.'),
       askExtra:{t:L(source[1])},
       show:'<span class="emo">'+source[0]+'</span><div style="font-size:18px">'+L(source[1])+'</div>',

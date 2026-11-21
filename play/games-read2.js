@@ -17,18 +17,21 @@
   const wholePicture=x=>x[2]==='starfish'?'<svg viewBox="0 0 80 80" width="44" height="44" aria-hidden="true"><path d="M40 4 49 29 76 28 55 46 64 74 40 57 16 74 25 46 4 28 31 29Z" fill="#df8c56" stroke="#8c4933" stroke-width="3"/><g fill="#ffdda3"><circle cx="40" cy="38" r="3"/><circle cx="40" cy="22" r="2"/><circle cx="26" cy="35" r="2"/><circle cx="54" cy="35" r="2"/><circle cx="30" cy="55" r="2"/><circle cx="50" cy="55" r="2"/></g></svg>':x[3];
   const emo=p=>`<span class="emo" style="font-size:clamp(28px,5dvh,44px)" aria-hidden="true">${p}</span>`;
   registerGame({id:'compound',grade:'K',subject:'read',icon:'🧁',title:B('Word Sound Partners','낱말 소리 합치기'),sub:B('Join and take apart spoken words','말소리를 합치고 나눠요'),area:B('Reading · Compound words','읽기 · 합성어'),play(){
-    const lv=lvl('compound'),wordOpt=(w,p,ok)=>({html:`${emo(p)}<span class="word" lang="en">${w}</span>`,ok});
+    const lv=lvl('compound'),wordOpt=(w,p,ok)=>({html:`${emo(p)}<span class="word ow-say" lang="en">${w}</span>`,ok});
+    // 11-20 (서연): the parts were written (foot + print) and so were the choices (footprint) — joined by spelling, not by ear.
+    const ear=(a,op,b)=>`<div class="cpd-say"><button class="say cpd" data-w="${a}" aria-label="${T().listen}">🔊</button><b aria-hidden="true">${op}</b><button class="say cpd" data-w="${b}" aria-label="${T().listen}">🔊</button></div>`;
+    const wire=()=>{$$('.cpd').forEach(b=>b.onclick=()=>say(b.dataset.w,'en-US'));readOpts();};
     const readOpts=()=>{const rb=$('#spo');if(rb)rb.onclick=()=>$$('.opt .word').forEach((e,i)=>say(e.textContent,'en-US',i>0));};
     const show=s=>`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${s}</div>`;
     if(lv===1){
       if(Math.random()<0.3){
         const t=pick(sylWords),ds=others(sylWords,t,2);
-        return quiz(this,{ask:B('Listen and join the two word parts.','듣고 두 낱말 조각을 합쳐요.'),askExtra:{t:`${t[4]||t[0]}. ${t[5]||t[1]}.`,lang:'en-US'},show:show(`${t[0]} + ${t[1]}`),opts:[t,...ds].map((x,i)=>wordOpt(x[2],x[3],i===0)),cls:'words',vocab:t[2],
-          onRender:readOpts,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
+        return quiz(this,{ask:B('Listen and join the two word parts.','듣고 두 낱말 조각을 합쳐요.'),askExtra:{t:`${t[4]||t[0]}. ${t[5]||t[1]}.`,lang:'en-US'},show:ear(t[4]||t[0],'+',t[5]||t[1]),opts:[t,...ds].map((x,i)=>wordOpt(x[2],x[3],i===0)),cls:'words',vocab:t[2],
+          onRender:wire,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
       }
       const t=pick(words),ds=others(words.filter(x=>x[3]!==t[3]),t,2);
-      return quiz(this,{ask:B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'),askExtra:{t:`${t[0]}. ${t[1]}.`,lang:'en-US'},show:show(`${t[0]} + ${t[1]}`),opts:[t,...ds].map((x,i)=>wordOpt(x[2],wholePicture(x),i===0)),cls:'words',vocab:t[2],
-        onRender:readOpts,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
+      return quiz(this,{ask:B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'),askExtra:{t:`${t[0]}. ${t[1]}.`,lang:'en-US'},show:ear(t[0],'+',t[1]),opts:[t,...ds].map((x,i)=>wordOpt(x[2],wholePicture(x),i===0)),cls:'words',vocab:t[2],
+        onRender:wire,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
     }
     // Level 2: take away the first word (answer = last part) or the last word (answer = first part).
     const first=Math.random()<0.5,keep=first?1:0,drop=first?0:1;
@@ -40,8 +43,8 @@
       if(!opts.some(o=>o[0]===x[keep]||o[1]===partPicture[x[keep]]))opts.push([x[keep],partPicture[x[keep]]]);
     }
     quiz(this,{ask:first?B('Listen and take away the first word.','듣고 앞 낱말 소리를 빼요.'):B('Listen and take away the last word.','듣고 뒤 낱말 소리를 빼요.'),askExtra:{t:`Say ${t[2]} without ${t[drop]}.`,lang:'en-US'},
-      show:show(`${t[2]} − ${t[drop]}`),opts:opts.map((o,i)=>wordOpt(o[0],o[1],i===0)),cls:'words',vocab:right,
-      onRender:readOpts,after:B(`${t[2]} − ${t[drop]} = ${right}`,`${t[2]} − ${t[drop]} = ${right}`)});
+      show:ear(t[2],'−',t[drop]),opts:opts.map((o,i)=>wordOpt(o[0],o[1],i===0)),cls:'words',vocab:right,
+      onRender:wire,after:B(`${t[2]} − ${t[drop]} = ${right}`,`${t[2]} − ${t[drop]} = ${right}`)});
   }});
   // 11-14 (P-bookway98, user panel 11-13): rebuilt as a picture book. The old page asked in text only and its level 1 arrow
   // pointed at the answer box. Now a page of picture words: the words already read are faded with ✓, 👆 rests on the last one read,
@@ -201,7 +204,7 @@ function showSightMap(w, box) {
 // [shown, heard]
 const SIGHT_SENT = {
   a: [['I see _ 🐶.', 'I see a dog.'], ['It is _ 🐝.', 'It is a bee.'], ['I have _ 🎈.', 'I have a balloon.'], ['Look at _ 🐸.', 'Look at a frog.']],
-  no: [['There is _ 🍪 left.', 'There is no cookie left.'], ['I said _.', 'I said no.'], ['_ 🐶 in the house!', 'No dogs in the house!'], ['Oh _, my 🎈!', 'Oh no, my balloon!']],
+  no: [['There is _ 🍪 left.', 'There is no cookie left.'], ['I said _.', 'I said no.'], ['I have _ 🐶.', 'I have no dog.'], ['Oh _, my 🎈!', 'Oh no, my balloon!']],
   go: [['I _ to 🏫.', 'I go to school.'], ['We _ to the 🏖️.', 'We go to the beach.'], ['We _ in the 🚗.', 'We go in the car.'], ['Ready, set, _! 🏁', 'Ready, set, go!']],
   to: [['I go _ 🏫.', 'I go to school.'], ['Give the 🎁 _ Mom.', 'Give the gift to Mom.'], ['We walk _ the 🏠.', 'We walk to the house.'], ['I like _ swim. 🏊', 'I like to swim.']],
   am: [['I _ happy. 😀', 'I am happy.'], ['I _ five. 5️⃣', 'I am five.'], ['I _ hot. 🥵', 'I am hot.'], ['I _ big! 💪', 'I am big!']],
@@ -240,7 +243,7 @@ registerGame({
       const blank = '<span aria-hidden="true" style="display:inline-block;min-width:2em;border-bottom:3px solid currentColor">&nbsp;</span>';
       return quiz(this, {
         ask: B('Listen. Which word fits?', '듣고 빈칸에 들어갈 낱말을 눌러요.'), askExtra: { t: heard, lang: 'en-US' },
-        show: `<div class="bigword sent" lang="en">${shown.replace('_', blank)}</div><button class="say" id="hear" aria-label="${T().listen}">🔊</button>`,
+        show: `<div class="bigword sent" lang="en"><span>${shown.replace('_', blank)}</span></div><button class="say" id="hear" aria-label="${T().listen}">🔊</button>`,
         opts: [t, ...ds2].map(w => ({ html: `<span class="num" lang="en">${w}</span>`, ok: w === t })), cls: 'shapes',
         after: B(heard, heard),
         onRender() {

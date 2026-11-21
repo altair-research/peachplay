@@ -163,9 +163,9 @@
   function irScreen() {
     style();
     const s = current() || { ir: {} }, sel = Object.assign({}, s.ir);
-    const row = (d) => `<div class="sr-row"><b>${L(d.n)}</b><span>${LEVELS.map(l => `<button data-k="${d.k}" data-v="${l.v}" aria-pressed="${sel[d.k] === l.v}" title="${esc(L(l.n))}" aria-label="${esc(L(d.n) + ': ' + L(l.n))}">${l.dot} ${L(l.sn)}</button>`).join('')}</span></div>`;
+    const row = (d) => `<div class="sr-row"><b>${L(d.n)}${S.lang === 'ko' ? `<small class="sr-en" lang="en">${d.n.en}</small>` : ''}</b><span>${LEVELS.map(l => `<button data-k="${d.k}" data-v="${l.v}" aria-pressed="${sel[d.k] === l.v}" title="${esc(L(l.n))}" aria-label="${esc(L(d.n) + ': ' + L(l.n))}">${l.dot} ${L(l.sn)}</button>`).join('')}</span></div>`;
     view().innerHTML = `<h1>🏫 ${L(B('School results', '학교 결과'))}</h1>${tabs('ir')}<button class="pill" id="srExample">${L(B('Explore example results', '예시 결과로 둘러보기'))}</button>
-      <p class="note2">${L(B('From the i-Ready Diagnostic family report, choose the placement for each domain. Skip any you do not have (tap again to clear).', 'i-Ready 진단 가정 통신 보고서에서 영역마다 배치 수준을 고르세요. 없는 영역은 비워 두세요(다시 누르면 지워져요).'))}<br>${LEVELS.map(l => `${l.dot} ${L(l.n)}`).join(' · ')}</p>${gradeNote()}
+      <p class="note2">${L(B('From the i-Ready Diagnostic family report, choose the placement for each domain. Skip any you do not have (tap again to clear).', 'i-Ready 진단 가정 통신 보고서에서 영역마다 배치 수준을 고르세요. 없는 영역은 비워 두세요(다시 누르면 지워져요).'))}<br>${LEVELS.map(l => `${l.dot} ${L(l.n)}${S.lang === 'ko' ? ` <span lang="en">(${l.n.en})</span>` : ''}`).join(' · ')}<br>${L(B('Newer reports say Above / At Grade Level → 🟢, Approaching → 🟡, Needs Improvement → 🔴.', '새 보고서 말로는 Above·At Grade Level → 🟢, Approaching → 🟡, Needs Improvement → 🔴 (추정 대응).'))}</p>${gradeNote()}
       <h2 class="sr-sub">📖 ${T().subjects.read}</h2>${IR.filter(d => d.s === 'read').map(row).join('')}
       <h2 class="sr-sub">🔢 ${T().subjects.math}</h2>${IR.filter(d => d.s === 'math').map(row).join('')}
       <div><button class="next" id="srSave">${L(B('Save and see the result card', '저장하고 결과 풀이 보기'))}</button></div>

@@ -88,7 +88,7 @@ registerGame({
   area: AREA_READ('Letter sounds'),
   play() {
     const lv = lvl('sounds'), keys = Object.keys(WORDS), pool = lv === 1 ? 'ABCDEFGHMPST'.split('') : keys;
-    const ow = (x, ok) => ({ html: `<span class="emo">${x.e}</span>`, label: B(x.w, x.ko), ok });
+    const ow = (x, ok) => ({ html: `<span class="emo">${x.e}</span><span class="word ow-say" lang="en">${x.w}</span>`, ok });   // 11-20 (서연): the word is spoken (🔉), not written — a written "tiger" let a child match the letter without listening
     // Wrong pictures: level 2 takes them from look-alike letters first.
     const wrongWords = (L, n, avoid, ban = '') => {
       const bad = c => soundGroup(L).includes(c) || [...soundGroup(c)].some(g => ban.includes(g));
@@ -162,15 +162,15 @@ registerGame({
     if(lvl('rhyme')===2){
       const gi=rnd(RHYMES.length),good=shuffle(RHYMES[gi]).slice(0,2),other=pick(RHYMES.filter((_,i)=>i!==gi)),wrong=pick(RHYMES.filter((_,i)=>i!==gi));
       const pairs=[good,[good[0],other[0]],[good[1],wrong[1]]];
-      quiz(this,{ask:B('Which pair has the same ending sound?','끝소리가 같은 낱말 짝은?'),askExtra:{t:pairs.map(p=>p.map(x=>x[1]).join(', ')).join('. '),lang:'en-US'},opts:pairs.map((p,i)=>({html:`<span class="emo" style="font-size:clamp(26px,5dvh,40px)" aria-hidden="true">${p.map(x=>x[0]).join(' + ')}</span><span class="word">${p.map(x=>x[1]).join(' + ')}</span>`,ok:i===0})),cls:'words'});return;
+      quiz(this,{ask:B('Which pair has the same ending sound?','끝소리가 같은 낱말 짝은?'),askExtra:{t:pairs.map(p=>p.map(x=>x[1]).join(', ')).join('. '),lang:'en-US'},opts:pairs.map((p,i)=>({html:`<span class="emo" style="font-size:clamp(26px,5dvh,40px)" aria-hidden="true">${p.map(x=>x[0]).join(' + ')}</span><span class="word ow-say" lang="en">${p.map(x=>x[1]).join(', ')}</span>`,ok:i===0})),cls:'words'});return;
     }
     const gi = rnd(RHYMES.length), g = shuffle(RHYMES[gi]), t = g[0], r = g[1];
     const pool = RHYMES.flatMap((x, i) => i === gi ? [] : x);
     const ds = shuffle(pool).slice(0, lvl('rhyme') === 2 ? 3 : 2);
-    const o = (w, ok) => ({ html: `<span class="emo">${w[0]}</span>`, label: w[1], ok });
+    const o = (w, ok) => ({ html: `<span class="emo">${w[0]}</span><span class="word ow-say" lang="en">${w[1]}</span>`, ok });   // 11-20 (서연): spoken, not written — sock/clock matched by spelling
     quiz(this, {
-      ask: B(`Which word rhymes with ${t[1].toUpperCase()}?`, `${t[1]}와 소리가 비슷하게 끝나는 단어는?`),
-      askSay: B(`Which word rhymes with ${t[1]}?`, `${t[1]}와 소리가 비슷하게 끝나는 단어는?`),
+      ask: B(`Which word rhymes with ${t[1].toUpperCase()}?`, `${t[1]}처럼 끝나는 단어는?`),
+      askSay: B(`Which word rhymes with ${t[1]}?`, `${t[1]}처럼 소리가 끝나는 단어는?`),
       show: `<div class="bigword"><span class="emo">${t[0]}</span> ${t[1]}</div>`,
       opts: [o(r, true), ...ds.map(d => o(d, false))],
       after: B(`${t[1]} and ${r[1]} rhyme!`, `${t[1]}, ${r[1]} 소리가 비슷해요!`), vocab: `${t[1]} and ${r[1]} rhyme!`

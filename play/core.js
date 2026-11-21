@@ -443,12 +443,12 @@ function sessionEnd(game) {
   const reward = sticker ? `<div class="newsticker"><div class="stk">${sticker}</div><div>${t.newSticker} (${S.stickers.length}/${ALL_STICKERS.length})</div></div>` : '';
   const peaches = Math.max(0, S.peaches - (SESSION.startPeaches ?? S.peaches));
   confetti.clear?.();
-  const kbFocus = document.activeElement?.closest?.('#view');   // keyboard play: keep focus on the end screen instead of losing it to the page
+  const kbFocus = document.activeElement?.closest?.('#view'), irkOn = !!(window.IReadyK && window.IReadyK.active());   // keyboard play: keep focus on the end screen; 11-20: no exits from the i-Ready K section
   view().innerHTML = `${pk ? `<h1>🎉 ${t.roundDone}</h1><p class="tag">${t.prekDone}</p>${reward}` : `<h1 class="round-title">${PEACH_SVG('yay')}${L(B('Round complete! Nice work!', '한 판 끝! 멋져요!'))}</h1><div class="round-rewards"><div class="round-reward" aria-label="${L(B(`${peaches} peaches this round`, `이번 판에 받은 복숭아 ${peaches}개`))}">🍑 +${peaches}</div>${reward}</div>${goalHtml(true)}${document.body.classList.contains('skin-explorer') ? roundBadgeHtml(game.subject, newly) : ''}`}
     <div class="menu intro${pk ? '' : ' round-actions'}"><button class="big math${pk ? '' : ' round-primary'}" id="again"><span class="gi">🔁</span>${t.playAgain}<small>${t.againSub}</small></button>
-    <button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>
-    <button class="big ss" id="goHome"><span class="gi">🏠</span>${t.pickAnother}<small>${t.anotherSub}</small></button></div>`;
-  $('#again').onclick = () => launch(game); $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
+    ${irkOn ? '' : `<button class="big read" id="mixbtn"><span class="gi">🎲</span>${t.surprise}<small>${t.surpriseSub}</small></button>`}
+    <button class="big ss" id="goHome"><span class="gi">${irkOn ? '📝' : '🏠'}</span>${irkOn ? L(B('Back to i-Ready practice', 'i-Ready 준비로')) : t.pickAnother}<small>${irkOn ? L(B('Pick another game', '다른 게임 고르기')) : t.anotherSub}</small></button></div>`;
+  $('#again').onclick = () => launch(game); if ($('#mixbtn')) $('#mixbtn').onclick = surprise; $('#goHome').onclick = home;
   if (kbFocus) $('#again').focus({ preventScroll: true });
   say(t.roundDone); sfx('win'); confetti(150);
   if (window.Today) window.Today.afterRound(game);
@@ -552,7 +552,7 @@ function scaffoldNote(game, type, ok) { const k = game.id + ':' + type; SCAFFOLD
 // When every choice is a plain number, keep each wrong number's distance from the answer but pick the side at random:
 // as written, mirrored, all above or all below. Never below 0, never a duplicate; decimals keep their places.
 // Only the games answer-skew.js flagged (11-11): other number games may use look-alike numbers (6/9) on purpose.
-const BALANCE_IDS = new Set(['dotplot4', 'ruler', 'round3', 'ladder', 'arrays', 'count120', 'tenmoreless', 'equalgroups', 'phonemes1', 'place3', 'addsub3', 'barstory3', 'array3', 'divide3', 'factfamily3', 'splitmultiply3', 'multiplytens3', 'multpattern3', 'multstory3', 'elapsed3', 'graph3', 'sundata3', 'market3', 'round4', 'decimal4', 'daylight4', 'budget4', 'decimalround5']);
+const BALANCE_IDS = new Set(['dotplot4', 'wordprob', 'ruler', 'round3', 'ladder', 'arrays', 'count120', 'tenmoreless', 'equalgroups', 'phonemes1', 'place3', 'addsub3', 'barstory3', 'array3', 'divide3', 'factfamily3', 'splitmultiply3', 'multiplytens3', 'multpattern3', 'multstory3', 'elapsed3', 'graph3', 'sundata3', 'market3', 'round4', 'decimal4', 'daylight4', 'budget4', 'decimalround5']);
 function balanceNumberOptions(item, id) {
   if (!item || item.__bal || !BALANCE_IDS.has(id) || !Array.isArray(item.opts) || item.opts.length < 3 || item.keepNumbers) return;
   item.__bal = true;
