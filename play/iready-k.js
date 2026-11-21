@@ -59,6 +59,7 @@
       if (!list.length) return null;
       const area = hasPlace ? list[0] : list[(day + si * 3) % list.length], all = games(area);
       const v = hasPlace ? s.ir[area.k] : '', gs = all.slice(0, v === 'b' || !hasPlace ? 2 : v === 'e' ? 3 : all.length);
+      if (v === 'b') { const first = gs.find(g => played(g.id) < 20); if (first) return first; }   // easiest first until two rounds
       return gs.map((g, i) => ({ g, n: played(g.id), r: (i + day) % gs.length })).sort((x, y) => x.n - y.n || x.r - y.r)[0].g;
     }).filter(Boolean);
   }

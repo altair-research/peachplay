@@ -218,7 +218,7 @@ registerGame({
     const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐', '🐟', '🌸', '🐞', '🚗', '🎈']);
     if (rnd(3) === 0) {
       quiz(this, {
-        ask: B(`${n} is ten and how many more?`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 몇일까요?`),
+        ask: B(`${n} is ten and how many more?`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 얼마일까요?`),
         show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span><span class="bigword qbox">?</span><span class="op">=</span><span class="bigword">${n}</span></div>`,
         opts: numOpts(n - 10, 1, 9), after: B(`${n} is ten and ${n - 10}.`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 ${n - 10}.`)
       });

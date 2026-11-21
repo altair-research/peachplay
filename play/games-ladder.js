@@ -140,8 +140,8 @@
     return `<div class="ld-show">${chip}${pic}${eqLine(eq, mode === 2)}</div>`;
   }
   const ASK = {
-    '+': B('How many in all?', '모두 몇일까요?'),
-    '-': B('How many are left?', '남은 것은 몇일까요?'),
+    '+': B('How many in all?', '모두 몇 개일까요?'),
+    '-': B('How many are left?', '남은 것은 몇 개일까요?'),
     '10': B('How many more make 10?', '10이 되려면 몇이 더 필요할까요?')
   };
   const say2 = (rung, { a, k }) => rung.op === '10' ? B(`${a} and how many more make 10?`, `${a}에 몇을 더하면 10이 될까요?`)
