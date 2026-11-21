@@ -8,10 +8,24 @@ registerGame({
   id: 'tens', subject: 'math', icon: '🚂', title: B('Count by Tens', '10씩 세기'), sub: B('10, 20, 30...', '10, 20, 30...'),
   area: AREA_MATH('Counting'),
   play() {
+    // 2026-11-20 (i-Ready K practice, more questions): L1 counts forward by tens to 100 (K standard), with 3- or 4-car trains
+    // and "what comes after"; L2 keeps the longer trains, counting back, totals to 100 and "what comes before/after".
     const lv = lvl('tens'), maxK = lv === 1 ? 5 : 10;
-    const kind = lv === 1 ? pick(['gap', 'gap', 'total']) : pick(['gap', 'back', 'total', 'gap']);
+    const kind = lv === 1 ? pick(['gap', 'gap', 'gap', 'total', 'after']) : pick(['gap', 'back', 'total', 'gap', 'back', 'after', 'before']);
     const dots = '<span>🔵</span>'.repeat(10);
     const near = (ans) => { const set = new Set([ans]); while (set.size < 3) { const v = ans + pick([-20, -10, 10, 20]); if (v >= 10 && v <= 100) set.add(v); } return [...set].map(v => ({ html: `<span class="num">${v}</span>`, ok: v === ans })); };
+    if (kind === 'after' || kind === 'before') {
+      // One full car with its number, then an empty car on the side we count toward (arrow shows the direction).
+      const after = kind === 'after', k = after ? 1 + rnd(9) : 2 + rnd(9), ans = after ? (k + 1) * 10 : (k - 1) * 10;
+      const full = `<div class="car"><div class="n">${k * 10}</div><div class="dots">${dots}</div></div>`, gap = `<div class="car gap"><div class="n">?</div><div class="dots"></div></div>`;
+      quiz(this, {
+        ask: after ? B(`Count by tens. What comes after ${k * 10}?`, `10씩 세요. ${k * 10} 다음은?`) : B(`Count by tens. What comes before ${k * 10}?`, `10씩 세요. ${k * 10} 앞은?`),
+        show: `<div class="train">${after ? full + '<div class="n" style="align-self:center;font-size:28px">➡️</div>' + gap : gap + '<div class="n" style="align-self:center;font-size:28px">⬅️</div>' + full}</div>`,
+        opts: near(ans), after: B(after ? `${k * 10}, ${ans}` : `${ans}, ${k * 10}`, after ? `${k * 10}, ${ans}` : `${ans}, ${k * 10}`),
+        onCorrect() { const g = $('.car.gap'); if (!g) return; g.classList.remove('gap'); g.querySelector('.n').textContent = ans; g.querySelector('.dots').innerHTML = dots; }
+      });
+      return;
+    }
     if (kind === 'total') {
       const k = 2 + rnd(maxK - 1), ans = k * 10, seq = Array.from({ length: k }, (_, i) => (i + 1) * 10);
       quiz(this, {
@@ -21,7 +35,7 @@ registerGame({
       });
       return;
     }
-    const len = lv === 1 ? 4 : 5, startIdx = rnd(maxK - len + 1);
+    const len = lv === 1 ? pick([3, 4]) : 5, startIdx = rnd((lv === 1 ? 10 : maxK) - len + 1);
     let seq = Array.from({ length: len }, (_, i) => (startIdx + i + 1) * 10);
     if (kind === 'back') seq = seq.reverse();
     const gapAt = rnd(len), ans = seq[gapAt];
@@ -79,7 +93,17 @@ registerGame({
   id: 'count', subject: 'math', icon: '🔢', title: B('Count Peaches', '복숭아 세기'), sub: B('Tap and count', '눌러서 세어요'),
   area: AREA_MATH('Counting objects'),
   play() {
-    const lv = lvl('count'), n = lv === 1 ? 2 + rnd(9) : 8 + rnd(13), e = pick(['🍑', '🍑', '🍎', '🐞', '⭐', '🦆']);
+    // 2026-11-20 (i-Ready K practice): more kinds of things to count, and "one more" (one new thing joins the group).
+    const lv = lvl('count'), n = lv === 1 ? 2 + rnd(9) : 8 + rnd(13), e = pick(['🍑', '🍑', '🍎', '🐞', '⭐', '🦆', '🐟', '🌸', '🚗', '🎈', '🐢']);
+    if (lv === 1 && rnd(4) === 0) {
+      const m = 1 + rnd(9);
+      quiz(this, {
+        ask: B('One more comes. How many now?', '하나 더 와요. 이제 몇 개?'),
+        show: `<div class="story">${emojiRow(m, e, 'sm')}<span class="op">+</span><div class="grp sm" style="border:3px dashed #f2b28c;border-radius:12px;padding:2px 6px"><span>${e}</span></div></div>`,
+        opts: numOpts(m + 1, 1, 10), after: B(`${m} and one more is ${m + 1}.`, `${m}보다 하나 더 많으면 ${m + 1}.`)
+      });
+      return;
+    }
     quiz(this, {
       ask: B('Tap each one: how many are there?', '하나씩 눌러 세면 모두 몇 개일까요?'),
       show: `<div class="scatter">${Array.from({ length: n }, () => `<button class="obj" style="transform:translate(${rnd(21) - 10}px,${rnd(21) - 10}px) rotate(${rnd(41) - 20}deg)">${e}</button>`).join('')}</div>`,
@@ -105,9 +129,12 @@ registerGame({
   area: AREA_MATH('Counting to 100'),
   play() {
     const lv = lvl('order'), hi = lv === 1 ? 20 : 100;
-    const kind = lv === 1 ? pick(['next', 'next', 'before']) : pick(['next', 'before', 'back', 'mid']);
+    // 2026-11-20 (i-Ready K practice): L1 also fills a missing middle card (to 20) and counts back from 10.
+    const kind = lv === 1 ? pick(['next', 'next', 'before', 'mid', 'mid2', 'back10']) : pick(['next', 'before', 'back', 'mid']);
     let cards, ans, ask;
-    if (kind === 'next') { const a = 1 + rnd(hi - 4); cards = [a, a + 1, a + 2, '?']; ans = a + 3; ask = B('What comes next?', '다음 숫자는 뭘까요?'); }
+    if (kind === 'mid2') { const a = 1 + rnd(hi - 3); cards = [a, '?', a + 2, a + 3]; ans = a + 1; ask = B('Which number is missing?', '빠진 숫자는 뭘까요?'); }
+    else if (kind === 'back10') { const a = 4 + rnd(7); cards = [a, a - 1, a - 2, '?']; ans = a - 3; ask = B('Counting backward, what comes next?', '거꾸로 세면 다음은 뭘까요?'); }
+    else if (kind === 'next') { const a = 1 + rnd(hi - 4); cards = [a, a + 1, a + 2, '?']; ans = a + 3; ask = B('What comes next?', '다음 숫자는 뭘까요?'); }
     else if (kind === 'before') { const a = 2 + rnd(hi - 4); cards = ['?', a, a + 1, a + 2]; ans = a - 1; ask = B('What comes before?', '앞에 올 숫자는 뭘까요?'); }
     else if (kind === 'back') { const a = 4 + rnd(hi - 4); cards = [a, a - 1, a - 2, '?']; ans = a - 3; ask = B('Counting backward, what comes next?', '거꾸로 세면 다음은 뭘까요?'); }
     else { const a = 1 + rnd(hi - 4); cards = [a, a + 1, '?', a + 3]; ans = a + 2; ask = B('Which number is missing?', '빠진 숫자는 뭘까요?'); }
@@ -120,7 +147,16 @@ registerGame({
   id: 'compare', subject: 'math', icon: '⚖️', title: B('More or Fewer?', '더 많이? 더 적게?'), sub: B('Compare groups', '묶음 비교하기'),
   area: AREA_MATH('Comparing sets'),
   play() {
-    const lv = lvl('compare'), e = pick(['🍑', '🍎', '🐟', '⭐']);
+    // 2026-11-20 (i-Ready K practice): more kinds of things; L2 also compares two written numbers (within 10).
+    const lv = lvl('compare'), e = pick(['🍑', '🍎', '🐟', '⭐', '🐞', '🌸', '🚗', '🦆']);
+    if (lv === 2 && rnd(4) === 0) {
+      const x = 1 + rnd(10); let y = 1 + rnd(10); if (y === x) y = x === 10 ? 9 : x + 1;
+      const big = !!rnd(2), right = big ? Math.max(x, y) : Math.min(x, y);
+      quiz(this, { ask: big ? B('Which number is MORE?', '어느 수가 더 클까요?') : B('Which number is LESS?', '어느 수가 더 작을까요?'),
+        opts: [x, y].map(v => ({ html: `<span class="num">${v}</span>`, ok: v === right })), cls: 'shapes', itemKey: `compare|num|${big}|${Math.min(x, y)},${Math.max(x, y)}`,
+        after: B(`${right} is ${big ? 'more' : 'less'}.`, `${right}${[2, 4, 5, 9].includes(right % 10) ? '가' : '이'} 더 ${big ? '커요' : '작아요'}.`) });
+      return;
+    }
     const same = lv === 2 && rnd(4) === 0;
     let a = 1 + rnd(10), b = same ? a : 1 + rnd(10);
     if (!same && a === b) b = a === 10 ? 9 : a + 1;
@@ -128,7 +164,7 @@ registerGame({
     const askMore = lv === 2 ? B('Which has MORE, or are they the SAME?', '어느 쪽이 더 많을까요, 같을까요?') : more ? B('Which group has MORE?', '어느 쪽이 더 많을까요?') : B('Which group has FEWER?', '어느 쪽이 더 적을까요?');
     const opts = [{ html: '<small>A</small>' + emojiRow(a, e, 'sm'), ok: !same && (more ? a > b : a < b) || false }, { html: '<small>B</small>' + emojiRow(b, e, 'sm'), ok: !same && (more ? b > a : b < a) || false }];
     if (lv === 2) opts.push({ html: '<span class="num">=</span>', label: B('Same', '같아요'), ok: same });
-    quiz(this, { ask: askMore, opts, cls: 'groups', after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`), sd: { e, more: lv === 2 || more } });
+    quiz(this, { ask: askMore, opts, cls: 'groups', itemKey: `compare|grp|${lv}|${more}|${e}|${a},${b}`, after: B(same ? `${a} and ${b} are the same.` : `${a} and ${b}.`, same ? `${a}와 ${b}는 같아요.` : `${a}와 ${b}.`), sd: { e, more: lv === 2 || more } });
   },
   // Step-down: smaller groups (1 to 5, at least 2 apart) and only two choices (the "Same" choice is taken away).
   stepDown(item) {
@@ -178,7 +214,17 @@ registerGame({
   id: 'teens', subject: 'math', icon: '🧱', title: B('Ten and More', '10과 더'), sub: B('11 to 19', '11부터 19까지'),
   area: AREA_MATH('Numbers to 20'),
   play() {
-    const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐']), fs = scaffoldStep(this, 'teen');
+    // 2026-11-20 (i-Ready K practice): more kinds of things, and the other direction (a teen number is ten and how many more?).
+    const lv = lvl('teens'), n = lv === 1 ? 11 + rnd(5) : 11 + rnd(9), e = pick(['🍑', '🍎', '⭐', '🐟', '🌸', '🐞', '🚗', '🎈']);
+    if (rnd(3) === 0) {
+      quiz(this, {
+        ask: B(`${n} is ten and how many more?`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 몇일까요?`),
+        show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span><span class="bigword qbox">?</span><span class="op">=</span><span class="bigword">${n}</span></div>`,
+        opts: numOpts(n - 10, 1, 9), after: B(`${n} is ten and ${n - 10}.`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 ${n - 10}.`)
+      });
+      return;
+    }
+    const fs = scaffoldStep(this, 'teen');
     quiz(this, {
       ask: B('Ten and some more: how many in all?', '10과 조금 더: 모두 몇 개일까요?'),
       show: fs === 0 ? teenShow(n, e) : fs === 1 ? `<div class="story"><span class="bigword" style="border:3px solid #f2b28c;border-radius:12px;padding:0 .3em">10</span><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}</div>` : `<div class="bigword">10 + ${n - 10}</div>`,
@@ -257,11 +303,12 @@ registerGame({
 });
 
 // ---------- 9. 3-D shapes in my world ----------
+// 2026-11-20 (i-Ready K practice): more everyday things per solid (each one clearly that shape).
 const SOLIDS = {
-  sphere: { n: B('sphere', '구'), things: [['🏀', B('basketball', '농구공')], ['⚽', B('soccer ball', '축구공')], ['🌍', B('globe', '지구본')]] },
-  cube: { n: B('cube', '정육면체'), things: [['🎲', B('game die', '주사위')], ['🧊', B('ice block', '얼음덩이')]] },
-  cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')]] },
-  cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('tin can', '깡통')], ['🔋', B('battery', '건전지')]] }
+  sphere: { n: B('sphere', '구'), things: [['🏀', B('basketball', '농구공')], ['⚽', B('soccer ball', '축구공')], ['🌍', B('globe', '지구본')], ['🍊', B('orange', '오렌지')], ['⚾', B('baseball', '야구공')], ['🎾', B('tennis ball', '테니스공')], ['🎱', B('pool ball', '당구공')]] },
+  cube: { n: B('cube', '정육면체'), things: [['🎲', B('game die', '주사위')], ['🧊', B('ice block', '얼음덩이')], ['🎁', B('gift box', '선물 상자')]] },
+  cone: { n: B('cone', '원뿔'), things: [['🍦', B('ice cream', '아이스크림')], ['🥳', B('party hat', '고깔모자')], ['🎉', B('party popper', '파티 폭죽')], ['🥕', B('carrot', '당근')]] },
+  cylinder: { n: B('cylinder', '원기둥'), things: [['🥫', B('tin can', '깡통')], ['🔋', B('battery', '건전지')], ['🧻', B('paper roll', '휴지 심')], ['🥁', B('drum', '북')], ['🪵', B('log', '통나무')], ['🕯️', B('candle', '양초')]] }
 };
 // Plain line drawings of the four solids (no real object), used where the answer is the shape itself.
 function solidSvg(k) {
@@ -344,6 +391,19 @@ registerGame({
   };
 })();
 
+// 2026-11-20 (i-Ready K practice): L1 also shows a drawn solid and asks which everyday thing has that shape.
+(() => {
+  const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
+  game.play = function () {
+    if (lvl(this.id) !== 1 || rnd(3)) return original.call(this);
+    const keys = Object.keys(SOLIDS), t = pick(keys), right = pick(SOLIDS[t].things);
+    const opts = [{ x: right, ok: true }, ...others(keys, t, 2).map(k => ({ x: pick(SOLIDS[k].things), ok: false }))];
+    quiz(this, { ask: B('Which thing has this shape?', '이 모양인 물건은 어느 것일까요?'), show: solidSvg(t),
+      opts: opts.map(o => ({ html: '<span class="emo">' + o.x[0] + '</span>', label: o.x[1], ok: o.ok })), cls: 'shapes',
+      after: B(`The ${right[1].en} looks like a ${SOLIDS[t].n.en}.`, `${right[1].ko}: ${SOLIDS[t].n.ko} 모양이에요.`), vocab: SOLIDS[t].n.en });
+  };
+})();
+
 // L2 transfers a familiar object's solid shape to a different object.
 (() => {
   const game = GAMES.find(g => g.id === 'shapes3d'), original = game.play;
@@ -362,8 +422,23 @@ registerGame({
 (() => {
  const upgrade=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
  // 2026-10-28 sample S1: A and B sit apart, left and right, each named above its box, so the extra peaches stand out.
- const moreSets=(a,b)=>{const box=(n,name)=>`<div style="flex:0 1 auto;border:3px solid #f2b28c;border-radius:16px;padding:6px 10px;background:#fff"><div style="font-weight:800;font-size:clamp(22px,4.5dvh,34px);color:#c4552b">${name}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;font-size:clamp(22px,min(5dvh,8.5vw),38px);line-height:1.1">${'<span>🍑</span>'.repeat(n)}</div></div>`;return `<div style="display:flex;gap:clamp(24px,8vw,72px);justify-content:center;align-items:flex-start">${box(a,'A')}${box(b,'B')}</div>`;};
- upgrade('count',()=>{const a=2+rnd(9),b=1+rnd(a-1);return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:moreSets(a,b),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10),sd:{more:true}};});
+ const moreSets=(a,b,e='🍑')=>{const box=(n,name)=>`<div style="flex:0 1 auto;border:3px solid #f2b28c;border-radius:16px;padding:6px 10px;background:#fff"><div style="font-weight:800;font-size:clamp(22px,4.5dvh,34px);color:#c4552b">${name}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;font-size:clamp(22px,min(5dvh,8.5vw),38px);line-height:1.1">${`<span>${e}</span>`.repeat(n)}</div></div>`;return `<div style="display:flex;gap:clamp(24px,8vw,72px);justify-content:center;align-items:flex-start">${box(a,'A')}${box(b,'B')}</div>`;};
+ // 2026-11-20 (i-Ready K practice): the "how many more" question also uses other things (and "how many fewer in B"),
+ // and a third of L2 rounds count a big scattered group (11 to 20).
+ const MORE_THINGS=[['🍎',B('apples','사과는')],['⭐',B('stars','별은')],['🐟',B('fish','물고기는')],['🐞',B('ladybugs','무당벌레는')],['🌸',B('flowers','꽃은')],['🚗',B('cars','자동차는')],['🎈',B('balloons','풍선은')]];
+ upgrade('count',()=>{
+  if(!rnd(3)){const n=11+rnd(10),e=pick(['🍑','🍎','🐞','⭐','🦆','🐟','🌸','🚗','🎈','🐢']);return {ask:B('Tap each one: how many are there?','하나씩 눌러 세면 모두 몇 개일까요?'),show:`<div class="scatter">${Array.from({length:n},()=>`<button class="obj" style="transform:translate(${rnd(21)-10}px,${rnd(21)-10}px) rotate(${rnd(41)-20}deg)">${e}</button>`).join('')}</div>`,opts:numOpts(n,1,20),after:B(`${n}`,`${n}`),sd:{n,e},onRender:countTaps};}
+  const a=2+rnd(9),b=1+rnd(a-1);
+  if(!rnd(3))return {ask:B('How many more peaches are in A?','A의 복숭아는 몇 개 더 많을까요?'),show:moreSets(a,b),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10),sd:{more:true}};
+  const [e,name]=pick(MORE_THINGS),fewer=!rnd(3);
+  return {ask:fewer?B('How many fewer are in B?','B는 몇 개 더 적을까요?'):B('How many more are in A?','A는 몇 개 더 많을까요?'),
+   askSay:fewer?B(`How many fewer ${name.en} are in B than in A?`,`B의 ${name.ko} A보다 몇 개 더 적을까요?`):B(`How many more ${name.en} are in A than in B?`,`A의 ${name.ko} B보다 몇 개 더 많을까요?`),
+   show:moreSets(a,b,e),quietShow:true,opts:numO(a-b,[a,b,a-b+1],0,10),sd:{more:true}};});
  upgrade('addsub',()=>{const a=2+rnd(4),b=1+rnd(3),c=1+rnd(a),ans=a+b-c;return {ask:B('How many peaches are left?','복숭아가 몇 개 남을까요?'),askSay:B(`${a} peaches. Get ${b} more, then give away ${c}. How many left?`,`${a}개에서 ${b}개를 받고 ${c}개를 주면 몇 개 남을까요?`),show:`<div class="bigword">${a} + ${b} − ${c} = ?</div>`,opts:numO(ans,[a+b,a-c,ans+1],0,10),sd:{l2:true,a,b}};});
- upgrade('teens',()=>{const a=1+rnd(7),b=1+rnd(9-a),ans=10+a+b;return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="bigword">10 + ${a} + ? = ${ans}</div>`,opts:numO(b,[a,a+b,b+1],0,10),sd:{l2:true,a,b}};});
+ // 2026-11-20 (i-Ready K practice): the same two-step question also comes as a picture (full ten-frame + some + a dashed box),
+ // and as 10 + ? = a teen number.
+ upgrade('teens',()=>{const a=1+rnd(7),b=1+rnd(9-a),ans=10+a+b,r=rnd(5);
+  if(r<2){const e=pick(['🍑','🍎','⭐','🐟','🌸','🐞','🚗','🎈']);return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="story"><div class="frame mini">${Array.from({length:10},()=>`<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span>${emojiRow(a,e,'sm')}<span class="op">+</span><span class="bigword qbox">?</span><span class="op">=</span><span class="bigword">${ans}</span></div>`,opts:numO(b,[a,a+b,b+1],0,10),sd:{l2:true,a,b}};}
+  if(r===2){const t=11+rnd(9);return {ask:B('What number makes it true?','어떤 수가 들어갈까요?'),askSay:B(`Ten and what make ${t}?`,`10과 몇을 합치면 ${t}${[2, 4, 5, 9].includes(t % 10) ? '가' : '이'} 될까요?`),show:`<div class="bigword eqline">10 + <span class="qbox">?</span> = ${t}</div>`,opts:numO(t-10,[t,t-9,t-11],0,19)};}
+  return {ask:B('How many more to reach the total?','모두가 되려면 몇 개 더 필요할까요?'),askSay:B(`Ten and ${a} are here. The total will be ${ans}. How many more?`,`10개와 ${a}개가 있어요. 모두 ${ans}개가 되려면 몇 개 더 필요할까요?`),show:`<div class="bigword">10 + ${a} + ? = ${ans}</div>`,opts:numO(b,[a,a+b,b+1],0,10),sd:{l2:true,a,b}};});
 })();

@@ -28,26 +28,43 @@ registerGame({
 });
 
 // ---------- 2. Number line hops ----------
-const nlSvg = (at, arcFrom) => {
+const nlSvg = (at, arcFrom, who = '🐸') => {
   const x = (i) => 6 + i * 10.8;
   let s = `<line x1="${x(0)}" y1="22" x2="${x(10)}" y2="22" stroke="#1d3557" stroke-width="1.6"/>`;
   for (let i = 0; i <= 10; i++) s += `<line x1="${x(i)}" y1="19" x2="${x(i)}" y2="25" stroke="#1d3557" stroke-width="1.2"/><text x="${x(i)}" y="32" font-size="5.6" text-anchor="middle" fill="#1d3557" font-weight="700">${i}</text>`;
   if (arcFrom !== undefined) s += `<path d="M${x(arcFrom)} 17 Q${(x(arcFrom) + x(at)) / 2} ${3} ${x(at)} 17" fill="none" stroke="#06d6a0" stroke-width="1.6" stroke-dasharray="2.5 2" marker-end="none"/>`;
-  s += `<text x="${x(at)}" y="15" font-size="10" text-anchor="middle">🐸</text>`;
+  s += `<text x="${x(at)}" y="15" font-size="10" text-anchor="middle">${who}</text>`;
   return `<svg viewBox="0 0 120 36" class="nlsvg">${s}</svg>`;
 };
+// Bank 11-20 (i-Ready K practice): L1 starts anywhere 0..9 (sum stays <= 10), and the hopper is a frog or a bunny,
+// so a round of ten rarely shows the same picture twice. L2 keeps back hops and adds "how many hops?" (missing change).
+const HOPPERS = [['🐸', B('frog', '개구리')], ['🐰', B('bunny', '토끼')]];
 registerGame({
   id: 'numline', subject: 'math', icon: '🐸', title: B('Frog Hops', '개구리 뛰기'), sub: B('Hop on the number line', '수직선에서 뛰어요'),
   area: AREA_MATH('Add & subtract'),
   play() {
-    const lv = lvl('numline'), back = lv === 2 && rnd(2) === 0;
+    const lv = lvl('numline'), [who, name] = pick(HOPPERS), N = name.en, K = name.ko;
+    const mode = lv === 2 ? pick(['fwd', 'back', 'back', 'gap']) : 'fwd';
     let a, b, ans;
-    if (back) { a = 3 + rnd(8); b = 1 + rnd(Math.min(3, a)); ans = a - b; } else { a = rnd(8); b = 1 + rnd(Math.min(lv === 1 ? 3 : 5, 10 - a)); ans = a + b; }
+    if (mode === 'back') { a = 3 + rnd(8); b = 1 + rnd(Math.min(3, a)); ans = a - b; }
+    else if (mode === 'gap') { do { a = 1 + rnd(6); b = 2 + rnd(3); } while (a === b); ans = b; }   // a >= 1 and a != b: the answer is never a number in the question
+    else { a = rnd(lv === 1 ? 10 : 8); b = 1 + rnd(Math.min(lv === 1 ? 3 : 5, 10 - a)); ans = a + b; }
+    if (mode === 'gap') {
+      // Two-step: find the start and the end on the line, then count the hops between them.
+      const end = a + b;
+      quiz(this, {
+        ask: B(`The ${N} hops from ${a} to ${end}. How many hops?`, `${K}가 ${a}에서 ${end}까지 뛰었어요. 몇 칸 뛰었을까요?`),
+        askSay: B(`The ${N} starts on ${a} and lands on ${end}. How many hops did it make?`, `${K}는 ${a}에서 출발해 ${end}에 도착했어요. 몇 칸 뛰었을까요?`),
+        show: nlSvg(end, a, who), opts: numOpts(b, 1, 6), after: B(`${a} to ${end} is ${b} hops.`, `${a}에서 ${end}까지 ${b}칸이에요.`)
+      });
+      return;
+    }
+    const back = mode === 'back';
     quiz(this, {
-      ask: back ? B(`The frog hops ${b} back—where does it land?`, `개구리가 뒤로 ${b}칸 뛰면 어디일까요?`) : B(`The frog hops ${b} forward—where does it land?`, `개구리가 앞으로 ${b}칸 뛰면 어디일까요?`),
-      askSay: back ? B(`The frog is on ${a}. It hops ${b} back. Where does it land?`, `개구리는 ${a}에 있어요. 뒤로 ${b}칸 뛰면 어디에 도착할까요?`) : B(`The frog is on ${a}. It hops ${b} forward. Where does it land?`, `개구리는 ${a}에 있어요. 앞으로 ${b}칸 뛰면 어디에 도착할까요?`),
-      show: nlSvg(a), opts: numOpts(ans, 0, 10), after: back ? B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`) : B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`),
-      onCorrect() { $('.show').innerHTML = nlSvg(ans, a); }
+      ask: back ? B(`The ${N} hops ${b} back—where does it land?`, `${K}가 뒤로 ${b}칸 뛰면 어디일까요?`) : B(`The ${N} hops ${b} forward—where does it land?`, `${K}가 앞으로 ${b}칸 뛰면 어디일까요?`),
+      askSay: back ? B(`The ${N} is on ${a}. It hops ${b} back. Where does it land?`, `${K}는 ${a}에 있어요. 뒤로 ${b}칸 뛰면 어디에 도착할까요?`) : B(`The ${N} is on ${a}. It hops ${b} forward. Where does it land?`, `${K}는 ${a}에 있어요. 앞으로 ${b}칸 뛰면 어디에 도착할까요?`),
+      show: nlSvg(a, undefined, who), opts: numOpts(ans, 0, 10), after: back ? B(`${a} minus ${b} is ${ans}.`, `${a} 빼기 ${b}는 ${ans}.`) : B(`${a} plus ${b} is ${ans}.`, `${a} 더하기 ${b}는 ${ans}.`),
+      onCorrect() { $('.show').innerHTML = nlSvg(ans, a, who); }
     });
   }
 });
@@ -56,16 +73,51 @@ registerGame({
 const clockSvg = (h) => { let s = '<circle cx="50" cy="50" r="46" fill="#fff" stroke="#1d3557" stroke-width="3"/>'; for (let i = 1; i <= 12; i++) { const a = (i * 30 - 90) * Math.PI / 180; s += `<text x="${50 + 36 * Math.cos(a)}" y="${50 + 36 * Math.sin(a) + 3.5}" font-size="10" font-weight="800" text-anchor="middle" fill="#1d3557">${i}</text>`; }
   const ha = (h * 30 - 90) * Math.PI / 180; s += `<line x1="50" y1="50" x2="${50 + 22 * Math.cos(ha)}" y2="${50 + 22 * Math.sin(ha)}" stroke="#ef476f" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="50" y2="14" stroke="#118ab2" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3.4" fill="#1d3557"/>`;
   return `<svg viewBox="0 0 100 100" class="clocksvg">${s}</svg>`; };
+// Bank 11-20 (i-Ready K practice): still time to the hour only. L1 reads a clock, or finds the clock for a time,
+// plain or with a daily-life scene at a sensible hour. L2 is two steps: an hour or two later or earlier.
+const CLOCK_SCENES = [
+  ['🥣', B('Breakfast time!', '아침 먹을 시간이에요!'), [7, 8]], ['🚌', B('Time for the school bus!', '학교 버스 탈 시간이에요!'), [8]],
+  ['🍎', B('Snack time!', '간식 시간이에요!'), [10, 3]], ['🥪', B('Lunch time!', '점심 시간이에요!'), [11, 12, 1]],
+  ['🛝', B('Time to play outside!', '밖에서 놀 시간이에요!'), [2, 4, 5]], ['🍝', B('Dinner time!', '저녁 먹을 시간이에요!'), [5, 6]],
+  ['🛁', B('Bath time!', '목욕 시간이에요!'), [7]], ['🛏️', B('Bedtime!', '잘 시간이에요!'), [8, 9]], ['📖', B('Story time!', '이야기 시간이에요!'), [9, 3]]
+];
+const clockNear = (h, n) => { const set = new Set([h]); while (set.size < n) set.add(((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1); return [...set]; };
+const clockHour = v => ((v - 1) % 12 + 12) % 12 + 1;
+const clockDigi = v => `<span class="num eq">${v}:00</span>`;
 registerGame({
   id: 'clock', subject: 'math', icon: '🕒', title: B('What Time Is It?', '몇 시일까?'), sub: B("O'clock times", '정각 읽기'),
   area: AREA_MATH('Time (enrichment)'),
   retired: true,   // K audit 11-05: clocks are grade 1 (1.MDR.6.2); grade 1 has clock1. Still opens by ?game=clock.
   play() {
-    if(lvl('clock')===2){const h=1+rnd(12),step=1+rnd(2),a=(h+step-1)%12+1;quiz(this,{ask:B(`What time is it ${step} hour${step>1?'s':''} later?`,`${step}시간 뒤는 몇 시일까요?`),askSay:B(`Look at the clock. What time is it ${step} hour${step>1?'s':''} later?`,`시계를 보세요. ${step}시간 뒤는 몇 시일까요?`),show:clockSvg(h),opts:[a,h,(h-step+11)%12+1].map(v=>({html:`<span class="num eq">${v}:00</span>`,ok:v===a})),cls:'shapes'});return;}
-    const h = 1 + rnd(12), set = new Set([h]); while (set.size < (lvl('clock') === 2 ? 4 : 3)) { const v = ((h - 1 + pick([-2, -1, 1, 2, 3])) % 12 + 12) % 12 + 1; set.add(v); }
+    if (lvl('clock') === 2) {
+      const h = 1 + rnd(12), kind = pick(['later', 'earlier', 'later', 'earlier', 'findLater']);
+      if (kind === 'findLater') {
+        // The time is written; pick the clock that shows one hour later (a clock picture, not a number).
+        const a = clockHour(h + 1);
+        quiz(this, { ask: B(`It is ${h}:00. Which clock shows 1 hour later?`, `지금 ${h}시예요. 1시간 뒤를 보여 주는 시계는?`),
+          askSay: B(`It is ${h} o'clock now. Which clock shows 1 hour later?`, `지금은 ${h}시예요. 1시간 뒤를 보여 주는 시계는 어느 것일까요?`),
+          show: `<span class="num bignum">${h}:00</span>`, opts: [a, h, clockHour(h + 2)].map(v => ({ html: clockSvg(v), ok: v === a })), cls: 'shapes', after: B(`1 hour after ${h} o'clock is ${a} o'clock.`, `${h}시에서 1시간 뒤는 ${a}시예요.`) });
+        return;
+      }
+      const step = 1 + rnd(2), later = kind === 'later', a = clockHour(later ? h + step : h - step), hrs = `${step} hour${step > 1 ? 's' : ''}`;
+      quiz(this, { ask: later ? B(`What time is it ${hrs} later?`, `${step}시간 뒤는 몇 시일까요?`) : B(`What time was it ${hrs} earlier?`, `${step}시간 전은 몇 시였을까요?`),
+        askSay: later ? B(`Look at the clock. What time is it ${hrs} later?`, `시계를 보세요. ${step}시간 뒤는 몇 시일까요?`) : B(`Look at the clock. What time was it ${hrs} earlier?`, `시계를 보세요. ${step}시간 전은 몇 시였을까요?`),
+        show: clockSvg(h), opts: [a, h, clockHour(later ? h - step : h + step)].map(v => ({ html: clockDigi(v), ok: v === a })), cls: 'shapes',
+        after: later ? B(`${hrs} after ${h} o'clock is ${a} o'clock.`, `${h}시에서 ${step}시간 뒤는 ${a}시예요.`) : B(`${hrs} before ${h} o'clock was ${a} o'clock.`, `${h}시에서 ${step}시간 전은 ${a}시예요.`) });
+      return;
+    }
+    const scene = rnd(2) === 0 ? pick(CLOCK_SCENES) : null, h = scene ? pick(scene[2]) : 1 + rnd(12), find = rnd(2) === 0;
+    const pic = scene ? `<span class="emo" style="font-size:clamp(36px,8dvh,64px)">${scene[0]}</span> ` : '';
+    if (find) {
+      // Reverse: the time is written (and spoken); choose the clock that shows it.
+      quiz(this, { ask: scene ? B(`${scene[1].en} Which clock shows ${h}:00?`, `${scene[1].ko} ${h}시를 보여 주는 시계는?`) : B(`Which clock shows ${h}:00?`, `${h}시를 보여 주는 시계는?`),
+        askSay: B(`${scene ? scene[1].en + ' ' : ''}Which clock shows ${h} o'clock?`, `${scene ? scene[1].ko + ' ' : ''}${h}시를 보여 주는 시계는 어느 것일까요?`),
+        show: pic + `<span class="num bignum">${h}:00</span>`, opts: clockNear(h, 3).map(v => ({ html: clockSvg(v), ok: v === h })), cls: 'shapes', after: B(`It is ${h} o'clock.`, `${h}시예요.`), vocab: `${h} o'clock` });
+      return;
+    }
     quiz(this, {
-      ask: B('What time does the clock show?', '시계가 가리키는 시각은?'), show: clockSvg(h),
-      opts: [...set].map(v => ({ html: `<span class="num eq">${v}:00</span>`, ok: v === h })), cls: 'shapes', after: B(`It is ${h} o'clock.`, `${h}시예요.`), vocab: `${h} o'clock`
+      ask: scene ? B(`${scene[1].en} What time is it?`, `${scene[1].ko} 몇 시일까요?`) : B('What time does the clock show?', '시계가 가리키는 시각은?'), show: pic + clockSvg(h),
+      opts: clockNear(h, 3).map(v => ({ html: clockDigi(v), ok: v === h })), cls: 'shapes', after: B(`It is ${h} o'clock.`, `${h}시예요.`), vocab: `${h} o'clock`
     });
   }
 });
@@ -209,12 +261,16 @@ registerGame({
 });
 
 // ---------- 7. Ending sounds ----------
+const END_WORDS = [...CVC.map(w => [w[0], w[1]]), ...'rat 🐀,map 🗺️,bug 🐛,jet ✈️,van 🚐,can 🥫,net 🥅,web 🕸️,ant 🐜,log 🪵,nut 🥜,pot 🍲,mug ☕,pan 🍳,bag 👜,leg 🦵,lip 👄,cap 🧢,tub 🛁,cab 🚕,ram 🐏,kid 🧒,car 🚗,owl 🦉,bell 🔔,gem 💎,ball ⚽,egg 🥚,sock 🧦,duck 🦆,rock 🪨,frog 🐸,crab 🦀,drum 🥁,flag 🚩,star ⭐,moon 🌙,bird 🐦,bear 🐻,goat 🐐,boat ⛵,coat 🧥,nest 🪺,tent ⛺,gift 🎁,hand ✋,sled 🛷,worm 🪱,arm 💪,seal 🦭,lion 🦁,corn 🌽,train 🚂,snail 🐌,jeep 🚙,soap 🧼,sheep 🐑,milk 🥛,bread 🍞,cloud ☁️'.split(',').map(x => x.split(' '))];
 registerGame({
   id: 'endsound', subject: 'read', icon: '🔚', title: B('Last Sound', '끝소리 찾기'), sub: B('cat ends with t', 'cat은 t로 끝나요'),
   area: AREA_READ('Phonemic awareness'),
   play() {
     if(lvl('endsound')===2){const words=['cat','hat','bat','mat','dog','log','fog','pig','wig','sun','run','fan','pen','hen','bus','gas','cup','map','cap','bed','red','mud','duck','back','rock'].map(w=>[w]),w=pick(words),last=w[0].slice(-1),good=pick(words.filter(x=>x!==w&&x[0].endsWith(last))),wrong=shuffle(words.filter(x=>!x[0].endsWith(last))).slice(0,2);quiz(this,{ask:B(`Which word ends like ${w[0]}?`,`${w[0]}와 끝소리가 같은 낱말은?`),askExtra:{t:w[0],lang:'en-US'},opts:[good,...wrong].map(x=>({html:`<span class="word">${x[0]}</span>`,ok:x===good})),cls:'words'});return;}
-    const w = pick(CVC), last = w[0][w[0].length - 1], ds = others(ALPHA.filter(c => c !== last), '', lvl('endsound') === 2 ? 3 : 2);
+    // L1 bank 11-20 (i-Ready K practice): 72 picture words whose last letter is the last sound (no silent e, sh/ch/ng or y).
+    // Wrong letters: the word's FIRST letter (the usual first/last mix-up) and one consonant not in the word.
+    const w = pick(END_WORDS.filter(x => x[0][0] !== x[0][x[0].length - 1])), last = w[0][w[0].length - 1], first = w[0][0];
+    const ds = [first, pick('bdfgklmnprst'.split('').filter(c => !w[0].includes(c)))];
     quiz(this, {
       ask: B(`Which letter does "${w[0]}" end with?`, `"${w[0]}"는 어떤 글자로 끝날까요?`), askSay: B(`Which letter does the word end with?`, `이 단어는 어떤 글자로 끝날까요?`), askExtra: { t: w[0], lang: 'en-US' },
       show: `<div class="bigword"><span class="emo">${w[1]}</span> ${w[0]}</div>`, opts: [last, ...ds].map(c => ({ html: `<span class="num">${c}</span>`, ok: c === last })), cls: 'shapes',

@@ -42,7 +42,7 @@ reg('addsub3','Calculation Strategies','여러 방법으로 계산하기','3.PAR
 });
 reg('barstory3','Bar Stories','막대 그림 문제','3.PAR.2.2',lv=>{
  if(lv===2){const a=10+rnd(80),b=10+rnd(80),sent=1+rnd(9);return q(B(`A shelf has ${a} books, a cart has ${b}, and ${sent} are lent out. How many remain?`,`선반에 ${a}권, 수레에 ${b}권이 있어요. ${sent}권을 빌려주면 모두 몇 권이 남나요?`),eq(`${a} + ${b} − ?`),a+b-sent,[a+b,a+b+sent]);}
- const a=10+rnd(lv===1?390:4490),b=10+rnd(lv===1?390:4490),t=a+b,m=rnd(3),ans=[a,b,t][m],v=[a,b,t].map((n,i)=>i===m?'n':n);
+ const a=10+rnd(lv===1?390:4490),b0=10+rnd(lv===1?390:4490),b=b0===a?b0+1:b0/* Q1: equal parts show the answer */,t=a+b,m=rnd(3),ans=[a,b,t][m],v=[a,b,t].map((n,i)=>i===m?'n':n);
  const asks=[B(`Of ${t} books, ${b} are on a cart and the rest are on a shelf. How many on the shelf?`,`책 ${t}권 중 ${b}권은 수레에, 나머지는 선반에 있어요. 선반에는 몇 권일까요?`),B(`A shelf has ${a} books, and more arrive to make ${t}. How many arrived?`,`선반에 책 ${a}권이 있었는데 더 들어와서 ${t}권이 되었어요. 더 들어온 책은 몇 권일까요?`),B(`A shelf has ${a} books and a cart has ${b}. How many altogether?`,`선반에 책 ${a}권, 수레에 ${b}권이 있어요. 모두 몇 권일까요?`)];
  return q(asks[m],panel(`<div class="g3-bar"><span style="flex:${a}">${v[0]}</span><span style="flex:${b}">${v[1]}</span></div><div>${v[2]}</div>`),ans,[ans+10,ans+100],B(`${a} + ${b} = ${t}`,`${a} + ${b} = ${t}`));
 });

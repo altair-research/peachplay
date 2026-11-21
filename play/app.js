@@ -16,6 +16,7 @@ function home() {
   window.LearnLog.leave();
   document.body.classList.remove('pk-playing'); SESSION.pkMixed=false;
   SESSION.review = null; NEXT_TOK++;
+  if (window.IReadyK && window.IReadyK.takeReturn()) { $('#langBtn').textContent = T().switchTo; renderNav(); return window.IReadyK.open(); }
   $('#langBtn').textContent = T().switchTo; renderNav(); if (typeof renderProfBtn === 'function') renderProfBtn();
   document.documentElement.lang = S.lang;
   if (kidGrade() === 'P') {
@@ -45,7 +46,8 @@ function home() {
     <div class="hero home-hero">${PEACH_SVG('happy')}<div class="bubble">${T().heroHi}<button class="home-say" id="helloSay" aria-label="${T().listen}">🔊</button></div></div>
     <h1 class="sr-only">${T().app}</h1>
     <div class="tag sr-only">${T().tagline}</div>
-    ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}
+    <div class="irk-pair">${window.IReadyK ? window.IReadyK.homeHtml() : ''}
+    ${continueHtml() || `<div class="controw home-primary"><button class="big cont" id="primarySurprise"><span class="gi">🎲</span>${T().surprise}</button></div>`}</div>
     ${window.Today ? window.Today.homeHtml() : ''}
     <div id="subjtiles">${SUBJECT_GROUPS.map(group => `<section class="subject-group" data-group="${group.id}" aria-labelledby="group-${group.id}"><h2 id="group-${group.id}">${shellIcon(group.id)} ${T().subjectGroups[group.id]}<button class="home-say group-say" data-say-group="${group.id}" aria-label="${T().listen}: ${T().subjectGroups[group.id]}">🔊</button></h2>${group.id === 'think' ? `<p class="group-description">${T().thinkDescription}</p>` : ''}<div class="menu home-subjects">${group.subjects.filter(sub => visibleGames().some(g => g.subject === sub)).map(subjTile).join('')}</div></section>`).join('')}</div>
     ${(S.review || []).some(x => x.id !== 'blockpuzzle' && gameById(x.id) && (kidGrade() === 'P' ? visibleGames().includes(gameById(x.id)) && !gameById(x.id).pkOpen : gradeOf(gameById(x.id)) !== 'P')) || (window.Spacing && window.Spacing.dueCount() > 0) ? `<div class="controw"><button class="big read" id="reviewStart"><span class="gi">🔁</span>${T().reviewTitle}<small>${kidGrade() === 'P' ? T().prekReview : T().reviewSub}</small></button></div>` : ''}
@@ -75,6 +77,7 @@ function home() {
   wireGames(); $$('.stile').forEach(b => b.onclick = () => subjectScreen(b.dataset.sub));
   if ($('#reviewStart')) $('#reviewStart').onclick = () => (window.Spacing && kidGrade() !== 'P' ? window.Spacing.start() : startReview());
   if (window.Today) window.Today.bind();
+  if (window.IReadyK) window.IReadyK.bind();
   $('#gsearch').oninput = (e) => {
     const q = e.target.value.trim().toLowerCase(), box = $('#gresults');
     if (!q) { box.innerHTML = ''; $('#subjtiles').style.display = ''; return; }

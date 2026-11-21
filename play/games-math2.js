@@ -16,29 +16,102 @@
 
 const HEAVY_PAIRS = [
   [['🐘', B('elephant', '코끼리')], ['🐭', B('mouse', '쥐')]], [['🚗', B('car', '자동차')], ['🚲', B('bicycle', '자전거')]],
-  [['🐋', B('whale', '고래')], ['🐟', B('fish', '물고기')]], [['🐻', B('bear', '곰')], ['🐦', B('bird', '새')]]
+  [['🐋', B('whale', '고래')], ['🐟', B('fish', '물고기')]], [['🐻', B('bear', '곰')], ['🐦', B('bird', '새')]],
+  // 2026-11-20 (i-Ready K practice, more questions): familiar pairs where one is clearly much heavier.
+  [['🍉', B('watermelon', '수박')], ['🍓', B('strawberry', '딸기')]], [['🐄', B('cow', '소')], ['🐥', B('chick', '병아리')]],
+  [['🪨', B('rock', '바위')], ['🪶', B('feather', '깃털')]], [['🎃', B('pumpkin', '호박')], ['🍇', B('grapes', '포도')]],
+  [['🚚', B('truck', '트럭')], ['🧸', B('teddy bear', '곰 인형')]], [['🐎', B('horse', '말')], ['🐇', B('rabbit', '토끼')]],
+  [['🦛', B('hippo', '하마')], ['🐸', B('frog', '개구리')]], [['🚌', B('bus', '버스')], ['🛴', B('scooter', '킥보드')]],
+  [['🐊', B('alligator', '악어')], ['🦋', B('butterfly', '나비')]], [['🍍', B('pineapple', '파인애플')], ['🍒', B('cherry', '체리')]],
+  [['🛋️', B('sofa', '소파')], ['📕', B('book', '책')]], [['🐢', B('turtle', '거북')], ['🐜', B('ant', '개미')]]
 ];
+// L2: three objects with clear steps from heaviest to lightest.
+const HEAVY_THREES = [
+  [['🐘', B('elephant', '코끼리')], ['🐕', B('dog', '개')], ['🐭', B('mouse', '쥐')]],
+  [['🚌', B('bus', '버스')], ['🚲', B('bicycle', '자전거')], ['⚽', B('ball', '공')]],
+  [['🍉', B('watermelon', '수박')], ['🍎', B('apple', '사과')], ['🍒', B('cherry', '체리')]],
+  [['🐄', B('cow', '소')], ['🐈', B('cat', '고양이')], ['🐥', B('chick', '병아리')]],
+  [['🐋', B('whale', '고래')], ['🐬', B('dolphin', '돌고래')], ['🐟', B('fish', '물고기')]],
+  [['🐻', B('bear', '곰')], ['🐇', B('rabbit', '토끼')], ['🐜', B('ant', '개미')]],
+  [['🪨', B('rock', '바위')], ['🧸', B('teddy bear', '곰 인형')], ['🪶', B('feather', '깃털')]],
+  [['🎃', B('pumpkin', '호박')], ['🍊', B('orange', '오렌지')], ['🍇', B('grapes', '포도')]]
+];
+// L2 balance pictures: things of about the same size, so the tilt of the scale (not what the child already knows) shows the answer.
+const SCALE_PAIRS = [
+  [['🎁', B('gift', '선물')], ['📦', B('box', '상자')]], [['🍎', B('apple', '사과')], ['🍊', B('orange', '오렌지')]],
+  [['🧸', B('teddy bear', '곰 인형')], ['⚽', B('soccer ball', '축구공')]], [['👟', B('shoe', '신발')], ['🎒', B('bag', '가방')]],
+  [['📕', B('book', '책')], ['🧃', B('juice box', '주스 팩')]], [['🍐', B('pear', '배')], ['🍋', B('lemon', '레몬')]],
+  [['🧁', B('cupcake', '컵케이크')], ['🍩', B('donut', '도넛')]], [['🥥', B('coconut', '코코넛')], ['🥭', B('mango', '망고')]]
+];
+const kJosa = (w, withB, noB) => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? withB : noB; };
+const LEN_STEPS = [60, 90, 120, 150, 180, 210, 240];
+// Length pictures: plain bars (first version), pencils, snakes, ropes. All options in one question are the same kind of thing.
+const LEN_THEMES = {
+  bar: (v, c) => `<div class="bar" style="width:${v}px;background:${c}"></div>`,
+  pencil: (v, c) => `<svg viewBox="0 0 ${v} 26" style="display:block;width:${v}px;height:26px;margin:6px 0"><rect x="0" y="3" width="12" height="20" rx="3" fill="#f4a6b7"/><rect x="12" y="3" width="${v - 34}" height="20" fill="${c}"/><polygon points="${v - 22},3 ${v},13 ${v - 22},23" fill="#f3d2a2"/><polygon points="${v - 7},10 ${v},13 ${v - 7},16" fill="#333"/></svg>`,
+  snake: (v) => `<svg viewBox="0 0 ${v} 26" style="display:block;width:${v}px;height:26px;margin:6px 0"><rect x="0" y="5" width="${v}" height="16" rx="8" fill="#5cb85c"/><circle cx="${v - 8}" cy="11" r="2.5" fill="#222"/></svg>`,
+  rope: (v) => `<svg viewBox="0 0 ${v} 26" style="display:block;width:${v}px;height:26px;margin:6px 0"><rect x="0" y="8" width="${v}" height="10" rx="5" fill="#c68b4e"/><path d="${Array.from({ length: Math.floor(v / 12) }, (_, i) => `M${i * 12 + 4} 8l6 10`).join('')}" stroke="#8a5a2b" stroke-width="2"/></svg>`
+};
+// Height pictures: something standing on one ground line (stem, pole, string, stick) with its top.
+const TALL_THEMES = { flower: ['🌻', '#3a9d23', 5], flag: ['🚩', '#8d99ae', 4], balloon: ['🎈', '#8d99ae', 1.5], lollipop: ['🍭', '#d9cfb8', 4] };
+const tallSvg = (theme, h) => { const [top, col, w] = TALL_THEMES[theme]; return `<svg viewBox="0 0 60 210" style="display:block;height:clamp(96px,21dvh,170px);width:auto"><line x1="0" y1="208" x2="60" y2="208" stroke="#7a5230" stroke-width="4"/><rect x="${30 - w / 2}" y="${206 - h}" width="${w}" height="${h}" fill="${col}"/><text x="30" y="${216 - h}" font-size="30" text-anchor="middle">${top}</text></svg>`; };
+const scaleSvg = (l, r, leftDown) => { const dy = leftDown ? 14 : -14; return `<svg viewBox="0 0 220 120" style="display:block;width:min(70vw,260px);height:auto;margin:0 auto"><polygon points="100,116 120,116 110,58" fill="#8d99ae"/><line x1="30" y1="${58 + dy}" x2="190" y2="${58 - dy}" stroke="#435269" stroke-width="5" stroke-linecap="round"/><circle cx="110" cy="58" r="5" fill="#435269"/><path d="M8 ${60 + dy}h44l-6 10h-32z" fill="#cfd8e3" stroke="#435269" stroke-width="2"/><path d="M168 ${60 - dy}h44l-6 10h-32z" fill="#cfd8e3" stroke="#435269" stroke-width="2"/><text x="30" y="${57 + dy}" font-size="34" text-anchor="middle">${l}</text><text x="190" y="${57 - dy}" font-size="34" text-anchor="middle">${r}</text></svg>`; };
+const emoOpt = (x, ok) => ({ html: `<span class="emo">${x[0]}</span>`, label: x[1], ok });
 registerGame({
   id: 'measure', subject: 'math', icon: '📏', title: B('Longer or Shorter?', '더 길까? 더 짧을까?'), sub: B('Length and weight', '길이와 무게'),
   area: AREA_MATH('Measurement'),
   play() {
-    const lv = lvl('measure');
-    if (rnd(3) === 0) {                                          // heavier / lighter
+    const lv = lvl('measure'), kind = pick(lv === 1 ? ['heavy', 'length', 'length', 'tall'] : ['heavy3', 'scale', 'length', 'length', 'tall']);
+    if (kind === 'heavy') {                                          // heavier / lighter
       const pr = pick(HEAVY_PAIRS), heavy = rnd(2) === 0;
       quiz(this, {
         ask: heavy ? B('Which one is HEAVIER?', '어느 것이 더 무거울까요?') : B('Which one is LIGHTER?', '어느 것이 더 가벼울까요?'),
-        opts: [{ html: `<span class="emo">${pr[0][0]}</span>`, label: pr[0][1], ok: heavy }, { html: `<span class="emo">${pr[1][0]}</span>`, label: pr[1][1], ok: !heavy }], cls: 'groups',
-        after: B(`The ${pr[0][1].en} is heavier.`, `${pr[0][1].ko}가 더 무거워요.`), vocab: heavy ? 'heavier' : 'lighter'
+        opts: [emoOpt(pr[0], heavy), emoOpt(pr[1], !heavy)], cls: 'groups',
+        after: B(`The ${pr[0][1].en} is heavier.`, `${pr[0][1].ko}${kJosa(pr[0][1].ko, '이', '가')} 더 무거워요.`), vocab: heavy ? 'heavier' : 'lighter'
       });
       return;
     }
-    const n = lv === 1 ? 2 : 3, gap = lv === 1 ? 50 : 28, longer = rnd(2) === 0;
-    let ws; do { ws = Array.from({ length: n }, () => 60 + rnd(181)); } while ([...ws].sort((a, b) => a - b).some((v, i, a) => i && v - a[i - 1] < gap));
-    const target = longer ? Math.max(...ws) : Math.min(...ws), cols = shuffle(['#ef476f', '#118ab2', '#06d6a0', '#ffb703']);
+    if (kind === 'heavy3') {                                         // L2: compare three at once
+      const tr = pick(HEAVY_THREES), heavy = rnd(2) === 0, right = heavy ? tr[0] : tr[2];
+      quiz(this, {
+        ask: heavy ? B('Which one is the HEAVIEST?', '어느 것이 가장 무거울까요?') : B('Which one is the LIGHTEST?', '어느 것이 가장 가벼울까요?'),
+        opts: tr.map(x => emoOpt(x, x === right)), cls: 'shapes',
+        after: B(`The ${right[1].en} is the ${heavy ? 'heaviest' : 'lightest'}.`, `${right[1].ko}${kJosa(right[1].ko, '이', '가')} 가장 ${heavy ? '무거워요' : '가벼워요'}.`), vocab: heavy ? 'heaviest' : 'lightest'
+      });
+      return;
+    }
+    if (kind === 'scale') {                                          // L2: read the balance (the lower side is heavier)
+      const pr = shuffle(pick(SCALE_PAIRS)), leftDown = rnd(2) === 0, heavy = rnd(2) === 0;
+      const heavier = leftDown ? pr[0] : pr[1], right = heavy ? heavier : (heavier === pr[0] ? pr[1] : pr[0]);
+      quiz(this, {
+        ask: heavy ? B('Look at the scale. Which is HEAVIER?', '저울을 봐요. 어느 것이 더 무거울까요?') : B('Look at the scale. Which is LIGHTER?', '저울을 봐요. 어느 것이 더 가벼울까요?'),
+        show: scaleSvg(pr[0][0], pr[1][0], leftDown),
+        opts: pr.map(x => emoOpt(x, x === right)), cls: 'groups',
+        after: B('The heavier side goes down.', '더 무거운 쪽이 아래로 내려가요.'), vocab: heavy ? 'heavier' : 'lighter'
+      });
+      return;
+    }
+    const n = lv === 1 ? 2 : 3, gap = lv === 1 ? 60 : 30, more = rnd(2) === 0;
+    let ws; do { ws = shuffle(LEN_STEPS).slice(0, n); } while ([...ws].sort((a, b) => a - b).some((v, i, a) => i && v - a[i - 1] < gap));
+    const target = more ? Math.max(...ws) : Math.min(...ws), cols = shuffle(['#ef476f', '#118ab2', '#06d6a0', '#ffb703']);
+    // The bar lengths sit in style attributes (ignored by the repeat check), so the key names them.
+    const key = (theme) => `measure|${kind}|${lv}|${theme}|${more}|${[...ws].sort((a, b) => a - b).join(',')}`;
+    if (kind === 'tall') {
+      const theme = pick(Object.keys(TALL_THEMES));
+      quiz(this, {
+        ask: n === 2 ? (more ? B('Which one is TALLER?', '어느 것이 더 키가 클까요?') : B('Which one is SHORTER?', '어느 것이 더 키가 작을까요?'))
+          : (more ? B('Which one is the TALLEST?', '어느 것이 가장 키가 클까요?') : B('Which one is the SHORTEST?', '어느 것이 가장 키가 작을까요?')),
+        opts: ws.map(v => ({ html: tallSvg(theme, v * 0.75), ok: v === target })), cls: 'shapes', itemKey: key(theme),
+        after: more ? B('That one is the tallest!', '이것이 가장 키가 커요!') : B('That one is the shortest!', '이것이 가장 키가 작아요!'), vocab: more ? 'taller' : 'shorter'
+      });
+      return;
+    }
+    const theme = pick(Object.keys(LEN_THEMES));
     quiz(this, {
-      ask: longer ? B('Which one is LONGER?', '어느 것이 더 길까요?') : B('Which one is SHORTER?', '어느 것이 더 짧을까요?'),
-      opts: ws.map((v, i) => ({ html: `<div class="bar" style="width:${v}px;background:${cols[i]}"></div>`, ok: v === target })), cls: 'bars',
-      after: longer ? B('That one is the longest!', '이것이 가장 길어요!') : B('That one is the shortest!', '이것이 가장 짧아요!'), vocab: longer ? 'longer' : 'shorter'
+      ask: n === 2 ? (more ? B('Which one is LONGER?', '어느 것이 더 길까요?') : B('Which one is SHORTER?', '어느 것이 더 짧을까요?'))
+        : (more ? B('Which one is the LONGEST?', '어느 것이 가장 길까요?') : B('Which one is the SHORTEST?', '어느 것이 가장 짧을까요?')),
+      opts: ws.map((v, i) => ({ html: LEN_THEMES[theme](v, cols[i]), ok: v === target })), cls: 'bars', itemKey: key(theme),
+      after: more ? B('That one is the longest!', '이것이 가장 길어요!') : B('That one is the shortest!', '이것이 가장 짧아요!'), vocab: more ? 'longer' : 'shorter'
     });
   }
 });

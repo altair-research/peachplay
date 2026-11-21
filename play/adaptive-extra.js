@@ -450,7 +450,9 @@
   const stepRound = (ask, show, sayText, right, wrongs, after) => ({ ask, show, opts: stepChoices(right, wrongs), cls: 'words', after,
     onRender() { const button = $('.storytext .rd'); if (button) button.onclick = () => say(sayText, 'en-US'); } });
   for (const grade of ['K', '1']) add('adinfo' + grade, grade, B('Read the Steps', '순서 글을 읽어요'), B('Comprehension: Informational Text', '이해: 정보 글'), lv => {
-    const [title, , steps] = pick(grade === '1' ? [...projects, ...kTopicProjects] : projects), text = spoken(steps);
+    // 11-20 (i-Ready K practice): K also reads the kTopicProjects step cards (same picture + two-word format, already K in adinfotopicK).
+    // Drum is left out: "Stretch balloon" is twice as long as its other cards (O2 length).
+    const [title, , steps] = pick([...projects, ...kTopicProjects.filter(x => grade === '1' || x[0] !== 'Drum')]), text = spoken(steps);
     if (grade === '1' && lv === 2) {
       const pair = (a, b) => ({ html: `<span class="word" aria-label="${a[1]}, then ${b[1]}">${a[0]} → ${b[0]}</span>` });
       return { ask: B('Which pair is step 2 → step 3?', '2번 → 3번의 짝은?'), show: stepCards(steps, ['1)', '2)', '3)']),

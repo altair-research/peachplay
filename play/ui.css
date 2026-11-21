@@ -710,3 +710,17 @@ body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
    the reading habit (end of a line → start of the next) without pointing at an answer */
 .bw-page{position:relative}
 .bw-page::after{content:'↵';position:absolute;right:1px;top:50%;transform:translateY(-50%);font-size:clamp(16px,3dvh,24px);font-weight:800;color:#b08968;pointer-events:none;line-height:1}
+
+/* i-Ready K section (11-20) */
+.irk-go{background:linear-gradient(135deg,#4361ee,#4cc9f0);color:#fff}
+.irk-go small{color:#eef6ff}
+.irk-bt{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px}.irk-bt b{white-space:nowrap;font-size:clamp(20px,5.4vw,26px)}.irk-bt small{display:block;margin:0}
+.irk-sub{margin:18px 0 6px;text-align:left}
+.irk-area{background:var(--card,#fff);border-radius:18px;padding:10px 12px 12px;margin:10px 0;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.irk-area h3{display:flex;align-items:center;gap:10px;margin:0 0 6px;text-align:left}
+.irk-ic{font-size:30px;line-height:1}
+.irk-names{display:flex;flex-direction:column;flex:1;min-width:0}
+.irk-names b{font-size:clamp(18px,4.6vw,22px)}
+.irk-names small{font-size:12px;font-weight:500;opacity:.75}
+.irk-dot{margin-right:4px}
+@media (max-height:700px){.irk-pair:has(.irk-home){display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch}.irk-pair:has(.irk-home)>.controw{margin:8px 0 4px;display:flex}.irk-pair:has(.irk-home) .big{flex-direction:column!important;align-items:flex-start;justify-content:center;padding:8px 10px!important;gap:4px!important;font-size:18px}.irk-pair:has(.irk-home) .gi{font-size:24px!important}.irk-pair .irk-bt b{font-size:18px;white-space:normal}.irk-pair .irk-bt small,.irk-pair .cont small{font-size:12px}.irk-pair:has(.irk-home) .cont{font-size:19px!important;white-space:nowrap}body:has(.irk-home) .home-hero{display:none}}

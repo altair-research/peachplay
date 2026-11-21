@@ -1,6 +1,9 @@
 (() => {
   'use strict';
-  const icons = ['🍎','🐟','🌼','🟣'];
+  // Bank 11-20 (i-Ready K practice): same-picture rows plus things that go together one to one (a bunny for each
+  // carrot, a cup for each saucer), so a round of ten rarely shows the same board twice. [top, bottom].
+  const sets = [['🍎','🍎'],['🐟','🐟'],['🌼','🌼'],['🟣','🟣'],['🐰','🥕'],['🐶','🦴'],['🐝','🌼'],['🐵','🍌'],
+    ['🐦','🪺'],['🧒','🎈'],['🐭','🧀'],['🐔','🥚'],['☕','🥄'],['🐱','🐟'],['🐿️','🌰'],['🧦','👟']];
   const choice = (side, equal) => `<svg viewBox="0 0 100 70" aria-hidden="true"><rect x="8" y="8" width="84" height="22" rx="7" fill="${equal || side === 'A' ? '#4d78bd' : '#e2e8ef'}"/><rect x="8" y="40" width="84" height="22" rx="7" fill="${equal || side === 'B' ? '#4d78bd' : '#e2e8ef'}"/><text x="50" y="${equal ? 45 : side==='A'?25:57}" text-anchor="middle" fill="${equal?'#253653':'white'}" font-size="22">${equal?'=':side}</text></svg>`;
   registerGame({
     id:'pair1to1',grade:'K',subject:'math',icon:'🔗',title:B('Pair Them Up','하나씩 짝지어요'),
@@ -8,12 +11,12 @@
     play(){
       const lv=Math.min(2,lvl(this.id));
       const a=lv===1?1+rnd(7):3+rnd(6), b=lv===1?1+rnd(7):3+rnd(6);
-      const icon=icons[(a+b)%icons.length], wideA=rnd(2)===0;
+      const pairSet=pick(sets), wideA=rnd(2)===0;
       const row=(n,side)=>`<div class="pair-group pair-${side}"><span class="pair-label">${side}</span>${Array.from({length:n},(_,i)=>{
         // Stagger L2 targets so 44px touch squares fit even when eight objects are spread narrowly.
         const spread=lv===1?Math.max(a,b)*44:((side==='A')===wideA?260:180),step=spread/Math.max(1,(lv===1?Math.max(a,b):n)-1);
         const left=lv===1?`calc(50% - ${Math.max(a,b)*22}px + ${i*44+22}px)`:`calc(50% + ${(i-(n-1)/2)*step}px)`;
-        return `<button class="pair-token" data-side="${side}" data-token="${i}" style="left:${left};top:${lv===2?12+(i%2)*44:16}px" aria-label="${side} ${i+1}" aria-pressed="false">${icon}</button>`;
+        return `<button class="pair-token" data-side="${side}" data-token="${i}" style="left:${left};top:${lv===2?12+(i%2)*44:16}px" aria-label="${side} ${i+1}" aria-pressed="false">${pairSet[side==='A'?0:1]}</button>`;
       }).join('')}</div>`;
       quiz(this,{
         ask:B('Which group has more?', '어느 쪽이 더 많아요?'),

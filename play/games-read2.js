@@ -1,14 +1,47 @@
 'use strict';
 (() => {
   'use strict';
-  const words=[['sun','flower','sunflower','🌻'],['rain','bow','rainbow','🌈'],['snow','man','snowman','☃️'],['tooth','brush','toothbrush','🪥'],['cup','cake','cupcake','🧁'],['foot','ball','football','🏈'],['pop','corn','popcorn','🍿'],['pan','cake','pancake','🥞'],['butter','fly','butterfly','🦋'],['star','fish','starfish','⭐'],['mail','box','mailbox','📫'],['door','bell','doorbell','🔔']];
-  const partPicture={sun:'☀️',flower:'🌼',rain:'🌧️',bow:'🎀',snow:'❄️',man:'👨',tooth:'🦷',brush:'🪥',cup:'🥤',cake:'🎂',foot:'🦶',ball:'⚽',pop:'💥',corn:'🌽',pan:'🍳',butter:'🧈',fly:'🪰',star:'⭐',fish:'🐟',mail:'✉️',box:'📦',door:'🚪',bell:'🔔'};
+  // 11-20 (i-Ready K practice, parent: many rounds without repeats): 45 compound words (was 12) plus 20 two-part words to
+  // blend (kit + ten). Level 1: join two word sounds or two word parts. Level 2: take away the first OR the last word; the
+  // part that was taken away is one of the wrong pictures (the mistake children really make), so the child has to listen.
+  // Entry: [first, second, whole, picture]. Words with no picture for a part (raindrop, backpack...) appear in level 1 only.
+  const words=[['sun','flower','sunflower','🌻'],['rain','bow','rainbow','🌈'],['snow','man','snowman','☃️'],['tooth','brush','toothbrush','🪥'],['cup','cake','cupcake','🧁'],['foot','ball','football','🏈'],['pop','corn','popcorn','🍿'],['pan','cake','pancake','🥞'],['butter','fly','butterfly','🦋'],['star','fish','starfish','⭐'],['mail','box','mailbox','📫'],['door','bell','doorbell','🔔'],
+    ['fire','truck','fire truck','🚒'],['cow','boy','cowboy','🤠'],['sun','glasses','sunglasses','🕶️'],['hot','dog','hot dog','🌭'],['straw','berry','strawberry','🍓'],['water','melon','watermelon','🍉'],['pine','apple','pineapple','🍍'],['sea','shell','seashell','🐚'],['lady','bug','ladybug','🐞'],['sail','boat','sailboat','⛵'],['air','plane','airplane','✈️'],['base','ball','baseball','⚾'],
+    ['basket','ball','basketball','🏀'],['wheel','chair','wheelchair','🦽'],['hand','bag','handbag','👜'],['pea','nut','peanut','🥜'],['head','phones','headphones','🎧'],['fire','man','fireman','🧑‍🚒'],['tea','cup','teacup','☕'],['egg','plant','eggplant','🍆'],['note','book','notebook','📓'],['flash','light','flashlight','🔦'],['tool','box','toolbox','🧰'],['key','board','keyboard','⌨️'],
+    ['rain','drop','raindrop','💧'],['sun','rise','sunrise','🌅'],['snow','flake','snowflake','❄️'],['foot','print','footprint','👣'],['back','pack','backpack','🎒'],['skate','board','skateboard','🛹'],['fire','works','fireworks','🎆'],['lip','stick','lipstick','💄'],['tea','pot','teapot','🫖']];
+  const partPicture={sun:'☀️',flower:'🌼',rain:'🌧️',bow:'🎀',snow:'❄️',man:'👨',tooth:'🦷',brush:'🪥',cup:'🥤',cake:'🎂',foot:'🦶',ball:'⚽',pop:'💥',corn:'🌽',pan:'🍳',butter:'🧈',fly:'🪰',star:'⭐',fish:'🐟',mail:'✉️',box:'📦',door:'🚪',bell:'🔔',
+    fire:'🔥',truck:'🚚',cow:'🐄',boy:'👦',glasses:'👓',dog:'🐶',berry:'🫐',water:'💧',melon:'🍈',pine:'🌲',apple:'🍎',sea:'🌊',shell:'🐚',lady:'👩',bug:'🐛',sail:'⛵',boat:'🚤',air:'💨',plane:'🛩️',basket:'🧺',wheel:'🛞',chair:'🪑',hand:'✋',bag:'🛍️',nut:'🌰',phones:'📱',tea:'🍵',egg:'🥚',plant:'🪴',book:'📘',light:'💡',tool:'🔧',key:'🔑'};
+  // Two-part words that are not compounds: [part 1, part 2, word, picture, how part 1 is said, how part 2 is said].
+  const sylWords=[['kit','ten','kitten','🐈'],['pump','kin','pumpkin','🎃'],['ro','bot','robot','🤖','row'],['ba','by','baby','👶','bay','bee'],['can','dy','candy','🍬','can','dee'],['ta','co','taco','🌮','tah','koe'],['pan','da','panda','🐼','pan','duh'],['rock','et','rocket','🚀','rock','it'],['cook','ie','cookie','🍪','cook','ee'],['cac','tus','cactus','🌵','cack','tuss'],
+    ['tur','key','turkey','🦃','ter'],['mon','key','monkey','🐵','mun'],['pen','guin','penguin','🐧','pen','gwin'],['drag','on','dragon','🐉','drag','un'],['bal','loon','balloon','🎈','buh'],['ap','ple','apple','🍎','ap','pull'],['lem','on','lemon','🍋','lem','un'],['car','rot','carrot','🥕','care','ut']];
   const wholePicture=x=>x[2]==='starfish'?'<svg viewBox="0 0 80 80" width="44" height="44" aria-hidden="true"><path d="M40 4 49 29 76 28 55 46 64 74 40 57 16 74 25 46 4 28 31 29Z" fill="#df8c56" stroke="#8c4933" stroke-width="3"/><g fill="#ffdda3"><circle cx="40" cy="38" r="3"/><circle cx="40" cy="22" r="2"/><circle cx="26" cy="35" r="2"/><circle cx="54" cy="35" r="2"/><circle cx="30" cy="55" r="2"/><circle cx="50" cy="55" r="2"/></g></svg>':x[3];
+  const emo=p=>`<span class="emo" style="font-size:clamp(28px,5dvh,44px)" aria-hidden="true">${p}</span>`;
   registerGame({id:'compound',grade:'K',subject:'read',icon:'🧁',title:B('Word Sound Partners','낱말 소리 합치기'),sub:B('Join and take apart spoken words','말소리를 합치고 나눠요'),area:B('Reading · Compound words','읽기 · 합성어'),play(){
-    const t=pick(words),lv=lvl('compound'),right=lv===1?t[2]:t[1],ds=shuffle(words.filter(x=>x!==t&&(lv===1||x[1]!==right))).filter((x,i,a)=>lv===1||a.findIndex(y=>y[1]===x[1])===i).slice(0,lv===1?2:3);
-    const spoken=lv===1?`${t[0]}. ${t[1]}.`:`Say ${t[2]} without ${t[0]}.`;
-    quiz(this,{ask:lv===1?B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'):B('Listen and take away the first word.','듣고 앞 낱말 소리를 빼요.'),askExtra:{t:spoken,lang:'en-US'},show:`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${lv===1?`${t[0]} + ${t[1]}`:`${t[2]} − ${t[0]}`}</div>`,opts:[t,...ds].map((x,i)=>({html:`<span class="emo" style="font-size:clamp(28px,5dvh,44px)" aria-hidden="true">${lv===1?wholePicture(x):partPicture[x[1]]}</span><span class="word" lang="en">${lv===1?x[2]:x[1]}</span>`,ok:i===0})),cls:'words',vocab:right,
-      onRender(){const rb=$('#spo');if(rb)rb.onclick=()=>$$('.opt .word').forEach((e,i)=>say(e.textContent,'en-US',i>0));},after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
+    const lv=lvl('compound'),wordOpt=(w,p,ok)=>({html:`${emo(p)}<span class="word" lang="en">${w}</span>`,ok});
+    const readOpts=()=>{const rb=$('#spo');if(rb)rb.onclick=()=>$$('.opt .word').forEach((e,i)=>say(e.textContent,'en-US',i>0));};
+    const show=s=>`<div style="font-size:clamp(22px,4dvh,30px)" lang="en">${s}</div>`;
+    if(lv===1){
+      if(Math.random()<0.3){
+        const t=pick(sylWords),ds=others(sylWords,t,2);
+        return quiz(this,{ask:B('Listen and join the two word parts.','듣고 두 낱말 조각을 합쳐요.'),askExtra:{t:`${t[4]||t[0]}. ${t[5]||t[1]}.`,lang:'en-US'},show:show(`${t[0]} + ${t[1]}`),opts:[t,...ds].map((x,i)=>wordOpt(x[2],x[3],i===0)),cls:'words',vocab:t[2],
+          onRender:readOpts,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
+      }
+      const t=pick(words),ds=others(words.filter(x=>x[3]!==t[3]),t,2);
+      return quiz(this,{ask:B('Listen and join the two word sounds.','듣고 두 낱말 소리를 합쳐요.'),askExtra:{t:`${t[0]}. ${t[1]}.`,lang:'en-US'},show:show(`${t[0]} + ${t[1]}`),opts:[t,...ds].map((x,i)=>wordOpt(x[2],wholePicture(x),i===0)),cls:'words',vocab:t[2],
+        onRender:readOpts,after:B(`${t[0]} + ${t[1]} = ${t[2]}`,`${t[0]} + ${t[1]} = ${t[2]}`)});
+    }
+    // Level 2: take away the first word (answer = last part) or the last word (answer = first part).
+    const first=Math.random()<0.5,keep=first?1:0,drop=first?0:1;
+    const t=pick(words.filter(x=>partPicture[x[keep]]&&!x[2].includes(' '))),right=t[keep];
+    const opts=[[right,partPicture[right]]];
+    if(partPicture[t[drop]]&&partPicture[t[drop]]!==partPicture[right])opts.push([t[drop],partPicture[t[drop]]]);   // the part taken away
+    for(const x of shuffle(words.filter(x=>x!==t&&partPicture[x[keep]]))){
+      if(opts.length>=4)break;
+      if(!opts.some(o=>o[0]===x[keep]||o[1]===partPicture[x[keep]]))opts.push([x[keep],partPicture[x[keep]]]);
+    }
+    quiz(this,{ask:first?B('Listen and take away the first word.','듣고 앞 낱말 소리를 빼요.'):B('Listen and take away the last word.','듣고 뒤 낱말 소리를 빼요.'),askExtra:{t:`Say ${t[2]} without ${t[drop]}.`,lang:'en-US'},
+      show:show(`${t[2]} − ${t[drop]}`),opts:opts.map((o,i)=>wordOpt(o[0],o[1],i===0)),cls:'words',vocab:right,
+      onRender:readOpts,after:B(`${t[2]} − ${t[drop]} = ${right}`,`${t[2]} − ${t[drop]} = ${right}`)});
   }});
   // 11-14 (P-bookway98, user panel 11-13): rebuilt as a picture book. The old page asked in text only and its level 1 arrow
   // pointed at the answer box. Now a page of picture words: the words already read are faded with ✓, 👆 rests on the last one read,
@@ -58,12 +91,43 @@
 // Reading extension: read & match, sight words, syllables, letter memory.
 // Uses CVC / BIGGER word lists from games-write.js.
 
-// ---------- Read and match (decode a word, pick the picture) ----------
+/// ---------- Read and match (decode a word, pick the picture) ----------
+// 11-20 (i-Ready K practice, parent: many rounds without repeats): more words and a second kind of question.
+// Kind 1: read the word, pick its picture. Kind 2: look at the picture, pick its written word (no 🔉 for the words: reading is the goal).
+// Level 1: short-vowel CVC words, wrong choices are other CVC words. Level 2: + blends, digraphs and silent-e words, and the wrong
+// choices are look-alike words (one letter changed, same start or same end: cat/hat/cap), so every letter has to be read.
+const RM_CVC = [['map', '🗺️', '지도'], ['nut', '🥜', '견과'], ['hut', '🛖', '오두막'], ['jet', '✈️', '제트기'], ['van', '🚐', '승합차'], ['web', '🕸️', '거미줄'], ['cap', '🧢', '야구 모자'],
+  ['bug', '🐛', '벌레'], ['rat', '🐀', '쥐'], ['fan', '🪭', '부채'], ['bag', '👜', '가방'], ['box', '📦', '상자'], ['six', '6️⃣', '여섯'], ['ten', '🔟', '열'], ['pin', '📌', '핀'], ['lip', '👄', '입술'],
+  ['leg', '🦵', '다리'], ['pan', '🍳', '프라이팬'], ['can', '🥫', '통조림'], ['tub', '🛁', '욕조'], ['mug', '☕', '머그잔'], ['red', '🔴', '빨강'], ['ram', '🐏', '숫양'], ['dad', '👨', '아빠'],
+  ['mom', '👩', '엄마'], ['sad', '😢', '슬픈'], ['mad', '😠', '화난'], ['hug', '🫂', '안아 주기'], ['log', '🪵', '통나무'], ['gas', '⛽', '기름']].map(x => [x[0], x[1], B(x[0], x[2])]);
+const RM_BIG = [['crab', '🦀', '게'], ['drum', '🥁', '북'], ['flag', '🚩', '깃발'], ['sled', '🛷', '썰매'], ['sock', '🧦', '양말'], ['ring', '💍', '반지'], ['king', '🤴', '왕'], ['hand', '✋', '손'],
+  ['tent', '⛺', '텐트'], ['truck', '🚚', '트럭'], ['chick', '🐤', '병아리'], ['shell', '🐚', '조개껍데기'], ['bell', '🔔', '종'], ['kite', '🪁', '연'], ['bone', '🦴', '뼈'], ['goat', '🐐', '염소'],
+  ['seal', '🦭', '물개'], ['leaf', '🍃', '잎'], ['train', '🚆', '기차'], ['snake', '🐍', '뱀'], ['nose', '👃', '코'], ['bike', '🚲', '자전거'], ['five', '5️⃣', '다섯'], ['nine', '9️⃣', '아홉'],
+  ['whale', '🐳', '고래'], ['sheep', '🐑', '양'], ['bee', '🐝', '벌'], ['corn', '🌽', '옥수수'], ['fork', '🍴', '포크'], ['shark', '🦈', '상어'], ['car', '🚗', '자동차'], ['clock', '⏰', '시계'], ['rock', '🪨', '돌']].map(x => [x[0], x[1], B(x[0], x[2])]);
+// A picture the target word could also name is never a wrong choice (a cap is a hat, a chick is a bird, a flag is red).
+const RM_CLASH = [['hat', 'cap'], ['cup', 'mug'], ['bus', 'van'], ['bird', 'chick'], ['fish', 'shark'], ['fish', 'whale'], ['red', 'flag'], ['ram', 'sheep'], ['dog', 'dad']];
+const rmClash = (a, b) => RM_CLASH.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+const rmLike = (a, b) => {   // look-alike score: same letters in the same places, same start, same end
+  let s = 0; for (let i = 0; i < Math.min(a.length, b.length); i++) if (a[i] === b[i]) s++;
+  if (a.length === b.length) s++; if (a.slice(-2) === b.slice(-2)) s++; if (a[0] === b[0]) s++;
+  return s;
+};
 registerGame({
   id: 'readmatch', subject: 'read', icon: '👀', title: B('Read & Match', '읽고 짝 맞추기'), sub: B('Read the word, find the picture', '단어를 읽고 그림 찾기'),
   area: AREA_READ('Decoding'),
   play() {
-    const pool = lvl('readmatch') === 1 ? CVC : [...CVC, ...BIGGER], t = pick(pool), ds = others(pool, t, 2);
+    const lv = lvl('readmatch'), pool = lv === 1 ? [...CVC, ...RM_CVC] : [...CVC, ...RM_CVC, ...BIGGER, ...RM_BIG], t = pick(pool);
+    const fair = pool.filter(w => w[0] !== t[0] && w[1] !== t[1] && !rmClash(w[0], t[0]));
+    const ds = lv === 1 ? others(fair, null, 2) : shuffle(fair).sort((a, b) => rmLike(b[0], t[0]) - rmLike(a[0], t[0])).slice(0, 5).sort(() => Math.random() - 0.5).slice(0, 2);
+    if (Math.random() < 0.5) {
+      // Picture -> word. The picture has no name tag (that would be the answer).
+      return quiz(this, {
+        ask: B('Look at the picture. Which word is it?', '그림을 보고 맞는 낱말을 골라요.'),
+        show: `<div class="bigword"><span class="emo">${t[1]}</span></div>`,
+        opts: [t, ...ds].map(w => ({ html: `<span class="num" lang="en">${w[0]}</span>`, ok: w === t })), cls: 'shapes', readGoal: 'opts',
+        after: B(`${t[0]}!`, `${t[0]} — ${t[2].ko}!`), vocab: t[0]
+      });
+    }
     const o = (w) => ({ html: `<span class="emo">${w[1]}</span>`, ok: w === t });
     quiz(this, {
       ask: B('Read the word: which picture matches?', '단어를 읽고 어느 그림인지 골라요.'),
@@ -131,6 +195,28 @@ function showSightMap(w, box) {
     if (slots) { const mo = new MutationObserver(() => { if (!slots.isConnected) return mo.disconnect(); if (slots.querySelectorAll('.slot.filled').length === t.length) { mo.disconnect(); showSightMap(t, v.querySelector('.show')); } }); mo.observe(slots, { subtree: true, attributes: true, attributeFilter: ['class'] }); }
   }).observe(v, { childList: true });
 })();
+// 11-20 (i-Ready K practice, parent: many rounds without repeats): 4 picture sentences per school word (level 1 list).
+// The child hears the whole sentence (🔊) and finds the missing word among look-alike words; '_' = the blank. The sentence is
+// heard, so the other words need not be read. Wrong choices never already appear in the sentence (to: "I go _ school" never offers go).
+// [shown, heard]
+const SIGHT_SENT = {
+  a: [['I see _ 🐶.', 'I see a dog.'], ['It is _ 🐝.', 'It is a bee.'], ['I have _ 🎈.', 'I have a balloon.'], ['Look at _ 🐸.', 'Look at a frog.']],
+  no: [['There is _ 🍪 left.', 'There is no cookie left.'], ['I said _.', 'I said no.'], ['_ 🐶 in the house!', 'No dogs in the house!'], ['Oh _, my 🎈!', 'Oh no, my balloon!']],
+  go: [['I _ to 🏫.', 'I go to school.'], ['We _ to the 🏖️.', 'We go to the beach.'], ['We _ in the 🚗.', 'We go in the car.'], ['Ready, set, _! 🏁', 'Ready, set, go!']],
+  to: [['I go _ 🏫.', 'I go to school.'], ['Give the 🎁 _ Mom.', 'Give the gift to Mom.'], ['We walk _ the 🏠.', 'We walk to the house.'], ['I like _ swim. 🏊', 'I like to swim.']],
+  am: [['I _ happy. 😀', 'I am happy.'], ['I _ five. 5️⃣', 'I am five.'], ['I _ hot. 🥵', 'I am hot.'], ['I _ big! 💪', 'I am big!']],
+  I: [['_ see a 🐱.', 'I see a cat.'], ['_ like 🍕.', 'I like pizza.'], ['_ can jump. 🦘', 'I can jump.'], ['_ am sleepy. 😴', 'I am sleepy.']],
+  of: [['A cup _ 🥛.', 'A cup of milk.'], ['A box _ 🖍️.', 'A box of crayons.'], ['A lot _ 🍎.', 'A lot of apples.'], ['A bag _ 🍪.', 'A bag of cookies.']],
+  an: [['I see _ 🐜.', 'I see an ant.'], ['It is _ 🥚.', 'It is an egg.'], ['I ate _ 🍎.', 'I ate an apple.'], ['Look at _ 🐙.', 'Look at an octopus.']],
+  into: [['Jump _ the 🛁.', 'Jump into the bath.'], ['Go _ the 🏠.', 'Go into the house.'], ['The 🐸 hops _ the 🌊.', 'The frog hops into the water.'], ['Put it _ the 📦.', 'Put it into the box.']],
+  said: [['The 🐶 _, "Woof!"', 'The dog said, "Woof!"'], ['The 🐱 _, "Meow!"', 'The cat said, "Meow!"'], ['The 🐮 _, "Moo!"', 'The cow said, "Moo!"'], ['👩 Mom _, "Hi!"', 'Mom said, "Hi!"']],
+  and: [['I like 🍎 _ 🍌.', 'I like apples and bananas.'], ['The 🐶 _ the 🐱 play.', 'The dog and the cat play.'], ['👩 Mom _ I go.', 'Mom and I go.'], ['I see a ☀️ _ a 🌙.', 'I see a sun and a moon.']],
+  is: [['It _ a 🐶.', 'It is a dog.'], ['The ☀️ _ hot.', 'The sun is hot.'], ['My 🐱 _ big.', 'My cat is big.'], ['The 🍦 _ cold.', 'The ice cream is cold.']],
+  so: [['I am _ happy! 😀', 'I am so happy!'], ['It is _ big! 🐘', 'It is so big!'], ['The 🍦 is _ cold!', 'The ice cream is so cold!'], ['You are _ fast! 🏃', 'You are so fast!']],
+  do: [['I can _ it! 💪', 'I can do it!'], ['_ you like 🍕?', 'Do you like pizza?'], ['What _ you see? 👀', 'What do you see?'], ['_ not touch the 🔥!', 'Do not touch the fire!']],
+  my: [['This is _ 🐶.', 'This is my dog.'], ['_ 🎒 is red.', 'My bag is red.'], ['Look at _ 🚲.', 'Look at my bike.'], ['I love _ 👩.', 'I love my mom.']],
+  the: [['Look at _ 🌙.', 'Look at the moon.'], ['I see _ 🐝.', 'I see the bee.'], ['_ 🐱 is big.', 'The cat is big.'], ['Go to _ 🏠.', 'Go to the house.']]
+};
 registerGame({
   id: 'sight', subject: 'read', icon: '👁️', title: B('Sight Words', '자주 보는 단어'), sub: B('said, was, the, you...', 'said, was, the, you...'),
   area: AREA_READ('High-frequency words'),
@@ -144,6 +230,24 @@ registerGame({
       return tileRound(this, {
         ask: B('Listen. Spell it!', '듣고 그 낱말을 글자로 써요.'),
         show: `<button class="say big-say" id="hear" data-sight="${t}" aria-label="${T().listen}">🔊</button>`, target: t.split(''), extra: SIGHT_EXTRA[t].filter(c => !t.includes(c)), speakTiles: false, oneRow: true, after: B(`${t}!`, `${t}!`), vocab: t
+      });
+    }
+    // Level 1 (and level 1 words in level 2 review): most questions are a heard picture sentence with the word missing.
+    if (SIGHT_SENT[t] && Math.random() < (lv === 1 ? 0.75 : 0.5)) {
+      const [shown, heard] = pick(SIGHT_SENT[t]);
+      const inSentence = shown.toLowerCase().split(/[^a-z]+/);
+      const ds2 = shuffle(SIGHT_LOOK[t].filter(w => w !== t && !inSentence.includes(w.toLowerCase()))).slice(0, 2);
+      const blank = '<span aria-hidden="true" style="display:inline-block;min-width:2em;border-bottom:3px solid currentColor">&nbsp;</span>';
+      return quiz(this, {
+        ask: B('Listen. Which word fits?', '듣고 빈칸에 들어갈 낱말을 눌러요.'), askExtra: { t: heard, lang: 'en-US' },
+        show: `<div class="bigword sent" lang="en">${shown.replace('_', blank)}</div><button class="say" id="hear" aria-label="${T().listen}">🔊</button>`,
+        opts: [t, ...ds2].map(w => ({ html: `<span class="num" lang="en">${w}</span>`, ok: w === t })), cls: 'shapes',
+        after: B(heard, heard),
+        onRender() {
+          $('#hear').onclick = () => say(heard, 'en-US');
+          if (S.lang === 'en') { say(heard, 'en-US', true); const sp = $('#sp'), old = sp.onclick; sp.onclick = () => { old(); say(heard, 'en-US', true); }; }
+        },
+        onCorrect() { showSightMap(t, $('.show')); }
       });
     }
     const hear = `<button class="say big-say" id="hear" aria-label="${T().listen}">🔊</button>`;

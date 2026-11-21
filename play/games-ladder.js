@@ -81,6 +81,11 @@
     return `<svg class="ld-pic ld-row" viewBox="0 0 ${Math.max(w, 18)} 20" role="img" aria-label="${label}">${s}</svg>`;
   };
   const card = n => `<span class="ld-card">${n}</span>`;
+  // 11-20 (i-Ready K practice): for adding up to 10, half the pictures use one kind of thing instead of dots, in the same
+  // one-row layout (first group, gap, added group), so a round of ten on a small rung rarely shows the same picture twice.
+  const THINGS = ['🍎', '🐟', '⭐', '🐞', '🎈', '🧁'];
+  const objRow = (n1, n2, e, label) => `<div class="ld-pic ld-obj" role="img" aria-label="${label}" style="height:auto;width:auto;font-size:clamp(22px,min(7vw,6dvh),40px);line-height:1.25;white-space:nowrap">` +
+    `${e.repeat(n1)}${n1 && n2 ? '<span style="display:inline-block;width:.7em"></span>' : ''}${e.repeat(n2)}</div>`;
   const eqLine = (parts, big) => `<div class="ld-eq${big ? ' ld-big' : ''}">${parts.join(' ')}</div>`;
 
   // ---------- one question ----------
@@ -109,7 +114,7 @@
   }
   // mode: 0 dots for everything, 1 start number + dots, 2 numbers only. v: layout/colour variety.
   function show(rung, f, mode, v) {
-    const { a, k } = f, [c1, c2] = COLORS[v % 3], flip = v % 2 === 1, chip = `<div class="ld-chip" aria-hidden="true">🪜 ${rung.chip}</div>`;
+    const { a, k } = f, [c1, c2] = COLORS[v % 3], flip = v % 2 === 1, thing = v >= 6 && rung.op === '+' && a + k <= 10 ? THINGS[v - 6] : null, chip = `<div class="ld-chip" aria-hidden="true">🪜 ${rung.chip}</div>`;
     const sign = rung.op === '-' ? '−' : '+';
     let pic = '', eq;
     if (rung.op === '10') {
@@ -117,10 +122,13 @@
       if (mode < 2) pic = frames(Array.from({ length: a }, () => ({ c: mode ? '#8a96a8' : c1 })), 10, `${a}`, true, mode ? 'ld-mini' : '');
     } else {
       eq = mode === 2 && flip ? ['?', '=', a, sign, k] : [a, sign, k, '=', '?'];
-      if (mode === 0) {
+      if (mode === 0 && thing) pic = objRow(a, k, thing, `${a} ${k}`);
+      else if (mode === 0) {
         const cells = rung.op === '-' ? Array.from({ length: a }, (_, i) => ({ c: c1, x: i >= a - k })) : [...Array(a).fill({ c: c1 }), ...Array(k).fill({ c: c2 })];
         const total = rung.op === '-' ? a : a + k;
         pic = total <= 10 && flip ? (rung.op === '-' ? row(a - k, c1, k, c1, `${a}`, true) : row(a, c1, k, c2, `${a} ${k}`)) : frames(cells, total, `${a} ${k}`);
+      } else if (mode === 1 && thing) {
+        return `<div class="ld-show">${chip}${eqLine([card(a), sign, objRow(0, k, thing, `${k}`), '=', '?'])}</div>`;
       } else if (mode === 1) {
         if (k === 1 && rung.op === '+' && flip) {
           return '<div class="ld-show">' + chip + eqLine([card(a), '<span aria-label="+1">↗ +1</span>', card('?')]) + '</div>';
@@ -143,7 +151,7 @@
 
   function makeItem(game, rung, mode, f, tracked) {
     f = f || fact(rung);
-    const v = rnd(6), item = {
+    const v = rnd(12), item = {
       ask: ASK[rung.op], askSay: say2(rung, f), show: show(rung, f, mode, v), opts: numOpts(f.ans, wrongs(rung, f)), after: after(rung, f),
       cls: 'ld-opts', fade: tracked ? 'ld-' + rung.k : undefined, ld: { rung: rung.k, op: rung.op, a: f.a, k: f.k, ans: f.ans, mode }
     };
