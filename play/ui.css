@@ -732,3 +732,10 @@ body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
 .irk-area .menu{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}.irk-area{padding:10px 8px 12px}
 .irk-today{background:#fff6d6;border-radius:18px;padding:6px 10px 12px;margin:10px 0}.irk-today .irk-sub{margin:6px 0;display:flex;align-items:center;gap:8px}.irk-today .menu{grid-template-columns:repeat(2,minmax(0,1fr))}.irk-grown .pill{margin:4px 4px 4px 0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .irk-today{background:#3a3220}}:root[data-theme="dark"] .irk-today{background:#3a3220}
+
+/* P-teens114: ten-frame and loose ones share one cell size */
+.frame.mini.teen{--tc:clamp(26px,min(8.6vw,6dvh),48px);grid-template-columns:repeat(5,var(--tc));max-width:none;width:auto;margin:0}
+.frame.mini.teen .cell{width:var(--tc);height:var(--tc);font-size:calc(var(--tc)*.62)}
+.frame.mini.teen.ones{grid-template-columns:repeat(var(--k),var(--tc))}
+.story:has(> .frame.teen){gap:clamp(4px,1.6vw,14px)}
+.story:has(> .frame.teen) .op{font-size:clamp(26px,6vw,44px)}
