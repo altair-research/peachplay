@@ -49,7 +49,8 @@ function refreshShellUI() {
  // Strip decorative pictographs from report text, preserving numbers, labels, IDs and controls.
  const walker=document.createTreeWalker(v,NodeFilter.SHOW_TEXT);const nodes=[];
  while(walker.nextNode())if(!walker.currentNode.parentElement.closest('svg,script,style,textarea,select,input,.avatar,.av,.kav,.kn,.grown-meta'))nodes.push(walker.currentNode);
- for(const n of nodes){const clean=n.textContent.replace(/[\p{Extended_Pictographic}\uFE0F\u200D\u20E3]/gu,'');if(clean!==n.textContent)n.textContent=clean;}
+ // 11-20 (서연): 🟢🟡🔴 are the school-result level marks, not decoration, so they stay.
+ for(const n of nodes){const clean=n.textContent.replace(/(?![🟢🟡🔴])[\p{Extended_Pictographic}\uFE0F\u200D\u20E3]/gu,'');if(clean!==n.textContent)n.textContent=clean;}
 }
 // Subscreens (school results, worksheet, report filters) retain the parent scope.
 // Observe child replacements, never values, and disconnect while decorating.

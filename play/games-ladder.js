@@ -84,7 +84,7 @@
   // 11-20 (i-Ready K practice): for adding up to 10, half the pictures use one kind of thing instead of dots, in the same
   // one-row layout (first group, gap, added group), so a round of ten on a small rung rarely shows the same picture twice.
   const THINGS = ['🍎', '🐟', '⭐', '🐞', '🎈', '🧁'];
-  const objRow = (n1, n2, e, label) => `<div class="ld-pic ld-obj" role="img" aria-label="${label}" style="height:auto;width:auto;font-size:clamp(22px,min(7vw,6dvh),40px);line-height:1.25;white-space:nowrap">` +
+  const objRow = (n1, n2, e, label) => `<div class="ld-pic ld-obj" role="img" aria-label="${label}" style="height:auto;width:auto;font-size:clamp(16px,min(5.2vw,5dvh),38px);line-height:1.25;white-space:nowrap;max-width:100%">` +
     `${e.repeat(n1)}${n1 && n2 ? '<span style="display:inline-block;width:.7em"></span>' : ''}${e.repeat(n2)}</div>`;
   const eqLine = (parts, big) => `<div class="ld-eq${big ? ' ld-big' : ''}">${parts.join(' ')}</div>`;
 

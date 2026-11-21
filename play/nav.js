@@ -97,7 +97,8 @@
       try { speechSynthesis.cancel(); } catch (_) {}
       if (typeof DIAG !== 'undefined' && DIAG.active && typeof quitDiag === 'function') quitDiag();
       document.querySelector('.prevpeek')?.remove();
-      if (st.pp === 'subj') SS(st.sub);
+      if (window.IReadyK && window.IReadyK.locked() && !(st.pp === 'game' && window.IReadyK.has(st.id))) window.IReadyK.open();
+      else if (st.pp === 'subj') SS(st.sub);
       else if (st.pp === 'game') { const g = GAMES.find(x => x.id === st.id); if (g) LA(g); else H(); }
       else if (st.pp === 'other' && OTHER[st.name]) OTHER[st.name]();
       else H();   // home, or a screen that must not be reopened without its gate

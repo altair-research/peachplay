@@ -28,6 +28,7 @@ function cleanState(s) {                                  // keeps only known, w
   if (isObj(s.learnDays)) o.learnDays = window.Learner.cleanDays(s.learnDays);
   if (isObj(s.strongAreas) && GRADE_LIST.includes(s.strongAreas.grade) && s.strongAreas.grade !== 'P' && Array.isArray(s.strongAreas.domains)) o.strongAreas = { grade: s.strongAreas.grade, domains: [...new Set(s.strongAreas.domains.filter(key => ['num', 'alg', 'meas', 'geo', 'pa', 'ph', 'hfw', 'voc', 'lit', 'inf'].includes(key)))] };
   if (s.lang === 'en' || s.lang === 'ko') o.lang = s.lang;
+  if (s.irkLock === true) o.irkLock = true;   // 11-20: grown-up lock to the i-Ready K section survives closing the app (서연 v5.14)
   if (Number.isFinite(s.peaches) && s.peaches >= 0) o.peaches = Math.floor(s.peaches);
   if (isObj(s.stats)) { o.stats = {}; Object.entries(s.stats).forEach(([k, v]) => { if (isObj(v)) o.stats[k] = { right: Math.max(0, numOr(v.right)), wrong: Math.max(0, numOr(v.wrong)), streak: Math.max(0, numOr(v.streak)), level: Math.min(3, Math.max(1, numOr(v.level, 1))), recent: typeof v.recent === 'string' && /^[01]{0,6}$/.test(v.recent) ? v.recent : '' }; }); }
   if (isObj(s.addr)) o.addr = { street: typeof s.addr.street === 'string' ? s.addr.street.slice(0, 80) : '', city: typeof s.addr.city === 'string' ? s.addr.city.slice(0, 40) : '' };

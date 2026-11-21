@@ -48,10 +48,17 @@
   // lowest area of each subject; without, the areas take turns by day. Inside the area, the game played least (stable all day).
   function todayPicks() {
     const day = Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5), played = id => { const v = (S.stats || {})[id]; return v ? (v.right || 0) + (v.wrong || 0) : 0; };
+    // 서연 v5.14: "below" should start with the area's easiest games, and a first-time child without results got a heavy
+    // reading-comprehension game. Area game lists are in gentle order, so the level picks how far down the list to look:
+    // below → first 2 games, early on → first 3, mid or above → any. Without results: reading takes turns among the
+    // foundational areas (sounds, letters, sight words, word meanings) and only their first 2 games.
+    const s = placed(), hasPlace = s && Object.keys(s.ir).length;
     return ['read', 'math'].map((subject, si) => {
-      const list = ordered(subject).filter(a => games(a).length), s = placed();
+      let list = ordered(subject).filter(a => games(a).length);
+      if (!hasPlace && subject === 'read') list = list.filter(a => ['pa', 'ph', 'hfw', 'voc'].includes(a.k));
       if (!list.length) return null;
-      const area = s && Object.keys(s.ir).length ? list[0] : list[(day + si * 3) % list.length], gs = games(area);
+      const area = hasPlace ? list[0] : list[(day + si * 3) % list.length], all = games(area);
+      const v = hasPlace ? s.ir[area.k] : '', gs = all.slice(0, v === 'b' || !hasPlace ? 2 : v === 'e' ? 3 : all.length);
       return gs.map((g, i) => ({ g, n: played(g.id), r: (i + day) % gs.length })).sort((x, y) => x.n - y.n || x.r - y.r)[0].g;
     }).filter(Boolean);
   }
@@ -101,5 +108,6 @@
   const active = () => { if (!shown()) { mode = false; return false; } return mode || locked(); };
   function takeReturn() { return active(); }
 
-  window.IReadyK = { AREAS, homeHtml, bind, open, takeReturn, active, locked, todayPicks };
+  const has = (id) => AREAS.some(a => a.g.includes(id));
+  window.IReadyK = { AREAS, homeHtml, bind, open, takeReturn, active, locked, todayPicks, has };
 })();
