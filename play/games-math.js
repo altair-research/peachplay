@@ -219,7 +219,7 @@ registerGame({
     if (rnd(3) === 0) {
       quiz(this, {
         ask: B(`${n} is ten and how many more?`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 얼마일까요?`),
-        show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span><span class="bigword qbox">?</span><span class="op">=</span><span class="bigword">${n}</span></div>`,
+        show: `<div class="story"><div class="frame mini">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div><span class="op">+</span>${emojiRow(n - 10, e, 'sm')}<span class="op">=</span><span class="bigword">${n}</span></div>`,   // 서연 11-21: the ones are drawn beside the full ten, so a K child counts "ten and 2" instead of computing 12 − 10
         opts: numOpts(n - 10, 1, 9), after: B(`${n} is ten and ${n - 10}.`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 ${n - 10}.`)
       });
       return;
