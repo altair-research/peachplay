@@ -115,10 +115,50 @@ const rmLike = (a, b) => {   // look-alike score: same letters in the same place
   if (a.length === b.length) s++; if (a.slice(-2) === b.slice(-2)) s++; if (a[0] === b[0]) s++;
   return s;
 };
+// 11-22 (IXL K skill types, user decision 2026-11-22): missing short vowel. A picture, the word with its vowel blank (c ? t)
+// and 🔊 (said once after the question); choose a, e, i, o or u. The vowel letters are not read aloud (that would be the answer).
+// Level 1: CVC words; the wrong vowels sound far from the right one (cat: i, u). Level 2: + blends and digraphs (fr?g, sh?p)
+// and the wrong vowels are the ones a child really mixes up: they make another real word (hat → hut, hot) or sound close
+// (e/i, a/e, o/u). In Georgia e and i before n/m sound alike (pen/pin), so they are never each other's wrong choice there.
+// [word, picture, Korean]
+const RM_V1 = [['cat', '🐱', '고양이'], ['hat', '🎩', '모자'], ['bat', '🦇', '박쥐'], ['map', '🗺️', '지도'], ['van', '🚐', '승합차'], ['cap', '🧢', '야구 모자'], ['rat', '🐀', '쥐'],
+  ['fan', '🪭', '부채'], ['bag', '👜', '가방'], ['pan', '🍳', '프라이팬'], ['can', '🥫', '통조림'], ['cab', '🚕', '택시'],
+  ['bed', '🛏️', '침대'], ['hen', '🐔', '암탉'], ['pen', '🖊️', '펜'], ['web', '🕸️', '거미줄'], ['ten', '🔟', '열'], ['leg', '🦵', '다리'], ['gem', '💎', '보석'], ['net', '🥅', '그물'], ['jet', '✈️', '제트기'],
+  ['pig', '🐷', '돼지'], ['six', '6️⃣', '여섯'], ['pin', '📌', '핀'], ['bin', '🗑️', '쓰레기통'], ['kid', '🧒', '아이'], ['lip', '👄', '입술'],
+  ['dog', '🐶', '강아지'], ['fox', '🦊', '여우'], ['box', '📦', '상자'], ['log', '🪵', '통나무'], ['pot', '🍲', '냄비'], ['ox', '🐂', '황소'],
+  ['sun', '☀️', '해'], ['bus', '🚌', '버스'], ['cup', '🥤', '컵'], ['nut', '🥜', '견과'], ['hut', '🛖', '오두막'], ['bug', '🐛', '벌레'], ['tub', '🛁', '욕조'], ['mug', '☕', '머그잔']];
+const RM_V2 = [['frog', '🐸', '개구리'], ['fish', '🐟', '물고기'], ['duck', '🦆', '오리'], ['milk', '🥛', '우유'], ['ship', '🚢', '배'], ['crab', '🦀', '게'], ['drum', '🥁', '북'],
+  ['flag', '🚩', '깃발'], ['sled', '🛷', '썰매'], ['sock', '🧦', '양말'], ['ring', '💍', '반지'], ['king', '🤴', '왕'], ['hand', '✋', '손'], ['tent', '⛺', '텐트'], ['truck', '🚚', '트럭'],
+  ['chick', '🐤', '병아리'], ['shell', '🐚', '조개껍데기'], ['bell', '🔔', '종'], ['clock', '⏰', '시계'], ['rock', '🪨', '돌'], ['lock', '🔒', '자물쇠'], ['gift', '🎁', '선물'],
+  ['dish', '🍽️', '접시'], ['brick', '🧱', '벽돌'], ['thumb', '👍', '엄지'], ['plug', '🔌', '플러그'], ['skunk', '🦨', '스컹크'], ['ant', '🐜', '개미'], ['egg', '🥚', '달걀']];
+// Real words a K child may know: a wrong vowel that makes one of these is the look-alike / sound-alike mistake.
+const RM_REAL = new Set(('bat bet bit but cat cot cut hat hit hot hut pan pen pin pun pit pot pet pat bag beg big bog bug bad bed bid bud cap cop cup map mop ' +
+  'ten tan tin ton bin ban bun fan fin fun van net nut not sun sin son six sax can pig peg dog dig dug log leg lag lug rat rot rut fox fix mug jet hen web ' +
+  'gem gum lip lap kid cab cub tub tab pod pad ox ax ship shop chip chop chick check duck deck dock sock sack suck lock lick luck rock rack ring rang rung ' +
+  'king hand tent drum flag clock click shell bell ball bill dish fish frog milk crab crib sled slid gift nest brick thumb plug skunk egg ant').split(' '));
+const RM_CLOSE = { a: 'e', e: 'ia', i: 'e', o: 'ua', u: 'o' }, RM_VOW = 'aeiou';
+function rmVowel(game, lv) {
+  const [w, e, ko] = pick(lv === 1 ? RM_V1 : [...RM_V1, ...RM_V2]), vi = w.search(/[aeiou]/), v = w[vi];
+  const merge = c => /[nm]/.test(w[vi + 1] || '') && 'ei'.includes(v) && 'ei'.includes(c);   // pen/pin in Georgia speech
+  const rest = RM_VOW.split('').filter(c => c !== v && !merge(c));
+  const ds = lv === 1
+    ? shuffle(rest.filter(c => !RM_CLOSE[v].includes(c))).slice(0, 2)
+    : [...shuffle(rest.filter(c => RM_REAL.has(w.slice(0, vi) + c + w.slice(vi + 1)))), ...shuffle(rest.filter(c => RM_CLOSE[v].includes(c))), ...shuffle(rest)]
+      .filter((c, i, a) => a.indexOf(c) === i).slice(0, 2);
+  const box = '<span style="display:inline-flex;align-items:center;justify-content:center;width:.9em;height:1.1em;margin:0 .08em;border:3px dashed #e0855a;border-radius:8px;color:#e0855a;vertical-align:middle">?</span>';
+  return quiz(game, {
+    ask: B('Listen. Which letter goes in the box?', '듣고 빈칸에 들어갈 글자를 골라요.'),
+    show: `<div class="bigword"><span class="emo">${e}</span> <span lang="en" style="letter-spacing:.06em;white-space:nowrap">${w.slice(0, vi)}${box}${w.slice(vi + 1)}</span> <button class="say" id="hear" aria-label="${T().listen}">🔊</button></div>`,
+    opts: [v, ...ds].map(c => ({ html: `<span class="num" lang="en">${c}</span>`, ok: c === v })), cls: 'shapes', readGoal: 'opts',
+    after: B(`${w}!`, `${w} — ${ko}!`), vocab: w,
+    onRender() { $('#hear').onclick = () => say(w, 'en-US'); say(w, 'en-US', true); }
+  });
+}
 registerGame({
   id: 'readmatch', subject: 'read', icon: '👀', title: B('Read & Match', '읽고 짝 맞추기'), sub: B('Read the word, find the picture', '단어를 읽고 그림 찾기'),
   area: AREA_READ('Decoding'),
   play() {
+    if (rnd(3) === 0) return rmVowel(this, lvl('readmatch'));
     const lv = lvl('readmatch'), pool = lv === 1 ? [...CVC, ...RM_CVC] : [...CVC, ...RM_CVC, ...BIGGER, ...RM_BIG], t = pick(pool);
     const fair = pool.filter(w => w[0] !== t[0] && w[1] !== t[1] && !rmClash(w[0], t[0]));
     const ds = lv === 1 ? others(fair, null, 2) : shuffle(fair).sort((a, b) => rmLike(b[0], t[0]) - rmLike(a[0], t[0])).slice(0, 5).sort(() => Math.random() - 0.5).slice(0, 2);
@@ -288,11 +328,34 @@ const SYL = [['dog', '🐶', 1], ['sun', '☀️', 1], ['fish', '🐟', 1], ['ap
   ['button', '🔘', 2], ['scissors', '✂️', 2], ['trophy', '🏆', 2],
   ['tomato', '🍅', 3], ['potato', '🥔', 3], ['pineapple', '🍍', 3], ['broccoli', '🥦', 3],
   ['bicycle', '🚲', 3]];
+// 11-22 (IXL K skill types, user decision 2026-11-22): "which word has the most / the fewest claps?" with three pictures.
+// The words are spoken (🔉 and once after the question), never written. Level 1: two words have the same number of parts and
+// one differs by one (1,1,2 or 2,2,1). Level 2: three different lengths (1, 2, 3), so every word must be counted and compared.
+// Left out: pictures with a common other name of a different length (🐶 puppy, 🐱 kitty, ✈️ plane, 🚲 bike, 🥜 nut,
+// 🏆 cup, ⛵ sailboat, 🐞 bug) and 🔘 (looks like a screen button).
+const SYL_MORE = [['gorilla', '🦍', 3], ['koala', '🐨', 3], ['flamingo', '🦩', 3], ['tornado', '🌪️', 3], ['volcano', '🌋', 3],
+  ['lizard', '🦎', 2], ['rainbow', '🌈', 2], ['candle', '🕯️', 2], ['robot', '🤖', 2], ['parrot', '🦜', 2], ['pretzel', '🥨', 2]];
+const SYL_SKIP = ['dog', 'cat', 'airplane', 'bicycle', 'button', 'ladybug', 'peanut', 'trophy', 'boat'];
+function sylMost(lv) {
+  const bank = [...SYL, ...SYL_MORE].filter(x => !SYL_SKIP.includes(x[0])), of = n => shuffle(bank.filter(x => x[2] === n));
+  const most = rnd(2) === 0;
+  let ws;
+  if (lv === 1) { const [one, two] = [of(1), of(2)]; ws = most ? [two[0], one[0], one[1]] : [one[0], two[0], two[1]]; }
+  else { const a = of(1)[0], b = of(2)[0], c = of(3)[0]; ws = most ? [c, a, b] : [a, b, c]; }
+  return {
+    ask: most ? B('Which word has the most claps?', '박수를 가장 많이 치는 낱말은?') : B('Which word has the fewest claps?', '박수를 가장 적게 치는 낱말은?'),
+    show: '<span class="emo" aria-hidden="true">👏</span>',
+    opts: ws.map((w, i) => ({ html: `<span class="emo">${w[1]}</span><span class="word ow-say" lang="en">${w[0]}</span>`, ok: i === 0 })), cls: 'shapes',
+    after: B(ws.map(w => `${w[0]}: ${w[2]} ${w[2] === 1 ? 'clap' : 'claps'}`).join(', '), ws.map(w => `${w[0]} 박수 ${w[2]}번`).join(', ')), vocab: ws[0][0],
+    onRender() { $$('.opt .word').forEach(e => say(e.textContent, 'en-US', true)); }
+  };
+}
 registerGame({
   id: 'syllable', subject: 'read', icon: '👏', title: B('Clap the Parts', '박수로 음절 세기'), sub: B('How many parts?', '몇 개로 나뉠까?'),
   area: AREA_READ('Syllables'),
   play() {
     // 11-14 (answer-skew): pick the number of parts first so 1 and 2 come up evenly (was 31 one-part words to 25); level 2 adds 3-part words.
+    if (rnd(3) === 0) return quiz(this, sylMost(1));
     const parts = lvl('syllable') === 1 ? 1 + rnd(2) : 1 + rnd(3), t = pick(SYL.filter(x => x[2] === parts));
     quiz(this, {
       ask: B('Say the word and clap: how many parts?', '말하며 박수 치면 몇 부분일까요?'),
@@ -340,6 +403,7 @@ registerGame({
  const replace=(id,make)=>{const g=GAMES.find(g=>g.id===id),old=g.play;g.play=function(){if(lvl(id)===1)return old.call(this);quiz(this,make());};};
  // sight L2 sentence fill removed (2026-10-28): L2 is now listen-and-write with letter tiles (see sight above).
  replace('syllable', () => {
+   if (rnd(3) === 0) return sylMost(2);
    const a = pick(SYL), b = pick(SYL.filter(word => word !== a));
    const picture = (word, other) => ({ html: `<span class="emo">${word[1]}</span>`, label: word[0], ok: word[2] > other[2] });
    return {

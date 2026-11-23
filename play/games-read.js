@@ -4,6 +4,56 @@ const AREA_READ = (u) => B(`Reading · ${u}`, `읽기 · ${u}`);
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 // ---------- 1. Big and little letters ----------
+// 11-22 (IXL K skill types, user decision 2026-11-22 — types only, items are ours): two more kinds mixed into the rotation.
+// (a) Look-alike letters: hear a letter name (never written on screen) and find it among letters that look alike in the same case.
+//     Level 1: one look-alike + one letter of a different shape. Level 2: only look-alikes (b among d p q, m among n w h).
+// (b) ABC order: a row of letters with one dashed blank. Level 1: early alphabet (A–P), "what comes next" or a blank inside.
+//     Level 2: anywhere in the alphabet and the blank is at the start or second ("what comes before"), wrong letters are the
+//     neighbors just outside the row (reading on forward instead of back is the real mistake).
+// Uppercase I and lowercase l look alike in the app font: I and L are never each other's wrong choice, and cases never mix.
+const LT_LOOK = {
+  b: 'dpq', d: 'bqp', p: 'qbd', q: 'pdg', m: 'nwh', n: 'umh', u: 'nvw', w: 'mvu', h: 'nbk', i: 'jlt', j: 'igy', l: 'tif', t: 'flj', f: 'tlj',
+  a: 'odg', e: 'cao', c: 'eoa', o: 'cae', g: 'qpy', y: 'vgj', v: 'wyu', k: 'hxy', r: 'nhm', s: 'zce', z: 'sxn', x: 'kzy',
+  B: 'DPR', D: 'BOP', P: 'RBF', R: 'PBK', Q: 'OGC', O: 'QCD', C: 'GOQ', G: 'CQO', M: 'NWH', N: 'MZH', W: 'MVN', V: 'UYW', U: 'VJO',
+  E: 'FBH', F: 'EPT', I: 'TJH', J: 'UTI', T: 'IFY', L: 'TJE', H: 'NAK', A: 'HKV', K: 'XRH', X: 'KYZ', Y: 'VXT', S: 'ZGC', Z: 'SNX'
+};
+const ltOk = (c, t) => c !== t && !(/^[IL]$/i.test(c) && /^[IL]$/i.test(t) && c.toUpperCase() !== t.toUpperCase());
+const ltHear = () => `<button class="say big-say" id="hear" aria-label="${T().listen}">🔊</button>`;
+function lettersConfused(game, lv) {
+  const big = rnd(2) === 0, all = big ? LETTERS : LETTERS.map(c => c.toLowerCase()), t = pick(all), name = t.toUpperCase();
+  const look = shuffle(LT_LOOK[t].split('')).filter(c => ltOk(c, t));
+  // Level 2: b d p q are all four shown (the classic flip set); other letters get two look-alikes.
+  const ds = lv === 2 ? ('bdpq'.includes(t) ? 'bdpq'.split('').filter(c => c !== t) : look.slice(0, 2))
+    : [look[0], pick(all.filter(c => ltOk(c, t) && !LT_LOOK[t].includes(c) && !LT_LOOK[c].includes(t)))];
+  return quiz(game, {
+    ask: B('Listen. Find that letter. Some look alike!', '듣고 그 글자를 찾아요. 닮은 글자를 조심해요!'), askExtra: { t: name, lang: 'en-US' },
+    show: ltHear(),
+    opts: [t, ...ds].map(c => ({ html: `<span class="num">${c}</span>`, ok: c === t })),
+    after: B(`This is ${t}.`, `이 글자는 ${t}.`), vocab: name,
+    onRender() { $('#hear').onclick = () => say(name, 'en-US'); if (S.lang === 'en') { say(name, 'en-US', true); const sp = $('#sp'), old = sp.onclick; sp.onclick = () => { old(); say(name, 'en-US', true); }; } }
+  });
+}
+function lettersOrder(game, lv) {
+  const big = rnd(2) === 0, g = c => (big ? c : c.toLowerCase());
+  // A row of four letters from index s; blank = which place is missing.
+  const s = lv === 1 ? rnd(13) : rnd(23), blank = lv === 1 ? pick([2, 3]) : pick([0, 1]), k = s + blank;
+  const row = [0, 1, 2, 3].map(i => LETTERS[s + i]), inRow = i => i >= s && i <= s + 3;
+  const near = [k + 1, k - 1, k + 2, k - 2, s + 4, s - 1].filter((i, j, a) => i >= 0 && i < 26 && !inRow(i) && a.indexOf(i) === j);
+  // Level 2: the letters just outside the row (s-1, s+4: going on forward instead of back); level 1: one neighbor + one far letter.
+  const ds = lv === 2 ? [...new Set([s - 1, s + 4, ...near, s + 5, s - 2])].filter(i => i >= 0 && i < 26 && !inRow(i)).slice(0, 2)
+    : [near[0], pick(Array.from({ length: 16 }, (_, i) => i).filter(i => !inRow(i) && i !== near[0] && Math.abs(i - k) > 2))];
+  const cell = (c, i) => i === blank
+    ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:1.25em;height:1.35em;border:3px dashed #e0855a;border-radius:10px;color:#e0855a">?</span>'
+    : `<span style="display:inline-flex;align-items:center;justify-content:center;width:1.25em;height:1.35em;border:2px solid #c9d6e6;border-radius:10px">${g(c)}</span>`;
+  const heard = row.map((c, i) => (i === blank ? 'blank' : c)).join(', ');
+  return quiz(game, {
+    ask: blank === 3 ? B('ABC order: which letter comes next?', 'ABC 순서: 다음에 올 글자는?') : B('ABC order: which letter is missing?', 'ABC 순서: 빈칸에 들어갈 글자는?'),
+    show: `<div style="display:flex;align-items:center;gap:.25em;flex-wrap:nowrap;font-size:clamp(30px,7dvh,52px);font-weight:700;line-height:1" lang="en">${row.map(cell).join('')}<span aria-hidden="true" style="font-size:.6em;color:#9aa9bb">➡</span></div><button class="say" id="hear" aria-label="${T().listen}">🔊</button>`,
+    opts: [k, ...ds].map(i => ({ html: `<span class="num">${g(LETTERS[i])}</span>`, ok: i === k })),
+    after: B(row.map(g).join(' '), row.map(g).join(' ')), vocab: LETTERS[k],
+    onRender() { $('#hear').onclick = () => say(heard, 'en-US'); }
+  });
+}
 registerGame({
   id: 'letters', subject: 'read', icon: '🔤', title: B('Big & Little Letters', '큰 글자 작은 글자'), sub: B('Match A with a', 'A와 a 짝 맞추기'),
   area: AREA_READ('Alphabet'),
@@ -16,7 +66,10 @@ registerGame({
     const LOOK = { B: 'DPR', D: 'BPQ', P: 'BDQR', Q: 'OPDG', M: 'NWH', N: 'MHU', W: 'MVU', U: 'NVY', H: 'NKM', E: 'FCO', F: 'ETP', O: 'QCD', C: 'OGE', G: 'CQJ', I: 'JTH', J: 'IGY', L: 'TJK', T: 'FJL', V: 'UWY', Y: 'VJT', A: 'OEH', K: 'HXR', R: 'PBK', S: 'ZCG', Z: 'SNX', X: 'KYZ' };
     const okD = c => c !== t && !(c + t === 'IL' || c + t === 'LI');
     const ds = lv === 2 ? [...shuffle(LOOK[t].split('')), ...shuffle(pool)].filter((c, i, a) => a.indexOf(c) === i && okD(c)).slice(0, 2) : shuffle(pool.filter(okD)).slice(0, 2);
-    if (rnd(3) === 0) {
+    const kind = rnd(6);   // 0-1 hear and find, 2 look-alike letters, 3 ABC order, 4-5 big/little match
+    if (kind === 2) return lettersConfused(this, lv);
+    if (kind === 3) return lettersOrder(this, lv);
+    if (kind < 2) {
       // Hear the letter name (not shown), find it. Big or little letters as choices.
       const big = rnd(2) === 0, g = c => (big ? c : c.toLowerCase());
       return quiz(this, {
@@ -155,10 +208,34 @@ const RHYMES = [
   [['🪁', 'kite'], ['💡', 'light']], [['🏀', 'ball'], ['🧱', 'wall']], [['🐌', 'snail'], ['🐳', 'whale']],
   [['🦆', 'duck'], ['🚚', 'truck']], [['🥚', 'egg'], ['🦵', 'leg']]
 ];
+// 11-22 (IXL K skill types, user decision 2026-11-22): "which one does not rhyme?" — three pictures, two from one family.
+// The words are never written (spoken by 🔉 and once after the question). Level 1: the odd word has a different vowel AND
+// a different ending (cat, hat / sun). Level 2: the odd word shares the vowel or the last sound (cake, snake / train;
+// dog, frog / sock), so the child has to hear the whole ending. Tags per RHYMES family: [vowel sound, last sound].
+const RHYME_TAG = [['a', 't'], ['o', 'g'], ['E', ''], ['U', 'n'], ['A', 'k'], ['ow', 's'], ['o', 'k'], ['i', 'sh'], ['ar', 'r'], ['O', 't'], ['air', 'r'],
+  ['i', 'ng'], ['O', 'n'], ['e', 'l'], ['O', 'z'], ['e', 'n'], ['u', 'n'], ['A', 'n'], ['e', 'd'], ['o', 'ks'], ['I', 't'], ['aw', 'l'], ['A', 'l'], ['u', 'k'], ['e', 'g']];
+const RHYME_TOO_CLOSE = ['6-19'];   // sock/box: same vowel and /k/ vs /ks/ — too close to call "not a rhyme" for a K child
+const rhymeClose = (i, j) => RHYME_TOO_CLOSE.includes(Math.min(i, j) + '-' + Math.max(i, j));
+const rhymeNear = (i, j) => i !== j && (RHYME_TAG[i][0] === RHYME_TAG[j][0] || (!!RHYME_TAG[i][1] && RHYME_TAG[i][1] === RHYME_TAG[j][1]));
+function rhymeOdd(game, lv) {
+  const gi = rnd(RHYMES.length), pair = shuffle(RHYMES[gi]).slice(0, 2);
+  const fams = RHYMES.map((_, i) => i).filter(i => i !== gi && !rhymeClose(gi, i) && (lv === 2 ? rhymeNear(gi, i) : !rhymeNear(gi, i)));
+  if (!fams.length) return game.play();   // ee (bee, tree, key) has no near family: level 2 picks again
+  const odd = pick(RHYMES[pick(fams)]);
+  const o = (w, ok) => ({ html: `<span class="emo">${w[0]}</span><span class="word ow-say" lang="en">${w[1]}</span>`, ok });
+  return quiz(game, {
+    ask: B('Which one does not rhyme?', '끝소리가 다른 하나는?'),
+    askSay: B('Listen to the three words. Which one does not rhyme?', '세 낱말을 잘 들어요. 끝소리가 다른 하나는?'),
+    opts: [o(odd, true), ...pair.map(w => o(w, false))],
+    after: B(`${pair[0][1]} and ${pair[1][1]} rhyme. ${odd[1]} does not.`, `${pair[0][1]}, ${pair[1][1]}는 끝소리가 같고 ${odd[1]}는 달라요.`), vocab: `${pair[0][1]}, ${pair[1][1]}, ${odd[1]}`,
+    onRender() { $$('.opt .word').forEach(e => say(e.textContent, 'en-US', true)); }
+  });
+}
 registerGame({
   id: 'rhyme', subject: 'read', icon: '🎵', title: B('Rhyme Time', '운율 맞추기'), sub: B('cat, hat, bat', 'cat, hat, bat'),
   area: AREA_READ('Rhyming'),
   play() {
+    if (rnd(3) === 0) return rhymeOdd(this, lvl('rhyme'));
     if(lvl('rhyme')===2){
       const gi=rnd(RHYMES.length),good=shuffle(RHYMES[gi]).slice(0,2),other=pick(RHYMES.filter((_,i)=>i!==gi)),wrong=pick(RHYMES.filter((_,i)=>i!==gi));
       const pairs=[good,[good[0],other[0]],[good[1],wrong[1]]];

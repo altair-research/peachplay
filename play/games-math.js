@@ -60,6 +60,7 @@ registerGame({
     const lv = lvl('ten'), e = pick(['🍑', '🍎', '🍓', '🍊', '⭐']), mode = lv === 1 ? 'more' : pick(['more', 'pair', 'missing', 'more']);
     const T = pick(lv === 1 ? [10, 10, 5, 6, 7, 8, 9] : [10, 10, 5, 6, 7, 8, 9]), word = (x) => (x === 10 && S.lang === 'ko' ? '십' : x);
     const koPair = (a, b) => `${a}와 ${b}를 합치면 ${word(T)}!`;
+    if (rnd(4) === 0) { quiz(this, takeApartItem(lv)); return; }
     if (mode === 'pair') {
       const a = 1 + rnd(T - 1), bad = [];
       let guard = 0; while (bad.length < 2 && guard++ < 60) { const y = Math.max(0, Math.min(T, T - a + pick([-3, -2, -1, 1, 2, 3]))); if (a + y !== T && !bad.some(b => b[1] === y)) bad.push([a, y]); }
@@ -87,6 +88,35 @@ registerGame({
     return { ask: tenMoreAsk(n, T), show: frameHtml(n, d.e, T), opts: numOpts(T - n, 0, T - 1) };
   }
 });
+
+// 2026-11-22 (IXL K skill types, P-ixl118): take a number apart in different ways - "which one makes 5?" with each choice drawn
+// as two small groups. One choice makes the number; the others keep one group and change the other by one or two, so they make
+// a nearby number (4 or 6 for 5) and only counting tells them apart. L1: totals 3-5 under an empty frame of that many cells.
+// L2: totals 6-10 as the number alone (no frame to match against).
+const koDigitK = (n) => ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'][n] || '';
+const koBatchim = (n) => !['이', '사', '오', '구'].includes(koDigitK(n % 10 || 10));      // 일·삼·육·칠·팔·십 end in a consonant
+function takeApartItem(lv) {
+  const T = lv === 1 ? 3 + rnd(3) : 6 + rnd(5), e = pick(['🍎', '🍓', '🍊', '⭐', '🐞', '🌸', '🐟', '🎈']);
+  const a = 1 + rnd(T - 1), b = T - a, bad = [], seen = new Set([a + ',' + b]);
+  let guard = 0;
+  while (bad.length < 2 && guard++ < 80) {
+    const d = pick(bad.length ? [-2, -1, 1, 2] : [-1, 1]), side = rnd(2), p = side ? [a, b + d] : [a + d, b];
+    if (p[0] < 1 || p[1] < 1 || p[0] + p[1] === T || seen.has(p.join(','))) continue;
+    if (bad.length && bad[0][0] + bad[0][1] === p[0] + p[1]) continue;              // the two wrong ones make different numbers
+    seen.add(p.join(',')); bad.push(p);
+  }
+  // Each group sits in its own box, 5 to a row (like half a ten-frame), so 7 reads as 5 and 2 instead of a long line to count.
+  const grp = (k) => `<span style="display:inline-grid;grid-template-columns:repeat(${Math.min(k, 5)},1.2em);justify-items:center;line-height:1.2;letter-spacing:0;border:2px solid #f2b28c;border-radius:10px;padding:1px 3px">${`<span>${e}</span>`.repeat(k)}</span>`;
+  const o = (p, ok) => ({ html: `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap;font-size:clamp(16px,min(5.4vw,3.6dvh),30px)">${grp(p[0])}<b style="color:#c4552b">+</b>${grp(p[1])}</span>`, ok });
+  const tj = koBatchim(T) ? '이' : '가', aj = koBatchim(a) ? '과' : '와', bj = koBatchim(b) ? '을' : '를';
+  return {
+    ask: B(`Which one makes ${T}?`, `${T}${tj} 되는 것은 어느 것일까요?`),
+    show: `<div class="bigword" style="text-align:center">${T}</div>` + (lv === 1 ? `<div class="frame mini" style="max-width:${T * 52}px;margin:4px auto 0;grid-template-columns:repeat(${T},1fr)">${'<div class="cell empty"></div>'.repeat(T)}</div>` : ''),
+    quietShow: true, opts: [o([a, b], true), ...bad.map(p => o(p, false))], cls: 'words',
+    itemKey: `ten|apart|${lv}|${e}|${a},${b}`,
+    after: B(`${a} and ${b} make ${T}!`, `${a}${aj} ${b}${bj} 합치면 ${T}!`)
+  };
+}
 
 // ---------- 3. Count the objects (one-to-one correspondence) ----------
 registerGame({
@@ -130,7 +160,9 @@ registerGame({
   play() {
     const lv = lvl('order'), hi = lv === 1 ? 20 : 100;
     // 2026-11-20 (i-Ready K practice): L1 also fills a missing middle card (to 20) and counts back from 10.
-    const kind = lv === 1 ? pick(['next', 'next', 'before', 'mid', 'mid2', 'back10']) : pick(['next', 'before', 'back', 'mid']);
+    const kind = lv === 1 ? pick(['next', 'next', 'before', 'mid', 'mid2', 'back10', 'ord', 'oml']) : pick(['next', 'before', 'back', 'mid', 'ord', 'oml']);
+    if (kind === 'ord') { quiz(this, ordinalItem(lv)); return; }
+    if (kind === 'oml') { quiz(this, oneMoreLessItem(lv)); return; }
     let cards, ans, ask;
     if (kind === 'mid2') { const a = 1 + rnd(hi - 3); cards = [a, '?', a + 2, a + 3]; ans = a + 1; ask = B('Which number is missing?', '빠진 숫자는 뭘까요?'); }
     else if (kind === 'back10') { const a = 4 + rnd(7); cards = [a, a - 1, a - 2, '?']; ans = a - 3; ask = B('Counting backward, what comes next?', '거꾸로 세면 다음은 뭘까요?'); }
@@ -142,6 +174,51 @@ registerGame({
   }
 });
 
+// 2026-11-22 (IXL K skill types, P-ixl118; types only, our own content): ordinal numbers and one more / one less with pictures.
+// Ordinals: a row of different animals with a 🏁 at the start; "which is third?" with animal pictures. Wrong choices are the
+// neighbours (counted one too far / not far enough) and the one counted from the wrong end. L1: 5 animals, first-fifth, flag on
+// the left. L2: 7-10 animals, third to tenth, and the flag may be on the right (count from the other side) - two things at once.
+// The answer animal is in the row on purpose (finding it by position is the skill; PF2 exception like 'pattern').
+const ORD_ANIMALS = ['🐶', '🐱', '🐰', '🐻', '🐸', '🐷', '🐵', '🐔', '🦊', '🐼', '🐯', '🦁', '🐮', '🐭', '🐨', '🐧', '🦆', '🐢'];
+const ORD_EN = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];
+const ORD_KO = ['첫 번째', '두 번째', '세 번째', '네 번째', '다섯 번째', '여섯 번째', '일곱 번째', '여덟 번째', '아홉 번째', '열 번째'];
+const ORD_COUNT_KO = ['하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
+function ordinalItem(lv) {
+  const n = lv === 1 ? 5 : 7 + rnd(4), k = lv === 1 ? 1 + rnd(5) : 3 + rnd(n - 2), right = lv === 2 && rnd(2) === 0;
+  const row = shuffle(ORD_ANIMALS.slice()).slice(0, n), at = (p) => row[p - 1];      // position 1 = next to the flag
+  const bad = new Set(), mirror = n + 1 - k;
+  if (mirror !== k) bad.add(mirror);
+  for (const p of shuffle([k - 1, k + 1])) if (p >= 1 && p <= n && bad.size < 2) bad.add(p);
+  if (bad.size < 2) bad.add(k + 2 <= n ? k + 2 : k - 2);
+  const fs = `display:grid;grid-template-columns:repeat(${n + 1},minmax(0,1fr));justify-items:center;width:100%;max-width:${(n + 1) * 64}px;margin:0 auto;font-size:clamp(14px,min(calc((100vw - 56px) / ${n + 1} * .74),6dvh),46px)`;
+  const flag = `<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1">🏁<span style="font-size:.5em">${right ? '⬅️' : '➡️'}</span></span>`;
+  const cells = row.map(a => `<span>${a}</span>`), line = right ? [...cells].reverse().join('') + flag : flag + cells.join('');
+  const ord = { en: ORD_EN[k - 1], ko: ORD_KO[k - 1] }, counts = { en: Array.from({ length: k }, (_, i) => i + 1).join(', '), ko: ORD_COUNT_KO.slice(0, k).join(', ') };
+  return {
+    ask: B(`Count from the 🏁. Which animal is ${ord.en}?`, `🏁부터 세어요. ${ord.ko} 동물은?`),
+    askSay: B(`Count from the flag. Which animal is ${ord.en}?`, `깃발부터 세어요. ${ord.ko} 동물은?`),
+    show: `<div class="ordrow" style="align-items:end;gap:2px;${fs};line-height:1.1">${line}</div>`,
+    opts: [k, ...bad].map(p => ({ html: `<span class="emo">${at(p)}</span>`, ok: p === k })), quietShow: true,
+    itemKey: `order|ord|${lv}|${right}|${row.join('')}|${k}`,
+    after: B(`${counts.en}: ${ord.en}!`, `${counts.ko}: ${ord.ko}!`)
+  };
+}
+// One more / one less: L1 a ten-frame with 1-9 things (one more up to 10, one less down to 0); L2 a teen number drawn as a full ten
+// and some more (11-19), so the child sees "ten and 4, one more is ten and 5" instead of counting all again.
+// The + / - beside the picture shows one thing coming or going, so it can be followed with the sound off.
+function oneMoreLessItem(lv) {
+  const e = pick(['🍎', '🍓', '🐟', '⭐', '🐞', '🌸', '🚗', '🎈', '🦆', '🍪']), more = rnd(2) === 0;
+  const n = lv === 1 ? 1 + rnd(9) : 11 + rnd(9), ans = more ? n + 1 : n - 1;
+  const pic = lv === 1 ? frameHtml(n, e, 10) : teenShow(n, e);
+  const sign = more ? `<span style="border:3px dashed #f2b28c;border-radius:12px;padding:0 6px">＋ ${e}</span>` : `<span style="border:3px dashed #c1121f;border-radius:12px;padding:0 6px">－ ${e}</span>`;
+  return {
+    ask: more ? B('One more than this is how many?', '이것보다 하나 더 많으면 몇 개?') : B('One less than this is how many?', '이것보다 하나 적으면 몇 개?'),
+    show: `${pic}<div style="text-align:center;font-size:clamp(22px,min(7vw,5dvh),36px);margin-top:6px">${sign}</div>`, quietShow: true,
+    opts: numOpts(ans, 0, 20), itemKey: `order|oml|${lv}|${more}|${n}|${e}`,
+    after: more ? B(`${n} and one more is ${ans}.`, `${n}보다 하나 더 많으면 ${ans}.`) : B(`One less than ${n} is ${ans}.`, `${n}보다 하나 적으면 ${ans}.`)
+  };
+}
+
 // ---------- 5. Compare groups: more / fewer / same ----------
 registerGame({
   id: 'compare', subject: 'math', icon: '⚖️', title: B('More or Fewer?', '더 많이? 더 적게?'), sub: B('Compare groups', '묶음 비교하기'),
@@ -149,6 +226,19 @@ registerGame({
   play() {
     // 2026-11-20 (i-Ready K practice): more kinds of things; L2 also compares two written numbers (within 10).
     const lv = lvl('compare'), e = pick(['🍑', '🍎', '🐟', '⭐', '🐞', '🌸', '🚗', '🦆']);
+    // 2026-11-22 (IXL K skill types, P-ixl118): three numbers, which is the greatest / the least.
+    // L1: 1-5, each number with its own group of things under it. L2: 1-10 as numbers only, often close together (a run like 6, 7, 8).
+    if (rnd(4) === 0) {
+      const top = lv === 1 ? 5 : 10, set = new Set();
+      if (lv === 2 && rnd(2) === 0) { const a = 1 + rnd(top - 2); [a, a + 1, a + 2].forEach(v => set.add(v)); }
+      while (set.size < 3) set.add(1 + rnd(top));
+      const vals = [...set], big = rnd(2) === 0, right = big ? Math.max(...vals) : Math.min(...vals), j = [2, 4, 5, 9].includes(right % 10);
+      quiz(this, { ask: big ? B('Which number is the greatest?', '어느 수가 가장 클까요?') : B('Which number is the least?', '어느 수가 가장 작을까요?'),
+        opts: vals.map(v => ({ html: `<span class="num">${v}</span>` + (lv === 1 ? emojiRow(v, e, 'sm') : ''), ok: v === right })), cls: 'shapes',
+        itemKey: `compare|three|${lv}|${big}|${lv === 1 ? e : ''}|${vals.slice().sort((a, b) => a - b).join(',')}`,
+        after: B(`${right} is the ${big ? 'greatest' : 'least'}.`, `${right}${j ? '가' : '이'} 가장 ${big ? '커요' : '작아요'}.`) });
+      return;
+    }
     if (lv === 2 && rnd(4) === 0) {
       const x = 1 + rnd(10); let y = 1 + rnd(10); if (y === x) y = x === 10 ? 9 : x + 1;
       const big = !!rnd(2), right = big ? Math.max(x, y) : Math.min(x, y);
