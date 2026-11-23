@@ -99,7 +99,8 @@
         after=B('State map; separate historical account.','주 지도와 별도 역사 기록을 함께 봤어요.');
       }
       const names=item.ids.map((id,i)=>`${String.fromCharCode(65+i)} · ${name(id)}`).join(' / ');
-      const compare=item.kind==='compare'?`<div class="g3e-compare">1909: ${L(cats[vals(item.m,1909,item.ids[0])])} → 1919: ${L(cats[vals(item.m,1919,item.ids[0])])}</div>`:item.card?`<div class="g3e-compare">A · ${name(item.ids[0])}: 1919 ③ · ${L(cats[2])}</div>`:'';
+      // 2026-11-23 review: no "1909: … → 1919: …" text line for compare items; it gave the answer away. Kids switch years on the map.
+      const compare=item.card?`<div class="g3e-compare">A · ${name(item.ids[0])}: 1919 ③ · ${L(cats[2])}</div>`:'';
       const source=B('Simplified · Census 1914/1925; modern Natural Earth outlines.','단순화 · Census 1914/1925 지도집; Natural Earth 현대 경계.');
       quiz(this,{ask,opts,cls:'g3e-options',after,
         show:`<section class="g3e-stage ${item.card?'g3e-with-card':'g3e-map-task'}"><div class="g3e-tools">${(item.kind==='compare'?[1909,1919]:[item.y]).map(y=>`<button data-g3e-year="${y}" aria-pressed="${y===item.y}">${y}</button>`).join('')}<button data-g3e-zoom aria-pressed="false">${L(B('Zoom','확대'))}</button><button data-g3e-say aria-label="${L(B('Hear map evidence','지도 자료 듣기'))}">🔊</button></div><strong>${L(metric(item.m))}</strong><div data-g3e-map>${map(item,item.y)}</div><div class="g3e-names">${names}</div><div class="g3e-legend">${cats.map((v,i)=>`<span><i class="g3e-key" style="background:${i===1?'repeating-linear-gradient(135deg,#7bbcc8 0 3px,#477b88 3px 4px)':colors[i]}"></i> ${['①','②','③'][i]} ${L(v)}</span>`).join('')}${item.m==='corn'?`<span>⋯ ${L(B('Not transcribed ≠ zero','미전사 ≠ 0'))}</span>`:''}</div>${compare}${item.card?`<div class="g3e-card">${L(item.card)}</div>`:''}<small class="g3e-source">${L(source)}${item.card?' '+L(B('NPS context · State ≠ city.','NPS 역사 배경 · 주 전체 ≠ 도시.')):''}</small></section>`,
