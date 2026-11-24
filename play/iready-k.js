@@ -10,7 +10,7 @@
   // kid-facing name, i-Ready domain name (from SchoolResults.IR), K games in a gentle order
   const AREAS = [
     { k: 'pa', s: 'read', icon: '👂', kid: B('Hear the sounds', '소리 듣기'), g: ['rhyme', 'syllable', 'compound', 'soundplay', 'endsound', 'phoneme', 'soundswap'] },
-    { k: 'ph', s: 'read', icon: '🔤', kid: B('Letters and sounds', '글자와 소리'), g: ['letters', 'sounds', 'memory', 'readmatch', 'wordchain'] },
+    { k: 'ph', s: 'read', icon: '🔤', kid: B('Letters and sounds', '글자와 소리'), g: ['letters', 'sounds', 'memory', 'readmatch', 'wordchain', 'soundteam'] },
     { k: 'hfw', s: 'read', icon: '👀', kid: B('Words I know by sight', '한눈에 읽는 낱말'), g: ['sight', 'adwordsK'] },
     { k: 'voc', s: 'read', icon: '💬', kid: B('Word meanings', '낱말 뜻'), g: ['opposites', 'admeaningK', 'directions', 'sortbox', 'listenpic'] },
     { k: 'lit', s: 'read', icon: '📖', kid: B('Stories', '이야기'), g: ['adstoryK', 'adstoryorderK', 'poemK', 'bookmakersK'] },

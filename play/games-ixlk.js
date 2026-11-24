@@ -106,6 +106,33 @@
     }
   });
 
+  // ---- 3b. soundteam (stage 3, 2026-11-23): a kindergarten challenge with grade 1 sounds. Level 1: sh, ch, th.
+  // Level 2: two letters that start a word (st, fr, ...) and the long vowel heard in a word. Pictures are spoken, never written.
+  const TEAM = { sh: '🚢ship 🐚shell 👟shoe 🐑sheep 🦈shark 👕shirt', ch: '🧀cheese 🪑chair 🐥chick 🍒cherry ⛓️chain 🍫chocolate', th: '👍thumb 3️⃣three 🛁bath 🦷tooth 👄mouth' };
+  const TEAM_END = { sh: '🐟fish', th: '🛁bath 🦷tooth 👄mouth', ch: '⌚watch 🥪sandwich' };
+  const BLEND = { st: '⭐star 🛑stop', sp: '🥄spoon 🕷️spider', sn: '🐍snake 🐌snail ⛄snowman', sl: '🛷sled', fr: '🐸frog 🍟fries', fl: '🚩flag 🌸flower', tr: '🌳tree 🚂train 🚚truck', dr: '🥁drum 🐉dragon 👗dress', cl: '🕰️clock ☁️cloud 🤡clown', cr: '🦀crab 👑crown 🖍️crayon', br: '🍞bread 🧹broom 🥦broccoli', gr: '🍇grapes', pl: '✈️plane', bl: '🫐blueberries' };
+  const LONGV = { a: '🎂cake 🌧️rain 🐳whale 🚂train', e: '🐝bee 🌳tree 🔑key 🐑sheep', i: '🪁kite 🚲bike 🧊ice 5️⃣five', o: '🦴bone 🌹rose 👃nose ⛵boat 🐐goat' };
+  const parse = o => Object.entries(o).flatMap(([k, t]) => t.split(' ').map(x => { const m = x.match(/^(.*?)([a-z]+)$/u); return { k, e: m[1], w: m[2] }; }));
+  const SHARE = k => Object.keys(BLEND).filter(x => x !== k && (x[0] === k[0] || x[1] === k[1]));
+  registerGame({
+    id: 'soundteam', grade: 'K', subject: 'read', icon: '👯', title: B('Letter Teams', '짝꿍 글자'), sub: B('sh, ch, th (challenge)', 'sh, ch, th (도전)'),
+    area: B('Reading · Phonics (grade 1 challenge)', '읽기 · 파닉스 (1학년 도전)'),
+    play() {
+      const lv = lvl('soundteam') > 1 ? 2 : 1, kind = lv === 1 ? pick(['start', 'start', 'pic', 'end']) : pick(['blend', 'blend', 'long']);
+      const x = pick(parse(kind === 'end' ? TEAM_END : kind === 'blend' ? BLEND : kind === 'long' ? LONGV : TEAM).filter(v => kind === 'end' || kind === 'blend' || kind === 'long' || !['bath', 'tooth', 'mouth'].includes(v.w)));
+      const hear = { askExtra: { t: x.w, lang: 'en-US' }, quietShow: true, show: `<div class="bigword"><span class="emo">${x.e}</span> <button class="say" id="ixHear" aria-label="${T().listen}">🔊</button></div>`, readGoal: 'opts', onRender() { $('#ixHear').onclick = () => say(x.w, 'en-US'); if (S.lang !== 'ko') say(x.w, 'en-US', true); } };
+      const letters = ks => ks.map((k, i) => ({ html: `<span class="num" lang="en">${k}</span>`, ok: i === 0 })), key = `soundteam:${kind}:${x.w}`;
+      if (kind === 'pic') {
+        const ds = shuffle(Object.keys(TEAM).filter(k => k !== x.k)).map(k => pick(parse(TEAM).filter(v => v.k === k && !['bath', 'tooth', 'mouth'].includes(v.w))));
+        return quiz(this, { itemKey: key, ask: B(`Which word starts with ${x.k}?`, `${x.k} 소리로 시작하는 그림은?`), quietShow: true, show: `<div class="letter">${x.k}</div>`,
+          opts: [x, ...ds].map((v, i) => ({ html: `<span class="emo">${v.e}</span><span class="word ow-say" lang="en">${v.w}</span>`, ok: i === 0 })), cls: 'shapes', after: B(`${x.w} starts with ${x.k}.`, `${x.w}, ${x.k}로 시작해요.`), vocab: x.w });
+      }
+      const ask = kind === 'end' ? B('Which letters end this word?', '이 낱말은 어떤 글자로 끝날까요?') : kind === 'long' ? B('Which letter says its name in this word?', '이 낱말에서 이름 그대로 소리 나는 글자는?') : B('Which letters start this word?', '이 낱말은 어떤 글자로 시작할까요?');
+      const wrong = kind === 'blend' ? shuffle(SHARE(x.k)) : shuffle(Object.keys(kind === 'long' ? LONGV : TEAM).filter(k => k !== x.k));
+      return quiz(this, { itemKey: key, ask, ...hear, opts: letters([x.k, ...wrong.slice(0, 2)]), cls: 'shapes', after: B(`${x.w}: ${x.k}`, `${x.w}: ${x.k}`), vocab: x.w });
+    }
+  });
+
   // ---- new shapes in older games ----
   const wrap = (id, chance, make) => { const g = GAMES.find(x => x.id === id), old = g.play; g.play = function () { return rnd(chance) === 0 ? make.call(this, lvl(id) > 1 ? 2 : 1) : old.call(this); }; };
   // sounds: which two start with the same sound? (three pairs; words are spoken, not written)
