@@ -1,9 +1,11 @@
 :root{--bg:#fff1e6;--card:#fff;--ink:#3a2a2a;--peach:#ff9a76;--leaf:#4caf50;--good:#2a9d8f;--bad:#e76f51;--blue:#4cc9f0;
   --math:#ff8c42;--read:#7b61ff;--ss:#e63946;--sci:#2a9d8f}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;touch-action:manipulation}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;touch-action:pan-x pan-y}
 header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;position:sticky;top:0;background:var(--bg);z-index:5}
 #peaches{font-size:28px;font-weight:700}
+/* P-nozoom116: scrolling stays, pinch and double-tap zoom do not (drawing surfaces keep their own touch-action:none) */
+*{touch-action:pan-x pan-y}
 button{font:inherit;color:inherit;cursor:pointer;border:0}
 button:disabled{cursor:default}
 .icon{font-size:32px;background:var(--card);border-radius:16px;width:64px;height:64px;box-shadow:0 3px 0 #0002}

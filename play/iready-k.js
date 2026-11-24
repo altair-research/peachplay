@@ -9,16 +9,16 @@
   const B = (en, ko) => ({ en, ko });
   // kid-facing name, i-Ready domain name (from SchoolResults.IR), K games in a gentle order
   const AREAS = [
-    { k: 'pa', s: 'read', icon: '👂', kid: B('Hear the sounds', '소리 듣기'), g: ['rhyme', 'syllable', 'compound', 'soundplay', 'endsound', 'phoneme'] },
+    { k: 'pa', s: 'read', icon: '👂', kid: B('Hear the sounds', '소리 듣기'), g: ['rhyme', 'syllable', 'compound', 'soundplay', 'endsound', 'phoneme', 'soundswap'] },
     { k: 'ph', s: 'read', icon: '🔤', kid: B('Letters and sounds', '글자와 소리'), g: ['letters', 'sounds', 'memory', 'readmatch', 'wordchain'] },
     { k: 'hfw', s: 'read', icon: '👀', kid: B('Words I know by sight', '한눈에 읽는 낱말'), g: ['sight', 'adwordsK'] },
-    { k: 'voc', s: 'read', icon: '💬', kid: B('Word meanings', '낱말 뜻'), g: ['opposites', 'admeaningK', 'directions'] },
+    { k: 'voc', s: 'read', icon: '💬', kid: B('Word meanings', '낱말 뜻'), g: ['opposites', 'admeaningK', 'directions', 'sortbox', 'listenpic'] },
     { k: 'lit', s: 'read', icon: '📖', kid: B('Stories', '이야기'), g: ['adstoryK', 'adstoryorderK', 'poemK', 'bookmakersK'] },
     { k: 'inf', s: 'read', icon: '🔎', kid: B('Fact books', '정보 글'), g: ['adinfoK', 'adinfotopicK', 'askfindK'] },
     { k: 'num', s: 'math', icon: '🔢', kid: B('Counting and numbers', '세기와 수'), g: ['count', 'quantity', 'pair1to1', 'order', 'compare', 'represent', 'teens', 'tens', 'ladder'] },
     { k: 'alg', s: 'math', icon: '➕', kid: B('Add, take away, patterns', '더하기·빼기·규칙'), g: ['addsub', 'ten', 'numline', 'pattern'] },
     { k: 'meas', s: 'math', icon: '📏', kid: B('Measure and graphs', '길이·그래프'), g: ['measure', 'graph', 'daytime'] },
-    { k: 'geo', s: 'math', icon: '🔺', kid: B('Shapes', '도형'), g: ['shapes2d', 'shapes3d', 'shapejoin'] }
+    { k: 'geo', s: 'math', icon: '🔺', kid: B('Shapes', '도형'), g: ['shapes2d', 'shapes3d', 'shapejoin', 'positions'] }
   ];
   const RANK = { b: 0, e: 1, m: 2 };
   // 11-20 (서연): the child left through the breadcrumb subject link and the end screen's "play anything".

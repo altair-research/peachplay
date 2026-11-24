@@ -198,6 +198,27 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
     }
   });
 
+  // ---- 2b. soundswap (2026-11-23): change one SOUND (no letters): level 1 the first sound, level 2 the last or middle sound ----
+  const swapAt = (a, b) => { if (a.ph.length !== b.ph.length || a.ph.length < 2) return -1; const d = a.ph.map((p, i) => p !== b.ph[i] ? i : -1).filter(i => i >= 0); return d.length === 1 ? d[0] : -1; };
+  const SW = list(noX), SWAPS = SW.flatMap(s => SW.map(t => ({ s, t, pos: swapAt(s, t) })).filter(p => p.pos >= 0 && p.s.e !== p.t.e));
+  registerGame({
+    id: 'soundswap', grade: 'K', subject: 'read', icon: '🔀', title: B('Sound Swap', '소리 바꾸기'), sub: B('cat → hat', 'cat → hat'),
+    area: AREA_READ('Phonemic awareness'),
+    play() {
+      const lv = lvl('soundswap') > 1 ? 2 : 1, { s, t, pos } = pick(SWAPS.filter(p => lv === 1 ? p.pos === 0 : p.pos > 0));
+      const oldS = cue(s.ph[pos]), newS = cue(t.ph[pos]);
+      // Wrong pictures: a word with the new sound in the same place, and near words (rhymes first).
+      const no = SW.filter(x => x !== t && x !== s && x.e !== t.e && x.e !== s.e), c1 = pick(no.filter(x => x.ph[pos] === t.ph[pos])), rest = near(t, no.filter(x => x !== c1), 2);
+      const wrong = [c1, ...rest].filter(Boolean).slice(0, 2);
+      const cues = fresh => talk([[s.w, 0.7], oldS, newS], { fresh, gap: 480, onStart: k => lightIn('.show .ph-box')(k ? pos : -1) });
+      return quiz(this, { itemKey: `soundswap:${lv}:${s.w}:${t.w}`,
+        ask: pos === 0 ? B('Change the first sound. Which word is it?', '첫소리를 바꾸면 어떤 낱말일까요?') : pos === s.ph.length - 1 ? B('Change the last sound. Which word is it?', '끝소리를 바꾸면 어떤 낱말일까요?') : B('Change the middle sound. Which word is it?', '가운뎃소리를 바꾸면 어떤 낱말일까요?'),
+        show: `<div class="ph-row">${pic(s, 'ph-pic')}${HEAR()}</div><div class="ph-chain"><span class="ph-arrow">➜</span>${boxes(s.ph.length, s.ph.map(() => '•'), pos)}</div>`,
+        opts: picOpts(t, wrong), cls: 'shapes', vocab: t.w, after: B(`${s.w} → ${t.w}`, `${s.w} → ${t.w}`),
+        onRender() { wire(cues); picNames(); }, onCorrect() { talk([[s.w, 0.8], [t.w, 0.8]], { gap: 300 }); } });
+    }
+  });
+
   // ---- 3. soundplay: daily sound routine ----
   // compound, first part, second part, (part pictures; null = no clear picture)
   const COMP = [['sunflower', '🌻', '☀️', '🌸'], ['rainbow', '🌈', '🌧️', '🎀'], ['snowman', '⛄', '❄️', '👨'], ['cupcake', '🧁', '🥤', '🎂'], ['football', '🏈', '🦶', '⚽'],

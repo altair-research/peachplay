@@ -309,7 +309,7 @@ registerGame({
     if (rnd(3) === 0) {
       quiz(this, {
         ask: B(`${n} is ten and how many more?`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 얼마일까요?`),
-        show: `<div class="story">${teenTen(e)}<span class="op">+</span>${teenOnes(n - 10, e)}<span class="op">=</span><span class="bigword">${n}</span></div>`,   // 서연 11-21: the ones are drawn beside the full ten, so a K child counts "ten and 2" instead of computing 12 − 10
+        show: `<div class="story">${teenTen(e)}<span class="teenadd"><span class="op">+</span>${teenOnes(n - 10, e)}</span><span class="op">=</span><span class="bigword">${n}</span></div>`,   // 서연 11-21: the ones are drawn beside the full ten, so a K child counts "ten and 2" instead of computing 12 − 10
         opts: numOpts(n - 10, 1, 9), after: B(`${n} is ten and ${n - 10}.`, `${n}${[2, 4, 5, 9].includes(n % 10) ? '는' : '은'} 10과 ${n - 10}.`)
       });
       return;
@@ -335,7 +335,7 @@ registerGame({
 // like a second ten-frame without its empty cells), so the ten and the ones look like the same kind of thing.
 const teenTen = (e) => `<div class="frame mini teen">${Array.from({ length: 10 }, () => `<div class="cell on">${e}</div>`).join('')}</div>`;
 const teenOnes = (k, e) => `<div class="frame mini teen ones" style="--k:${Math.min(k, 5)}">${Array.from({ length: k }, () => `<div class="cell on">${e}</div>`).join('')}</div>`;
-const teenShow = (n, e) => `<div class="story">${teenTen(e)}<span class="op">+</span>${teenOnes(n - 10, e)}</div>`;
+const teenShow = (n, e) => `<div class="story">${teenTen(e)}<span class="teenadd"><span class="op">+</span>${teenOnes(n - 10, e)}</span></div>`;
 
 // ---------- 8. 2-D shapes (SVG, random rotation) ----------
 const SHAPES = {

@@ -309,9 +309,9 @@ registerGame({
     view().innerHTML = `<div class="prompt" id="st">${T().watch}</div>
       <div class="pads">${PADS.map((p, i) => `<button class="pad" data-i="${i}" style="background:${p[0]}" aria-label="color ${i + 1}"></button>`).join('')}</div>
       <div><button class="pill" id="rep">👂 ${T().replay}</button></div><pk-cheer class="cheer" id="cheer"></pk-cheer>`;
-    const pads = $$('.pad'), flash = async (i) => { pads[i].classList.add('lit'); beep(PADS[i][1]); await sleep(420); pads[i].classList.remove('lit'); await sleep(160); };
+    const pads = $$('.pad'), flash = async (i, n) => { if (n) pads[i].textContent = n; pads[i].classList.add('lit'); beep(PADS[i][1]); await sleep(n ? 620 : 420); pads[i].classList.remove('lit'); pads[i].textContent = ''; await sleep(160); };
     let step = 0, missed = false, busy = true, solved = false;
-    const playSeq = async () => { busy = true; $('#st').textContent = T().watch; await sleep(500); for (const i of seq) { if (tok !== simonTok || !$('#st')) return; await flash(i); } if (tok !== simonTok || !$('#st')) return; $('#st').textContent = T().yourTurn; say(T().yourTurn); busy = false; step = 0; };
+    const playSeq = async () => { busy = true; $('#st').textContent = T().watch; await sleep(500); for (let k = 0; k < seq.length; k++) { if (tok !== simonTok || !$('#st')) return; await flash(seq[k], k + 1); /* P-simonnum117: order number only while showing */ } if (tok !== simonTok || !$('#st')) return; $('#st').textContent = T().yourTurn; say(T().yourTurn); busy = false; step = 0; };
     pads.forEach(p => p.onclick = async () => {
       if (busy || solved) return; const i = +p.dataset.i; p.classList.add('lit'); beep(PADS[i][1], 200); setTimeout(() => p.classList.remove('lit'), 220);
       if (i === seq[step]) { step++; if (step === seq.length) { solved = true; recordFinal('simon', missed); if (!missed) addPeach(); $('#cheer').textContent = pick(T().right); say(pick(T().right)); nextButton(() => this.play()); } }

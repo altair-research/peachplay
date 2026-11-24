@@ -348,3 +348,7 @@ renderPeaches(); renderProfBtn();
   if (q.get('results') === '1') { gate(() => SchoolResults.open(grownups, true)); return; }
   if (g) { home(); launch(g); } else if (S.introSeen) home(); else intro();
 })();
+
+// P-nozoom116 (user 11-22): small children zoom by accident; block iOS pinch and Chromebook Ctrl+wheel / trackpad pinch.
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
