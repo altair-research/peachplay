@@ -208,7 +208,7 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
       const lv = lvl('soundswap') > 1 ? 2 : 1, { s, t, pos } = pick(SWAPS.filter(p => lv === 1 ? p.pos === 0 : p.pos > 0));
       const oldS = cue(s.ph[pos]), newS = cue(t.ph[pos]);
       // Wrong pictures: a word with the new sound in the same place, and near words (rhymes first).
-      const ALIKE = ['house hut', 'cup mug', 'rat mouse', 'boat ship', 'hat cap', 'car van', 'bug bee', 'bug ant', 'dish pan'], alike = (x, y) => ALIKE.some(p => p.split(' ').includes(x.w) && p.split(' ').includes(y.w));   // pictures a child may name alike
+      const ALIKE = ['house hut', 'cup mug', 'rat mouse', 'boat ship', 'hat cap', 'car van', 'bug bee', 'bug ant', 'dish pan', 'pan egg'], alike = (x, y) => ALIKE.some(p => p.split(' ').includes(x.w) && p.split(' ').includes(y.w));   // pictures a child may name alike
       const no = SW.filter(x => x !== t && x !== s && x.e !== t.e && x.e !== s.e && !alike(x, t) && !alike(x, s)), c1 = pick(no.filter(x => x.ph[pos] === t.ph[pos])), rest = near(t, no.filter(x => x !== c1), 2);
       const wrong = [c1, ...rest].filter(Boolean).slice(0, 2);
       const cues = fresh => talk([[s.w, 0.7], oldS, newS], { fresh, gap: 480, onStart: k => lightIn('.show .ph-box')(k ? pos : -1) });

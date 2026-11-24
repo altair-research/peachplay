@@ -6,3 +6,5 @@
 .g5-scope{font-size:14px;line-height:1.25;margin:4px auto;max-width:520px;color:#34465a}
 
 @media(max-height:700px){.g5-sci-model svg{height:clamp(80px,15dvh,110px)}.g5-sci-model svg[viewBox="0 0 280 80"]{height:70px}}
+
+@media(max-height:660px){.g5-sci-model{font-size:16px;line-height:1.25;padding:5px 8px}.g5-sci-model svg{height:80px}.g5-sci-options .word{font-size:16px}}

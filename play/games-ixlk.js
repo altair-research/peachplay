@@ -23,7 +23,7 @@
     { lv: 1, ref: B('box', '상자'), who: WHO, pos: { in: e => ground + boxBack + emo(e, 60, 62, 36) + boxFront, on: e => ground + boxFront + boxLid + emo(e, 60, 43, 30), next: (e, m) => ground + boxFront + boxLid + emo(e, m ? 16 : 104, 89, 27) } },
     { lv: 1, ref: B('cloud', '구름'), who: FLY, pos: { above: e => cloud + emo(e, 60, 26, 24), below: e => cloud + emo(e, 60, 92, 26), next: (e, m) => cloud + emo(e, m ? 16 : 104, 59, 26) } },
     { lv: 2, ref: B('tree', '나무'), who: WHO, pos: { behind: (e, m) => ground + emo(e, m ? 46 : 74, 89, 34) + tree(60), front: e => ground + tree(60) + emo(e, 60, 92, 34), next: (e, m) => ground + tree(60) + emo(e, m ? 16 : 104, 90, 26) } },
-    { lv: 2, ref: B('tree', '나무'), two: 1, who: WHO, pos: { between: e => ground + tree(24) + tree(96) + emo(e, 60, 90, 28), front: (e, m) => ground + tree(24) + tree(96) + emo(e, m ? 24 : 96, 92, 32), behind: (e, m) => ground + emo(e, m ? 12 : 108, 89, 30) + tree(24) + tree(96) } }
+    { lv: 2, ref: B('tree', '나무'), two: 1, who: WHO, pos: { between: e => ground + tree(24) + tree(96) + emo(e, 60, 90, 28), front: (e, m) => ground + tree(24) + tree(96) + emo(e, m ? 24 : 96, 92, 32), behind: (e, m) => ground + emo(e, m ? 15 : 105, 89, 28) + tree(24) + tree(96) } }
   ];
   const PW = { on: ['on', '위에'], under: ['under', '아래에'], next: ['next to', '옆에'], in: ['in', '안에'], above: ['above', '위에'], below: ['below', '아래에'], behind: ['behind', '뒤에'], front: ['in front of', '앞에'], between: ['between', '사이에'] };
   const refEn = (s, p) => p === 'between' ? 'the two trees' : (s.two ? 'a ' : 'the ') + s.ref.en;
@@ -58,7 +58,7 @@
   ];
   // Level 2: the three boxes are near each other, so the child has to think about the rule.
   const NEAR = [
-    [[B('in the water', '물속'), '🐟 🐙 🦈 🐬 🦑 🐳'], [B('in the sky', '하늘'), '🦅 🦋 🐝 🦉 🦇 🦜'], [B('on the land', '땅 위'), '🐴 🐮 🐘 🦁 🐑 🦒']],
+    [[B('lives in the water', '물에 살아요'), '🐟 🐙 🦈 🐬 🦑 🐳'], [B('can fly', '날아요'), '🦅 🦋 🐝 🦉 🦇 🦜'], [B('walks on land', '땅에서 걸어요'), '🐴 🐮 🐘 🦁 🐑 🦒']],
     [[B('fruit', '과일'), '🍎 🍌 🍇 🍓 🍊 🍉'], [B('vegetables', '채소'), '🥕 🥦 🌽 🥬 🧅 🥔'], [B('cookies and candy', '과자·사탕'), '🍪 🍩 🍰 🍭 🍫 🧁']],
     [[B('on the road', '길'), '🚗 🚌 🚚 🚕 🚲 🛵'], [B('on the water', '물 위'), '⛵ 🚢 🛶 🚤 ⛴️'], [B('in the sky', '하늘'), '✈️ 🚁 🚀 🛩️']],
     [[B('cold days', '추운 날'), '🧤 🧣 🧥 ⛄ 🛷'], [B('hot days', '더운 날'), '🩳 🕶️ 🩴 🍦'], [B('rainy days', '비 오는 날'), '☂️ 🌧️ ☔']],
@@ -72,8 +72,8 @@
     area: B('Science · Sorting and grouping', '과학 · 나누고 모으기'),
     play() {
       const lv = lvl('sortbox') > 1 ? 2 : 1, boxes = shuffle(lv === 1 ? CAT : pick(NEAR)).slice(0, 3), [name, list] = boxes[0], all = shuffle(things(list)), t = all[0];
-      if (lv === 2 && all.length > 3 && rnd(2)) return quiz(this, { itemKey: 'sortbox:2:more:' + t + name.en, ask: B('Which one also goes in this box?', '이 상자에 또 들어갈 것은?'),
-        show: `<div class="ix-bigbox">${all.slice(1, 4).map(x => `<span class="emo">${x}</span>`).join('')}</div>`, quietShow: true,
+      if (lv === 2 && all.length > 3 && rnd(2)) return quiz(this, { itemKey: 'sortbox:2:more:' + t + name.en, ask: B(`Box: ${name.en}. Which one also goes in?`, `상자 이름: ${name.ko}. 또 들어갈 것은?`),
+        show: `<div class="ix-bigbox">${all.slice(1, 4).map(x => `<span class="emo">${x}</span>`).join('')}</div><div class="word">${L(name)}</div>`, quietShow: true,
         opts: [t, ...boxes.slice(1).map(b => pick(things(b[1])))].map((x, i) => ({ html: `<span class="emo">${x}</span>`, ok: i === 0 })), cls: 'shapes', after: B(`This box: ${name.en}.`, `이 상자: ${name.ko}.`), vocab: name.en });
       return quiz(this, { itemKey: `sortbox:${lv}:${t}:${name.en}`, ask: B('Which box does it go in?', '어느 상자에 넣을까요?'), show: `<div class="ix-cue"><span class="emo">${t}</span><span aria-hidden="true">➜ ?</span></div>`, quietShow: true,
         opts: boxes.map((b, i) => ({ html: box(b[0], i === 0 ? all.slice(1, 3) : shuffle(things(b[1])).slice(0, 2)), ok: i === 0 })), cls: 'shapes ix-boxes', after: B(`It goes with: ${name.en}.`, `${name.ko} 상자에 들어가요.`), vocab: name.en });
