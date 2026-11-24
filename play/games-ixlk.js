@@ -11,17 +11,17 @@
   const svg = (body, cls = '') => `<svg viewBox="0 0 120 100" class="ix-svg ${cls}" aria-hidden="true">${body}</svg>`;
 
   // ---- 1. positions ----
-  const WHO = [['🐱', B('cat', '고양이')], ['🐶', B('dog', '강아지')], ['🐰', B('bunny', '토끼')], ['🐻', B('bear', '곰')], ['🐸', B('frog', '개구리')], ['🐭', B('mouse', '쥐')], ['🐷', B('pig', '돼지')], ['🐔', B('hen', '암탉')], ['⚽', B('ball', '공')], ['🐵', B('monkey', '원숭이')]];
+  const WHO = [['🐱', B('cat', '고양이')], ['🐶', B('dog', '강아지')], ['🐰', B('bunny', '토끼')], ['🐻', B('bear', '곰')], ['🐸', B('frog', '개구리')], ['🐭', B('mouse', '쥐')], ['🐷', B('pig', '돼지')], ['🐔', B('chicken', '닭')], ['⚽', B('ball', '공')], ['🐵', B('monkey', '원숭이')]];
   const FLY = [['🐦', B('bird', '새')], ['🦋', B('butterfly', '나비')], ['🎈', B('balloon', '풍선')], ['🐝', B('bee', '벌')], ['🪁', B('kite', '연')], ['✈️', B('plane', '비행기')]];
   const table = '<rect x="30" y="46" width="60" height="8" rx="2" fill="#b9772f"/><rect x="34" y="54" width="6" height="38" fill="#9a5f22"/><rect x="80" y="54" width="6" height="38" fill="#9a5f22"/>';
   const boxBack = '<path d="M34 54h52l-7-11H41z" fill="#8a5a24"/>', boxFront = '<rect x="34" y="54" width="52" height="38" rx="2" fill="#d9a05b" stroke="#8a5a24" stroke-width="2"/>', boxLid = '<rect x="31" y="46" width="58" height="9" rx="2" fill="#c98b43" stroke="#8a5a24" stroke-width="2"/>';
   const tree = x => `<rect x="${x - 9}" y="36" width="18" height="56" fill="#8d5a2b"/><circle cx="${x}" cy="25" r="23" fill="#4f9d4a"/>`;
-  const cloud = '<ellipse cx="60" cy="50" rx="27" ry="13" fill="#cfe3f5" stroke="#8db4d8" stroke-width="2"/>';
+  const cloud = '<path d="M36 62h48a9 9 0 0 0 2-18a11 11 0 0 0-17-6a13 13 0 0 0-23 3a10 10 0 0 0-11 9a7 7 0 0 0 1 12z" fill="#cfe3f5" stroke="#8db4d8" stroke-width="2"/>';
   const ground = '<rect x="0" y="92" width="120" height="4" rx="2" fill="#d8c3a5"/>';
   const SETS = [
     { lv: 1, ref: B('table', '탁자'), who: WHO, pos: { on: e => ground + table + emo(e, 60, 43, 30), under: e => ground + table + emo(e, 60, 89, 27), next: (e, m) => ground + table + emo(e, m ? 15 : 105, 89, 27) } },
     { lv: 1, ref: B('box', '상자'), who: WHO, pos: { in: e => ground + boxBack + emo(e, 60, 62, 36) + boxFront, on: e => ground + boxFront + boxLid + emo(e, 60, 43, 30), next: (e, m) => ground + boxFront + boxLid + emo(e, m ? 16 : 104, 89, 27) } },
-    { lv: 1, ref: B('cloud', '구름'), who: FLY, pos: { above: e => cloud + emo(e, 60, 32, 26), below: e => cloud + emo(e, 60, 92, 26), next: (e, m) => cloud + emo(e, m ? 16 : 104, 59, 26) } },
+    { lv: 1, ref: B('cloud', '구름'), who: FLY, pos: { above: e => cloud + emo(e, 60, 26, 24), below: e => cloud + emo(e, 60, 92, 26), next: (e, m) => cloud + emo(e, m ? 16 : 104, 59, 26) } },
     { lv: 2, ref: B('tree', '나무'), who: WHO, pos: { behind: (e, m) => ground + emo(e, m ? 46 : 74, 89, 34) + tree(60), front: e => ground + tree(60) + emo(e, 60, 92, 34), next: (e, m) => ground + tree(60) + emo(e, m ? 16 : 104, 90, 26) } },
     { lv: 2, ref: B('tree', '나무'), two: 1, who: WHO, pos: { between: e => ground + tree(24) + tree(96) + emo(e, 60, 90, 28), front: (e, m) => ground + tree(24) + tree(96) + emo(e, m ? 24 : 96, 92, 32), behind: (e, m) => ground + emo(e, m ? 12 : 108, 89, 30) + tree(24) + tree(96) } }
   ];
@@ -32,8 +32,9 @@
   const iga = w => w + (hasEnd(w) ? '이' : '가'), eul = w => w + (hasEnd(w) ? '을' : '를');
   // Small sign for the place word (a dot and a square), so a child who cannot read or hear still sees which place is meant.
   const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="8" fill="#e4572e"/>`, sq = '<rect x="30" y="26" width="40" height="32" rx="4" fill="#fff" stroke="#1d3557" stroke-width="4"/>';
-  const SIGN = { on: sq + dot(50, 16), above: sq + dot(50, 9), under: sq + dot(50, 69), below: sq + dot(50, 71), next: sq + dot(84, 46), in: sq + dot(50, 42), behind: dot(71, 40) + sq, front: sq + dot(50, 56), between: '<rect x="6" y="26" width="26" height="32" rx="4" fill="#fff" stroke="#1d3557" stroke-width="4"/><rect x="68" y="26" width="26" height="32" rx="4" fill="#fff" stroke="#1d3557" stroke-width="4"/>' + dot(50, 42) };
-  const sign = p => `<svg viewBox="0 0 100 80" class="ix-sign" aria-hidden="true">${SIGN[p]}</svg>`;
+  const SIGN = { on: sq + dot(50, 16), above: sq + dot(50, 9), under: sq + dot(50, 69), below: sq + dot(50, 71), next: sq + dot(84, 46), in: sq + dot(50, 42), behind: '<circle cx="68" cy="34" r="17" fill="#e4572e"/>' + sq + '<circle cx="68" cy="34" r="17" fill="none" stroke="#e4572e" stroke-width="2" stroke-dasharray="4 4"/>', front: sq + '<circle cx="50" cy="46" r="17" fill="#e4572e" stroke="#fff" stroke-width="3"/>', between: '<rect x="6" y="26" width="26" height="32" rx="4" fill="#fff" stroke="#1d3557" stroke-width="4"/><rect x="68" y="26" width="26" height="32" rx="4" fill="#fff" stroke="#1d3557" stroke-width="4"/>' + dot(50, 42) };
+  // The side in the sign follows the side in the picture.
+  const sign = (p, m) => `<svg viewBox="0 0 100 80" class="ix-sign" aria-hidden="true">${m && (p === 'next' || p === 'behind') ? `<g transform="translate(100 0) scale(-1 1)">${SIGN[p]}</g>` : SIGN[p]}</svg>`;
   registerGame({
     id: 'positions', grade: 'K', subject: 'math', icon: '📍', title: B('Where Is It?', '어디에 있을까?'), sub: B('on, under, next to', '위, 아래, 옆'),
     area: AREA_MATH('Position words'),
@@ -42,9 +43,9 @@
       const key = `positions:${lv}:${reverse}:${s.ref.en}${s.two || ''}:${e}:${p}`;
       const after = B(`The ${n.en} is ${PW[p][0]} ${refEn(s, p)}.`, `${iga(n.ko)} ${refKo(s, p)} 있어요.`);
       if (reverse) return quiz(this, { itemKey: key, ask: B(`Where is the ${n.en}?`, `${iga(n.ko)} 어디에 있나요?`), show: svg(s.pos[p](e, m), 'big'), quietShow: true,
-        opts: keys.map(k => ({ html: `${sign(k)}<span class="word">${L(B(PW[k][0], PW[k][1]))}</span>`, ok: k === p })), cls: 'shapes ix-pos', after, vocab: after.en });
+        opts: keys.map(k => ({ html: `${sign(k, m)}<span class="word">${L(B(PW[k][0], PW[k][1]))}</span>`, ok: k === p })), cls: 'shapes ix-pos', after, vocab: after.en });
       return quiz(this, { itemKey: key, ask: B(`Find the ${n.en} ${PW[p][0]} ${refEn(s, p)}.`, `${refKo(s, p)} 있는 ${eul(n.ko)} 찾아요.`),
-        show: `<div class="ix-cue"><span class="emo">${e}</span>${sign(p)}</div>`, quietShow: true,
+        show: `<div class="ix-cue"><span class="emo">${e}</span>${sign(p, m)}</div>`, quietShow: true,
         opts: keys.map(k => ({ html: svg(s.pos[k](e, m)), ok: k === p })), cls: 'shapes ix-scenes', after, vocab: after.en });
     }
   });
@@ -58,9 +59,9 @@
   // Level 2: the three boxes are near each other, so the child has to think about the rule.
   const NEAR = [
     [[B('in the water', '물속'), '🐟 🐙 🦈 🐬 🦑 🐳'], [B('in the sky', '하늘'), '🦅 🦋 🐝 🦉 🦇 🦜'], [B('on the land', '땅 위'), '🐴 🐮 🐘 🦁 🐑 🦒']],
-    [[B('fruit', '과일'), '🍎 🍌 🍇 🍓 🍊 🍉'], [B('vegetables', '채소'), '🥕 🥦 🌽 🥬 🧅 🥔'], [B('sweet treats', '달콤한 간식'), '🍪 🍩 🍰 🍭 🍫 🧁']],
+    [[B('fruit', '과일'), '🍎 🍌 🍇 🍓 🍊 🍉'], [B('vegetables', '채소'), '🥕 🥦 🌽 🥬 🧅 🥔'], [B('cookies and candy', '과자·사탕'), '🍪 🍩 🍰 🍭 🍫 🧁']],
     [[B('on the road', '길'), '🚗 🚌 🚚 🚕 🚲 🛵'], [B('on the water', '물 위'), '⛵ 🚢 🛶 🚤 ⛴️'], [B('in the sky', '하늘'), '✈️ 🚁 🚀 🛩️']],
-    [[B('cold days', '추운 날'), '🧤 🧣 🧥 ⛄ 🛷'], [B('hot days', '더운 날'), '🩳 🕶️ 🩴 🍦 🏖️'], [B('rainy days', '비 오는 날'), '☂️ 🌧️ ☔']],
+    [[B('cold days', '추운 날'), '🧤 🧣 🧥 ⛄ 🛷'], [B('hot days', '더운 날'), '🩳 🕶️ 🩴 🍦'], [B('rainy days', '비 오는 날'), '☂️ 🌧️ ☔']],
     [[B('to eat with', '먹을 때'), '🥄 🍴 🥣 🥢 🍽️'], [B('to fix with', '고칠 때'), '🔨 🪛 🔧 🪚 🪜'], [B('to wash with', '씻을 때'), '🧼 🪥 🧽 🛁 🚿']],
     [[B('for feet', '발'), '👟 🧦 🥾 👠 🩴'], [B('for the head', '머리'), '🧢 👒 🎩 👑 ⛑️'], [B('for hands', '손'), '🧤 💍 🥊']]
   ];
@@ -74,7 +75,7 @@
       if (lv === 2 && all.length > 3 && rnd(2)) return quiz(this, { itemKey: 'sortbox:2:more:' + t + name.en, ask: B('Which one also goes in this box?', '이 상자에 또 들어갈 것은?'),
         show: `<div class="ix-bigbox">${all.slice(1, 4).map(x => `<span class="emo">${x}</span>`).join('')}</div>`, quietShow: true,
         opts: [t, ...boxes.slice(1).map(b => pick(things(b[1])))].map((x, i) => ({ html: `<span class="emo">${x}</span>`, ok: i === 0 })), cls: 'shapes', after: B(`This box: ${name.en}.`, `이 상자: ${name.ko}.`), vocab: name.en });
-      return quiz(this, { itemKey: `sortbox:${lv}:${t}:${name.en}`, ask: B('Which box does it go in?', '어느 상자에 넣을까요?'), show: `<div class="ix-cue"><span class="emo">${t}</span><span aria-hidden="true">➜ 📦</span></div>`, quietShow: true,
+      return quiz(this, { itemKey: `sortbox:${lv}:${t}:${name.en}`, ask: B('Which box does it go in?', '어느 상자에 넣을까요?'), show: `<div class="ix-cue"><span class="emo">${t}</span><span aria-hidden="true">➜ ?</span></div>`, quietShow: true,
         opts: boxes.map((b, i) => ({ html: box(b[0], i === 0 ? all.slice(1, 3) : shuffle(things(b[1])).slice(0, 2)), ok: i === 0 })), cls: 'shapes ix-boxes', after: B(`It goes with: ${name.en}.`, `${name.ko} 상자에 들어가요.`), vocab: name.en });
     }
   });
@@ -97,8 +98,8 @@
     play() {
       const lv = lvl('listenpic') > 1 ? 2 : 1, d = { a: pick(A), t: pick(Object.keys(THING)), c: pick(Object.keys(COL)), big: lv === 2 ? rnd(2) === 1 : true, sized: lv === 2 };
       const alt = { a: () => ({ ...d, a: pick(A.filter(x => x !== d.a)) }), t: () => ({ ...d, t: pick(Object.keys(THING).filter(x => x !== d.t)) }), c: () => ({ ...d, c: pick(Object.keys(COL).filter(x => x !== d.c)) }), z: () => ({ ...d, big: !d.big }) };
-      // Level 1: two wrong pictures, each different in one place. Level 2: three (size, color, and the thing or the animal).
-      const wrong = (lv === 1 ? shuffle(['a', 't', 'c']).slice(0, 2) : ['z', 'c', pick(['a', 't'])]).map(k => alt[k]()), en = sent(d);
+      // Level 1: two wrong pictures, each different in one place (one is always the color). Level 2: three (size, color, and the thing or the animal).
+      const wrong = (lv === 1 ? ['c', pick(['a', 't'])] : ['z', 'c', pick(['a', 't'])]).map(k => alt[k]()), en = sent(d);
       const askB = B('Listen. Which picture fits?', '영어 문장을 들어요. 맞는 그림은?');
       return quiz(this, { itemKey: `listenpic:${lv}:${en}`, ask: askB, askExtra: { t: en, lang: 'en-US' }, quietShow: true,
         show: `<div class="ix-sent"><button class="say" id="ixHear" aria-label="${T().listen}">🔊</button><span lang="en">${en}</span></div>`, opts: [d, ...wrong].map((x, i) => ({ html: draw(x), ok: i === 0 })), cls: lv === 2 ? 'four ix-scenes' : 'shapes ix-scenes', after: B(en, `${en} ${sentKo(d)}`), vocab: en,
@@ -119,11 +120,11 @@
     area: B('Reading · Phonics (grade 1 challenge)', '읽기 · 파닉스 (1학년 도전)'),
     play() {
       const lv = lvl('soundteam') > 1 ? 2 : 1, kind = lv === 1 ? pick(['start', 'start', 'pic', 'end']) : pick(['blend', 'blend', 'long']);
-      const x = pick(parse(kind === 'end' ? TEAM_END : kind === 'blend' ? BLEND : kind === 'long' ? LONGV : TEAM).filter(v => kind === 'end' || kind === 'blend' || kind === 'long' || !['bath', 'tooth', 'mouth'].includes(v.w)));
+      const x = pick(parse(kind === 'end' ? TEAM_END : kind === 'blend' ? BLEND : kind === 'long' ? LONGV : TEAM).filter(v => kind === 'end' || kind === 'blend' || kind === 'long' || (!['bath', 'tooth', 'mouth'].includes(v.w) && !(kind === 'pic' && ['shoe', 'chick'].includes(v.w)))));
       const hear = { askExtra: { t: x.w, lang: 'en-US' }, quietShow: true, show: `<div class="bigword"><span class="emo">${x.e}</span> <button class="say" id="ixHear" aria-label="${T().listen}">🔊</button></div>`, readGoal: 'opts', onRender() { $('#ixHear').onclick = () => say(x.w, 'en-US'); if (S.lang !== 'ko') say(x.w, 'en-US', true); } };
       const letters = ks => ks.map((k, i) => ({ html: `<span class="num" lang="en">${k}</span>`, ok: i === 0 })), key = `soundteam:${kind}:${x.w}`;
       if (kind === 'pic') {
-        const ds = shuffle(Object.keys(TEAM).filter(k => k !== x.k)).map(k => pick(parse(TEAM).filter(v => v.k === k && !['bath', 'tooth', 'mouth'].includes(v.w))));
+        const ds = shuffle(Object.keys(TEAM).filter(k => k !== x.k)).map(k => pick(parse(TEAM).filter(v => v.k === k && !['bath', 'tooth', 'mouth', 'shoe', 'chick'].includes(v.w))));
         return quiz(this, { itemKey: key, ask: B(`Which word starts with ${x.k}?`, `${x.k} 소리로 시작하는 그림은?`), quietShow: true, show: `<div class="letter">${x.k}</div>`,
           opts: [x, ...ds].map((v, i) => ({ html: `<span class="emo">${v.e}</span><span class="word ow-say" lang="en">${v.w}</span>`, ok: i === 0 })), cls: 'shapes', after: B(`${x.w} starts with ${x.k}.`, `${x.w}, ${x.k}로 시작해요.`), vocab: x.w });
       }

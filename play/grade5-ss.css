@@ -4,3 +4,5 @@
 .g5-ss-model svg[viewBox="0 0 300 190"]{height:125px}
 
 .g5-scope{font-size:14px;line-height:1.25;margin:4px auto;max-width:520px;color:#34465a}
+
+@media (max-height:660px){.g5-ss-model svg,.g5-ss-model svg[viewBox="0 0 300 190"]{height:108px}}

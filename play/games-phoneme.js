@@ -208,13 +208,14 @@ hand ✋ h.a.n.d h.a.n.d|milk 🥛 m.i.l.k m.i.l.k|sled 🛷 s.l.e.d s.l.e.d|gif
       const lv = lvl('soundswap') > 1 ? 2 : 1, { s, t, pos } = pick(SWAPS.filter(p => lv === 1 ? p.pos === 0 : p.pos > 0));
       const oldS = cue(s.ph[pos]), newS = cue(t.ph[pos]);
       // Wrong pictures: a word with the new sound in the same place, and near words (rhymes first).
-      const no = SW.filter(x => x !== t && x !== s && x.e !== t.e && x.e !== s.e), c1 = pick(no.filter(x => x.ph[pos] === t.ph[pos])), rest = near(t, no.filter(x => x !== c1), 2);
+      const ALIKE = ['house hut', 'cup mug', 'rat mouse', 'boat ship', 'hat cap', 'car van', 'bug bee', 'bug ant', 'dish pan'], alike = (x, y) => ALIKE.some(p => p.split(' ').includes(x.w) && p.split(' ').includes(y.w));   // pictures a child may name alike
+      const no = SW.filter(x => x !== t && x !== s && x.e !== t.e && x.e !== s.e && !alike(x, t) && !alike(x, s)), c1 = pick(no.filter(x => x.ph[pos] === t.ph[pos])), rest = near(t, no.filter(x => x !== c1), 2);
       const wrong = [c1, ...rest].filter(Boolean).slice(0, 2);
       const cues = fresh => talk([[s.w, 0.7], oldS, newS], { fresh, gap: 480, onStart: k => lightIn('.show .ph-box')(k ? pos : -1) });
       return quiz(this, { itemKey: `soundswap:${lv}:${s.w}:${t.w}`,
         ask: pos === 0 ? B('Change the first sound. Which word is it?', '첫소리를 바꾸면 어떤 낱말일까요?') : pos === s.ph.length - 1 ? B('Change the last sound. Which word is it?', '끝소리를 바꾸면 어떤 낱말일까요?') : B('Change the middle sound. Which word is it?', '가운뎃소리를 바꾸면 어떤 낱말일까요?'),
-        show: `<div class="ph-row">${pic(s, 'ph-pic')}${HEAR()}</div><div class="ph-chain"><span class="ph-arrow">➜</span>${boxes(s.ph.length, s.ph.map(() => '•'), pos)}</div>`,
-        opts: picOpts(t, wrong), cls: 'shapes', vocab: t.w, after: B(`${s.w} → ${t.w}`, `${s.w} → ${t.w}`),
+        show: `<div class="ph-chain">${pic(s, 'ph-pic')}<span class="ph-arrow">➜</span>${boxes(s.ph.length, s.ph.map(() => '•'), pos)}</div>`,
+        quietShow: true, opts: picOpts(t, wrong), cls: 'shapes', vocab: t.w, after: B(`${s.w} → ${t.w}`, `${s.w} → ${t.w}`),
         onRender() { wire(cues); picNames(); }, onCorrect() { talk([[s.w, 0.8], [t.w, 0.8]], { gap: 300 }); } });
     }
   });

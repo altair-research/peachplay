@@ -745,9 +745,9 @@ body:not(.muted):not(.voice-off) .show .auto-cap{padding-right:44px!important}
 /* games-ixlk.js: position words, sorting boxes, listen-and-find */
 .ix-svg{width:100%;height:auto;max-height:clamp(84px,19dvh,170px);display:block}
 .ix-svg.big{width:min(72vw,300px);max-height:clamp(120px,30dvh,250px);margin:0 auto}
-.ix-sign,.show svg.ix-sign,.opt svg.ix-sign{width:clamp(56px,17vw,96px);height:auto;flex:none;max-width:none;max-height:none;display:block;margin:0 auto}
+.ix-sign,.show svg.ix-sign,.opt svg.ix-sign{width:clamp(72px,24vw,120px);height:auto;flex:none;max-width:none;max-height:none;display:block;margin:0 auto}
 .ix-cue{display:flex;align-items:center;justify-content:center;gap:clamp(10px,4vw,24px);font-size:clamp(28px,6dvh,48px)}
-.ix-cue .emo{font-size:clamp(44px,9dvh,80px)}
+.ix-cue>*{flex:none;width:auto}.ix-cue .emo{font-size:clamp(44px,9dvh,80px)}
 .opts.ix-scenes .opt{padding:6px 4px;background:#fff}
 .ix-box{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
 .ix-in{font-size:clamp(24px,min(7.4vw,5.5dvh),44px);line-height:1.2;border:4px solid #c98b43;border-top:0;border-radius:0 0 10px 10px;padding:6px 4px;width:100%;background:#fff6e6;white-space:nowrap}
