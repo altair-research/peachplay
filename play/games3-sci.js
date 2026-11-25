@@ -250,7 +250,7 @@ survival3:[
  sr('Why would a polar bear struggle in a hot desert?','북극곰이 뜨거운 사막에서 힘든 까닭은?','','','Its thick fur would overheat it','두꺼운 털 때문에 너무 더워요','It would find too much ice','얼음이 너무 많아요','Its fur would be too thin','털이 너무 얇아요'),
  sr('Which change makes site W meet both needs?','W가 두 조건을 모두 갖추게 하는 변화는?','Ducks in this model need water and plants. Site W has plants only.','이 모형의 오리에게 물과 식물이 필요해요. W에는 식물만 있어요.','Add a pond','연못 만들기','Add more plants','식물 더 심기','Remove the plants','식물 없애기'),
  sr('Which need becomes harder to meet?','채우기 더 어려워진 조건은?','A new fence blocks deer from their usual stream.','새 울타리가 사슴이 늘 가던 개울을 막았어요.','Water','물','Sunlight','햇빛','Air','공기'),
- sr('Why do many animals live in a wetland?','많은 동물이 습지에 사는 까닭은?','','','It has water, food and shelter','물, 먹이, 숨을 곳이 있어요','It is dry and bare most of the year','일 년 내내 마르고 텅 비어 있어요','It is covered in ice and rock','얼음과 바위로 덮여 있어요'),
+ sr('Why do many animals live in a wetland?','많은 동물이 습지에 사는 까닭은?','','','It has water, food and shelter','물, 먹이, 숨을 곳이 있어요','It is dry and bare most of the year','일 년 중 대부분 마르고 텅 비어 있어요','It is covered in ice and rock','얼음과 바위로 덮여 있어요'),
  sr('Which organism would NOT thrive in a dark cave?','어두운 동굴에서 잘 살 수 없는 생물은?','','','A sunflower','해바라기','A bat','박쥐','A cave cricket','동굴 귀뚜라미'),
  sr('A drought kills most plants. What happens to the deer?','가뭄으로 식물이 대부분 죽었어요. 사슴은 어떻게 되나요?','','','They have less food','먹이가 줄어요','They have more food','먹이가 늘어요','They have more water','물이 늘어요'),
  sr('Which site is better for a gopher tortoise?','고퍼거북에게 더 알맞은 곳은?','It digs burrows in sandy soil. Site X: deep sandy soil. Site Y: hard, rocky ground.','고퍼거북은 모래흙에 굴을 파요. X: 깊은 모래흙. Y: 단단한 돌땅.','Site X','장소 X','Site Y','장소 Y','Both equally','둘이 같아요'),
