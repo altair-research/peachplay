@@ -69,7 +69,7 @@ bank('pollution3','Pollution Records','오염 기록','S3L2.a',[
 bank('conserve3','Protect Resources','자원 지키기','S3L2.b',[
  [B('Which action reuses an item?','물건을 다시 사용하는 행동은?'),null,B('Use a clean jar to store pencils','깨끗한 통에 연필 보관하기'),B('Throw away the clean jar','깨끗한 통 버리기'),B('Break the jar into pieces for recycling','통을 잘게 깨뜨려 재활용하기')],
  [B('Which action reduces paper use?','종이를 덜 쓰는 방법은?'),null,B('Use both sides when suitable','쓸 수 있을 때 종이 양면 쓰기'),B('Use a new page for each word','낱말 하나마다 새 종이 쓰기'),B('Throw away unused pages','안 쓴 종이 버리기')],
- [B('Before putting an item in a recycling bin, what should you check?','재활용 통에 넣기 전에 무엇을 확인하나요?'),null,B('Local rules for accepted materials','우리 지역에서 받는 재활용품'),B('The item’s cleanliness','물건이 깨끗한지'),B('The recycling symbol','물건의 재활용 표시')]]);
+ [B('Before putting an item in a recycling bin, what should you check?','재활용 통에 넣기 전에 무엇을 확인하나요?'),null,B('Local rules for accepted materials','우리 지역에서 받는 재활용품'),B('The item’s color','물건의 색'),B('The recycling symbol','물건의 재활용 표시')]]);
 bank('heatsource3','Sources of Heat','열은 어디에서 올까요?','S3P1.a',[
  [B('What supplies energy that warms a sunlit bench?','햇빛 받는 벤치를 데우는 에너지는 어디서 오나요?'),null,B('The Sun','태양'),B('Nearby air','주변 공기'),B('The cool ground','차가운 땅')],
  [B('What warms your hands as you rub them?','손을 서로 비빌 때 따뜻해지는 까닭은?'),null,B('Friction from rubbing','손을 비빌 때 생긴 마찰'),B('Heat from nearby air','주변 공기에서 온 열'),B('Heat from sunlight','햇빛에서 온 열')],
@@ -149,7 +149,7 @@ pollution3:[
  sr('Which observation directly shows dirty air?','공기가 더러워졌다는 직접 관찰은?','','','Smoke is in the air','공기 중에 연기가 있어요','Oil floats on pond water','연못 물에 기름이 떠요','Litter lies on the soil','흙에 쓰레기가 놓여 있어요'),
  sr('What is a limit of this observation?','이 관찰의 한계는?','We saw oil on the water, but did not examine fish.','물에 기름이 있는 것을 보았지만 물고기는 살펴보지 않았어요.','It does not show every effect on fish','물고기에 미친 모든 영향을 알 수는 없어요','It proves all fish are safe','모든 물고기가 안전함을 증명해요','It proves there was no oil','기름이 없었음을 증명해요')],
 conserve3:[
- sr('Which reduces waste?','쓰레기를 줄이는 방법은?','','','Refill a reusable bottle','다시 쓰는 물병에 물 채우기','Throw it away after one use','한 번 쓰고 버리기','Recycle the bottle after using it','물병을 쓰고 재활용하기'),
+ sr('Which reduces waste?','쓰레기를 줄이는 방법은?','','','Refill a reusable bottle','다시 쓰는 물병에 물 채우기','Throw it away after one use','한 번 쓰고 버리기','Buy a new bottle every day','매일 새 물병 사기'),
  sr('Which reuses paper?','종이를 다시 쓰는 방법은?','','','Draw on a clean unused side','아직 깨끗한 뒷면에 그리기','Discard an unused sheet','안 쓴 종이 버리기','Use ten sheets for one letter','글자 하나에 열 장 쓰기'),
  sr('Which reuses a box?','상자를 다시 쓰는 방법은?','','','Store game pieces in it','놀이 조각을 보관해요','Throw the usable box away','쓸 수 있는 상자를 버려요','Leave it in a stream','개울에 두어요'),
  sr('Which saves water?','물을 아끼는 방법은?','','','Close the tap when not needed','필요 없을 때 수도꼭지 잠그기','Let water run while not using it','물을 쓰지 않을 때도 계속 틀기','Ignore a leaking tap','새는 수도꼭지 무시하기'),
@@ -329,7 +329,7 @@ const habitatNotes=[
  ['Piedmont: some habitats include rock outcrops.','피드몬트: 일부 서식지에 드러난 암석이 있어요.','Rock outcrops','드러난 암석','Only floating ice','떠 있는 얼음만','Only salt water','소금물만'],
  ['Coastal Plain: Okefenokee is a wetland habitat.','해안 평야: 오키피노키는 습지 서식지예요.','Wetland','습지','Bare glacier','식물 없는 빙하','Only dry mountain peaks','마른 산 정상만'],
  ['Georgia salt marsh: cordgrass grows in tidal wetland.','조지아 염습지: 갯줄풀이 바닷물 드나드는 습지에서 자라요.','Tidal wetland','바닷물 드나드는 습지','Only dry desert','마른 사막만','Only ice','얼음만']
-].map((r,i,all)=>{const other=all[(i+3)%all.length];return [B(r[0],r[1]),B(r[2],r[3]),B(other[2],other[3]),B(all[(i+4)%all.length][2],all[(i+4)%all.length][3]),B(`${r[0]} Compare: ${other[0]}`,`${r[1]} 비교: ${other[1]}`),B(`${r[2]} versus ${other[2]}`,`${r[3]} / ${other[3]}`),B(`${other[2]} versus ${r[2]}`,`${other[3]} / ${r[3]}`),B(`Both: ${r[2]}`,`둘 다: ${r[3]}`)];});
+].map((r,i,all)=>{const other=all[(i+3)%all.length];return [B(r[0],r[1]),B(r[2],r[3]),B(all[(i+2)%all.length][2],all[(i+2)%all.length][3]),B(all[(i+5)%all.length][2],all[(i+5)%all.length][3]),B(`${r[0]} Compare: ${other[0]}`,`${r[1]} 비교: ${other[1]}`),B(`${r[2]} versus ${other[2]}`,`${r[3]} / ${other[3]}`),B(`${other[2]} versus ${r[2]}`,`${other[3]} / ${r[3]}`),B(`Both: ${r[2]}`,`둘 다: ${r[3]}`)];});
 const shadeQuestions=[
  [B('How should we compare the designs fairly?','공정하게 비교하는 방법은?'),B('Same blocks, starting temperature and time','같은 블록·처음 온도·시간'),B('Different blocks and times','다른 블록과 시간'),B('Measure the design with the wider roof','지붕이 더 넓은 설계 측정')],
  [B('Which tool checks the warming effect?','따뜻해진 정도를 확인할 도구는?'),B('Thermometer','온도계'),B('Ruler','자'),B('Balance scale','양팔저울')],

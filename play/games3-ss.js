@@ -86,7 +86,7 @@ reg('resources3','Four Production Resources','생산 자원 네 가지','SS3E1.a
 bank('publicservice3','Taxes and Services','세금과 서비스','SS3E2',[
  [B('What helps governments pay for public services?','정부가 공공서비스 비용을 마련하는 방법은?'),null,B('Taxes','세금'),B('Private birthday gifts','개인의 생일 선물'),B('Family pocket money','가족의 용돈')],
  [B('Which is a public service in this example?','이 사례의 공공서비스는?'),B('A town uses tax money to run its public library.','마을이 세금으로 공공도서관을 운영해요.'),B('The public library','공공도서관'),B('A family’s private toy box','가족의 개인 장난감 통'),B('A child’s birthday gift','아이의 생일 선물')],
- [B('Which statement fits?','맞는 설명을 골라요.'),B('Different governments help provide schools, roads, and fire protection using taxes.','시·주·나라 정부가 세금으로 학교, 도로, 소방 서비스 제공에 힘을 보태요.'),B('Taxes help pay for shared services','세금은 공공서비스 비용에 쓰여요'),B('Sales at stores pay for each buyer’s road use','가게 매출이 구매자의 도로 사용료예요'),B('Taxes pay for private shopping','공공서비스에는 가정에서 구매한 물건이에요')]]);
+ [B('Which statement fits?','맞는 설명을 골라요.'),B('Different governments help provide schools, roads, and fire protection using taxes.','시·주·나라 정부가 세금으로 학교, 도로, 소방 서비스 제공에 힘을 보태요.'),B('Taxes help pay for shared services','세금은 공공서비스 비용에 쓰여요'),B('Sales at stores pay for each buyer’s road use','가게 매출이 구매자의 도로 사용료예요'),B('Taxes pay for private shopping','세금으로 개인 쇼핑 비용을 내요')]]);
 bank('trade3','People Need Each Other','서로가 필요해요','SS3E3.a/c/d',[
  [B('Who is the producer in this example?','이 사례의 생산자는 누구인가요?'),B('A farmer grows apples. A family buys them to eat.','농부가 사과를 기르고 가족이 사서 먹어요.'),B('The farmer growing apples','사과를 기르는 농부'),B('The family buying apples','사과를 사는 가족'),B('The apples themselves','사과 자체')],
  [B('Who is the consumer in this example?','이 사례의 소비자는 누구인가요?'),B('A baker makes bread. Jo buys a loaf for lunch.','제빵사가 빵을 만들고 Jo가 점심으로 사요.'),B('Jo buying bread','빵을 사는 Jo'),B('The baker making bread','빵을 만드는 제빵사'),B('The oven','오븐')],
@@ -123,7 +123,7 @@ nativetoday3:[
  hr('What does contemporary mean in this record?','이 기록의 현대 예술은 무엇인가요?','Jeffrey Gibson is a contemporary Native artist.','제프리 깁슨은 현대 원주민 예술가예요.','Art made in our time','오늘날 만들어지는 예술','Art made in an earlier century','지난 세기에 만들어진 예술','Drawings made before this century','이번 세기 전에 만들어진 그림'),
  hr('Which claim fits these artists?','이 예술가들의 자료에 맞는 말은?','DY Begay creates woven art. Jeffrey Gibson creates contemporary art.','DY 베게이는 직물 예술을, 제프리 깁슨은 현대 예술을 만들어요.','Native artists contribute today','원주민 예술가가 오늘도 기여해요','These works were made in an earlier century','이 작품들은 지난 세기에 만들어졌어요','These artists use the same medium','이 예술가들은 같은 재료를 써요'),
  hr('Which statement avoids a stereotype?','모두 같다고 단정하지 않는 설명은?','These are examples of particular Native artists, not all artists.','특정 원주민 예술가들의 사례이며 모든 예술가의 모습은 아니에요.','Different artists make different work','예술가마다 작품이 달라요','The artists use the same materials','두 예술가가 같은 재료를 써요','The work was made in an earlier century','작품이 지난 세기에 만들어졌어요'),
- hr('What is the contribution in this record?','이 기록에 나온 기여는?','Native educators demonstrate traditional skills for visitors today.','원주민 교육자들이 오늘날 방문객에게 전통 기술을 보여 줘요.','Teaching visitors a craft','방문객에게 알려 주기','Selling craft supplies','공예 설명보다 재료 판매하기','Teaching house building','공예를 새 건축 방법으로 바꾸기'),
+ hr('What is the contribution in this record?','이 기록에 나온 기여는?','Native educators demonstrate traditional skills for visitors today.','원주민 교육자들이 오늘날 방문객에게 전통 기술을 보여 줘요.','Teaching visitors a craft','방문객에게 공예 알려 주기','Selling craft supplies','공예 재료 판매하기','Replacing the craft with a new building method','공예를 새 건축 방법으로 바꾸기'),
  hr('What should a record name?','문화 사례를 기록할 때 적을 것은?','This record describes a particular artist and community.','이 기록은 특정 예술가와 공동체를 설명해요.','The artist and community','예술가와 공동체','A guess based on the artwork’s color','작품 색에 따른 추측','An invented history','지어낸 역사'),
  hr('What does a modern exhibition demonstrate?','현대 전시가 보여 주는 것은?','A museum displays work by living Native artists.','박물관이 현재 활동하는 원주민 예술가의 작품을 전시해요.','Native art continues in the present','원주민 예술이 오늘날에도 이어져요','Native art stopped long ago','원주민 예술이 오래전에 끝났어요','Artists cannot have different styles','예술가는 서로 다른 작품을 못 만들어요')],
 explorerwhy3:[
@@ -165,7 +165,7 @@ colonylife3:[
 colonyperspective3:[
  hr('What time limit did this indentured service have?','이 계약 노동의 기간은 어떻게 정해져 있었나요?','Indentured service had a specified term. Some people were forced into this service.','계약 노동에는 정해진 기간이 있었어요. 강제로 이 일을 해야 했던 사람들도 있었어요.','A specified period','정해진 기간','A lifetime with no end date','끝나는 날짜 없는 평생','Until the worker chose to leave','노동자가 떠나기로 할 때까지'),
  hr('Which institution did some servants ask for release?','일부 계약 노동자가 요청한 곳은?','Some Maryland servants asked courts for release after their term.','일부 메릴랜드 계약 노동자는 기간이 끝난 뒤 법원에 풀려나게 해 달라고 요청했어요.','Colonial courts','식민지 법원','A colonial assembly','식민지 의회','A local church','지역 교회'),
- hr('Where did this 1662 law apply?','1662년 이 법이 있던 식민지는?','A Virginia law linked a child’s status to the mother.','버지니아 법은 아이 신분을 어머니 신분에 따르게 했어요.','Virginia','버지니아','Georgia','이웃 식민지','Modern Georgia','현대 조지아'),
+ hr('Where did this 1662 law apply?','1662년 이 법이 있던 식민지는?','A Virginia law linked a child’s status to the mother.','버지니아 법은 아이 신분을 어머니 신분에 따르게 했어요.','Virginia','버지니아','Massachusetts','매사추세츠','Modern Georgia','현대 조지아'),
  hr('Could a child simply choose a status under this law?','이 법 아래서 아이가 신분을 마음대로 고를 수 있었나요?','The law made status follow the mother.','법이 어머니의 신분을 따르게 했어요.','No, the law imposed a limit','아니요, 법이 선택을 제한했어요','Yes, any choice was allowed','네, 어떤 선택도 허용했어요','The father’s status decided','아버지 신분이 정했어요'),
  hr('Which record shows a specified time limit?','정해진 기간을 보여 주는 기록은?','A: indentured service had a term. B: a law linked a child’s status to the mother.','A: 계약 노동에는 기간이 있었어요. B: 법이 아이 신분을 어머니 신분에 따르게 했어요.','Record A','기록 A','Record B','기록 B','Neither','둘 다 아니에요'),
  hr('Which record shows inherited legal status?','신분을 물려받게 한 법의 기록은?','A: a service agreement. B: Virginia’s 1662 status law.','A: 노동 계약. B: 버지니아의 1662년 신분 법.','Record B','기록 B','Record A','기록 A','Neither','둘 다 아니에요'),
@@ -191,8 +191,8 @@ trade3:[
 };
 const exchangeQuestions=[
  ...[['cards','카드'],['marbles','구슬'],['stickers','스티커'],['bookmarks','책갈피'],['pencils','연필']].flatMap(r=>[
- hr('Which exchange is voluntary?','자발적인 교환은?',`Practice: two children want to trade ${r[0]}.`,`연습: 두 아이가 ${r[1]}을 서로 바꾸고 싶어 해요.`,'Both agree without force','강요 없이 둘 다 동의해요','One takes the item by force','한 명이 강제로 가져가요','One says no but is forced','싫다고 했지만 강요받아요'),
- hr('Which exchange is forced?','강제로 한 교환은?',`Practice: two children discuss trading ${r[0]}.`,`연습: 두 아이가 ${r[1]}을 바꾸는 일을 이야기해요.`,'One takes an item despite refusal','거절했는데도 물건을 가져가요','Both freely agree','둘 다 자유롭게 동의해요','Both can choose not to trade','둘 다 안 바꿀 자유가 있어요')])
+ hr('Which exchange is voluntary?','자발적인 교환은?',`Practice: two children want to trade ${r[0]}.`,`연습: 두 아이가 가진 ${r[1]}끼리 서로 바꾸고 싶어 해요.`,'Both agree without force','강요 없이 둘 다 동의해요','One takes the item by force','한 명이 강제로 가져가요','One says no but is forced','싫다고 했지만 강요받아요'),
+ hr('Which exchange is forced?','강제로 한 교환은?',`Practice: two children discuss trading ${r[0]}.`,`연습: 두 아이가 ${r[1]} 바꾸기를 이야기해요.`,'One takes an item despite refusal','거절했는데도 물건을 가져가요','Both freely agree','둘 다 자유롭게 동의해요','Both can choose not to trade','둘 다 안 바꿀 자유가 있어요')])
 ];
 // Broad locations checked against USGS, NPS and Smithsonian; sources in done-49.
 const mapCaption49=s=>`<div class="real-map-note">${s}</div>`;
